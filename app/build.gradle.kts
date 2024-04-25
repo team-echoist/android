@@ -26,6 +26,11 @@ android {
             "google_native_api_key",
             keystoreProperties["google_native_app_key"].toString()
         )
+        buildConfigField(
+            "String",
+            "kakao_native_app_key",
+            keystoreProperties["kakao_native_app_key"].toString()
+        )
         resValue("string","kakao_oauth_host",keystoreProperties["kakao_oauth_host"].toString())
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
