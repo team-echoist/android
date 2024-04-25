@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
                     AppPreview(navController = navController)
                 }
                 composable("screen2") {
-                    Greeting("Google")
+                    Greeting()
                 }
                 composable("screen3") {
                     GoogleLoginBtn(navController)
@@ -113,7 +113,7 @@ fun KakaoBtn(navController: NavController){
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
+fun Greeting( modifier: Modifier = Modifier) {
     val viewModel : SocialLoginViewModel = viewModel()
     Scaffold {
         Box(modifier= Modifier
