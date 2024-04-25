@@ -25,7 +25,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
-import com.echoist.linkedout.viewModels.GoogleLoginSuccessDialog
 import com.echoist.linkedout.viewModels.LoginSuccessDialog
 import com.echoist.linkedout.viewModels.SocialLoginViewModel
 import com.kakao.sdk.common.KakaoSdk
