@@ -126,6 +126,7 @@ class SocialLoginViewModel : ViewModel() {
     }
 
     // 로그인과 동시에 사용자 정보 요청 (기본) 따로 메서드를 빼서 활용가능할듯합니다.
+    // 메일이나 프로필, 등의 추가정보를 얻기위해선 비즈니스 앱 등록이 필요함.
     private fun getKakaoUserInfo(){
         UserApiClient.instance.me { user, error ->
             if (error != null) {
@@ -159,7 +160,7 @@ class SocialLoginViewModel : ViewModel() {
 
 //로그인 성공시 일단 간단한 토스트메세지 띄움
 @Composable
-fun LoginSuccessDialog(str : String, dialogState: MutableState<Boolean>){
+fun LoginSuccessDialog(successMsg : String, dialogState: MutableState<Boolean>){
     AlertDialog(
         onDismissRequest = { dialogState.value = false},
         confirmButton = {
@@ -167,6 +168,6 @@ fun LoginSuccessDialog(str : String, dialogState: MutableState<Boolean>){
                 Text(text = "확인")
             }
         },
-        text = { Text(text = str)},
+        text = { Text(text = successMsg)},
     )
 }
