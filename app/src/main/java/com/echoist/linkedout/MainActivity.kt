@@ -29,7 +29,6 @@ import com.echoist.linkedout.viewModels.LoginSuccessDialog
 import com.echoist.linkedout.viewModels.SocialLoginViewModel
 import com.kakao.sdk.common.KakaoSdk
 import com.kakao.sdk.common.util.Utility
-
 class MainActivity : ComponentActivity() {
     override fun onStart() {
         super.onStart()
