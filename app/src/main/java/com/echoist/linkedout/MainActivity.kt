@@ -1,11 +1,13 @@
 package com.echoist.linkedout
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,17 +25,27 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
-import com.echoist.linkedout.viewModels.GoogleLoginSuccessDialog
+import com.echoist.linkedout.viewModels.LoginSuccessDialog
 import com.echoist.linkedout.viewModels.SocialLoginViewModel
+import com.kakao.sdk.common.KakaoSdk
+import com.kakao.sdk.common.util.Utility
 
 class MainActivity : ComponentActivity() {
+    override fun onStart() {
+        super.onStart()
+        //카카오 sdk 초기화
+        KakaoSdk.init(this,BuildConfig.kakao_native_app_key)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
+
 
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
 
         setContent {
+            val keyHash = Utility.getKeyHash(this)
+            Log.d("Hash", keyHash)
             val navController = rememberNavController()
 
             NavHost(navController = navController, startDestination = "screen1") {
@@ -41,7 +53,7 @@ class MainActivity : ComponentActivity() {
                     AppPreview(navController = navController)
                 }
                 composable("screen2") {
-                    Greeting("Google")
+                    Greeting()
                 }
                 composable("screen3") {
                     GoogleLoginBtn(navController)
@@ -64,7 +76,7 @@ fun GoogleLoginBtn( navController: NavController) {
         viewModel.handleGoogleSignInResult(result.data, navController)
     }
 
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+
         Button(
             onClick = {
                 viewModel.signInWithGoogle(launcher,context)
@@ -72,15 +84,36 @@ fun GoogleLoginBtn( navController: NavController) {
         ) {
             Text(text = "Google Sign In")
         }
-        if (viewModel.state.value) {
-            GoogleLoginSuccessDialog(viewModel.state)
+        if (viewModel.googleLoginstate.value) {
+            LoginSuccessDialog("google 로그인성공",viewModel.googleLoginstate)
         }
+}
+
+
+
+@Composable
+fun KakaoBtn(navController: NavController){
+    val viewModel : SocialLoginViewModel = viewModel()
+    val context = LocalContext.current
+
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Button(onClick = { viewModel.handleKaKaoLogin(context) }) {
+            Text(text = "Kakao Sign in")
+        }
+        Button(onClick = { viewModel.handleKaKaoLogout() }) {
+            Text(text = "Kakao Sign out")
+        }
+
+
+    }
+    if (viewModel.kakaoLoginstate.value) {
+        LoginSuccessDialog("kakao 로그인성공",viewModel.kakaoLoginstate)
     }
 
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
+fun Greeting( modifier: Modifier = Modifier) {
     val viewModel : SocialLoginViewModel = viewModel()
     Scaffold {
         Box(modifier= Modifier
@@ -105,11 +138,14 @@ fun AppPreview(navController: NavController) {
             content = {
                 Column(
                     modifier = Modifier
-                        .fillMaxSize()
                         .padding(it)
+                        .fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
 
                     GoogleLoginBtn(navController = navController)
+                    KakaoBtn(navController = navController)
 
                 }
             }
