@@ -1,4 +1,4 @@
-package com.echoist.linkedout
+package com.echoist.linkedout.api
 
 import com.echoist.linkedout.data.NaverApiUserInfo
 import retrofit2.http.GET
