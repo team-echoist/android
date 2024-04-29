@@ -16,8 +16,10 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.ContextCompat.getString
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.echoist.linkedout.BuildConfig
+import com.echoist.linkedout.NaverApiService
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -30,6 +32,11 @@ import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
 import com.navercorp.nid.NaverIdLoginSDK
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import kotlinx.coroutines.launch
+import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
 
 class SocialLoginViewModel : ViewModel() {
     private val auth : FirebaseAuth = Firebase.auth
@@ -57,7 +64,7 @@ class SocialLoginViewModel : ViewModel() {
         launcher.launch(googleSignInClient.signInIntent)
     }
 
-    fun handleGoogleSignInResult(data: Intent?, navController: NavController) {
+    fun handleGoogleLogin(data: Intent?, navController: NavController) {
         // Google ID 토큰을 사용하여 Firebase에 인증합니다.
         try {
             // Google 로그인이 성공하면 Firebase로 인증합니다.
@@ -71,6 +78,7 @@ class SocialLoginViewModel : ViewModel() {
                     if (task.isSuccessful) {
                         googleLoginstate.value = true
                         // 로그인 성공
+                        // 회원정보 획득 가능
                         navController.navigate("screen2")
                         Log.d("TAG", "Google Sign In Success")
                         Log.d(TAG, "firebaseAuthWithGoogle id:" + account.id)
@@ -179,7 +187,8 @@ class SocialLoginViewModel : ViewModel() {
                 Log.d("Naver_getTokenType", NaverIdLoginSDK.getTokenType().toString())
                 Log.d("Naver_getState", NaverIdLoginSDK.getState().toString())
                 naverLoginstate.value = true
-                // Handle success accordingly
+                // 로그인 성공 시 유저 정보 획득
+                getNaverUserInfo()
             }
             RESULT_CANCELED -> {
                 // 실패 or 에러
@@ -193,6 +202,41 @@ class SocialLoginViewModel : ViewModel() {
 
     fun handleNaverLogout(){
         NaverIdLoginSDK.logout()
+    }
+
+    private fun getNaverUserInfo(){
+        val token = NaverIdLoginSDK.getAccessToken()
+        val moshi = Moshi.Builder()
+            .addLast(KotlinJsonAdapterFactory())
+            .build()
+
+        val api = Retrofit
+            .Builder()
+            .baseUrl("https://openapi.naver.com/")
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .build()
+            .create(NaverApiService::class.java)
+
+        if (token != null){
+            viewModelScope.launch {
+                try {
+                    val userInfo = api.getUserInfo("Bearer ${NaverIdLoginSDK.getAccessToken()}")
+                    val info = userInfo.response
+                    // info.name 등으로 유저 정보 획득
+                    Log.d("NaverUserInfo success", info.name.toString())
+                    Log.d("NaverUserInfo success", info.email.toString())
+
+                }catch (e : Exception){
+                    // 사용자 정보 가져오기 실패
+                    Log.e("NaverUserInfo", "Failed to get user info: ${e.message}")
+                }
+            }
+        }
+        else{
+            //토큰 없는 경우
+            Log.e("NaverUserInfo", "Access token is null")
+        }
+
     }
 
 

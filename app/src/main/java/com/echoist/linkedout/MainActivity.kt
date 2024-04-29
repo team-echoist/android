@@ -77,7 +77,7 @@ fun GoogleLoginBtn( navController: NavController) {
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
     ) { result ->
-        viewModel.handleGoogleSignInResult(result.data, navController)
+        viewModel.handleGoogleLogin(result.data, navController)
     }
 
 
