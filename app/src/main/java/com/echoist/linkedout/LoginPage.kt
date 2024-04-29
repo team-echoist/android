@@ -13,20 +13,31 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
@@ -64,7 +75,6 @@ class MainActivity : ComponentActivity() {
                     AppPreview(navController = navController)
                 }
                 composable("screen2") {
-                    Greeting()
                 }
                 composable("screen3") {
                     GoogleLoginBtn(navController)
@@ -167,50 +177,43 @@ fun AppleLoginBtn(navController: NavController) {
             modifier = Modifier
                 .size(40.dp)
                 .clickable { }, //애플로그인 로직 구현필요
-                    tint = Color.Unspecified
-                    )
+            tint = Color.Unspecified
+        )
 
 
-                }
+    }
     if (viewModel.naverLoginstate.value) {
         LoginSuccessDialog("naver 로그인성공", viewModel.naverLoginstate)
     }
 
 }
 
-@Composable
-fun Greeting(modifier: Modifier = Modifier) {
-    val viewModel: SocialLoginViewModel = viewModel()
-    Scaffold {
-        Box(
-            modifier = Modifier
-                .padding(it)
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "Hello ${viewModel.userName}!",
-                modifier = modifier
-            )
-        }
-
-    }
-
-}
 
 @Composable
 fun AppPreview(navController: NavController) {
+    var rememberId by remember { mutableStateOf("null") }
+    var rememberPw by remember { mutableStateOf("") }
 
     LinkedOutTheme {
         Scaffold(
             content = {
-                Column (modifier = Modifier
-                    .padding(it)
-                    .fillMaxSize()){
+                Column(
+                    modifier = Modifier
+                        .padding(it)
+                ) {
+                    Text(text = "안녕하세요!", fontSize = 20.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(start = 16.dp), color = Color.White)
+                    Text(text = "링크드아웃에 오신 것을 환영합니다", fontSize = 20.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(start = 16.dp, bottom = 16.dp),color = Color.White)
+                    IdTextField { id -> rememberId = id }
+                    PwTextField { pw -> rememberPw = pw }
 
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                         SocialLoginBar(navController)
 
                     }
+                    LoginBtn(navController = navController, id = rememberId, pw = rememberPw)
+
+
+                }
 
 
             }
@@ -219,11 +222,10 @@ fun AppPreview(navController: NavController) {
 }
 
 @Composable
-fun SocialLoginBar(navController : NavController) {
+fun SocialLoginBar(navController: NavController) {
     Row(
         modifier = Modifier
-            .padding(25.dp)
-            .fillMaxSize(),
+            .padding(25.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -236,4 +238,93 @@ fun SocialLoginBar(navController : NavController) {
         AppleLoginBtn(navController = navController)
     }
 }
+
+@Composable
+fun IdTextField(onValueChanged: (String) -> Unit) {
+    var text by remember { mutableStateOf("") }
+
+    TextField(
+        value = text,
+        onValueChange = { new ->
+            text = new
+            onValueChanged(text)
+        },
+        label = { Text("이메일 주소 또는 아이디", color = Color(0xFF919191), fontSize = 14.sp) }, // 힌트를 라벨로 설정합니다.
+        colors = TextFieldDefaults.colors(
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            focusedTextColor = Color.White,
+            unfocusedTextColor = Color.White,
+            focusedContainerColor = Color(0xFF252525),
+            unfocusedContainerColor = Color(0xFF252525)
+
+
+        ),
+        shape = RoundedCornerShape(8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+    )
+}
+
+@Composable
+fun PwTextField(onValueChanged: (String) -> Unit) {
+    var text by remember { mutableStateOf("") }
+
+    TextField(
+        value = text,
+        onValueChange = { new ->
+            text = new
+            onValueChanged(text)
+        },
+        label = { Text("비밀번호", color = Color(0xFF919191), fontSize = 14.sp) }, // 힌트를 라벨로 설정합니다.
+        colors = TextFieldDefaults.colors(
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            focusedTextColor = Color.White,
+            unfocusedTextColor = Color.White,
+            focusedContainerColor = Color(0xFF252525),
+            unfocusedContainerColor = Color(0xFF252525)
+
+
+        ),
+        shape = RoundedCornerShape(8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp)
+    )
+}
+
+@Composable
+fun LoginBtn(navController: NavController, id : String, pw : String){
+    Button(
+        onClick = { /*TODO*/ },
+        colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp)
+    ) {
+        Text(text = "로그인", color = Color.Black)
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
