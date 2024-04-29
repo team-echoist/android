@@ -17,19 +17,40 @@ android {
 
     defaultConfig {
         applicationId = "com.echoist.linkedout"
-        minSdk = 24
+        minSdk = 25
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+        //git ignore 용입니다.
+        //구글 네이티브 앱 키
         buildConfigField(
             "String",
             "google_native_api_key",
             keystoreProperties["google_native_app_key"].toString()
         )
+        //카카오 네이티브 앱 키
         buildConfigField(
             "String",
             "kakao_native_app_key",
             keystoreProperties["kakao_native_app_key"].toString()
+        )
+        //네이버 네이티브 clientID
+        buildConfigField(
+            "String",
+            "naver_client_id",
+            keystoreProperties["naver_client_id"].toString()
+        )
+        //네이버 네이티브 clientSecret
+        buildConfigField(
+            "String",
+            "naver_slient_secret",
+            keystoreProperties["naver_slient_secret"].toString()
+        )
+        //네이버 client Name
+        buildConfigField(
+            "String",
+            "naver_client_name",
+            keystoreProperties["naver_client_name"].toString()
         )
         resValue("string","kakao_oauth_host",keystoreProperties["kakao_oauth_host"].toString())
 
@@ -80,6 +101,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.firebase.auth.ktx)
+    implementation(libs.androidx.compose.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -120,5 +142,8 @@ dependencies {
     implementation ("com.kakao.sdk:v2-friend:2.19.0") // 카카오톡 소셜 피커, 리소스 번들 파일 포함
     implementation ("com.kakao.sdk:v2-navi:2.19.0") // 카카오내비
     implementation ("com.kakao.sdk:v2-cert:2.19.0") // 카카오 인증서비스
+
+    implementation ("com.navercorp.nid:oauth-jdk8:5.9.0") // 네이버 로그인
+
 
 }

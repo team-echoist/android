@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.content.ContextCompat.getString
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.BuildConfig
@@ -25,6 +26,7 @@ import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
+import com.navercorp.nid.NaverIdLoginSDK
 
 class SocialLoginViewModel : ViewModel() {
     private val auth : FirebaseAuth = Firebase.auth
@@ -152,6 +154,14 @@ class SocialLoginViewModel : ViewModel() {
                 Log.i(TAG, "로그아웃 성공. SDK에서 토큰 삭제됨")
             }
         }
+    }
+
+    //네이버 로그인 초기화
+    private fun initializeNaverLogin(context: Context) {
+        val naverClientId = BuildConfig.naver_client_id
+        val naverClientSecret = BuildConfig.naver_slient_secret
+        val naverClientName = BuildConfig.naver_client_name
+        NaverIdLoginSDK.initialize(context, naverClientId, naverClientSecret, naverClientName)
     }
 
 
