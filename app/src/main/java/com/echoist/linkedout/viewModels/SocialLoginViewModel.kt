@@ -191,6 +191,10 @@ class SocialLoginViewModel : ViewModel() {
         }
     }
 
+    fun handleNaverLogout(){
+        NaverIdLoginSDK.logout()
+    }
+
 
 
 }

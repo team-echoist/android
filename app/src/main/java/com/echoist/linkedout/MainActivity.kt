@@ -92,9 +92,6 @@ fun GoogleLoginBtn( navController: NavController) {
             LoginSuccessDialog("google 로그인성공",viewModel.googleLoginstate)
         }
 }
-
-
-
 @Composable
 fun KakaoLoginBtn(navController: NavController){
     val viewModel : SocialLoginViewModel = viewModel()
@@ -129,7 +126,10 @@ fun NaverLoginBtn(navController: NavController){
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Button(onClick = { NaverIdLoginSDK.authenticate(context, launcher) }) {
-            Text(text = "naver Sign in")
+            Text(text = "Naver Sign in")
+        }
+        Button(onClick = { viewModel.handleNaverLogout() }) {
+            Text(text = "Naver Sign out")
         }
 
 
