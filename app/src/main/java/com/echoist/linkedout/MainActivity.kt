@@ -1,11 +1,13 @@
 package com.echoist.linkedout
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,6 +31,8 @@ import com.echoist.linkedout.viewModels.LoginSuccessDialog
 import com.echoist.linkedout.viewModels.SocialLoginViewModel
 import com.kakao.sdk.common.KakaoSdk
 import com.kakao.sdk.common.util.Utility
+import com.navercorp.nid.NaverIdLoginSDK
+
 class MainActivity : ComponentActivity() {
     override fun onStart() {
         super.onStart()
@@ -40,6 +44,7 @@ class MainActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
 
 
         setContent {
@@ -72,7 +77,7 @@ fun GoogleLoginBtn( navController: NavController) {
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
     ) { result ->
-        viewModel.handleGoogleSignInResult(result.data, navController)
+        viewModel.handleGoogleLogin(result.data, navController)
     }
 
 
@@ -87,11 +92,8 @@ fun GoogleLoginBtn( navController: NavController) {
             LoginSuccessDialog("google 로그인성공",viewModel.googleLoginstate)
         }
 }
-
-
-
 @Composable
-fun KakaoBtn(navController: NavController){
+fun KakaoLoginBtn(navController: NavController){
     val viewModel : SocialLoginViewModel = viewModel()
     val context = LocalContext.current
 
@@ -107,6 +109,33 @@ fun KakaoBtn(navController: NavController){
     }
     if (viewModel.kakaoLoginstate.value) {
         LoginSuccessDialog("kakao 로그인성공",viewModel.kakaoLoginstate)
+    }
+
+}
+@Composable
+fun NaverLoginBtn(navController: NavController){
+    val viewModel : SocialLoginViewModel = viewModel()
+    val context = LocalContext.current
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        viewModel.handleNaverLoginResult(result)
+    }
+    viewModel.initializeNaverLogin(context)
+
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Button(onClick = { NaverIdLoginSDK.authenticate(context, launcher) }) {
+            Text(text = "Naver Sign in")
+        }
+        Button(onClick = { viewModel.handleNaverLogout() }) {
+            Text(text = "Naver Sign out")
+        }
+
+
+    }
+    if (viewModel.naverLoginstate.value) {
+        LoginSuccessDialog("naver 로그인성공",viewModel.naverLoginstate)
     }
 
 }
@@ -144,7 +173,8 @@ fun AppPreview(navController: NavController) {
                 ) {
 
                     GoogleLoginBtn(navController = navController)
-                    KakaoBtn(navController = navController)
+                    KakaoLoginBtn(navController = navController)
+                    NaverLoginBtn(navController = navController)
 
                 }
             }
