@@ -219,14 +219,14 @@ fun AppPreview(navController: NavController) {
                     PwTextField { pw -> rememberPw = pw }
 
                     LoginBtn(navController = navController, id = rememberId, pw = rememberPw)
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                    Row(modifier = Modifier.fillMaxWidth().padding(top = 32.dp), horizontalArrangement = Arrangement.Center) {
                         Text(text = "아이디 찾기", fontSize = 12.sp, style = TextStyle(textDecoration = TextDecoration.Underline), color = Color(0xFF919191), modifier = Modifier.padding(end = 25.dp))
                         Text(text = "비밀번호 재설정", fontSize = 12.sp, style = TextStyle(textDecoration = TextDecoration.Underline), color = Color(0xFF919191), modifier = Modifier.padding(end = 25.dp))
                         Text(text = "회원가입", fontSize = 12.sp, style = TextStyle(textDecoration = TextDecoration.Underline), color = Color(0xFF919191))
                     }
                     Spacer(modifier = Modifier.height(150.dp))
 
-                    Row(
+                    Row(modifier = Modifier.padding(bottom = 30.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         HorizontalDivider(
@@ -270,8 +270,6 @@ fun AppPreview(navController: NavController) {
 @Composable
 fun SocialLoginBar(navController: NavController) {
     Row(
-        modifier = Modifier
-            .padding(25.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -352,7 +350,8 @@ fun LoginBtn(navController: NavController, id : String, pw : String){
         interactionSource = interactionSource,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp, bottom = 10.dp)
+            .height(55.dp)
+            .padding(start = 16.dp, end = 16.dp)
     ) {
         Text(text = "로그인", color = Color.Black)
     }
