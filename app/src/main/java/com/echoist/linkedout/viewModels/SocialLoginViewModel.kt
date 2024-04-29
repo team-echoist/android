@@ -1,10 +1,13 @@
 package com.echoist.linkedout.viewModels
 
+import android.app.Activity.RESULT_CANCELED
+import android.app.Activity.RESULT_OK
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.result.ActivityResult
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -32,6 +35,8 @@ class SocialLoginViewModel : ViewModel() {
     private val auth : FirebaseAuth = Firebase.auth
     var googleLoginstate = mutableStateOf(false)
     var kakaoLoginstate = mutableStateOf(false)
+    var naverLoginstate = mutableStateOf(false)
+
 
     val userName = auth.currentUser?.displayName.toString()
 
@@ -157,11 +162,33 @@ class SocialLoginViewModel : ViewModel() {
     }
 
     //네이버 로그인 초기화
-    private fun initializeNaverLogin(context: Context) {
+    fun initializeNaverLogin(context: Context) {
         val naverClientId = BuildConfig.naver_client_id
         val naverClientSecret = BuildConfig.naver_slient_secret
         val naverClientName = BuildConfig.naver_client_name
         NaverIdLoginSDK.initialize(context, naverClientId, naverClientSecret, naverClientName)
+    }
+
+    fun handleNaverLoginResult(result: ActivityResult) {
+        when (result.resultCode) {
+            RESULT_OK -> {
+                // 네이버 로그인 인증이 성공했을 때 수행할 코드 추가
+                Log.d("Naver_getAccessToken", NaverIdLoginSDK.getAccessToken().toString())
+                Log.d("Naver_getRefreshToken", NaverIdLoginSDK.getRefreshToken().toString())
+                Log.d("Naver_getExpiresAt", NaverIdLoginSDK.getExpiresAt().toString())
+                Log.d("Naver_getTokenType", NaverIdLoginSDK.getTokenType().toString())
+                Log.d("Naver_getState", NaverIdLoginSDK.getState().toString())
+                naverLoginstate.value = true
+                // Handle success accordingly
+            }
+            RESULT_CANCELED -> {
+                // 실패 or 에러
+                Log.d("errorCode", NaverIdLoginSDK.getLastErrorCode().code)
+                Log.d("errorDescription", NaverIdLoginSDK.getLastErrorDescription().toString())
+
+                // Handle failure accordingly
+            }
+        }
     }
 
 
