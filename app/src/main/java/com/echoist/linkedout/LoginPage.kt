@@ -8,18 +8,24 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -35,7 +41,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -55,6 +63,7 @@ class MainActivity : ComponentActivity() {
         super.onStart()
         //카카오 sdk 초기화
         KakaoSdk.init(this, BuildConfig.kakao_native_app_key)
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -201,16 +210,53 @@ fun AppPreview(navController: NavController) {
                     modifier = Modifier
                         .padding(it)
                 ) {
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "arrowback", tint = Color.White, modifier = Modifier.padding(16.dp))
+                    Spacer(modifier = Modifier.height(30.dp))
                     Text(text = "안녕하세요!", fontSize = 20.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(start = 16.dp), color = Color.White)
-                    Text(text = "링크드아웃에 오신 것을 환영합니다", fontSize = 20.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(start = 16.dp, bottom = 16.dp),color = Color.White)
+                    Text(text = "링크드아웃에 오신 것을 환영합니다", fontSize = 20.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(start = 16.dp, bottom = 32.dp),color = Color.White)
                     IdTextField { id -> rememberId = id }
                     PwTextField { pw -> rememberPw = pw }
+
+                    LoginBtn(navController = navController, id = rememberId, pw = rememberPw)
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                        Text(text = "아이디 찾기", fontSize = 12.sp, style = TextStyle(textDecoration = TextDecoration.Underline), color = Color(0xFF919191), modifier = Modifier.padding(end = 25.dp))
+                        Text(text = "비밀번호 재설정", fontSize = 12.sp, style = TextStyle(textDecoration = TextDecoration.Underline), color = Color(0xFF919191), modifier = Modifier.padding(end = 25.dp))
+                        Text(text = "회원가입", fontSize = 12.sp, style = TextStyle(textDecoration = TextDecoration.Underline), color = Color(0xFF919191))
+                    }
+                    Spacer(modifier = Modifier.height(150.dp))
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        HorizontalDivider(
+                            thickness = 1.dp,
+                            color = Color.White,
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp)) // 공간을 만듭니다
+                        Text(
+                            text = "간편 회원가입/로그인",
+                            color = Color.White,
+                            fontSize = 12.sp
+                        )
+                        Spacer(modifier = Modifier.width(12.dp)) // 공간을 만듭니다
+                        HorizontalDivider(
+                            thickness = 1.dp,
+                            color = Color.White,
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(16.dp)
+                        )
+                    }
+
 
                     Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                         SocialLoginBar(navController)
 
                     }
-                    LoginBtn(navController = navController, id = rememberId, pw = rememberPw)
 
 
                 }
@@ -291,23 +337,26 @@ fun PwTextField(onValueChanged: (String) -> Unit) {
         shape = RoundedCornerShape(8.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp)
+            .padding(start = 16.dp, end = 16.dp, bottom = 32.dp)
     )
 }
 
 @Composable
 fun LoginBtn(navController: NavController, id : String, pw : String){
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
     Button(
-        onClick = { /*TODO*/ },
-        colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+        shape = RoundedCornerShape(10.dp),
+        onClick = { print("sdf") },
+        colors = ButtonDefaults.buttonColors(containerColor = if (isPressed) Color.LightGray else Color.White),
+        interactionSource = interactionSource,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp)
+            .padding(start = 16.dp, end = 16.dp, bottom = 10.dp)
     ) {
         Text(text = "로그인", color = Color.Black)
     }
 }
-
 
 
 
