@@ -223,7 +223,7 @@ class SocialLoginViewModel : ViewModel() {
                     val info = userInfo.response
                     // info.name 등으로 유저 정보 획득
                     Log.d("NaverUserInfo success", info.name.toString())
-                    Log.d("NaverUserInfo success", info.email.toString())
+                    Log.d("NaverUserInfo success", info.profile_image.toString())
 
                 }catch (e : Exception){
                     // 사용자 정보 가져오기 실패

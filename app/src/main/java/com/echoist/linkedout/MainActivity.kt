@@ -1,26 +1,32 @@
 package com.echoist.linkedout
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
@@ -37,8 +43,9 @@ class MainActivity : ComponentActivity() {
     override fun onStart() {
         super.onStart()
         //카카오 sdk 초기화
-        KakaoSdk.init(this,BuildConfig.kakao_native_app_key)
+        KakaoSdk.init(this, BuildConfig.kakao_native_app_key)
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
 
@@ -68,10 +75,11 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
 //구글로그인 버튼
 @Composable
-fun GoogleLoginBtn( navController: NavController) {
-    val viewModel : SocialLoginViewModel = viewModel()
+fun GoogleLoginBtn(navController: NavController) {
+    val viewModel: SocialLoginViewModel = viewModel()
 
     val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(
@@ -79,42 +87,47 @@ fun GoogleLoginBtn( navController: NavController) {
     ) { result ->
         viewModel.handleGoogleLogin(result.data, navController)
     }
+    Icon(
+        painter = painterResource(id = R.drawable.googleloginbtn4x),
+        contentDescription = "naver Login btn",
+        modifier = Modifier
+            .size(40.dp)
+            .clickable { viewModel.signInWithGoogle(launcher, context) },
+        tint = Color.Unspecified
+    )
 
-
-        Button(
-            onClick = {
-                viewModel.signInWithGoogle(launcher,context)
-            }
-        ) {
-            Text(text = "Google Sign In")
-        }
-        if (viewModel.googleLoginstate.value) {
-            LoginSuccessDialog("google 로그인성공",viewModel.googleLoginstate)
-        }
+    if (viewModel.googleLoginstate.value) {
+        LoginSuccessDialog("google 로그인성공", viewModel.googleLoginstate)
+    }
 }
+
 @Composable
-fun KakaoLoginBtn(navController: NavController){
-    val viewModel : SocialLoginViewModel = viewModel()
+fun KakaoLoginBtn(navController: NavController) {
+    val viewModel: SocialLoginViewModel = viewModel()
     val context = LocalContext.current
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Button(onClick = { viewModel.handleKaKaoLogin(context) }) {
-            Text(text = "Kakao Sign in")
-        }
-        Button(onClick = { viewModel.handleKaKaoLogout() }) {
-            Text(text = "Kakao Sign out")
-        }
+
+        Icon(
+            painter = painterResource(id = R.drawable.kakaologinbtn4x),
+            contentDescription = "naver Login btn",
+            modifier = Modifier
+                .size(40.dp)
+                .clickable { viewModel.handleKaKaoLogin(context) },
+            tint = Color.Unspecified
+        )
 
 
     }
     if (viewModel.kakaoLoginstate.value) {
-        LoginSuccessDialog("kakao 로그인성공",viewModel.kakaoLoginstate)
+        LoginSuccessDialog("kakao 로그인성공", viewModel.kakaoLoginstate)
     }
 
 }
+
 @Composable
-fun NaverLoginBtn(navController: NavController){
-    val viewModel : SocialLoginViewModel = viewModel()
+fun NaverLoginBtn(navController: NavController) {
+    val viewModel: SocialLoginViewModel = viewModel()
     val context = LocalContext.current
 
     val launcher = rememberLauncherForActivityResult(
@@ -125,29 +138,56 @@ fun NaverLoginBtn(navController: NavController){
     viewModel.initializeNaverLogin(context)
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Button(onClick = { NaverIdLoginSDK.authenticate(context, launcher) }) {
-            Text(text = "Naver Sign in")
-        }
-        Button(onClick = { viewModel.handleNaverLogout() }) {
-            Text(text = "Naver Sign out")
-        }
+        Icon(
+            painter = painterResource(id = R.drawable.naverloginbtn4x),
+            contentDescription = "naver Login btn",
+            modifier = Modifier
+                .size(40.dp)
+                .clickable { NaverIdLoginSDK.authenticate(context, launcher) },
+            tint = Color.Unspecified
+        )
 
 
     }
     if (viewModel.naverLoginstate.value) {
-        LoginSuccessDialog("naver 로그인성공",viewModel.naverLoginstate)
+        LoginSuccessDialog("naver 로그인성공", viewModel.naverLoginstate)
     }
 
 }
 
 @Composable
-fun Greeting( modifier: Modifier = Modifier) {
-    val viewModel : SocialLoginViewModel = viewModel()
+fun AppleLoginBtn(navController: NavController) {
+    val viewModel: SocialLoginViewModel = viewModel()
+    val context = LocalContext.current
+
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Icon(
+            painter = painterResource(id = R.drawable.appleloginbtn4x),
+            contentDescription = "naver Login btn",
+            modifier = Modifier
+                .size(40.dp)
+                .clickable { }, //애플로그인 로직 구현필요
+                    tint = Color.Unspecified
+                    )
+
+
+                }
+    if (viewModel.naverLoginstate.value) {
+        LoginSuccessDialog("naver 로그인성공", viewModel.naverLoginstate)
+    }
+
+}
+
+@Composable
+fun Greeting(modifier: Modifier = Modifier) {
+    val viewModel: SocialLoginViewModel = viewModel()
     Scaffold {
-        Box(modifier= Modifier
-            .padding(it)
-            .fillMaxSize(),
-            contentAlignment = Alignment.Center) {
+        Box(
+            modifier = Modifier
+                .padding(it)
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
             Text(
                 text = "Hello ${viewModel.userName}!",
                 modifier = modifier
@@ -162,22 +202,38 @@ fun Greeting( modifier: Modifier = Modifier) {
 fun AppPreview(navController: NavController) {
 
     LinkedOutTheme {
-        Scaffold (
+        Scaffold(
             content = {
-                Column(
-                    modifier = Modifier
-                        .padding(it)
-                        .fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
+                Column (modifier = Modifier
+                    .padding(it)
+                    .fillMaxSize()){
 
-                    GoogleLoginBtn(navController = navController)
-                    KakaoLoginBtn(navController = navController)
-                    NaverLoginBtn(navController = navController)
+                        SocialLoginBar(navController)
 
-                }
+                    }
+
+
             }
         )
     }
 }
+
+@Composable
+fun SocialLoginBar(navController : NavController) {
+    Row(
+        modifier = Modifier
+            .padding(25.dp)
+            .fillMaxSize(),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        GoogleLoginBtn(navController = navController)
+        Spacer(modifier = Modifier.width(25.dp))
+        KakaoLoginBtn(navController = navController)
+        Spacer(modifier = Modifier.width(25.dp))
+        NaverLoginBtn(navController = navController)
+        Spacer(modifier = Modifier.width(25.dp))
+        AppleLoginBtn(navController = navController)
+    }
+}
+
