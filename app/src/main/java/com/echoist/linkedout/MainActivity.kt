@@ -52,8 +52,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-
-
         setContent {
             val keyHash = Utility.getKeyHash(this)
             Log.d("Hash", keyHash)
@@ -61,7 +59,7 @@ class MainActivity : ComponentActivity() {
 
             NavHost(navController = navController, startDestination = "screen1") {
                 composable("screen1") {
-                    AppPreview(navController = navController)
+                    HomePage()
                 }
                 composable("screen2") {
                     Greeting()
