@@ -57,16 +57,21 @@ class MainActivity : ComponentActivity() {
             Log.d("Hash", keyHash)
             val navController = rememberNavController()
 
-            NavHost(navController = navController, startDestination = "screen1") {
-                composable("screen1") {
-                    HomePage()
+            NavHost(navController = navController, startDestination = "LoginPage") {
+                composable("LoginPage") {
+                    LoginPage(navController)
                 }
-                composable("screen2") {
-                    Greeting()
+                composable("HOME") {
+                    HomePage(navController)
                 }
-                composable("screen3") {
-                    GoogleLoginBtn(navController)
-
+                composable("MYLOG") {
+                    //mylog page
+                }
+                composable("COMMUNITY") {
+                    //community page
+                }
+                composable("SETTINGS") {
+                    //settings page
                 }
             }
 
@@ -197,7 +202,7 @@ fun Greeting(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun AppPreview(navController: NavController) {
+fun LoginPage(navController: NavController) {
 
     LinkedOutTheme {
         Scaffold(

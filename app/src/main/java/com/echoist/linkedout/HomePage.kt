@@ -4,15 +4,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -22,37 +23,59 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
+import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 
-@Preview
+
 @Composable
-fun HomePage(){
-    LinkedOutTheme{
-        Scaffold(bottomBar = {PrevBottomNav()}, topBar = { CustomTopAppBar() }) {
-            Column(modifier = Modifier.padding(it)) {
-                Text(text = "Welcome to Home Page!", modifier = Modifier.padding(16.dp))
+fun HomePage(navController: NavController) {
 
+    LinkedOutTheme {
+        Scaffold(
+            bottomBar = { MyBottomNavigation(navController) },
+            topBar = { CustomTopAppBar(navController) },
+            floatingActionButton = { WriteFTB(navController) },
+            content = {
+                Column(modifier = Modifier.padding(it)) {
+
+                }
             }
-
-        }
+        )
     }
 }
-@Preview
+
+
+@Composable
+fun WriteFTB(navController: NavController) {
+    FloatingActionButton(
+        onClick = { /* TODO FTB 눌렀을때 작성페이지로 넘어가는 기능구현필요.*/ },
+        shape = RoundedCornerShape(100.dp),
+        containerColor = Color.White
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.edit_ftb),
+            contentDescription = "edit",
+            modifier = Modifier.size(20.dp)
+        )
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CustomTopAppBar(){
-    TopAppBar(title = { }, colors = TopAppBarDefaults.topAppBarColors(Color.Transparent),
+fun CustomTopAppBar(navController: NavController) {
+    TopAppBar(
+        title = { }, colors = TopAppBarDefaults.topAppBarColors(Color.Transparent),
         navigationIcon = {
             Icon(
                 tint = Color.White,
                 imageVector = Icons.Default.Menu,
                 contentDescription = "Menu",
                 modifier = Modifier
-                    .clickable { }
+                    .clickable { /* Todo 메뉴 클릭 시 작동 기능 구현 필요 */ }
                     .padding(start = 20.dp)
+                    .size(30.dp)
             )
         },
         actions = {
@@ -60,10 +83,12 @@ fun CustomTopAppBar(){
                 Icons.Default.Notifications,
                 contentDescription = "Notifications",
                 modifier = Modifier
+                    .clickable {/* Todo 알림 표시 클릭 시 작동 기능 구현 필요 */ }
                     .padding(end = 20.dp)
                     .size(30.dp)
             )
-        })
+        },
+    )
 
 }
 
@@ -75,7 +100,7 @@ fun PrevBottomNav() {
 }
 
 @Composable
-fun MyBottomNavigation(navController: NavHostController) {
+fun MyBottomNavigation(navController: NavController) {
     val items = listOf(
         BottomNavItem.Home,
         BottomNavItem.MyLog,
@@ -86,7 +111,7 @@ fun MyBottomNavigation(navController: NavHostController) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
 
-        items.forEach {item->
+        items.forEach { item ->
             NavigationBarItem(
                 selected = currentRoute == item.screenRoute,
                 onClick = {
@@ -96,7 +121,7 @@ fun MyBottomNavigation(navController: NavHostController) {
                     Icon(
                         painter = painterResource(id = item.icon),
                         contentDescription = item.title,
-                        modifier = Modifier.size(25.dp),
+                        modifier = Modifier.size(32.dp),
                         tint = if (currentRoute == item.screenRoute) Color(0xFF686868) else Color.White
                     )
                 })
