@@ -1,6 +1,7 @@
 package com.echoist.linkedout
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -56,16 +57,19 @@ fun HomePage(navController: NavController) {
 
 @Composable
 fun WriteFTB(navController: NavController) {
+
+
     FloatingActionButton(
         modifier = Modifier.padding(end = 25.dp, bottom = 25.dp),
         onClick = { /* TODO FTB 눌렀을때 작성페이지로 넘어가는 기능구현필요.*/ },
         shape = RoundedCornerShape(100.dp),
-        containerColor = Color.White
+        containerColor =  if (isSystemInDarkTheme()) Color.White else Color.Gray
     ) {
         Icon(
             painter = painterResource(id = R.drawable.edit_ftb),
             contentDescription = "edit",
-            modifier = Modifier.size(20.dp)
+            modifier = Modifier.size(20.dp),
+            tint = if (isSystemInDarkTheme()) Color.Black else Color.White
         )
     }
 }
@@ -77,7 +81,7 @@ fun CustomTopAppBar(navController: NavController) {
         title = { }, colors = TopAppBarDefaults.topAppBarColors(Color.Transparent),
         navigationIcon = {
             Icon(
-                tint = Color.White,
+                tint = if (isSystemInDarkTheme()) Color.White else Color.Gray,
                 imageVector = Icons.Default.Menu,
                 contentDescription = "Menu",
                 modifier = Modifier
@@ -115,7 +119,7 @@ fun MyBottomNavigation(navController: NavController) {
         BottomNavItem.Community,
         BottomNavItem.Settings
     )
-    NavigationBar(containerColor = Color.Black) {
+    NavigationBar(containerColor = Color.Transparent) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
 
