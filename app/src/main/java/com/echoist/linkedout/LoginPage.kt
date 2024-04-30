@@ -148,7 +148,7 @@ fun KakaoLoginBtn(navController: NavController) {
             contentDescription = "naver Login btn",
             modifier = Modifier
                 .size(40.dp)
-                .clickable { viewModel.handleKaKaoLogin(context) },
+                .clickable { viewModel.handleKaKaoLogin(context,navController) },
             tint = Color.Unspecified
         )
 
@@ -168,7 +168,7 @@ fun NaverLoginBtn(navController: NavController) {
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        viewModel.handleNaverLoginResult(result)
+        viewModel.handleNaverLoginResult(result,navController)
     }
     viewModel.initializeNaverLogin(context)
 
@@ -239,7 +239,7 @@ fun LoginPage(navController: NavController) {
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "arrowback",
                         tint = Color.White,
-                        modifier = Modifier.padding(16.dp)
+                        modifier = Modifier.padding(16.dp).clickable { navController.popBackStack() } //뒤로가기
                     )
                     Spacer(modifier = Modifier.height(30.dp))
                     Text(

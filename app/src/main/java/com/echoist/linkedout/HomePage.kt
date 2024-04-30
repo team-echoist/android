@@ -31,6 +31,11 @@ import com.echoist.linkedout.data.BottomNavItem
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 
 
+@Preview
+@Composable
+fun PrevHomePage() {
+    HomePage(navController = rememberNavController())
+}
 @Composable
 fun HomePage(navController: NavController) {
 
@@ -52,6 +57,7 @@ fun HomePage(navController: NavController) {
 @Composable
 fun WriteFTB(navController: NavController) {
     FloatingActionButton(
+        modifier = Modifier.padding(end = 25.dp, bottom = 25.dp),
         onClick = { /* TODO FTB 눌렀을때 작성페이지로 넘어가는 기능구현필요.*/ },
         shape = RoundedCornerShape(100.dp),
         containerColor = Color.White

@@ -98,7 +98,7 @@ class SocialLoginViewModel : ViewModel() {
         }
     }
 
-    fun handleKaKaoLogin(context: Context){
+    fun handleKaKaoLogin(context: Context,navController: NavController){
         // 카카오 로그인 조합 예제
 
         // 카카오계정으로 로그인 공통 callback 구성
@@ -108,6 +108,7 @@ class SocialLoginViewModel : ViewModel() {
                 Log.e(TAG, "카카오계정으로 로그인 실패", error)
             } else if (token != null) {
                 kakaoLoginstate.value = true
+                navController.navigate("HOME")
                 Log.i(TAG, "카카오계정으로 로그인 성공 ${token.accessToken} ")
             }
         }
@@ -128,6 +129,7 @@ class SocialLoginViewModel : ViewModel() {
                     UserApiClient.instance.loginWithKakaoAccount(context, callback = callback)
                 } else if (token != null) {
                     kakaoLoginstate.value = true
+                    navController.navigate("HOME")
                     Log.i(TAG, "카카오톡으로 로그인 성공 ${token.accessToken}")
                 }
             }
@@ -176,7 +178,7 @@ class SocialLoginViewModel : ViewModel() {
         NaverIdLoginSDK.initialize(context, naverClientId, naverClientSecret, naverClientName)
     }
 
-    fun handleNaverLoginResult(result: ActivityResult) {
+    fun handleNaverLoginResult(result: ActivityResult , navController: NavController) {
         when (result.resultCode) {
             RESULT_OK -> {
                 // 네이버 로그인 인증이 성공했을 때 수행할 코드 추가
@@ -186,6 +188,7 @@ class SocialLoginViewModel : ViewModel() {
                 Log.d("Naver_getTokenType", NaverIdLoginSDK.getTokenType().toString())
                 Log.d("Naver_getState", NaverIdLoginSDK.getState().toString())
                 naverLoginstate.value = true
+                navController.navigate("HOME")
                 // 로그인 성공 시 유저 정보 획득
                 getNaverUserInfo()
             }
