@@ -7,6 +7,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -16,9 +17,10 @@ import androidx.navigation.compose.rememberNavController
 
 @Preview
 @Composable
-fun TestBottomNav() {
+fun PrevBottomNav() {
     MyBottomNavigation(navController = rememberNavController())
 }
+
 @Composable
 fun MyBottomNavigation(navController: NavHostController) {
     val items = listOf<BottomNavItem>(
@@ -27,7 +29,7 @@ fun MyBottomNavigation(navController: NavHostController) {
         BottomNavItem.Community,
         BottomNavItem.Settings
     )
-    NavigationBar {
+    NavigationBar(containerColor = Color.Black) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
 
@@ -38,60 +40,49 @@ fun MyBottomNavigation(navController: NavHostController) {
                     navController.navigate(it.screenRoute)
                 },
                 icon = {
-                    if (currentRoute == it.screenRoute) {
-                        Icon(
-                            painter = painterResource(id = it.selectedIcon),
-                            contentDescription = it.title
-                        )
-                    } else
-                        Icon(
-                            painter = painterResource(id = it.unSelectedIcon),
-                            contentDescription = it.title,
-                            modifier = Modifier.size(20.dp)
-                        )
+                    Icon(
+                        painter = painterResource(id = it.icon),
+                        contentDescription = it.title,
+                        modifier = Modifier.size(25.dp),
+                        tint = if (currentRoute == it.screenRoute) Color(0xFF68686) else Color.White
+                    )
                 })
+
         }
     }
 }
 
 
-
-
 sealed class BottomNavItem(
     val title: String,
-    val unSelectedIcon: Int,
-    val selectedIcon: Int,
+    val icon: Int,
     val screenRoute: String
 ) {
     data object Home :
         BottomNavItem(
             "HOME",
-            R.drawable.nav_1_unselected,
-            R.drawable.nav_1_selected,
+            R.drawable.bottom_nav_1,
             "HOME" // nav Route 재지정 필요
         )
 
     data object MyLog :
         BottomNavItem(
             "MYLOG",
-            R.drawable.nav_2_unselected,
-            R.drawable.nav_2_selected,
+            R.drawable.bottom_nav_2,
             "MYLOG"
         )
 
     data object Community :
         BottomNavItem(
             "COMMUNITY",
-            R.drawable.nav_3_unselected,
-            R.drawable.nav_3_selected,
+            R.drawable.bottom_nav_3,
             "COMMUNITY"
         )
 
     data object Settings :
         BottomNavItem(
             "SETTINGS",
-            R.drawable.nav_4_unselected,
-            R.drawable.nav_4_selected,
+            R.drawable.bottom_nav_4,
             "SETTINGS"
         )
 }
