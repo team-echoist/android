@@ -8,10 +8,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,12 +21,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -39,10 +42,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -81,7 +89,7 @@ class MainActivity : ComponentActivity() {
 
             NavHost(navController = navController, startDestination = "screen1") {
                 composable("screen1") {
-                    AppPreview(navController = navController)
+                    LoginPage(navController = navController)
                 }
                 composable("screen2") {
                 }
@@ -199,9 +207,10 @@ fun AppleLoginBtn(navController: NavController) {
 
 
 @Composable
-fun AppPreview(navController: NavController) {
+fun LoginPage(navController: NavController) {
     var rememberId by remember { mutableStateOf("null") }
     var rememberPw by remember { mutableStateOf("") }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     LinkedOutTheme {
         Scaffold(
@@ -209,24 +218,52 @@ fun AppPreview(navController: NavController) {
                 Column(
                     modifier = Modifier
                         .padding(it)
+                        .pointerInput(Unit) { //배경 터치 시 키보드 숨김
+                            detectTapGestures(onTap = {
+                                keyboardController?.hide()
+                            })
+                        }
                 ) {
                     Spacer(modifier = Modifier.height(20.dp))
-                    Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "arrowback", tint = Color.White, modifier = Modifier.padding(16.dp))
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "arrowback",
+                        tint = Color.White,
+                        modifier = Modifier.padding(16.dp)
+                    )
                     Spacer(modifier = Modifier.height(30.dp))
-                    Text(text = "안녕하세요!", fontSize = 20.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(start = 16.dp), color = Color.White)
-                    Text(text = "링크드아웃에 오신 것을 환영합니다", fontSize = 20.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(start = 16.dp, bottom = 32.dp),color = Color.White)
+                    Text(
+                        text = "안녕하세요!",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.padding(start = 16.dp),
+                        color = Color.White
+                    )
+                    Text(
+                        text = "링크드아웃에 오신 것을 환영합니다",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.padding(start = 16.dp, bottom = 32.dp),
+                        color = Color.White
+                    )
                     IdTextField { id -> rememberId = id }
                     PwTextField { pw -> rememberPw = pw }
 
                     LoginBtn(navController = navController, id = rememberId, pw = rememberPw)
-                    Row(modifier = Modifier.fillMaxWidth().padding(top = 32.dp), horizontalArrangement = Arrangement.Center) {
-                        Text(text = "아이디 찾기", fontSize = 12.sp, style = TextStyle(textDecoration = TextDecoration.Underline), color = Color(0xFF919191), modifier = Modifier.padding(end = 25.dp))
-                        Text(text = "비밀번호 재설정", fontSize = 12.sp, style = TextStyle(textDecoration = TextDecoration.Underline), color = Color(0xFF919191), modifier = Modifier.padding(end = 25.dp))
-                        Text(text = "회원가입", fontSize = 12.sp, style = TextStyle(textDecoration = TextDecoration.Underline), color = Color(0xFF919191))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 32.dp),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        UnderlineText(text = "아이디 찾기") { } //아이디찾기 페이지 이동
+                        UnderlineText(text = "비밀번호 재설정") { } //비밀번호 재설정 페이지 이동
+                        UnderlineText(text = "회원가입") { } // 회원가입 페이지 이동
                     }
                     Spacer(modifier = Modifier.height(150.dp))
 
-                    Row(modifier = Modifier.padding(bottom = 30.dp),
+                    Row(
+                        modifier = Modifier.padding(bottom = 30.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         HorizontalDivider(
@@ -251,12 +288,10 @@ fun AppPreview(navController: NavController) {
                                 .padding(16.dp)
                         )
                     }
+                    
+                    SocialLoginBar(navController)
 
 
-                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                        SocialLoginBar(navController)
-
-                    }
 
 
                 }
@@ -270,6 +305,7 @@ fun AppPreview(navController: NavController) {
 @Composable
 fun SocialLoginBar(navController: NavController) {
     Row(
+        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -293,7 +329,13 @@ fun IdTextField(onValueChanged: (String) -> Unit) {
             text = new
             onValueChanged(text)
         },
-        label = { Text("이메일 주소 또는 아이디", color = Color(0xFF919191), fontSize = 14.sp) }, // 힌트를 라벨로 설정합니다.
+        label = {
+            Text(
+                "이메일 주소 또는 아이디",
+                color = Color(0xFF919191),
+                fontSize = 14.sp
+            )
+        }, // 힌트를 라벨로 설정합니다.
         colors = TextFieldDefaults.colors(
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
@@ -314,6 +356,7 @@ fun IdTextField(onValueChanged: (String) -> Unit) {
 @Composable
 fun PwTextField(onValueChanged: (String) -> Unit) {
     var text by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
 
     TextField(
         value = text,
@@ -332,6 +375,16 @@ fun PwTextField(onValueChanged: (String) -> Unit) {
 
 
         ),
+        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        trailingIcon = { // 비밀번호 표시 여부입니다.
+            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                Icon(
+                    imageVector = Icons.Filled.Done,
+                    contentDescription = "Toggle password visibility"
+                )
+            }
+        },
         shape = RoundedCornerShape(8.dp),
         modifier = Modifier
             .fillMaxWidth()
@@ -340,7 +393,7 @@ fun PwTextField(onValueChanged: (String) -> Unit) {
 }
 
 @Composable
-fun LoginBtn(navController: NavController, id : String, pw : String){
+fun LoginBtn(navController: NavController, id: String, pw: String) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     Button(
@@ -355,6 +408,23 @@ fun LoginBtn(navController: NavController, id : String, pw : String){
     ) {
         Text(text = "로그인", color = Color.Black)
     }
+}
+
+@Composable
+fun UnderlineText(
+    text: String,
+    onClick : () -> Unit
+) {
+    Text(
+        text = text,
+        fontSize = 12.sp,
+        style = TextStyle(textDecoration = TextDecoration.Underline),
+        color = Color(0xFF919191),
+        modifier = Modifier
+            .padding(end = 25.dp)
+            .clickable { onClick() }
+
+    )
 }
 
 
