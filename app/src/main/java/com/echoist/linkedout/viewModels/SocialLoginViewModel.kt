@@ -78,7 +78,7 @@ class SocialLoginViewModel : ViewModel() {
                         googleLoginstate.value = true
                         // 로그인 성공
                         // 회원정보 획득 가능
-                        navController.navigate("screen2")
+                        navController.navigate("HOME")
                         Log.d("TAG", "Google Sign In Success")
                         Log.d(TAG, "firebaseAuthWithGoogle id:" + account.id)
                         Log.d(TAG, "firebaseAuthWithGoogle idtoken:" + account.idToken) //토큰값.
