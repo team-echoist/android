@@ -68,7 +68,7 @@ import com.kakao.sdk.common.KakaoSdk
 import com.kakao.sdk.common.util.Utility
 import com.navercorp.nid.NaverIdLoginSDK
 
-class MainActivity : ComponentActivity() {
+class LoginPage : ComponentActivity() {
     override fun onStart() {
         super.onStart()
         //카카오 sdk 초기화
@@ -89,15 +89,21 @@ class MainActivity : ComponentActivity() {
             Log.d("Hash", keyHash)
             val navController = rememberNavController()
 
-            NavHost(navController = navController, startDestination = "screen1") {
-                composable("screen1") {
-                    LoginPage(navController = navController)
+            NavHost(navController = navController, startDestination = "LoginPage") {
+                composable("LoginPage") {
+                    LoginPage(navController)
                 }
-                composable("screen2") {
+                composable("HOME") {
+                    HomePage(navController)
                 }
-                composable("screen3") {
-                    GoogleLoginBtn(navController)
-
+                composable("MYLOG") {
+                    //mylog page
+                }
+                composable("COMMUNITY") {
+                    //community page
+                }
+                composable("SETTINGS") {
+                    //settings page
                 }
             }
 
@@ -117,7 +123,7 @@ fun GoogleLoginBtn(navController: NavController) {
         viewModel.handleGoogleLogin(result.data, navController)
     }
     Icon(
-        painter = painterResource(id = R.drawable.googleloginbtn4x),
+        painter = painterResource(id = R.drawable.social_googlebtn),
         contentDescription = "naver Login btn",
         modifier = Modifier
             .size(40.dp)
@@ -138,7 +144,7 @@ fun KakaoLoginBtn(navController: NavController) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
         Icon(
-            painter = painterResource(id = R.drawable.kakaologinbtn4x),
+            painter = painterResource(id = R.drawable.social_kakaobtn),
             contentDescription = "naver Login btn",
             modifier = Modifier
                 .size(40.dp)
@@ -168,7 +174,7 @@ fun NaverLoginBtn(navController: NavController) {
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Icon(
-            painter = painterResource(id = R.drawable.naverloginbtn4x),
+            painter = painterResource(id = R.drawable.social_naverbtn),
             contentDescription = "naver Login btn",
             modifier = Modifier
                 .size(40.dp)
@@ -191,7 +197,7 @@ fun AppleLoginBtn(navController: NavController) {
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Icon(
-            painter = painterResource(id = R.drawable.appleloginbtn4x),
+            painter = painterResource(id = R.drawable.social_applebtn),
             contentDescription = "naver Login btn",
             modifier = Modifier
                 .size(40.dp)
@@ -202,7 +208,7 @@ fun AppleLoginBtn(navController: NavController) {
 
     }
     if (viewModel.naverLoginstate.value) {
-        LoginSuccessDialog("naver 로그인성공", viewModel.naverLoginstate)
+        LoginSuccessDialog("apple 로그인성공", viewModel.naverLoginstate)
     }
 
 }
