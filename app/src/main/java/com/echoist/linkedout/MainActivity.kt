@@ -96,7 +96,7 @@ fun GoogleLoginBtn(navController: NavController) {
         tint = Color.Unspecified
     )
 
-    if (viewModel.googleLoginstate.value) {
+    if (viewModel.googleLoginstate.value) {// 로그인 성공 시 홈화면진입
         LoginSuccessDialog("google 로그인성공", viewModel.googleLoginstate)
     }
 }
@@ -119,7 +119,7 @@ fun KakaoLoginBtn(navController: NavController) {
 
 
     }
-    if (viewModel.kakaoLoginstate.value) {
+    if (viewModel.kakaoLoginstate.value) { // 로그인 성공 시 홈화면진입
         LoginSuccessDialog("kakao 로그인성공", viewModel.kakaoLoginstate)
     }
 
@@ -149,7 +149,7 @@ fun NaverLoginBtn(navController: NavController) {
 
 
     }
-    if (viewModel.naverLoginstate.value) {
+    if (viewModel.naverLoginstate.value) { // 로그인 성공 시 홈화면진입
         LoginSuccessDialog("naver 로그인성공", viewModel.naverLoginstate)
     }
 
