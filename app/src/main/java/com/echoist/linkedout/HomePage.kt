@@ -13,6 +13,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -113,6 +114,7 @@ fun MyBottomNavigation(navController: NavController) {
 
         items.forEach { item ->
             NavigationBarItem(
+                colors = NavigationBarItemDefaults.colors(indicatorColor = Color.Transparent),
                 selected = currentRoute == item.screenRoute,
                 onClick = {
                     navController.navigate(item.screenRoute)
@@ -122,7 +124,7 @@ fun MyBottomNavigation(navController: NavController) {
                         painter = painterResource(id = item.icon),
                         contentDescription = item.title,
                         modifier = Modifier.size(32.dp),
-                        tint = if (currentRoute == item.screenRoute) Color(0xFF686868) else Color.White
+                        tint = if (currentRoute == item.screenRoute) Color.White else Color(0xFF686868)
                     )
                 })
 
