@@ -20,8 +20,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Done
@@ -211,6 +213,7 @@ fun LoginPage(navController: NavController) {
     var rememberId by remember { mutableStateOf("null") }
     var rememberPw by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
+    val scrollState = rememberScrollState()
 
     LinkedOutTheme {
         Scaffold(
@@ -218,6 +221,7 @@ fun LoginPage(navController: NavController) {
                 Column(
                     modifier = Modifier
                         .padding(it)
+                        .verticalScroll(scrollState)
                         .pointerInput(Unit) { //배경 터치 시 키보드 숨김
                             detectTapGestures(onTap = {
                                 keyboardController?.hide()
