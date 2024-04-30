@@ -11,7 +11,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.LinkedOut"
+        android:theme="@style/LinkedOut"
         tools:targetApi="31">
 
         <activity
@@ -31,7 +31,7 @@
         <activity
             android:name=".LoginPage"
             android:exported="true"
-            android:theme="@style/Theme.LinkedOut">
+            android:theme="@style/LinkedOut">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
