@@ -26,7 +26,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -390,9 +389,11 @@ fun PwTextField(onValueChanged: (String) -> Unit) {
         trailingIcon = { // 비밀번호 표시 여부입니다.
             IconButton(onClick = { passwordVisible = !passwordVisible }) {
                 Icon(
-                    imageVector = Icons.Filled.Done,
-                    contentDescription = "Toggle password visibility"
+                    modifier = Modifier.size(24.dp),
+                    painter = painterResource(id = if (passwordVisible) R.drawable.pw_eye else R.drawable.pw_eye_off),
+                    contentDescription = "pw_eye"
                 )
+
             }
         },
         shape = RoundedCornerShape(8.dp),
