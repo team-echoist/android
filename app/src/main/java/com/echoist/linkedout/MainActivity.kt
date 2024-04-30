@@ -52,23 +52,26 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-
-
         setContent {
             val keyHash = Utility.getKeyHash(this)
             Log.d("Hash", keyHash)
             val navController = rememberNavController()
 
-            NavHost(navController = navController, startDestination = "screen1") {
-                composable("screen1") {
-                    AppPreview(navController = navController)
+            NavHost(navController = navController, startDestination = "LoginPage") {
+                composable("LoginPage") {
+                    LoginPage(navController)
                 }
-                composable("screen2") {
-                    Greeting()
+                composable("HOME") {
+                    HomePage(navController)
                 }
-                composable("screen3") {
-                    GoogleLoginBtn(navController)
-
+                composable("MYLOG") {
+                    //mylog page
+                }
+                composable("COMMUNITY") {
+                    //community page
+                }
+                composable("SETTINGS") {
+                    //settings page
                 }
             }
 
@@ -88,7 +91,7 @@ fun GoogleLoginBtn(navController: NavController) {
         viewModel.handleGoogleLogin(result.data, navController)
     }
     Icon(
-        painter = painterResource(id = R.drawable.googleloginbtn4x),
+        painter = painterResource(id = R.drawable.social_googlebtn),
         contentDescription = "naver Login btn",
         modifier = Modifier
             .size(40.dp)
@@ -96,7 +99,7 @@ fun GoogleLoginBtn(navController: NavController) {
         tint = Color.Unspecified
     )
 
-    if (viewModel.googleLoginstate.value) {
+    if (viewModel.googleLoginstate.value) {// 로그인 성공 시 홈화면진입
         LoginSuccessDialog("google 로그인성공", viewModel.googleLoginstate)
     }
 }
@@ -109,7 +112,7 @@ fun KakaoLoginBtn(navController: NavController) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
         Icon(
-            painter = painterResource(id = R.drawable.kakaologinbtn4x),
+            painter = painterResource(id = R.drawable.social_kakaobtn),
             contentDescription = "naver Login btn",
             modifier = Modifier
                 .size(40.dp)
@@ -119,7 +122,7 @@ fun KakaoLoginBtn(navController: NavController) {
 
 
     }
-    if (viewModel.kakaoLoginstate.value) {
+    if (viewModel.kakaoLoginstate.value) { // 로그인 성공 시 홈화면진입
         LoginSuccessDialog("kakao 로그인성공", viewModel.kakaoLoginstate)
     }
 
@@ -139,7 +142,7 @@ fun NaverLoginBtn(navController: NavController) {
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Icon(
-            painter = painterResource(id = R.drawable.naverloginbtn4x),
+            painter = painterResource(id = R.drawable.social_naverbtn),
             contentDescription = "naver Login btn",
             modifier = Modifier
                 .size(40.dp)
@@ -149,7 +152,7 @@ fun NaverLoginBtn(navController: NavController) {
 
 
     }
-    if (viewModel.naverLoginstate.value) {
+    if (viewModel.naverLoginstate.value) { // 로그인 성공 시 홈화면진입
         LoginSuccessDialog("naver 로그인성공", viewModel.naverLoginstate)
     }
 
@@ -162,7 +165,7 @@ fun AppleLoginBtn(navController: NavController) {
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Icon(
-            painter = painterResource(id = R.drawable.appleloginbtn4x),
+            painter = painterResource(id = R.drawable.social_applebtn),
             contentDescription = "naver Login btn",
             modifier = Modifier
                 .size(40.dp)
@@ -199,7 +202,7 @@ fun Greeting(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun AppPreview(navController: NavController) {
+fun LoginPage(navController: NavController) {
 
     LinkedOutTheme {
         Scaffold(
