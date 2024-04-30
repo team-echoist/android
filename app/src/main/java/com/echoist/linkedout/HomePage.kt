@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.echoist.linkedout.data.BottomNavItem
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 
 
@@ -130,39 +131,4 @@ fun MyBottomNavigation(navController: NavController) {
 
         }
     }
-}
-
-
-sealed class BottomNavItem(
-    val title: String,
-    val icon: Int,
-    val screenRoute: String
-) {
-    data object Home :
-        BottomNavItem(
-            "HOME",
-            R.drawable.bottom_nav_1,
-            "HOME" // nav Route 전부 재지정 필요
-        )
-
-    data object MyLog :
-        BottomNavItem(
-            "MYLOG",
-            R.drawable.bottom_nav_2,
-            "MYLOG"
-        )
-
-    data object Community :
-        BottomNavItem(
-            "COMMUNITY",
-            R.drawable.bottom_nav_3,
-            "COMMUNITY"
-        )
-
-    data object Settings :
-        BottomNavItem(
-            "SETTINGS",
-            R.drawable.bottom_nav_4,
-            "SETTINGS"
-        )
 }
