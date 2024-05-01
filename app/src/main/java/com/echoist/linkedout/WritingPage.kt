@@ -38,7 +38,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.colintheshots.twain.MarkdownText
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
@@ -53,12 +52,12 @@ fun MarkDownBtn(viewModel: WritingViewModel) {
     val end = selection.end
     val selectText = viewModel.content.value.getSelectedText() //selected text
     // 선택된 텍스트 앞에 '*'을 붙임
-    val boldText = if(start != end) "**$selectText**" else selectText
-    val italicText = if(start != end)"*$selectText*" else selectText
-    val header1Text = if(start != end)"# $selectText" else selectText
-    val header2Text = if(start != end)"## $selectText" else selectText
+    val boldText = if (start != end) "**$selectText**" else selectText
+    val italicText = if (start != end) "*$selectText*" else selectText
+    val header1Text = if (start != end) "# $selectText" else selectText
+    val header2Text = if (start != end) "## $selectText" else selectText
 
-    if (start != end){
+    if (start != end) {
 
     }
 
@@ -89,11 +88,8 @@ fun MarkDownBtn(viewModel: WritingViewModel) {
 //@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 //@PreviewScreenSizes
 @Composable
-fun WritingPage(navController: NavController) {
+fun WritingPage(navController: NavController,viewModel: WritingViewModel) {
 
-    val textType = listOf("Bold","Italic","Header 1","Header 2")
-
-    val viewModel: WritingViewModel = viewModel()
     val keyboardController = LocalSoftwareKeyboardController.current
     val scrollState = rememberScrollState()
     val focusManager = LocalFocusManager.current
@@ -136,7 +132,7 @@ fun WritingPage(navController: NavController) {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun PreviewWritingPage() {
-    WritingPage(navController = NavController(LocalContext.current))
+    WritingPage(navController = NavController(LocalContext.current), WritingViewModel())
 }
 
 @Composable
@@ -220,7 +216,13 @@ fun WritingTopAppBar(navController: NavController, viewModel: WritingViewModel) 
                 color = Color.White,
                 text = "완료",
                 fontSize = 16.sp,
-                modifier = Modifier.padding(end = 20.dp, top = 15.dp)
+                modifier = Modifier
+                    .padding(end = 20.dp, top = 15.dp)
+                    .clickable {
+                        navController.navigate("WritingCompletePage")
+                        /* todo 서버로 제목과 내용 보내는 기능 필요합니다.
+                        *   사진 넣는 방식도 구현 필요합니다.  */
+                    }
 
             )
 

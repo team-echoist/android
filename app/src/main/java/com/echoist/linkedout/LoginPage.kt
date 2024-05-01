@@ -63,6 +63,7 @@ import androidx.navigation.compose.rememberNavController
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.LoginSuccessDialog
 import com.echoist.linkedout.viewModels.SocialLoginViewModel
+import com.echoist.linkedout.viewModels.WritingViewModel
 import com.kakao.sdk.common.KakaoSdk
 import com.kakao.sdk.common.util.Utility
 import com.navercorp.nid.NaverIdLoginSDK
@@ -81,6 +82,8 @@ class LoginPage : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val viewModel by viewModels<SocialLoginViewModel>()
+        val writingViewModel by viewModels<WritingViewModel>()
+
 
         setContent {
             val keyHash = Utility.getKeyHash(this)
@@ -104,7 +107,10 @@ class LoginPage : ComponentActivity() {
                     //settings page
                 }
                 composable("WritingPage") {
-                    WritingPage(navController)
+                    WritingPage(navController,writingViewModel)
+                }
+                composable("WritingCompletePage") {
+                    WritingCompletePage(navController,writingViewModel)
                 }
             }
 
