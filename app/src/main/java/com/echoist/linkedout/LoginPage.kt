@@ -201,7 +201,7 @@ fun AppleLoginBtn(navController: NavController, viewModel: SocialLoginViewModel)
             contentDescription = "naver Login btn",
             modifier = Modifier
                 .size(40.dp)
-                .clickable { }, //애플로그인 로직 구현필요
+                .clickable {/* todo 애플로그인 로직 구현필요 */ },
             tint = Color.Unspecified
         )
 
