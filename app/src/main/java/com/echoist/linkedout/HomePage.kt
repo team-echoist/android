@@ -42,8 +42,8 @@ fun HomePage(navController: NavController) {
 
     LinkedOutTheme {
         Scaffold(
-            bottomBar = { MyBottomNavigation(navController) },
             topBar = { CustomTopAppBar(navController) },
+            bottomBar = { MyBottomNavigation(navController) },
             floatingActionButton = { WriteFTB(navController) },
             content = {
                 Column(modifier = Modifier.padding(it)) {
