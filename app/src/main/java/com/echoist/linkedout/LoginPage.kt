@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -55,7 +56,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -80,6 +80,8 @@ class LoginPage : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
 
+        val viewModel by viewModels<SocialLoginViewModel>()
+
 
 
         setContent {
@@ -89,7 +91,7 @@ class LoginPage : ComponentActivity() {
 
             NavHost(navController = navController, startDestination = "LoginPage") {
                 composable("LoginPage") {
-                    LoginPage(navController)
+                    LoginPage(navController, viewModel)
                 }
                 composable("HOME") {
                     HomePage(navController)
@@ -111,8 +113,7 @@ class LoginPage : ComponentActivity() {
 
 //구글로그인 버튼
 @Composable
-fun GoogleLoginBtn(navController: NavController) {
-    val viewModel: SocialLoginViewModel = viewModel()
+fun GoogleLoginBtn(navController: NavController, viewModel: SocialLoginViewModel) {
 
     val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(
@@ -135,8 +136,7 @@ fun GoogleLoginBtn(navController: NavController) {
 }
 
 @Composable
-fun KakaoLoginBtn(navController: NavController) {
-    val viewModel: SocialLoginViewModel = viewModel()
+fun KakaoLoginBtn(navController: NavController, viewModel: SocialLoginViewModel) {
     val context = LocalContext.current
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -159,9 +159,10 @@ fun KakaoLoginBtn(navController: NavController) {
 }
 
 @Composable
-fun NaverLoginBtn(navController: NavController) {
-    val viewModel: SocialLoginViewModel = viewModel()
+fun NaverLoginBtn(navController: NavController, viewModel: SocialLoginViewModel) {
     val context = LocalContext.current
+    Log.d("naverviewmodel", viewModel.toString())
+
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -189,9 +190,10 @@ fun NaverLoginBtn(navController: NavController) {
 }
 
 @Composable
-fun AppleLoginBtn(navController: NavController) {
-    val viewModel: SocialLoginViewModel = viewModel()
+fun AppleLoginBtn(navController: NavController, viewModel: SocialLoginViewModel) {
+
     val context = LocalContext.current
+    Log.d("appleviewmodel", viewModel.toString())
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Icon(
@@ -213,7 +215,8 @@ fun AppleLoginBtn(navController: NavController) {
 
 
 @Composable
-fun LoginPage(navController: NavController) {
+fun LoginPage(navController: NavController, viewModel: SocialLoginViewModel) {
+
     var rememberId by remember { mutableStateOf("") }
     var rememberPw by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -257,10 +260,10 @@ fun LoginPage(navController: NavController) {
                         modifier = Modifier.padding(start = 16.dp, bottom = 32.dp),
                         color = if (isSystemInDarkTheme()) Color.White else Color.Gray
                     )
-                    IdTextField { id -> rememberId = id }
-                    PwTextField { pw -> rememberPw = pw }
+                    IdTextField(viewModel)
+                    PwTextField(viewModel)
 
-                    LoginBtn(navController = navController, id = rememberId, pw = rememberPw)
+                    LoginBtn(navController = navController, viewModel)
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -300,7 +303,7 @@ fun LoginPage(navController: NavController) {
                         )
                     }
 
-                    SocialLoginBar(navController)
+                    SocialLoginBar(navController, viewModel)
 
 
                 }
@@ -312,31 +315,31 @@ fun LoginPage(navController: NavController) {
 }
 
 @Composable
-fun SocialLoginBar(navController: NavController) {
+fun SocialLoginBar(navController: NavController, viewModel: SocialLoginViewModel) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        GoogleLoginBtn(navController = navController)
+        GoogleLoginBtn(navController = navController, viewModel)
         Spacer(modifier = Modifier.width(25.dp))
-        KakaoLoginBtn(navController = navController)
+        KakaoLoginBtn(navController = navController, viewModel)
         Spacer(modifier = Modifier.width(25.dp))
-        NaverLoginBtn(navController = navController)
+        NaverLoginBtn(navController = navController, viewModel)
         Spacer(modifier = Modifier.width(25.dp))
-        AppleLoginBtn(navController = navController)
+        AppleLoginBtn(navController = navController, viewModel)
     }
 }
 
 @Composable
-fun IdTextField(onValueChanged: (String) -> Unit) {
+fun IdTextField(viewModel: SocialLoginViewModel) {
     var text by remember { mutableStateOf("") }
 
     TextField(
         value = text,
         onValueChange = { new ->
             text = new
-            onValueChanged(text)
+            viewModel.userId.value = text
         },
         label = {
             Text(
@@ -350,8 +353,8 @@ fun IdTextField(onValueChanged: (String) -> Unit) {
             unfocusedIndicatorColor = Color.Transparent,
             focusedTextColor = Color.White,
             unfocusedTextColor = Color.White,
-            focusedContainerColor = if (isSystemInDarkTheme())Color(0xFF252525) else Color.Black,
-            unfocusedContainerColor = if (isSystemInDarkTheme())Color(0xFF252525) else Color.Black
+            focusedContainerColor = if (isSystemInDarkTheme()) Color(0xFF252525) else Color.Black,
+            unfocusedContainerColor = if (isSystemInDarkTheme()) Color(0xFF252525) else Color.Black
 
 
         ),
@@ -363,7 +366,7 @@ fun IdTextField(onValueChanged: (String) -> Unit) {
 }
 
 @Composable
-fun PwTextField(onValueChanged: (String) -> Unit) {
+fun PwTextField(viewModel: SocialLoginViewModel) {
     var text by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
@@ -371,7 +374,7 @@ fun PwTextField(onValueChanged: (String) -> Unit) {
         value = text,
         onValueChange = { new ->
             text = new
-            onValueChanged(text)
+            viewModel.userPw.value = text
         },
         label = { Text("비밀번호", color = Color(0xFF919191), fontSize = 14.sp) }, // 힌트를 라벨로 설정합니다.
         colors = TextFieldDefaults.colors(
@@ -379,8 +382,8 @@ fun PwTextField(onValueChanged: (String) -> Unit) {
             unfocusedIndicatorColor = Color.Transparent,
             focusedTextColor = Color.White,
             unfocusedTextColor = Color.White,
-            focusedContainerColor = if (isSystemInDarkTheme())Color(0xFF252525) else Color.Black,
-            unfocusedContainerColor = if (isSystemInDarkTheme())Color(0xFF252525) else Color.Black
+            focusedContainerColor = if (isSystemInDarkTheme()) Color(0xFF252525) else Color.Black,
+            unfocusedContainerColor = if (isSystemInDarkTheme()) Color(0xFF252525) else Color.Black
 
 
         ),
@@ -404,17 +407,23 @@ fun PwTextField(onValueChanged: (String) -> Unit) {
 }
 
 @Composable
-fun LoginBtn(navController: NavController, id: String, pw: String) {
+fun LoginBtn(navController: NavController, viewModel: SocialLoginViewModel) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     Button(
         shape = RoundedCornerShape(10.dp),
-        onClick = { print("sdf") },
-        colors = ButtonDefaults.buttonColors(containerColor =if (isSystemInDarkTheme()){
-            if (isPressed) Color.LightGray else Color.White
-        } else {
-            if (isPressed) Color.Gray else Color.Black
-        }
+        onClick = {
+            Log.d(
+                "로그인 id pw",
+                "${viewModel.userId.value}, ${viewModel.userPw.value} " /*todo 유저 로그인 진입 로직 구현 필요. */
+            )
+        },
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (isSystemInDarkTheme()) {
+                if (isPressed) Color.LightGray else Color.White
+            } else {
+                if (isPressed) Color.Gray else Color.Black
+            }
         ),
         interactionSource = interactionSource,
         modifier = Modifier
@@ -435,7 +444,7 @@ fun UnderlineText(
         text = text,
         fontSize = 12.sp,
         style = TextStyle(textDecoration = TextDecoration.Underline),
-        color = if (isSystemInDarkTheme())Color(0xFF919191) else Color.Black,
+        color = if (isSystemInDarkTheme()) Color(0xFF919191) else Color.Black,
         modifier = Modifier
             .padding(end = 25.dp)
             .clickable { onClick() }

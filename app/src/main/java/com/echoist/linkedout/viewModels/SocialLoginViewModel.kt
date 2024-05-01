@@ -43,6 +43,8 @@ class SocialLoginViewModel : ViewModel() {
     var kakaoLoginstate = mutableStateOf(false)
     var naverLoginstate = mutableStateOf(false)
 
+    var userId = mutableStateOf("")
+    var userPw = mutableStateOf("")
 
     val userName = auth.currentUser?.displayName.toString()
 
