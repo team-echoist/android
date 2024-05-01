@@ -82,8 +82,6 @@ class LoginPage : ComponentActivity() {
 
         val viewModel by viewModels<SocialLoginViewModel>()
 
-
-
         setContent {
             val keyHash = Utility.getKeyHash(this)
             Log.d("Hash", keyHash)
@@ -91,7 +89,7 @@ class LoginPage : ComponentActivity() {
 
             NavHost(navController = navController, startDestination = "LoginPage") {
                 composable("LoginPage") {
-                    LoginPage(navController, viewModel)
+                   LoginPage(navController = navController, viewModel = viewModel)
                 }
                 composable("HOME") {
                     HomePage(navController)
@@ -104,6 +102,9 @@ class LoginPage : ComponentActivity() {
                 }
                 composable("SETTINGS") {
                     //settings page
+                }
+                composable("WritingPage") {
+                    WritingPage(navController)
                 }
             }
 
@@ -224,16 +225,16 @@ fun LoginPage(navController: NavController, viewModel: SocialLoginViewModel) {
 
     LinkedOutTheme {
         Scaffold(
+            modifier = Modifier.pointerInput(Unit) { //배경 터치 시 키보드 숨김
+                detectTapGestures(onTap = {
+                    keyboardController?.hide()
+                })
+            },
             content = {
                 Column(
                     modifier = Modifier
                         .padding(it)
                         .verticalScroll(scrollState)
-                        .pointerInput(Unit) { //배경 터치 시 키보드 숨김
-                            detectTapGestures(onTap = {
-                                keyboardController?.hide()
-                            })
-                        }
                 ) {
                     Spacer(modifier = Modifier.height(20.dp))
                     Icon(

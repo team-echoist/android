@@ -1,4 +1,13 @@
 package com.echoist.linkedout.viewModels
 
-class WritingViewModel {
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.lifecycle.ViewModel
+
+class WritingViewModel : ViewModel() {
+
+    var focusState = mutableStateOf(false)
+    var title = mutableStateOf(TextFieldValue(""))
+    var content = mutableStateOf(TextFieldValue(""))
+
 }

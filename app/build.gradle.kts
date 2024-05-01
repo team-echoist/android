@@ -144,6 +144,7 @@ dependencies {
     implementation ("com.kakao.sdk:v2-cert:2.19.0") // 카카오 인증서비스
 
     implementation ("com.navercorp.nid:oauth-jdk8:5.9.0") // 네이버 로그인
-
-
+    implementation("com.colintheshots:twain:0.3.2")
 }
+
+
