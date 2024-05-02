@@ -8,7 +8,10 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -43,7 +46,6 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview
 @Composable
 fun PreviewWritingPage2() {
     WritingCompletePage(navController = rememberNavController(), WritingViewModel())
@@ -53,7 +55,7 @@ fun PreviewWritingPage2() {
 fun WritingCompletePage(navController: NavController, viewModel: WritingViewModel) {
 
     val scrollState = rememberScrollState()
-    var isBottomSheetOpen = remember {
+    val isBottomSheetOpen = remember {
         mutableStateOf(true)
     }
 
@@ -61,8 +63,8 @@ fun WritingCompletePage(navController: NavController, viewModel: WritingViewMode
         Scaffold(topBar = { CompleteAppBar(navController = navController) }
         ) {
             Column(modifier = Modifier
-                    .padding(it)
-                    .verticalScroll(scrollState))
+                .padding(it)
+                .verticalScroll(scrollState))
             {
 
                 CompleteTitle(viewModel = viewModel)
@@ -71,8 +73,10 @@ fun WritingCompletePage(navController: NavController, viewModel: WritingViewMode
                 CompleteDate(viewModel = viewModel)
                 if (isBottomSheetOpen.value) {
                     BottomSheet(
-                        modifier = Modifier,
-                        closeSheet = { isBottomSheetOpen.value = false })
+                        closeSheet = { isBottomSheetOpen.value = false
+                                     viewModel.ringTouchedTime.value = 5},
+                        viewModel = viewModel
+                    )
                 }
                 Button(onClick = { isBottomSheetOpen.value = true }) {
                     Text(text = "bottom sheet open")
@@ -177,10 +181,11 @@ fun CompleteDate(viewModel: WritingViewModel) {
 //꼭 버튼으로만 다 닫고 올리고 해야하는가?
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomSheet(modifier: Modifier,closeSheet : ()->Unit){
+fun BottomSheet(viewModel: WritingViewModel,closeSheet : ()->Unit){
     val sheetState = rememberModalBottomSheetState()
 
     ModalBottomSheet(
+        containerColor = Color.White,
         onDismissRequest = { closeSheet() },
         sheetState = sheetState
     ) {
@@ -196,10 +201,89 @@ fun BottomSheet(modifier: Modifier,closeSheet : ()->Unit){
                 painter = painterResource(id = R.drawable.text_bottomsheet),
                 contentDescription = "고리를 풀어"
             )
+            Spacer(modifier = Modifier.height(44.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                GroupRingImg(viewModel = viewModel)
+                Spacer(modifier = Modifier.height(22.dp))
+                SingleRing(viewModel = viewModel)
+            }
+            Spacer(modifier = Modifier.height(51.dp))
+        }
+    }
+}
+
+@Composable
+fun GroupRingImg(viewModel: WritingViewModel) {
+
+
+    val ringImage =
+        when (viewModel.ringTouchedTime.value)
+    {
+        1 -> R.drawable.ring
+        2 -> R.drawable.ring2
+        3 -> R.drawable.ring3
+        4 -> R.drawable.ring4
+        5 -> R.drawable.ring5
+            else -> R.drawable.pw_eye_off
+    }
+
+        Image(
+            painter = painterResource(id = ringImage),
+            contentDescription = null,
+            modifier = Modifier
+                .height(45.dp)
+                .clickable {
+                    if (viewModel.ringTouchedTime.value != 1) {
+                        viewModel.ringTouchedTime.value -= 1
+                    }
+                }
+        )
+
+
+    }
+
+@Composable
+fun SingleRing(viewModel: WritingViewModel) {
+
+    Row {
+        when (viewModel.ringTouchedTime.value) {
+
+            4 -> RingImg(viewModel)
+
+            3 -> repeat(2) {
+                RingImg(viewModel)
+            }
+            2 -> repeat(3) {
+                RingImg(viewModel)
+            }
+            1 -> repeat(4) {
+                RingImg(viewModel)
+            }
+
         }
 
     }
 }
+@Composable
+fun RingImg(viewModel: WritingViewModel){
+    Image(
+        painter = painterResource(id = R.drawable.ring),
+        contentDescription = null,
+        modifier = Modifier
+            .height(45.dp)
+            .clickable { viewModel.ringTouchedTime.value += 1 }
+    )
+}
+
+
+
+
 
 
 

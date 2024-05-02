@@ -10,5 +10,6 @@ class WritingViewModel : ViewModel() {
     var title = mutableStateOf(TextFieldValue(""))
     var content = mutableStateOf(TextFieldValue(""))
     var date = mutableStateOf("")
+    var ringTouchedTime = mutableStateOf(5)
 
 }
