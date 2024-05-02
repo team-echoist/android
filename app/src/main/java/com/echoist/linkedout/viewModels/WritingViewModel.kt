@@ -9,5 +9,6 @@ class WritingViewModel : ViewModel() {
     var focusState = mutableStateOf(false)
     var title = mutableStateOf(TextFieldValue(""))
     var content = mutableStateOf(TextFieldValue(""))
+    var date = mutableStateOf("")
 
 }

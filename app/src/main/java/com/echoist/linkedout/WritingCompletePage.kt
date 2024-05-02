@@ -154,9 +154,13 @@ fun CompleteNickName() {
 
 @Composable
 fun CompleteDate(viewModel: WritingViewModel) {
+
     val currentDateTime = LocalDateTime.now()
     val formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm")
     val formattedDateTime = currentDateTime.format(formatter)
+
+    viewModel.date.value = formattedDateTime
+
     Box(
         modifier = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.BottomEnd
