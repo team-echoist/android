@@ -45,6 +45,7 @@ import com.echoist.linkedout.viewModels.WritingViewModel
 
 @Composable
 fun MarkDownBtn(viewModel: WritingViewModel) {
+    //todo 코드정리와 마크다운 어디까지 구현해서 쓸지 생각필요.
     val selection = viewModel.content.value.selection
     // 선택된 텍스트의 시작 위치
     val start = selection.start
@@ -161,8 +162,6 @@ fun WritingTopAppBar(navController: NavController, viewModel: WritingViewModel) 
                     },
                 fontSize = 16.sp
             )
-
-
             // 텍스트 필드와 완료 버튼을 수평으로 배치
             Row(
                 modifier = Modifier

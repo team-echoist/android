@@ -145,6 +145,9 @@ dependencies {
 
     implementation ("com.navercorp.nid:oauth-jdk8:5.9.0") // 네이버 로그인
     implementation("com.colintheshots:twain:0.3.2")
+
+    implementation ("com.google.accompanist:accompanist-pager:0.20.1") //view pager
+    implementation ("com.google.accompanist:accompanist-pager-indicators:0.20.1")
 }
 
 

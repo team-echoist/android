@@ -1,7 +1,7 @@
 package com.echoist.linkedout
 
-import android.content.res.Configuration
 import android.util.Log
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -14,11 +14,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
@@ -34,7 +40,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -45,7 +50,6 @@ import com.echoist.linkedout.viewModels.WritingViewModel
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun PreviewWritingPage2() {
     WritingCompletePage(navController = rememberNavController(), WritingViewModel())
@@ -62,9 +66,11 @@ fun WritingCompletePage(navController: NavController, viewModel: WritingViewMode
     LinkedOutTheme {
         Scaffold(topBar = { CompleteAppBar(navController = navController) }
         ) {
-            Column(modifier = Modifier
-                .padding(it)
-                .verticalScroll(scrollState))
+            Column(
+                modifier = Modifier
+                    .padding(it)
+                    .verticalScroll(scrollState)
+            )
             {
 
                 CompleteTitle(viewModel = viewModel)
@@ -73,8 +79,11 @@ fun WritingCompletePage(navController: NavController, viewModel: WritingViewMode
                 CompleteDate(viewModel = viewModel)
                 if (isBottomSheetOpen.value) {
                     BottomSheet(
-                        closeSheet = { isBottomSheetOpen.value = false
-                                     viewModel.ringTouchedTime.value = 5},
+                        closeSheet = {
+                            isBottomSheetOpen.value = false
+                            viewModel.ringTouchedTime.value = 5
+                        },
+
                         viewModel = viewModel
                     )
                 }
@@ -181,7 +190,10 @@ fun CompleteDate(viewModel: WritingViewModel) {
 //꼭 버튼으로만 다 닫고 올리고 해야하는가?
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomSheet(viewModel: WritingViewModel,closeSheet : ()->Unit){
+fun BottomSheet(
+    viewModel: WritingViewModel,
+    closeSheet: () -> Unit,
+) {
     val sheetState = rememberModalBottomSheetState()
 
     ModalBottomSheet(
@@ -189,33 +201,10 @@ fun BottomSheet(viewModel: WritingViewModel,closeSheet : ()->Unit){
         onDismissRequest = { closeSheet() },
         sheetState = sheetState
     ) {
-        Column(
-            modifier = Modifier
-                .padding(20.dp)
-                .fillMaxWidth(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Image(
-                modifier = Modifier.size(211.dp, 48.dp),
-                painter = painterResource(id = R.drawable.text_bottomsheet),
-                contentDescription = "고리를 풀어"
-            )
-            Spacer(modifier = Modifier.height(44.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                GroupRingImg(viewModel = viewModel)
-                Spacer(modifier = Modifier.height(22.dp))
-                SingleRing(viewModel = viewModel)
-            }
-            Spacer(modifier = Modifier.height(51.dp))
-        }
+        WritingCompletePager(viewModel = viewModel)
     }
+
+
 }
 
 @Composable
@@ -223,34 +212,32 @@ fun GroupRingImg(viewModel: WritingViewModel) {
 
 
     val ringImage =
-        when (viewModel.ringTouchedTime.value)
-    {
-        1 -> R.drawable.ring
-        2 -> R.drawable.ring2
-        3 -> R.drawable.ring3
-        4 -> R.drawable.ring4
-        5 -> R.drawable.ring5
+        when (viewModel.ringTouchedTime.value) {
+            1 -> R.drawable.ring
+            2 -> R.drawable.ring2
+            3 -> R.drawable.ring3
+            4 -> R.drawable.ring4
+            5 -> R.drawable.ring5
             else -> R.drawable.pw_eye_off
-    }
+        }
 
-        Image(
-            painter = painterResource(id = ringImage),
-            contentDescription = null,
-            modifier = Modifier
-                .height(45.dp)
-                .clickable {
-                    if (viewModel.ringTouchedTime.value != 1) {
-                        viewModel.ringTouchedTime.value -= 1
-                    }
+    Image(
+        painter = painterResource(id = ringImage),
+        contentDescription = null,
+        modifier = Modifier
+            .height(45.dp)
+            .clickable {
+                if (viewModel.ringTouchedTime.value != 1) {
+                    viewModel.ringTouchedTime.value -= 1
                 }
-        )
+            }
+    )
 
 
-    }
+}
 
 @Composable
 fun SingleRing(viewModel: WritingViewModel) {
-
     Row {
         when (viewModel.ringTouchedTime.value) {
 
@@ -259,9 +246,11 @@ fun SingleRing(viewModel: WritingViewModel) {
             3 -> repeat(2) {
                 RingImg(viewModel)
             }
+
             2 -> repeat(3) {
                 RingImg(viewModel)
             }
+
             1 -> repeat(4) {
                 RingImg(viewModel)
             }
@@ -270,8 +259,9 @@ fun SingleRing(viewModel: WritingViewModel) {
 
     }
 }
+
 @Composable
-fun RingImg(viewModel: WritingViewModel){
+fun RingImg(viewModel: WritingViewModel) {
     Image(
         painter = painterResource(id = R.drawable.ring),
         contentDescription = null,
@@ -281,7 +271,129 @@ fun RingImg(viewModel: WritingViewModel){
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun WritingCompletePager(viewModel: WritingViewModel) {
+    val pagerstate = rememberPagerState {
+        2
+    }
+    HorizontalPager(state = pagerstate) {
+        when (it) {
+            0 -> {
+                Column(
+                    modifier = Modifier
+                        .padding(20.dp)
+                        .fillMaxWidth()
+                        .height(279.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(
+                        modifier = Modifier.size(211.dp, 48.dp),
+                        painter = painterResource(id = R.drawable.text_bottomsheet),
+                        contentDescription = "고리를 풀어"
+                    )
+                    Spacer(modifier = Modifier.height(28.dp))
 
+                    Box {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+
+                            GroupRingImg(viewModel = viewModel)
+                            Spacer(modifier = Modifier.height(22.dp))
+                            SingleRing(viewModel = viewModel)
+
+                        }
+                        Box(
+                            modifier = Modifier.matchParentSize(),
+                            contentAlignment = Alignment.CenterEnd
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                                contentDescription = "nextpage"
+                            )
+                        }
+
+                    }
+
+                    Spacer(modifier = Modifier.height(51.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(text = "#깨달음") //todo 해시태그 어떻게 만들지 구현필요합니다.
+                        Spacer(modifier = Modifier.width(22.dp))
+                        Text(text = "#깨달음")
+                        Spacer(modifier = Modifier.width(22.dp))
+                        Text(text = "#깨달음")
+                    }
+
+                }
+
+            }
+
+            1 -> {
+                Box {
+                    Column(
+                        modifier = Modifier
+                            .padding(20.dp)
+                            .fillMaxWidth()
+                            .height(279.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "이 글을 어떻게 할까요?",
+                            modifier = Modifier.padding(bottom = 25.dp),
+                            color = Color.Black
+                        )
+                        Button(
+                            onClick = { /*TODO 저장할래요 기능 구현필요*/ },
+                            modifier = Modifier.padding(bottom = 16.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1D1D1D))
+                        ) {
+                            Text(text = "저장할래요", color = Color.White)
+                        }
+                        Button(
+                            onClick = { /*TODO 나눠볼래요 기능 구현필요*/ },
+                            modifier = Modifier.padding(bottom = 16.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1D1D1D))
+
+                        ) {
+                            Text(text = "나눠볼래요", color = Color.White)
+                        }
+                        Button(
+                            onClick = { /*TODO 놓아줄래요 기능 구현필요*/ },
+                            modifier = Modifier.padding(bottom = 30.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1D1D1D))
+
+                        ) {
+                            Text(text = "놓아줄래요", color = Color.White)
+                        }
+
+                    }
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .padding(start = 20.dp),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                            contentDescription = "arrow back"
+                        )
+                    }
+                }
+
+
+            }
+        }
+    }
+}
 
 
 
