@@ -58,22 +58,21 @@ fun WritingCompletePage(navController: NavController, viewModel: WritingViewMode
     }
 
     LinkedOutTheme {
-        Scaffold(topBar = {
-            CompleteAppBar(navController = navController)
-        }, content = {
-            Column(
-                modifier = Modifier
+        Scaffold(topBar = { CompleteAppBar(navController = navController) }
+        ) {
+            Column(modifier = Modifier
                     .padding(it)
-                    .verticalScroll(scrollState)
-            )
+                    .verticalScroll(scrollState))
             {
 
                 CompleteTitle(viewModel = viewModel)
                 CompleteContents(viewModel = viewModel)
                 CompleteNickName()
                 CompleteDate(viewModel = viewModel)
-                if (isBottomSheetOpen.value){
-                    BottomSheet(modifier = Modifier,closeSheet = { isBottomSheetOpen.value = false })
+                if (isBottomSheetOpen.value) {
+                    BottomSheet(
+                        modifier = Modifier,
+                        closeSheet = { isBottomSheetOpen.value = false })
                 }
                 Button(onClick = { isBottomSheetOpen.value = true }) {
                     Text(text = "bottom sheet open")
@@ -81,7 +80,6 @@ fun WritingCompletePage(navController: NavController, viewModel: WritingViewMode
 
             }
         }
-        )
 
 
     }
@@ -178,11 +176,22 @@ fun CompleteDate(viewModel: WritingViewModel) {
 fun BottomSheet(modifier: Modifier,closeSheet : ()->Unit){
     val sheetState = rememberModalBottomSheetState()
 
-    ModalBottomSheet(onDismissRequest = { closeSheet()},sheetState = sheetState) {
-        Column(modifier = Modifier
-            .padding(20.dp)
-            .fillMaxWidth(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-            Image(modifier = Modifier.size(211.dp,48.dp), painter = painterResource(id = R.drawable.text_bottomsheet), contentDescription = "고리를 풀어")
+    ModalBottomSheet(
+        onDismissRequest = { closeSheet() },
+        sheetState = sheetState
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(20.dp)
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                modifier = Modifier.size(211.dp, 48.dp),
+                painter = painterResource(id = R.drawable.text_bottomsheet),
+                contentDescription = "고리를 풀어"
+            )
         }
 
     }
