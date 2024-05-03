@@ -67,7 +67,9 @@ import com.echoist.linkedout.viewModels.WritingViewModel
 import com.kakao.sdk.common.KakaoSdk
 import com.kakao.sdk.common.util.Utility
 import com.navercorp.nid.NaverIdLoginSDK
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class LoginPage : ComponentActivity() {
     override fun onStart() {
         super.onStart()
@@ -81,8 +83,8 @@ class LoginPage : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
 
-        val viewModel by viewModels<SocialLoginViewModel>()
-        val writingViewModel by viewModels<WritingViewModel>()
+        val viewModel : SocialLoginViewModel by viewModels()
+        val writingViewModel : WritingViewModel by viewModels()
 
 
         setContent {

@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -71,18 +73,21 @@ fun MarkDownBtn(viewModel: WritingViewModel) {
 
 // 변경된 텍스트를 ViewModel에 설정
 
-    Button(onClick = { viewModel.content.value = TextFieldValue(new_bold) }) {
-        Text(text = "bold", color = Color.White)
+    Row {
+        Button(onClick = { viewModel.content.value = TextFieldValue(new_bold) }) {
+            Text(text = "bold", color = Color.White)
+        }
+        Button(onClick = { viewModel.content.value = TextFieldValue(new_italic) }) {
+            Text(text = "italic", color = Color.White)
+        }
+        Button(onClick = { viewModel.content.value = TextFieldValue(new_header1) }) {
+            Text(text = "header1", color = Color.White)
+        }
+        Button(onClick = { viewModel.content.value = TextFieldValue(new_header2) }) {
+            Text(text = "header2", color = Color.White)
+        }
     }
-    Button(onClick = { viewModel.content.value = TextFieldValue(new_italic) }) {
-        Text(text = "italic", color = Color.White)
-    }
-    Button(onClick = { viewModel.content.value = TextFieldValue(new_header1) }) {
-        Text(text = "header1", color = Color.White)
-    }
-    Button(onClick = { viewModel.content.value = TextFieldValue(new_header2) }) {
-        Text(text = "header2", color = Color.White)
-    }
+
 }
 
 
@@ -94,6 +99,7 @@ fun WritingPage(navController: NavController,viewModel: WritingViewModel) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val scrollState = rememberScrollState()
     val focusManager = LocalFocusManager.current
+    val focusState = viewModel.focusState
 
 
     //scaffold에 넣으면 위치변경이 어려워져서 그냥 컬럼에 다 때려박았습니다. . .
@@ -118,9 +124,20 @@ fun WritingPage(navController: NavController,viewModel: WritingViewModel) {
                 markdown = viewModel.content.value.text,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 20.dp),
+                    .padding(start = 20.dp)
+                    // todo 이 modifier를 따로 함수로 빼놓으면 좋을듯
+                    .layout { measurable, constraints ->
+                        val placeable = measurable.measure(constraints)
+                        layout(placeable.width, placeable.height) {
+                            placeable.place(
+                                x = 0,
+                                y = if (focusState.value) 100 else 0
+                            )
+                        }
+                    },
                 color = Color.White
             )
+            Spacer(modifier = Modifier.height(100.dp))
             MarkDownBtn(viewModel)
 
         }

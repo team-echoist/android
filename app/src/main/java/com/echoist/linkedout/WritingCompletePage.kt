@@ -40,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -50,6 +51,7 @@ import com.echoist.linkedout.viewModels.WritingViewModel
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+@Preview
 @Composable
 fun PreviewWritingPage2() {
     WritingCompletePage(navController = rememberNavController(), WritingViewModel())
@@ -73,6 +75,8 @@ fun WritingCompletePage(navController: NavController, viewModel: WritingViewMode
             )
             {
 
+                // todo 이미지 있으면 올리고 없으면 무시하는형태.
+
                 CompleteTitle(viewModel = viewModel)
                 CompleteContents(viewModel = viewModel)
                 CompleteNickName()
@@ -84,7 +88,8 @@ fun WritingCompletePage(navController: NavController, viewModel: WritingViewMode
                             viewModel.ringTouchedTime.value = 5
                         },
 
-                        viewModel = viewModel
+                        viewModel = viewModel,
+                        navController = navController
                     )
                 }
                 Button(onClick = { isBottomSheetOpen.value = true }) {
@@ -193,6 +198,7 @@ fun CompleteDate(viewModel: WritingViewModel) {
 fun BottomSheet(
     viewModel: WritingViewModel,
     closeSheet: () -> Unit,
+    navController: NavController
 ) {
     val sheetState = rememberModalBottomSheetState()
 
@@ -201,7 +207,7 @@ fun BottomSheet(
         onDismissRequest = { closeSheet() },
         sheetState = sheetState
     ) {
-        WritingCompletePager(viewModel = viewModel)
+        WritingCompletePager(viewModel = viewModel, navController = navController)
     }
 
 
@@ -273,7 +279,7 @@ fun RingImg(viewModel: WritingViewModel) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun WritingCompletePager(viewModel: WritingViewModel) {
+fun WritingCompletePager(viewModel: WritingViewModel,navController: NavController) {
     val pagerstate = rememberPagerState {
         2
     }
@@ -352,7 +358,8 @@ fun WritingCompletePager(viewModel: WritingViewModel) {
                             color = Color.Black
                         )
                         Button(
-                            onClick = { /*TODO 저장할래요 기능 구현필요*/ },
+                            onClick = { /*TODO 저장할래요 기능 구현필요*/
+                                      viewModel.writeEssay(navController = navController)},
                             modifier = Modifier.padding(bottom = 16.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1D1D1D))
                         ) {
