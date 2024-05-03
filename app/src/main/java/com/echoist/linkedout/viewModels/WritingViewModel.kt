@@ -41,23 +41,36 @@ class WritingViewModel @Inject constructor()
 
 
     //에세이 작성 후 서버에 post
-    fun writeEssay(navController: NavController) {
+    fun writeEssay(
+        navController: NavController,
+        published: Boolean = false,
+        linkedOut: Boolean = false
+    ) {
         viewModelScope.launch {
             try {
 
+
                 val response = api.writeEssay(/*todo 토큰값. 매번변경*/ accessToken.value,
                     title.value.text,
-                    content.value.text
+                    content.value.text,
+                    linkedOutGauge = ringTouchedTime.value,
+                    published = published,
+                    linkedOut = linkedOut
                 )
-
-                navController.navigate("home") {
-                    popUpTo("home") {
-                        inclusive = false
+                if (response.isSuccessful){
+                    Log.e("writeEssayApiSuccess", "${response.code()}")
+                    navController.navigate("home") {
+                        popUpTo("home") {
+                            inclusive = false
+                        }
                     }
                 }
-                if (response.code() == 202) {
-                    //todo 블랙리스트 코드 이동
+
+                else {
+                    //todo 토큰 재발급 받는 창을 띄워줘야할듯.
+                    Log.e("writeEssayApiFailed", "Failed to write essay: ${response.code()}")
                 }
+
 
             } catch (e: Exception) {
                 // api 요청 실패
@@ -93,7 +106,7 @@ class WritingViewModel @Inject constructor()
         }
     }
 
-    fun modifyDelete(navController: NavController) {
+    fun essayDelete(navController: NavController) {
         viewModelScope.launch {
             try {
 

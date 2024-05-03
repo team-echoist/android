@@ -359,14 +359,13 @@ fun WritingCompletePager(viewModel: WritingViewModel,navController: NavControlle
                         )
                         Button(
                             onClick = { /*TODO 저장할래요 기능 구현필요*/
-                                      viewModel.writeEssay(navController = navController)},
-                            modifier = Modifier.padding(bottom = 16.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1D1D1D))
-                        ) {
+                                viewModel.writeEssay(navController = navController)
+                            }, modifier = Modifier.padding(bottom = 16.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1D1D1D))) {
                             Text(text = "저장할래요", color = Color.White)
                         }
                         Button(
-                            onClick = { /*TODO 나눠볼래요 기능 구현필요*/ },
+                            onClick = { /*TODO 나눠볼래요 기능 구현필요*/
+                                      viewModel.writeEssay(navController,published = true)},
                             modifier = Modifier.padding(bottom = 16.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1D1D1D))
 
@@ -374,7 +373,8 @@ fun WritingCompletePager(viewModel: WritingViewModel,navController: NavControlle
                             Text(text = "나눠볼래요", color = Color.White)
                         }
                         Button(
-                            onClick = { /*TODO 놓아줄래요 기능 구현필요*/ },
+                            onClick = { /*TODO 놓아줄래요 기능 구현필요*/
+                                viewModel.writeEssay(navController, linkedOut = true)},
                             modifier = Modifier.padding(bottom = 30.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1D1D1D))
 
