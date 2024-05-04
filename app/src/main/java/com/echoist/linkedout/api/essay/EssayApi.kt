@@ -23,6 +23,7 @@ interface EssayApi{
     @FormUrlEncoded
     @POST("/api/essay")
     suspend fun writeEssay(
+        //todo 쿼리로 보내지말고 바디로보내기~
         @Header("Authorization") accessToken: String,
         @Field("title") title: String,
         @Field("content") content: String,
@@ -32,6 +33,7 @@ interface EssayApi{
         @Field("published") published: Boolean = false,
         @Field("linkedOut") linkedOut: Boolean = false
     ): Response<WritingUserInfo>
+
 
     @FormUrlEncoded
     @PUT("/api/essay/:essayId")

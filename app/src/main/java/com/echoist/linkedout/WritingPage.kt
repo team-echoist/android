@@ -1,6 +1,7 @@
 package com.echoist.linkedout
 
 import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -9,13 +10,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -94,58 +96,76 @@ fun MarkDownBtn(viewModel: WritingViewModel) {
 //@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 //@PreviewScreenSizes
 @Composable
-fun WritingPage(navController: NavController,viewModel: WritingViewModel) {
+fun WritingPage(navController: NavController, viewModel: WritingViewModel) {
 
     val keyboardController = LocalSoftwareKeyboardController.current
     val scrollState = rememberScrollState()
     val focusManager = LocalFocusManager.current
     val focusState = viewModel.focusState
 
+    val backgroundColor =
+        if (viewModel.isCanCelClicked.value) Color.Black.copy(alpha = 0.5f) else Color.Transparent
+
 
     //scaffold에 넣으면 위치변경이 어려워져서 그냥 컬럼에 다 때려박았습니다. . .
 
     LinkedOutTheme {
-        Column(modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(scrollState)
-            .background(Color.Black)
-            .pointerInput(Unit) { //배경 터치 시 키보드 숨김
-                detectTapGestures(onTap = {
-                    keyboardController?.hide()
-                    focusManager.clearFocus()
+
+        Column(
+            modifier = Modifier.background(backgroundColor)
+        ) {
+            Column(modifier = Modifier
+                .verticalScroll(scrollState)
+                .weight(1f)
+                .pointerInput(Unit) { //배경 터치 시 키보드 숨김
+                    detectTapGestures(onTap = {
+                        keyboardController?.hide()
+                        focusManager.clearFocus()
+                        viewModel.isCanCelClicked.value = false
+                    }
+                    )
                 }
-                )
-            }
-        )
-        {
-            WritingTopAppBar(navController = navController, viewModel)
-            ContentTextField(viewModel = viewModel)
-            MarkdownText(
-                markdown = viewModel.content.value.text,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 20.dp)
-                    // todo 이 modifier를 따로 함수로 빼놓으면 좋을듯
-                    .layout { measurable, constraints ->
-                        val placeable = measurable.measure(constraints)
-                        layout(placeable.width, placeable.height) {
-                            placeable.place(
-                                x = 0,
-                                y = if (focusState.value) 100 else 0
-                            )
-                        }
-                    },
-                color = Color.White
             )
-            Spacer(modifier = Modifier.height(100.dp))
-            MarkDownBtn(viewModel)
+            {
+                WritingTopAppBar(navController = navController, viewModel)
+                ContentTextField(viewModel = viewModel)
+                MarkdownText(
+                    markdown = viewModel.content.value.text,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 20.dp)
+                        // todo 이 modifier를 따로 함수로 빼놓으면 좋을듯
+                        .layout { measurable, constraints ->
+                            val placeable = measurable.measure(constraints)
+                            layout(placeable.width, placeable.height) {
+                                placeable.place(
+                                    x = 0,
+                                    y = if (focusState.value) 100 else 0
+                                )
+                            }
+                        },
+                    color = Color.White
+                )
+
+                Spacer(modifier = Modifier.height(100.dp))
+                MarkDownBtn(viewModel)
+
+
+            }
+
+
+            AnimatedVisibility(visible = viewModel.isCanCelClicked.value) {
+                WritingCancelCard(viewModel = viewModel, navController = navController)
+
+            }
+
 
         }
-
-
     }
 
+
 }
+
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
@@ -175,7 +195,7 @@ fun WritingTopAppBar(navController: NavController, viewModel: WritingViewModel) 
                 modifier = Modifier
                     .padding(start = 20.dp, top = 15.dp)
                     .clickable {
-                        navController.popBackStack()
+                        viewModel.isCanCelClicked.value = true
                     },
                 fontSize = 16.sp
             )
@@ -309,6 +329,86 @@ fun MyDivider(viewModel: WritingViewModel) {
         })
 }
 
+@Composable
+fun WritingCancelCard(viewModel: WritingViewModel, navController: NavController) {
+    Column(
+        modifier = Modifier.padding(start = 20.dp, end = 20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF191919))
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(top = 24.dp, bottom = 24.dp),
+                    text = "지금 취소하면 모든 내용이 삭제됩니다.",
+                    textAlign = TextAlign.Center,
+                    color = Color.White
+                )
+                HorizontalDivider(
+                    modifier = Modifier.fillMaxWidth(),
+                    thickness = 1.dp,
+                    color = Color(0xFF202020)
+                )
+                Text(
+                    modifier = Modifier
+                        .padding(top = 20.dp, bottom = 20.dp)
+                        .clickable {
+                            navController.navigate("HOME")
+                            viewModel.isCanCelClicked.value = false
+                        },
+                    fontSize = 16.sp,
+                    text = "작성취소",
+                    textAlign = TextAlign.Center,
+                    color = Color.Red
+                )
+                HorizontalDivider(
+                    modifier = Modifier.fillMaxWidth(),
+                    thickness = 1.dp,
+                    color = Color(0xFF202020)
+                )
+                Text(
+                    modifier = Modifier
+                        .padding(top = 20.dp, bottom = 20.dp)
+                        .clickable { /*todo 임시저장 기능구현필요 */ },
+                    fontSize = 16.sp,
+                    text = "임시저장",
+                    textAlign = TextAlign.Center,
+                    color = Color.White
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(14.dp))
+
+        Card(
+            modifier = Modifier.clickable { viewModel.isCanCelClicked.value = false },
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF191919))
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(vertical = 20.dp)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    fontSize = 16.sp,
+                    text = "돌아가기",
+                    textAlign = TextAlign.Center,
+                    color = Color.White
+                )
+
+            }
+        }
+        Spacer(modifier = Modifier.height(35.dp))
+
+    }
+}
 
 
 

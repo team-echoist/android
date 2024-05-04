@@ -1,9 +1,12 @@
 package com.echoist.linkedout
 
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,7 +28,10 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
@@ -39,7 +45,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -66,7 +74,17 @@ fun WritingCompletePage(navController: NavController, viewModel: WritingViewMode
     }
 
     LinkedOutTheme {
-        Scaffold(topBar = { CompleteAppBar(navController = navController) }
+        Scaffold(modifier = Modifier.pointerInput(Unit){
+            detectTapGestures(onTap = {
+                viewModel.isDeleteClicked.value = false
+            })
+        },
+            topBar = { CompleteAppBar(navController = navController, viewModel) },
+            bottomBar = {
+                AnimatedVisibility(visible = viewModel.isDeleteClicked.value, exit = fadeOut()) {
+                    WritingDeleteCard(viewModel = viewModel, navController = navController)
+                }
+            }
         ) {
             Column(
                 modifier = Modifier
@@ -78,6 +96,7 @@ fun WritingCompletePage(navController: NavController, viewModel: WritingViewMode
                 // todo 이미지 있으면 올리고 없으면 무시하는형태.
 
                 CompleteTitle(viewModel = viewModel)
+
                 CompleteContents(viewModel = viewModel)
                 CompleteNickName()
                 CompleteDate(viewModel = viewModel)
@@ -97,6 +116,7 @@ fun WritingCompletePage(navController: NavController, viewModel: WritingViewMode
                 }
 
             }
+
         }
 
 
@@ -106,7 +126,7 @@ fun WritingCompletePage(navController: NavController, viewModel: WritingViewMode
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CompleteAppBar(navController: NavController) {
+fun CompleteAppBar(navController: NavController, viewModel: WritingViewModel) {
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
         title = { },
@@ -131,7 +151,7 @@ fun CompleteAppBar(navController: NavController) {
                 modifier = Modifier
                     .padding(end = 20.dp)
                     .clickable {
-                        /* todo 삭제 구현 필요합니다. */
+                        viewModel.isDeleteClicked.value = true
                     },
                 fontSize = 16.sp
             )
@@ -216,7 +236,6 @@ fun BottomSheet(
 @Composable
 fun GroupRingImg(viewModel: WritingViewModel) {
 
-
     val ringImage =
         when (viewModel.ringTouchedTime.value) {
             1 -> R.drawable.ring
@@ -279,7 +298,7 @@ fun RingImg(viewModel: WritingViewModel) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun WritingCompletePager(viewModel: WritingViewModel,navController: NavController) {
+fun WritingCompletePager(viewModel: WritingViewModel, navController: NavController) {
     val pagerstate = rememberPagerState {
         2
     }
@@ -360,12 +379,16 @@ fun WritingCompletePager(viewModel: WritingViewModel,navController: NavControlle
                         Button(
                             onClick = { /*TODO 저장할래요 기능 구현필요*/
                                 viewModel.writeEssay(navController = navController)
-                            }, modifier = Modifier.padding(bottom = 16.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1D1D1D))) {
+                            },
+                            modifier = Modifier.padding(bottom = 16.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1D1D1D))
+                        ) {
                             Text(text = "저장할래요", color = Color.White)
                         }
                         Button(
                             onClick = { /*TODO 나눠볼래요 기능 구현필요*/
-                                      viewModel.writeEssay(navController,published = true)},
+                                viewModel.writeEssay(navController, published = true)
+                            },
                             modifier = Modifier.padding(bottom = 16.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1D1D1D))
 
@@ -374,7 +397,8 @@ fun WritingCompletePager(viewModel: WritingViewModel,navController: NavControlle
                         }
                         Button(
                             onClick = { /*TODO 놓아줄래요 기능 구현필요*/
-                                viewModel.writeEssay(navController, linkedOut = true)},
+                                viewModel.writeEssay(navController, linkedOut = true)
+                            },
                             modifier = Modifier.padding(bottom = 30.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1D1D1D))
 
@@ -401,6 +425,80 @@ fun WritingCompletePager(viewModel: WritingViewModel,navController: NavControlle
         }
     }
 }
+
+@Composable
+fun WritingDeleteCard(viewModel: WritingViewModel, navController: NavController) {
+
+    if (viewModel.isDeleteClicked.value) {
+        Column(
+            modifier = Modifier.padding(start = 20.dp, end = 20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF191919))
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(top = 18.dp, bottom = 18.dp),
+                        text = "삭제된 글은 복구할 수 없습니다. 삭제하시겠습니까?.",
+                        textAlign = TextAlign.Center,
+                        color = Color.White
+                    )
+                    HorizontalDivider(
+                        modifier = Modifier.fillMaxWidth(),
+                        thickness = 1.dp,
+                        color = Color(0xFF202020)
+                    )
+                    Text(
+                        modifier = Modifier
+                            .padding(top = 20.dp, bottom = 20.dp)
+                            .clickable {
+                                viewModel.isDeleteClicked.value = false
+                                viewModel.deleteEssay(navController)
+                            },
+                        fontSize = 16.sp,
+                        text = "삭제하기",
+                        textAlign = TextAlign.Center,
+                        color = Color.Red
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            Card(
+                modifier = Modifier.clickable { viewModel.isDeleteClicked.value = false },
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF191919))
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(vertical = 20.dp)
+                        .fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        fontSize = 16.sp,
+                        text = "취소",
+
+                        textAlign = TextAlign.Center,
+                        color = Color.White
+                    )
+
+                }
+            }
+            Spacer(modifier = Modifier.height(35.dp))
+
+        }
+    }
+
+}
+
+
 
 
 

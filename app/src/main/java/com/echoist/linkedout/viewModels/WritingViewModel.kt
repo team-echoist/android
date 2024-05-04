@@ -26,6 +26,9 @@ class WritingViewModel @Inject constructor()
     var content = mutableStateOf(TextFieldValue(""))
     var date = mutableStateOf("")
     var ringTouchedTime = mutableStateOf(5)
+    var isCanCelClicked = mutableStateOf(false)
+    var isDeleteClicked = mutableStateOf(false)
+
 
     private val moshi = Moshi.Builder()
         .addLast(KotlinJsonAdapterFactory())
@@ -41,6 +44,7 @@ class WritingViewModel @Inject constructor()
 
 
     //에세이 작성 후 서버에 post
+    //api 통신 성공했을시에만 화면 이동
     fun writeEssay(
         navController: NavController,
         published: Boolean = false,
@@ -48,9 +52,7 @@ class WritingViewModel @Inject constructor()
     ) {
         viewModelScope.launch {
             try {
-
-
-                val response = api.writeEssay(/*todo 토큰값. 매번변경*/ accessToken.value,
+                val response = api.writeEssay(/*todo 토큰값. 매번변경*/ "Bearer ${accessToken.value}}",
                     title.value.text,
                     content.value.text,
                     linkedOutGauge = ringTouchedTime.value,
@@ -58,17 +60,22 @@ class WritingViewModel @Inject constructor()
                     linkedOut = linkedOut
                 )
                 if (response.isSuccessful){
+                    Log.e("writeEssayApiSuccess", "${response.headers()}")
                     Log.e("writeEssayApiSuccess", "${response.code()}")
-                    navController.navigate("home") {
-                        popUpTo("home") {
+                    navController.navigate("HOME") {
+                        popUpTo("HOME") {
                             inclusive = false
                         }
                     }
                 }
 
                 else {
-                    //todo 토큰 재발급 받는 창을 띄워줘야할듯.
+                    Log.e("writeEssayApiFailed", "Failed to write essay: ${response.headers()}")
+                    //todo header 파싱 ㄱㄱ.
                     Log.e("writeEssayApiFailed", "Failed to write essay: ${response.code()}")
+                    Log.e("writeEssayApiFailed", "Failed to write essay: ${response.errorBody()}")
+                    Log.e("writeEssayApiFailed", "Failed to write essay: ${response.message()}")
+
                 }
 
 
@@ -90,8 +97,8 @@ class WritingViewModel @Inject constructor()
                     content.value.text
                 )
 
-                navController.navigate("home") {
-                    popUpTo("home") {
+                navController.navigate("HOME") {
+                    popUpTo("HOME") {
                         inclusive = false
                     }
                 }
@@ -106,15 +113,19 @@ class WritingViewModel @Inject constructor()
         }
     }
 
-    fun essayDelete(navController: NavController) {
+    fun deleteEssay(navController: NavController) {
         viewModelScope.launch {
             try {
 
                 val response = api.deleteEssay(accessToken.value,)/*todo 토큰값. 매번변경*/
 
-                navController.navigate("home") {
-                    popUpTo("home") {
-                        inclusive = false
+                if (response.isSuccessful){
+                    Log.e("writeEssayApiSuccess", "${response.headers()}")
+                    Log.e("writeEssayApiSuccess", "${response.code()}")
+                    navController.navigate("HOME") {
+                        popUpTo("HOME") {
+                            inclusive = false
+                        }
                     }
                 }
                 if (response.code() == 202) {
