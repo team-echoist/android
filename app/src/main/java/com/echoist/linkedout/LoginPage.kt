@@ -92,7 +92,10 @@ class LoginPage : ComponentActivity() {
             Log.d("Hash", keyHash)
             val navController = rememberNavController()
 
-            NavHost(navController = navController, startDestination = "LoginPage") {
+            NavHost(navController = navController, startDestination = "OnBoarding") {
+                composable("OnBoarding") {
+                    OnBoardingPager(navController)
+                }
                 composable("LoginPage") {
                    LoginPage(navController = navController, viewModel = viewModel)
                 }
