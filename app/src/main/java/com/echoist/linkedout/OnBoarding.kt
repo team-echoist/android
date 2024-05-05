@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -50,46 +48,52 @@ fun OnBoardingPager(navController: NavController){
                     mainText = "에세이 엮기",
                     subText = "써두었던 글을 모아\n나만의 에세이 모음집을 만들 수 있어요."
                 )
-                3 -> OnBoardingLastPage(
+                3 -> OnBoardingPage(
                     mainText = "다양한 감정 마주하기",
-                    subText = "타인의 솔직한 글을 읽는 경험을 할 수 있어요\n문장 속에 담긴 다양한 감정을 마주해보세요.",
-                    navController
+                    subText = "타인의 솔직한 글을 읽는 경험을 할 수 있어요\n문장 속에 담긴 다양한 감정을 마주해보세요."
                 )
             }
         }
-        Row( //todo 위치 수정하기 그냥 column안에 넣어서 사용하는게 좋을듯 아니면 그냥 스캐폴드?
-            Modifier
-                .height(50.dp)
-                .padding(bottom = 10.dp)
-                .align(Alignment.BottomCenter),
-            horizontalArrangement = Arrangement.Center
-        )
-        {
-            repeat(4) { iteration ->
-                val color = if (pagerstate.currentPage == iteration) Color(0xFFE4A89E) else Color.White.copy(alpha = 0.5f)
-                if (pagerstate.currentPage == iteration){
-                    Box(
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .clip(CircleShape)
-                            .background(color)
-                            .size(20.dp, 10.dp)
+        Box(modifier = Modifier
+            .fillMaxSize() /* 부모 만큼 */
+            .padding(bottom = 115.dp)
+            ,contentAlignment = Alignment.BottomCenter) {
+            
+            Row( //todo 위치 수정하기 그냥 column안에 넣어서 사용하는게 좋을듯 아니면 그냥 스캐폴드? 버튼 달아야함
+                Modifier
+                    .height(50.dp)
+                    .padding(bottom = 10.dp), //box 안에 있어야하는거같기도?
+                horizontalArrangement = Arrangement.Center
+            )
+            {
+                repeat(4) { iteration ->
+                    val color = if (pagerstate.currentPage == iteration) Color(0xFFE4A89E) else Color.White.copy(alpha = 0.5f)
+                    if (pagerstate.currentPage == iteration){
+                        Box(
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .clip(CircleShape)
+                                .background(color)
+                                .size(20.dp, 10.dp)
 
-                    )
+                        )
+                    }
+                    else{
+                        Box(
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .clip(CircleShape)
+                                .background(color)
+                                .size(10.dp)
+
+                        )
+                    }
+
                 }
-                else{
-                    Box(
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .clip(CircleShape)
-                            .background(color)
-                            .size(10.dp)
-
-                    )
-                }
-
             }
+
         }
+
     }
 
 }
@@ -110,28 +114,4 @@ fun OnBoardingPage(mainText : String, subText : String){
     }
 }
 
-@Composable
-fun OnBoardingLastPage(mainText : String, subText : String,navController: NavController){
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ){
-        //todo 3d 그래픽 넣을것~~
 
-        Text(text = mainText, color = Color.White, textAlign = TextAlign.Center, fontSize = 20.sp)
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(text = subText, color = Color(0xFF686868), textAlign = TextAlign.Center)
-        Spacer(modifier = Modifier.height(90.dp))
-        Button(
-            modifier = Modifier.size(200.dp, 50.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE4A89E)),
-            onClick = {
-                navController.navigate("HOME")
-            }
-        ) {
-            Text(text = "시작하기")
-        }
-
-    }
-}
