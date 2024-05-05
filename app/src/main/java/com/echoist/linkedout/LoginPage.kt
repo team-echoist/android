@@ -63,10 +63,13 @@ import androidx.navigation.compose.rememberNavController
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.LoginSuccessDialog
 import com.echoist.linkedout.viewModels.SocialLoginViewModel
+import com.echoist.linkedout.viewModels.WritingViewModel
 import com.kakao.sdk.common.KakaoSdk
 import com.kakao.sdk.common.util.Utility
 import com.navercorp.nid.NaverIdLoginSDK
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class LoginPage : ComponentActivity() {
     override fun onStart() {
         super.onStart()
@@ -80,8 +83,8 @@ class LoginPage : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
 
-        val viewModel by viewModels<SocialLoginViewModel>()
-
+        val viewModel : SocialLoginViewModel by viewModels()
+        val writingViewModel : WritingViewModel by viewModels()
 
 
         setContent {
@@ -91,7 +94,7 @@ class LoginPage : ComponentActivity() {
 
             NavHost(navController = navController, startDestination = "LoginPage") {
                 composable("LoginPage") {
-                    LoginPage(navController, viewModel)
+                   LoginPage(navController = navController, viewModel = viewModel)
                 }
                 composable("HOME") {
                     HomePage(navController)
@@ -104,6 +107,12 @@ class LoginPage : ComponentActivity() {
                 }
                 composable("SETTINGS") {
                     //settings page
+                }
+                composable("WritingPage") {
+                    WritingPage(navController,writingViewModel)
+                }
+                composable("WritingCompletePage") {
+                    WritingCompletePage(navController,writingViewModel)
                 }
             }
 
@@ -201,7 +210,7 @@ fun AppleLoginBtn(navController: NavController, viewModel: SocialLoginViewModel)
             contentDescription = "naver Login btn",
             modifier = Modifier
                 .size(40.dp)
-                .clickable { }, //애플로그인 로직 구현필요
+                .clickable {/* todo 애플로그인 로직 구현필요 */ },
             tint = Color.Unspecified
         )
 
@@ -224,16 +233,16 @@ fun LoginPage(navController: NavController, viewModel: SocialLoginViewModel) {
 
     LinkedOutTheme {
         Scaffold(
+            modifier = Modifier.pointerInput(Unit) { //배경 터치 시 키보드 숨김
+                detectTapGestures(onTap = {
+                    keyboardController?.hide()
+                })
+            },
             content = {
                 Column(
                     modifier = Modifier
                         .padding(it)
                         .verticalScroll(scrollState)
-                        .pointerInput(Unit) { //배경 터치 시 키보드 숨김
-                            detectTapGestures(onTap = {
-                                keyboardController?.hide()
-                            })
-                        }
                 ) {
                     Spacer(modifier = Modifier.height(20.dp))
                     Icon(
