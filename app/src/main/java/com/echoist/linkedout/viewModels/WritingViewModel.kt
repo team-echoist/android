@@ -1,7 +1,10 @@
 package com.echoist.linkedout.viewModels
 
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -28,6 +31,11 @@ class WritingViewModel @Inject constructor()
     var ringTouchedTime = mutableStateOf(5)
     var isCanCelClicked = mutableStateOf(false)
     var isDeleteClicked = mutableStateOf(false)
+
+    var isHashTagClicked by mutableStateOf(false)
+    var hashTagText by mutableStateOf("")
+    var hashTagList by mutableStateOf(mutableStateListOf<String>())
+    var isTextFeatOpened  = mutableStateOf(false)
 
 
     private val moshi = Moshi.Builder()

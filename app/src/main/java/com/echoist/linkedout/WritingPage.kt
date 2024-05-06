@@ -1,29 +1,42 @@
 package com.echoist.linkedout
 
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,10 +44,8 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
@@ -45,6 +56,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.colintheshots.twain.MarkdownText
+import com.echoist.linkedout.data.FuncItem
+import com.echoist.linkedout.data.FuncItemData
+import com.echoist.linkedout.data.HashTagBtn
+import com.echoist.linkedout.data.HashTagTextField
+import com.echoist.linkedout.data.TextItem
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.WritingViewModel
 
@@ -63,9 +79,6 @@ fun MarkDownBtn(viewModel: WritingViewModel) {
     val header1Text = if (start != end) "# $selectText" else selectText
     val header2Text = if (start != end) "## $selectText" else selectText
 
-    if (start != end) {
-
-    }
 
 // 이전 텍스트에서 선택된 부분을 대체
     val new_bold = viewModel.content.value.text.replaceRange(start, end, boldText)
@@ -76,7 +89,9 @@ fun MarkDownBtn(viewModel: WritingViewModel) {
 
 // 변경된 텍스트를 ViewModel에 설정
 
-    Row {
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .background(Color(0xFF1D1D1D)), horizontalArrangement = Arrangement.Center ) {
         Button(onClick = { viewModel.content.value = TextFieldValue(new_bold) }) {
             Text(text = "bold", color = Color.White)
         }
@@ -98,68 +113,80 @@ fun MarkDownBtn(viewModel: WritingViewModel) {
 //@PreviewScreenSizes
 @Composable
 fun WritingPage(navController: NavController, viewModel: WritingViewModel) {
+    val isKeyBoardOpened by keyboardAsState()
 
-    val keyboardController = LocalSoftwareKeyboardController.current
     val scrollState = rememberScrollState()
-    val focusManager = LocalFocusManager.current
     val focusState = viewModel.focusState
 
     val background = if (isSystemInDarkTheme()) Color.Black else Color.White
 
     LinkedOutTheme {
-
-        Column(modifier = Modifier.background(background)) {
+        Box {
             Column(modifier = Modifier
+                .background(background)
+                .fillMaxSize()) {
+                Column(modifier = Modifier
 
-                .verticalScroll(scrollState)
-                .weight(1f)
-                .pointerInput(Unit) { //배경 터치 시 키보드 숨김
-                    detectTapGestures(onTap = {
-                        keyboardController?.hide()
-                        focusManager.clearFocus()
-                        viewModel.isCanCelClicked.value = false
-                    }
+                    .verticalScroll(scrollState)
+
+                )
+                {
+                    WritingTopAppBar(navController = navController, viewModel)
+                    ContentTextField(viewModel = viewModel)
+                    MarkdownText(
+                        markdown = viewModel.content.value.text,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 20.dp)
+                            .layout { measurable, constraints ->
+                                val placeable = measurable.measure(constraints)
+                                layout(placeable.width, placeable.height) {
+                                    placeable.place(
+                                        x = 0,
+                                        y = if (focusState.value) 100 else 0
+                                    )
+                                }
+                            },
+                        color = Color.White
                     )
                 }
-            )
-            {
-                WritingTopAppBar(navController = navController, viewModel)
-                ContentTextField(viewModel = viewModel)
-                MarkdownText(
-                    markdown = viewModel.content.value.text,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 20.dp)
-                        .layout { measurable, constraints ->
-                            val placeable = measurable.measure(constraints)
-                            layout(placeable.width, placeable.height) {
-                                placeable.place(
-                                    x = 0,
-                                    y = if (focusState.value) 100 else 0
-                                )
+
+            }
+            Box(modifier = Modifier
+                .fillMaxSize(),
+                contentAlignment = Alignment.BottomCenter){ //키보드 자리에 들어갈 컴포 넣기
+                Column {
+                    AnimatedVisibility(visible = viewModel.isCanCelClicked.value) {
+                        WritingCancelCard(viewModel = viewModel, navController = navController)
+
+                    }
+                    if (viewModel.hashTagList.isNotEmpty()) {
+                        Row {
+                            viewModel.hashTagList.forEach {
+                                HashTagBtn(viewModel = viewModel, text = it)
                             }
-                        },
-                    color = Color.White
-                )
+                        }
+                    }
+                    if (isKeyBoardOpened == Keyboard.Opened ||  viewModel.isTextFeatOpened.value){
 
-                Spacer(modifier = Modifier.height(100.dp))
-                MarkDownBtn(viewModel)
+                        TextEditBar(viewModel)
+                        KeyboardLocationFunc(viewModel)
+                        }
+                    }
 
 
-            }
-
-
-            AnimatedVisibility(visible = viewModel.isCanCelClicked.value) {
-                WritingCancelCard(viewModel = viewModel, navController = navController)
+                }
 
             }
-
-
         }
+
+
+
     }
 
 
-}
+
+
 
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
@@ -170,9 +197,11 @@ fun PreviewWritingPage() {
 
 @Composable
 fun WritingTopAppBar(navController: NavController, viewModel: WritingViewModel) {
+    val isKeyboardOpen by keyboardAsState() //keyBoard.Opened
     val textState = viewModel.title
     val focusRequester = remember { FocusRequester() }
     val focusState = viewModel.focusState
+    val keyboardController = LocalSoftwareKeyboardController.current
 
 
     Column(
@@ -184,16 +213,35 @@ fun WritingTopAppBar(navController: NavController, viewModel: WritingViewModel) 
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            Text(
-                text = "취소",
-                color = Color(0xFF686868),
-                modifier = Modifier
-                    .padding(start = 20.dp, top = 15.dp)
-                    .clickable {
-                        viewModel.isCanCelClicked.value = true
-                    },
-                fontSize = 16.sp
-            )
+            if (isKeyboardOpen == Keyboard.Opened){
+                Icon(
+                    imageVector = Icons.Default.Done,
+                    contentDescription = "keyboardDown",
+                    modifier = Modifier
+                        .padding(start = 20.dp, top = 15.dp)
+                        .clickable {
+                            keyboardController?.hide()
+                            focusState.value = false
+                            viewModel.isTextFeatOpened.value = false
+                            viewModel.isHashTagClicked = false
+                        },
+                    tint = Color.White
+                )
+            }
+            else{
+                Text(
+                    text = "취소",
+                    color = Color(0xFF686868),
+                    modifier = Modifier
+                        .padding(start = 20.dp, top = 15.dp)
+                        .clickable {
+                            viewModel.isCanCelClicked.value = true
+                            keyboardController?.hide()
+                        },
+                    fontSize = 16.sp
+                )
+            }
+
             // 텍스트 필드와 완료 버튼을 수평으로 배치
             Row(
                 modifier = Modifier
@@ -205,13 +253,15 @@ fun WritingTopAppBar(navController: NavController, viewModel: WritingViewModel) 
                             val placeable = measurable.measure(constraints)
                             layout(placeable.width, placeable.height) {
                                 placeable.place(
-                                    x = if (focusState.value) -125 else 0,
+                                    x = if (focusState.value) -115 else 0,
                                     y = if (focusState.value) 120 else 0
                                 )
                             }
                         }
                         .focusRequester(focusRequester = focusRequester)
-                        .onFocusChanged { focusState.value = it.isFocused },
+                        .onFocusChanged {
+                            focusState.value = it.isFocused
+                        },
                     placeholder = {
                         Box(
                             modifier = Modifier.fillMaxWidth(),
@@ -280,6 +330,7 @@ fun ContentTextField(viewModel: WritingViewModel) {
                     )
                 }
             }
+            .onFocusChanged { focusState.value = it.isFocused }
             .fillMaxWidth()
             .padding(5.dp),
         value = content.value,
@@ -404,6 +455,85 @@ fun WritingCancelCard(viewModel: WritingViewModel, navController: NavController)
 
     }
 }
+
+@Composable
+fun KeyboardLocationFunc(viewModel: WritingViewModel) {
+    val funcItems = listOf(
+        FuncItemData("인용구", Icons.Default.FavoriteBorder) {},
+        FuncItemData("인용구", Icons.Default.FavoriteBorder) {},
+        FuncItemData("위치", Icons.Default.LocationOn) {},
+        FuncItemData("쓰다 만 글", Icons.Default.FavoriteBorder) {},
+        FuncItemData("감정 해시태그", Icons.Default.ThumbUp) {
+            viewModel.isHashTagClicked = true
+            Log.d("tagtag", "tag")
+        },
+        FuncItemData("맞춤법 검사", Icons.Default.FavoriteBorder) {},
+        FuncItemData("이미지", Icons.Default.FavoriteBorder) {},
+        FuncItemData("이미지", Icons.Default.FavoriteBorder) {},
+    )
+    Box(
+        modifier = Modifier
+            .background(Color(0xFF313131))
+            .fillMaxWidth()
+            .height(283.dp)
+            .padding(horizontal = 16.dp), // 수평 방향으로 패딩 추가
+        contentAlignment = Alignment.Center
+    ) {
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(4),
+            modifier = Modifier
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(60.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            items(funcItems) {
+                FuncItem(it.text, it.icon,it.clickable)
+            }
+        }
+    }
+}
+@Composable
+fun TextEditBar(viewModel: WritingViewModel){
+    val keyboardController = LocalSoftwareKeyboardController.current
+    
+    Row(
+        modifier = Modifier
+            .background(Color(0xFF1D1D1D))
+            .fillMaxWidth()
+            .height(50.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (viewModel.isHashTagClicked){
+            Spacer(modifier = Modifier.width(20.dp))
+            TextItem(icon = R.drawable.hashtag){}
+            HashTagTextField(viewModel = viewModel)
+        }
+        else{
+
+            Spacer(modifier = Modifier.width(20.dp))
+            TextItem(icon = R.drawable.ring){}
+            TextItem(icon = R.drawable.ring){}
+            TextItem(icon = R.drawable.ring){}
+            TextItem(icon = R.drawable.ring){}
+            Box (modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
+                Row {
+                    TextItem(icon = R.drawable.ring){}
+                    VerticalDivider(modifier = Modifier
+                        .height(34.dp)
+                        .padding(end = 12.dp), thickness = 1.dp)
+                    TextItem(icon = R.drawable.ring){
+                        keyboardController?.hide()
+                        viewModel.isTextFeatOpened.value = true
+                    }
+
+                }
+            }
+        }
+
+
+    }
+}
+
 
 
 
