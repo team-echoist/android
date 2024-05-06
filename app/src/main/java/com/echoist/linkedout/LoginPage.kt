@@ -229,8 +229,6 @@ fun AppleLoginBtn(navController: NavController, viewModel: SocialLoginViewModel)
 @Composable
 fun LoginPage(navController: NavController, viewModel: SocialLoginViewModel) {
 
-    var rememberId by remember { mutableStateOf("") }
-    var rememberPw by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
     val scrollState = rememberScrollState()
 
