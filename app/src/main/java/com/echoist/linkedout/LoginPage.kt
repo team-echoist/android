@@ -94,7 +94,7 @@ class LoginPage : ComponentActivity() {
 
             NavHost(navController = navController, startDestination = "OnBoarding") {
                 composable("OnBoarding") {
-                    OnBoardingPager(navController)
+                    OnBoardingPage(navController)
                 }
                 composable("LoginPage") {
                    LoginPage(navController = navController, viewModel = viewModel)

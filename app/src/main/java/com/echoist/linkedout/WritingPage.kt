@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -103,18 +104,13 @@ fun WritingPage(navController: NavController, viewModel: WritingViewModel) {
     val focusManager = LocalFocusManager.current
     val focusState = viewModel.focusState
 
-    val backgroundColor =
-        if (viewModel.isCanCelClicked.value) Color.Black.copy(alpha = 0.5f) else Color.Transparent
-
-
-    //scaffold에 넣으면 위치변경이 어려워져서 그냥 컬럼에 다 때려박았습니다. . .
+    val background = if (isSystemInDarkTheme()) Color.Black else Color.White
 
     LinkedOutTheme {
 
-        Column(
-            modifier = Modifier.background(backgroundColor)
-        ) {
+        Column(modifier = Modifier.background(background)) {
             Column(modifier = Modifier
+
                 .verticalScroll(scrollState)
                 .weight(1f)
                 .pointerInput(Unit) { //배경 터치 시 키보드 숨김
@@ -134,7 +130,6 @@ fun WritingPage(navController: NavController, viewModel: WritingViewModel) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 20.dp)
-                        // todo 이 modifier를 따로 함수로 빼놓으면 좋을듯
                         .layout { measurable, constraints ->
                             val placeable = measurable.measure(constraints)
                             layout(placeable.width, placeable.height) {
