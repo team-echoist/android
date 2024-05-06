@@ -62,6 +62,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.LoginSuccessDialog
+import com.echoist.linkedout.viewModels.SignUpViewModel
 import com.echoist.linkedout.viewModels.SocialLoginViewModel
 import com.echoist.linkedout.viewModels.WritingViewModel
 import com.kakao.sdk.common.KakaoSdk
@@ -85,6 +86,8 @@ class LoginPage : ComponentActivity() {
 
         val viewModel : SocialLoginViewModel by viewModels()
         val writingViewModel : WritingViewModel by viewModels()
+        val signUpViewModel : SignUpViewModel by viewModels()
+
 
 
         setContent {
@@ -98,6 +101,9 @@ class LoginPage : ComponentActivity() {
                 }
                 composable("LoginPage") {
                    LoginPage(navController = navController, viewModel = viewModel)
+                }
+                composable("SIGNUP") {
+                    SignUpPage(navController, signUpViewModel)
                 }
                 composable("HOME") {
                     HomePage(navController)
@@ -282,7 +288,7 @@ fun LoginPage(navController: NavController, viewModel: SocialLoginViewModel) {
                     ) {
                         UnderlineText(text = "아이디 찾기") { } //아이디찾기 페이지 이동
                         UnderlineText(text = "비밀번호 재설정") { } //비밀번호 재설정 페이지 이동
-                        UnderlineText(text = "회원가입") { } // 회원가입 페이지 이동
+                        UnderlineText(text = "회원가입") { navController.navigate("SIGNUP") } // 회원가입 페이지 이동
                     }
                     Spacer(modifier = Modifier.height(150.dp))
 
