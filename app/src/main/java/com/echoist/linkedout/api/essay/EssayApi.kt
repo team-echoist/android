@@ -21,7 +21,7 @@ interface EssayApi{
      * "message": "review has been requested.."
      */
     @FormUrlEncoded
-    @POST("/api/essay")
+    @POST("api/essay")
     suspend fun writeEssay(
         //todo 쿼리로 보내지말고 바디로보내기~
         @Header("Authorization") accessToken: String,
@@ -36,7 +36,7 @@ interface EssayApi{
 
 
     @FormUrlEncoded
-    @PUT("/api/essay/:essayId")
+    @PUT("api/essay/:essayId")
     suspend fun modifyEssay(
         @Header("Authorization") accessToken: String,
         @Field("title") title: String = "",
@@ -48,7 +48,7 @@ interface EssayApi{
         @Field("linkedOut") linkedOut: Boolean = false
     ): Response<WritingUserInfo>
 
-    @DELETE("/api/essay/:essayId")
+    @DELETE("api/essay/:essayId")
     suspend fun deleteEssay(
         @Header("Authorization") accessToken: String
     ): Response<WritingUserInfo>

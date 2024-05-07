@@ -45,7 +45,7 @@ class WritingViewModel @Inject constructor()
 
     private val api = Retrofit
         .Builder()
-        .baseUrl("https://www.linkedoutapp.com")
+        .baseUrl("https://www.linkedoutapp.com/")
         .addConverterFactory(MoshiConverterFactory.create(moshi))
         .build()
         .create(EssayApi::class.java)

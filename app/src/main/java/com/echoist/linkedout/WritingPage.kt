@@ -173,22 +173,10 @@ fun WritingPage(navController: NavController, viewModel: WritingViewModel) {
                         KeyboardLocationFunc(viewModel)
                         }
                     }
-
-
                 }
-
             }
         }
-
-
-
     }
-
-
-
-
-
-
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun PreviewWritingPage() {

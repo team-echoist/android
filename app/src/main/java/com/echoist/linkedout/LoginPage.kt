@@ -93,8 +93,6 @@ class LoginPage : ComponentActivity() {
         val writingViewModel : WritingViewModel by viewModels()
         val signUpViewModel : SignUpViewModel by viewModels()
 
-
-
         setContent {
             val keyHash = Utility.getKeyHash(this)
             Log.d("Hash", keyHash)

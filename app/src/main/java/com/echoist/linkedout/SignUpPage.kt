@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -72,7 +73,8 @@ fun SignUpPage(navController: NavController,
                 },
                 content = {
                     Column(
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier
+                            .fillMaxSize()
                             .padding(it)
                     ) {
                         Spacer(modifier = Modifier.height(20.dp))
@@ -104,7 +106,7 @@ fun SignUpPage(navController: NavController,
                             modifier = Modifier.padding(start = 16.dp, bottom = 32.dp),
                             color = if (isSystemInDarkTheme()) Color(0xFF919191) else Color.Gray
                         )
-                        IdTextField(viewModel)
+                        EmailTextField(viewModel)
                         PwTextField(viewModel)
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
@@ -114,20 +116,20 @@ fun SignUpPage(navController: NavController,
                                     .padding(start = 16.dp)
                                     .size(25.dp)
                                     .clickable {
-                                        viewModel.agreement_service.value =
-                                            !viewModel.agreement_service.value
-                                        viewModel.agreement_collection.value =
-                                            !viewModel.agreement_collection.value
-                                        viewModel.agreement_teen.value =
-                                            !viewModel.agreement_teen.value
-                                        viewModel.agreement_marketing.value =
-                                            !viewModel.agreement_marketing.value
+                                        viewModel.agreement_service =
+                                            !viewModel.agreement_service
+                                        viewModel.agreement_collection =
+                                            !viewModel.agreement_collection
+                                        viewModel.agreement_teen =
+                                            !viewModel.agreement_teen
+                                        viewModel.agreement_marketing =
+                                            !viewModel.agreement_marketing
                                         //todo 약관동의마다 백엔드 기능 구현해야할것.
                                     },
-                                tint = if (viewModel.agreement_service.value &&
-                                    viewModel.agreement_collection.value &&
-                                    viewModel.agreement_teen.value &&
-                                    viewModel.agreement_marketing.value
+                                tint = if (viewModel.agreement_service &&
+                                    viewModel.agreement_collection &&
+                                    viewModel.agreement_teen &&
+                                    viewModel.agreement_marketing
                                 )
                                     Color.White
                                 else Color(0xFF919191)
@@ -138,40 +140,44 @@ fun SignUpPage(navController: NavController,
                         AgreementText(
                             text = "(필수)  서비스  이용약관  동의",
                             {
-                                viewModel.agreement_service.value =
-                                    !viewModel.agreement_service.value
+                                viewModel.agreement_service =
+                                    !viewModel.agreement_service
                             }
-                            ,if (viewModel.agreement_service.value) Color.White else Color(0xFF919191)
+                            ,if (viewModel.agreement_service) Color.White else Color(0xFF919191)
                         )
                         AgreementText(
                             text = "(필수)  개인정보  수집  및  이용  동의",
                             {
-                                viewModel.agreement_collection.value =
-                                    !viewModel.agreement_collection.value
+                                viewModel.agreement_collection =
+                                    !viewModel.agreement_collection
                             }
-                            ,if (viewModel.agreement_collection.value) Color.White else Color(0xFF919191)
+                            ,if (viewModel.agreement_collection) Color.White else Color(0xFF919191)
                         )
                         AgreementText(
                             text = "(필수)   만  14세  이상입니다",
-                            { viewModel.agreement_teen.value = !viewModel.agreement_teen.value }
-                            ,if (viewModel.agreement_teen.value) Color.White else Color(0xFF919191)
+                            { viewModel.agreement_teen = !viewModel.agreement_teen }
+                            ,if (viewModel.agreement_teen) Color.White else Color(0xFF919191)
                         )
                         AgreementText(
                             text = "(선택)   마케팅  정보  수신  동의",
                             {
-                                viewModel.agreement_marketing.value =
-                                    !viewModel.agreement_marketing.value
+                                viewModel.agreement_marketing =
+                                    !viewModel.agreement_marketing
                             }
-                            ,if (viewModel.agreement_marketing.value) Color.White else Color(0xFF919191)
+                            ,if (viewModel.agreement_marketing) Color.White else Color(0xFF919191)
                         )
 
                         Button(
                             shape = RoundedCornerShape(16.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE4A89E), disabledContainerColor = Color(0xFF868686)),
+                            enabled = viewModel.agreement_service && viewModel.agreement_collection && viewModel.agreement_teen && !viewModel.userEmailError,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(100.dp)
                                 .padding(start = 20.dp, end = 20.dp, top = 43.dp),
-                            onClick = { /*TODO 회원가입 기능구현 및 화면이동*/ }
+                            onClick = { /*TODO 회원가입 기능구현 및 화면이동*/
+                            viewModel.getUserEmailCheck(navController)
+                            }
                         ) {
                             Text(text = "회원가입")
                         }
@@ -186,49 +192,69 @@ fun SignUpPage(navController: NavController,
 }
 
 @Composable
-fun IdTextField(viewModel: SignUpViewModel) {
-    var text by remember { mutableStateOf("") }
+fun EmailTextField(viewModel: SignUpViewModel) {
+    var errorText by remember { mutableStateOf("") }
 
-    TextField(
-        value = text,
-        onValueChange = { new ->
-            text = new
-            viewModel.userEmail.value = text
-        },
-        label = {
-            Text(
-                "이메일 주소 또는 아이디",
-                color = if (isSystemInDarkTheme()) Color(0xFF919191) else Color.Gray,
-                fontSize = 14.sp
-            )
-        }, // 힌트를 라벨로 설정합니다.
-        colors = TextFieldDefaults.colors(
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            focusedTextColor = Color.White,
-            unfocusedTextColor = Color.White,
-            focusedContainerColor = if (isSystemInDarkTheme()) Color(0xFF252525) else Color.Black,
-            unfocusedContainerColor = if (isSystemInDarkTheme()) Color(0xFF252525) else Color.Black
+    Column {
+        TextField(
+            value = viewModel.userEmail,
+            isError = viewModel.userEmailError,
+            onValueChange = { new ->
+                viewModel.userEmail = new
+                if (new.isNotEmpty() && viewModel.isEmailValid(viewModel.userEmail)){
+                    viewModel.userEmailError = false
+                    errorText = ""
+                }
+                else {
+                    viewModel.userEmailError = true
+                    errorText = "올바르지 않은 이메일 형식입니다."
+                }
+            },
+            label = {
+                Text(
+                    "이메일 주소 또는 아이디",
+                    color = if (isSystemInDarkTheme()) Color(0xFF919191) else Color.Gray,
+                    fontSize = 14.sp
+                )
+            }, // 힌트를 라벨로 설정합니다.
+            colors = TextFieldDefaults.colors(
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedTextColor = Color.White,
+                unfocusedTextColor = Color.White,
+                focusedContainerColor = if (isSystemInDarkTheme()) Color(0xFF252525) else Color.Black,
+                unfocusedContainerColor = if (isSystemInDarkTheme()) Color(0xFF252525) else Color.Black,
+                errorTextColor = Color.Red,
+                errorContainerColor = if (isSystemInDarkTheme()) Color(0xFF252525) else Color.Black,
+                errorIndicatorColor = Color.Transparent
+            ),
+            shape = RoundedCornerShape(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp, bottom = 14.dp)
+        )
+        if (viewModel.userEmailError){
+            if (errorText.isNotEmpty())
+                Text(
+                    text = errorText,
+                    fontSize = 12.sp,
+                    color = Color.Red,
+                    modifier = Modifier.padding(start = 16.dp, bottom = 14.dp)
+                )
+        }
+    }
 
-
-        ),
-        shape = RoundedCornerShape(8.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp, bottom = 14.dp)
-    )
 }
 
 @Composable
 fun PwTextField(viewModel: SignUpViewModel) {
-    var text by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
     TextField(
-        value = text,
+        value = viewModel.userPw,
         onValueChange = { new ->
-            text = new
-            viewModel.userPw.value = text
+            if (new.length <= 20)
+            viewModel.userPw = new
         },
         label = { Text("비밀번호", color = Color(0xFF919191), fontSize = 14.sp) }, // 힌트를 라벨로 설정합니다.
         colors = TextFieldDefaults.colors(
@@ -237,10 +263,13 @@ fun PwTextField(viewModel: SignUpViewModel) {
             focusedTextColor = Color.White,
             unfocusedTextColor = Color.White,
             focusedContainerColor = if (isSystemInDarkTheme()) Color(0xFF252525) else Color.Black,
-            unfocusedContainerColor = if (isSystemInDarkTheme()) Color(0xFF252525) else Color.Black
-
-
+            unfocusedContainerColor = if (isSystemInDarkTheme()) Color(0xFF252525) else Color.Black ,
+            errorTextColor = Color.Red,
+            errorContainerColor = if (isSystemInDarkTheme()) Color(0xFF252525) else Color.Black,
+            errorIndicatorColor = Color.Transparent
         ),
+        maxLines = 1, // 한 줄에만 입력할 수 있도록 설정
+
         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         trailingIcon = { // 비밀번호 표시 여부입니다.
