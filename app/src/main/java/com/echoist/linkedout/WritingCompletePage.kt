@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -54,6 +55,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.colintheshots.twain.MarkdownText
+import com.echoist.linkedout.data.HashTagGroup
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.WritingViewModel
 import java.time.LocalDateTime
@@ -86,36 +88,46 @@ fun WritingCompletePage(navController: NavController, viewModel: WritingViewMode
                 }
             }
         ) {
-            Column(
-                modifier = Modifier
-                    .padding(it)
-                    .verticalScroll(scrollState)
-            )
-            {
+            Box {
+                Column(
+                    modifier = Modifier
+                        .padding(it)
+                        .verticalScroll(scrollState)
+                )
+                {
 
-                // todo 이미지 있으면 올리고 없으면 무시하는형태.
+                    // todo 이미지 있으면 올리고 없으면 무시하는형태.
 
-                CompleteTitle(viewModel = viewModel)
+                    CompleteTitle(viewModel = viewModel)
 
-                CompleteContents(viewModel = viewModel)
-                CompleteNickName()
-                CompleteDate(viewModel = viewModel)
-                if (isBottomSheetOpen.value) {
-                    BottomSheet(
-                        closeSheet = {
-                            isBottomSheetOpen.value = false
-                            viewModel.ringTouchedTime.value = 5
-                        },
+                    CompleteContents(viewModel = viewModel)
+                    CompleteNickName()
+                    CompleteDate(viewModel = viewModel)
+                    if (isBottomSheetOpen.value) {
+                        BottomSheet(
+                            closeSheet = {
+                                isBottomSheetOpen.value = false
+                                viewModel.ringTouchedTime.value = 5
+                            },
 
-                        viewModel = viewModel,
-                        navController = navController
-                    )
+                            viewModel = viewModel,
+                            navController = navController
+                        )
+                    }
+                    Button(onClick = { isBottomSheetOpen.value = true }) {
+                        Text(text = "bottom sheet open")
+                    }
+
                 }
-                Button(onClick = { isBottomSheetOpen.value = true }) {
-                    Text(text = "bottom sheet open")
+                Box(
+                    modifier = Modifier.fillMaxSize().
+                    padding(bottom = 67.dp),
+                    contentAlignment = Alignment.BottomCenter
+                ){
+                    HashTagGroup(viewModel = viewModel)
                 }
-
             }
+
 
         }
 
