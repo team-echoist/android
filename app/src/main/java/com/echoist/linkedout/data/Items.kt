@@ -115,10 +115,11 @@ fun HashTagTextField(viewModel: WritingViewModel){
         ),
         onValueChange = {
             if (it.isNotEmpty() && (it.last() == ' ' || it.last() == '\n')) {
-                viewModel.hashTagList.add(viewModel.hashTagText.trim())
-                viewModel.hashTagText = ""
-                // 입력값의 마지막 문자가 스페이스바 혹은 엔터인 경우 처리
-                // 이 부분에서 원하는 동작을 수행하십시오.
+                val trimmedText = it.trim()
+                if (trimmedText.isNotBlank()) {
+                    viewModel.hashTagList.add(trimmedText)
+                    viewModel.hashTagText = ""
+                }
             }
             else viewModel.hashTagText = it
         }
@@ -128,7 +129,12 @@ fun HashTagTextField(viewModel: WritingViewModel){
 @Preview
 @Composable
 fun prev(){
-    HashTagGroup(WritingViewModel())
+    Column {
+
+        HashTagGroup(WritingViewModel())
+        HashTagBtn(viewModel = WritingViewModel(), text = "qjxms")
+        HashTagTextField(viewModel = WritingViewModel())
+    }
 }
 
 @Composable
@@ -163,7 +169,6 @@ fun HashTagGroup(viewModel: WritingViewModel){
                     .width(220.dp)
                     .fillMaxHeight()
                     .horizontalScroll(scrollState),
-                horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ){
                 viewModel.hashTagList.forEach {
