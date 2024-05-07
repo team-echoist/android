@@ -132,9 +132,7 @@ fun HashTagBtn(viewModel: WritingViewModel,text: String){
         mutableStateOf("")
     }
     Button(onClick = {
-        viewModel.hashTagList.forEachIndexed { index, s ->
-            if (hashTag==s) viewModel.hashTagList.removeAt(index)
-        }
+        viewModel.hashTagList.remove(text)
     }) {
         Text(text = text, fontSize = 14.sp)
         Spacer(modifier = Modifier.width(2.dp))

@@ -220,10 +220,10 @@ fun WritingTopAppBar(navController: NavController, viewModel: WritingViewModel) 
                     modifier = Modifier
                         .padding(start = 20.dp, top = 15.dp)
                         .clickable {
-                            keyboardController?.hide()
-                            focusState.value = false
                             viewModel.isTextFeatOpened.value = false
                             viewModel.isHashTagClicked = false
+                            keyboardController?.hide()
+                            focusState.value = false
                         },
                     tint = Color.White
                 )
@@ -407,6 +407,8 @@ fun WritingCancelCard(viewModel: WritingViewModel, navController: NavController)
                         .clickable {
                             navController.navigate("HOME")
                             viewModel.isCanCelClicked.value = false
+                            viewModel.isTextFeatOpened.value = false
+                            viewModel.hashTagList.clear()
                         },
                     fontSize = 16.sp,
                     text = "작성취소",
@@ -458,6 +460,8 @@ fun WritingCancelCard(viewModel: WritingViewModel, navController: NavController)
 
 @Composable
 fun KeyboardLocationFunc(viewModel: WritingViewModel) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     val funcItems = listOf(
         FuncItemData("인용구", Icons.Default.FavoriteBorder) {},
         FuncItemData("인용구", Icons.Default.FavoriteBorder) {},

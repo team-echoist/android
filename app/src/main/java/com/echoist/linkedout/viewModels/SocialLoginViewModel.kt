@@ -49,7 +49,7 @@ class SocialLoginViewModel : ViewModel() {
     val userName = auth.currentUser?.displayName.toString()
 
     fun signInWithGoogle(
-        launcher: ManagedActivityResultLauncher<Intent,androidx.activity.result.ActivityResult>,
+        launcher: ManagedActivityResultLauncher<Intent,ActivityResult>,
         context: Context
     ){
         val token = BuildConfig.google_native_api_key //토큰값 -> local.properties 통해 git ignore
@@ -189,6 +189,7 @@ class SocialLoginViewModel : ViewModel() {
                 Log.d("Naver_getExpiresAt", NaverIdLoginSDK.getExpiresAt().toString())
                 Log.d("Naver_getTokenType", NaverIdLoginSDK.getTokenType().toString())
                 Log.d("Naver_getState", NaverIdLoginSDK.getState().toString())
+
                 naverLoginstate.value = true
                 navController.navigate("HOME")
                 // 로그인 성공 시 유저 정보 획득

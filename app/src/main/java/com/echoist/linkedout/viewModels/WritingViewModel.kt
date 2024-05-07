@@ -86,7 +86,6 @@ class WritingViewModel @Inject constructor()
 
                 }
 
-
             } catch (e: Exception) {
                 // api 요청 실패
                 Log.e("writeEssayApiFailed", "Failed to write essay: ${e.message}")
