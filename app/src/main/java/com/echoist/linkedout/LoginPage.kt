@@ -72,6 +72,8 @@ import com.echoist.linkedout.viewModels.LoginSuccessDialog
 import com.echoist.linkedout.viewModels.SignUpViewModel
 import com.echoist.linkedout.viewModels.SocialLoginViewModel
 import com.echoist.linkedout.viewModels.WritingViewModel
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.kakao.sdk.common.KakaoSdk
 import com.kakao.sdk.common.util.Utility
 import com.navercorp.nid.NaverIdLoginSDK
@@ -84,6 +86,7 @@ class LoginPage : ComponentActivity() {
         super.onStart()
         //카카오 sdk 초기화
         KakaoSdk.init(this, BuildConfig.kakao_native_app_key)
+        Firebase.auth.signOut()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
