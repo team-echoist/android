@@ -19,10 +19,15 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Inject
 
 @HiltViewModel
-class WritingViewModel @Inject constructor()
+class WritingViewModel @Inject constructor(
+)
     : ViewModel() {
+        private val socialLoginViewModel = SocialLoginViewModel()
 
-    private var accessToken = mutableStateOf("") // 토큰값을 계속 갱신하며, 이 값을 헤더로 요청보낸다.
+    var accessToken by mutableStateOf("")
+    init { // 아마 이 뷰모델이 관계없는 뷰모델이라 안되는거. 방법은 내일 생각해보자
+        accessToken = socialLoginViewModel.accessToken
+    }
 
     var focusState = mutableStateOf(false)
     var title = mutableStateOf(TextFieldValue(""))
@@ -54,41 +59,49 @@ class WritingViewModel @Inject constructor()
     //에세이 작성 후 서버에 post
     //api 통신 성공했을시에만 화면 이동
     fun writeEssay(
-        navController: NavController,
-        published: Boolean = false,
-        linkedOut: Boolean = false
+        navController: NavController, //저장할래요는 기본 둘다 false
+        published: Boolean = false, //나눠볼래요
+        linkedOut: Boolean = false //놓아줄래요
     ) {
         viewModelScope.launch {
             try {
-                val response = api.writeEssay(/*todo 토큰값. 매번변경*/ "Bearer ${accessToken.value}}",
-                    title.value.text,
-                    content.value.text,
+                val essayData = EssayApi.EssayData(
+                    title.value.toString(),
+                    content.value.toString(),
                     linkedOutGauge = ringTouchedTime.value,
                     published = published,
                     linkedOut = linkedOut
                 )
+                val response = api.writeEssay(accessToken,
+                    essayData = essayData
+                )
                 if (response.isSuccessful){
+                    accessToken = (response.headers()["authorization"].toString())
                     Log.e("writeEssayApiSuccess", "${response.headers()}")
                     Log.e("writeEssayApiSuccess", "${response.code()}")
                     navController.navigate("HOME") {
                         popUpTo("HOME") {
                             inclusive = false
                         }
+
                     }
                 }
 
                 else {
-                    Log.e("writeEssayApiFailed", "Failed to write essay: ${response.headers()}")
+                    Log.e("writeEssayApiFailed token", "Failed to write essay: ${accessToken}")
+                    Log.e("writeEssayApiFailed token", "Failed to write essay: ${title.value}")
+                    Log.e("writeEssayApiFailed token", "Failed to write essay: ${content.value}")
+
                     //todo header 파싱 ㄱㄱ.
-                    Log.e("writeEssayApiFailed", "Failed to write essay: ${response.code()}")
-                    Log.e("writeEssayApiFailed", "Failed to write essay: ${response.errorBody()}")
-                    Log.e("writeEssayApiFailed", "Failed to write essay: ${response.message()}")
+                    Log.e("writeEssayApiFailed1", "Failed to write essay: ${response.code()}")
+                    Log.e("writeEssayApiFailed1", "Failed to write essay: ${response.errorBody()}")
+                    Log.e("writeEssayApiFailed1", "Failed to write essay: ${response.message()}")
 
                 }
 
             } catch (e: Exception) {
                 // api 요청 실패
-                Log.e("writeEssayApiFailed", "Failed to write essay: ${e.message}")
+                Log.e("writeEssayApiFailed 아예", "Failed to write essay: ${e.message}")
             }
         }
     }
@@ -99,7 +112,7 @@ class WritingViewModel @Inject constructor()
         viewModelScope.launch {
             try {
 
-                val response = api.modifyEssay(/*todo 토큰값. 매번변경*/ accessToken.value,
+                val response = api.modifyEssay(/*todo 토큰값. 매번변경*/ accessToken,
                     title.value.text,
                     content.value.text
                 )
@@ -124,7 +137,7 @@ class WritingViewModel @Inject constructor()
         viewModelScope.launch {
             try {
 
-                val response = api.deleteEssay(accessToken.value,)/*todo 토큰값. 매번변경*/
+                val response = api.deleteEssay(accessToken,)/*todo 토큰값. 매번변경*/
 
                 if (response.isSuccessful){
                     Log.e("writeEssayApiSuccess", "${response.headers()}")

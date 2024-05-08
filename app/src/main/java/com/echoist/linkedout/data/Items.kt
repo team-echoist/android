@@ -37,6 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.echoist.linkedout.R
 import com.echoist.linkedout.viewModels.WritingViewModel
 
@@ -131,9 +132,11 @@ fun HashTagTextField(viewModel: WritingViewModel){
 fun prev(){
     Column {
 
-        HashTagGroup(WritingViewModel())
-        HashTagBtn(viewModel = WritingViewModel(), text = "qjxms")
-        HashTagTextField(viewModel = WritingViewModel())
+        val viewModel = hiltViewModel<WritingViewModel>()
+
+        HashTagGroup(viewModel)
+        HashTagBtn(viewModel = viewModel, text = "qjxms")
+        HashTagTextField(viewModel = viewModel)
     }
 }
 

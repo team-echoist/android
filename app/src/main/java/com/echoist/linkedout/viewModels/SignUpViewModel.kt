@@ -50,19 +50,19 @@ class SignUpViewModel : ViewModel() {
                 val response = authApi.emailDuplicateConfirm(userEmail)
 
                 if (response.code() == 200) {
-                    Log.e("authApiSuccess", "${response.headers()}")
-                    Log.e("authApiSuccess", "${response.code()}")
+                    Log.e("authApiSuccess1", "${response.code()}")
 
                     emailVerify(navController)
                 } else {
-                    Log.e("authApiFailed", "Failed : ${response.headers()}")
+                    Log.e("authApiFailed1", "Failed : ${response.errorBody()}")
+
                     Log.e("authApiSuccess", "${response.code()}")
                     //todo header 파싱 ㄱㄱ 는 회원가입부터 작동
                 }
 
             } catch (e: Exception) {
                 // api 요청 실패
-                Log.e("writeEssayApiFailed", "Failed: ${e.message}")
+                Log.e("writeEssayApiFailed1", "Failed: ${e.message}")
             }
         }
     }
@@ -76,19 +76,21 @@ class SignUpViewModel : ViewModel() {
                 val response = authApi.emailVerify(userAccount)
 
                 if (response.code() == 201) {
-                    Log.e("authApiSuccess", "${response.headers()}")
-                    Log.e("authApiSuccess", "${response.code()}")
-                    navController.navigate("HOME")
+                    Log.e("authApiSuccess2", "${response.headers()}")
+                    Log.e("authApiSuccess2", "${response.code()}")
+
+                    navController.navigate("LoginPage")
                 } else {
-                    Log.e("authApiFailed", "Failed : ${response.headers()}")
-                    Log.e("authApiSuccess", "${response.code()}")
-                    //todo header 파싱 ㄱㄱ.
+                    Log.e("authApiFailed2", "Failed : ${response.headers()}")
+                    Log.e("authApiSuccess2", "${response.code()}")
                 }
 
             } catch (e: Exception) {
                 // api 요청 실패
-                Log.e("writeEssayApiFailed", "Failed: ${e.message}")
+                Log.e("writeEssayApiFailed2", "Failed: ${e.message}")
             }
 
     }
+
+
 }

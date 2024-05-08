@@ -116,6 +116,7 @@ dependencies {
     implementation ("com.squareup.retrofit2:converter-moshi:2.11.0")
     implementation ("com.squareup.moshi:moshi-kotlin:1.15.1")
     implementation ("com.google.dagger:hilt-android:2.44")
+    implementation ("androidx.hilt:hilt-navigation-compose:1.0.0")
 
     implementation ("com.github.bumptech.glide:compose:1.0.0-beta01")
     implementation ("com.github.skydoves:landscapist-glide:1.4.7")

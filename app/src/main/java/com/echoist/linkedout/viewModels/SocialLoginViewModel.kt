@@ -13,12 +13,15 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.echoist.linkedout.BuildConfig
 import com.echoist.linkedout.api.NaverApiService
+import com.echoist.linkedout.api.SignUpApi
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -33,20 +36,27 @@ import com.kakao.sdk.user.UserApiClient
 import com.navercorp.nid.NaverIdLoginSDK
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
+import javax.inject.Inject
 
-class SocialLoginViewModel : ViewModel() {
+
+@HiltViewModel
+class SocialLoginViewModel @Inject constructor() : ViewModel() {
     private val auth : FirebaseAuth = Firebase.auth
+
+    var accessToken by mutableStateOf("")
+
     var googleLoginstate = mutableStateOf(false)
     var kakaoLoginstate = mutableStateOf(false)
     var naverLoginstate = mutableStateOf(false)
 
-    var userId = mutableStateOf("")
-    var userPw = mutableStateOf("")
-
-    val userName = auth.currentUser?.displayName.toString()
+    var userId by mutableStateOf("")
+    var userPw by mutableStateOf("")
 
     fun signInWithGoogle(
         launcher: ManagedActivityResultLauncher<Intent,ActivityResult>,
@@ -243,7 +253,47 @@ class SocialLoginViewModel : ViewModel() {
         }
 
     }
+    private val moshi = Moshi.Builder()
+        .addLast(KotlinJsonAdapterFactory())
+        .build()
 
+
+    private val authApi = Retrofit
+        .Builder()
+        .baseUrl("https://www.linkedoutapp.com/api/")
+        .addConverterFactory(MoshiConverterFactory.create(moshi))
+        .build()
+        .create(SignUpApi::class.java)
+
+    //로그인
+    fun login(navController: NavController) {
+        viewModelScope.launch{
+            try {
+                val userAccount = SignUpApi.UserAccount(userId, userPw)
+                val response = authApi.login(userAccount)
+
+                if (response.isSuccessful) {
+                    Log.d("tokentoken",response.headers()["authorization"].toString())
+                    accessToken = (response.headers()["authorization"].toString())
+                    Log.e("authApiSuccess3", "로그인 성공! ${response.headers()["authorization"]}") // 이값을 항상 헤더에 넣을것.
+                    Log.e("authApiSuccess3", "${response.code()}")
+                    Log.e("authApiSuccess3 헤더", "${response.headers()}")
+
+                    val encodedUrl = URLEncoder.encode("android-app://androidx.navigation/HOME/$accessToken", StandardCharsets.UTF_8.toString())
+                    navController.navigate("HOME/$accessToken")
+                } else {
+                    Log.e("authApiFailed2", "Failed : ${response.headers().get("authorization")}")
+                    Log.e("authApifailed32", "${response.code()}")
+                    Log.e("authApifailed32", response.message())
+
+                }
+
+            } catch (e: Exception) {
+                // api 요청 실패
+                Log.e("writeEssayApiFailed2", "Failed: ${e.message}")
+            }
+        }
+    }
 
 
 }

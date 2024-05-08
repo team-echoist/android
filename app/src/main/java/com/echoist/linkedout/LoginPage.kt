@@ -62,9 +62,11 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.LoginSuccessDialog
 import com.echoist.linkedout.viewModels.SignUpViewModel
@@ -74,6 +76,7 @@ import com.kakao.sdk.common.KakaoSdk
 import com.kakao.sdk.common.util.Utility
 import com.navercorp.nid.NaverIdLoginSDK
 import dagger.hilt.android.AndroidEntryPoint
+
 
 @AndroidEntryPoint
 class LoginPage : ComponentActivity() {
@@ -85,8 +88,6 @@ class LoginPage : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
-
         super.onCreate(savedInstanceState)
 
         val viewModel : SocialLoginViewModel by viewModels()
@@ -102,14 +103,27 @@ class LoginPage : ComponentActivity() {
                 composable("OnBoarding") {
                     OnBoardingPage(navController)
                 }
-                composable("LoginPage") {
-                   LoginPage(navController = navController, viewModel = viewModel)
+                composable("LoginPage"){navBackStackEntry ->
+                    LoginPage(
+                        navController = navController,
+                        viewModel = viewModel,
+                       "emptyToken"
+                    )
+
                 }
                 composable("SIGNUP") {
                     SignUpPage(navController, signUpViewModel)
                 }
-                composable("HOME") {
-                    HomePage(navController)
+                composable(
+                    "HOME/{accessToken}",
+                    arguments = listOf(navArgument("accessToken") {
+                        type = NavType.StringType
+                    })
+                ) {navBackStackEntry->
+                    HomePage(
+                        navController,
+                        navBackStackEntry.arguments?.getString("accessToken").toString()
+                    )
                 }
                 composable("MYLOG") {
                     //mylog page
@@ -120,11 +134,31 @@ class LoginPage : ComponentActivity() {
                 composable("SETTINGS") {
                     //settings page
                 }
-                composable("WritingPage") {
-                    WritingPage(navController,writingViewModel)
+                composable(
+                    "WritingPage/{accessToken}",
+                    arguments = listOf(
+                        navArgument("accessToken") {
+                        type = NavType.StringType
+                    })
+                ) {navBackStackEntry->
+                    WritingPage(
+                        navController,
+                        writingViewModel,
+                        navBackStackEntry.arguments?.getString("accessToken").toString()
+                    )
                 }
-                composable("WritingCompletePage") {
-                    WritingCompletePage(navController,writingViewModel)
+                composable(
+                    "WritingCompletePage/{accessToken}",
+                    arguments = listOf(
+                        navArgument("accessToken") {
+                            type = NavType.StringType
+                        })
+                ) {navBackStackEntry->
+                    WritingCompletePage(
+                        navController,
+                        writingViewModel,
+                        navBackStackEntry.arguments?.getString("accessToken").toString()
+                    )
                 }
             }
 
@@ -236,10 +270,16 @@ fun AppleLoginBtn(navController: NavController, viewModel: SocialLoginViewModel)
 
 
 @Composable
-fun LoginPage(navController: NavController, viewModel: SocialLoginViewModel) {
+fun LoginPage(
+    navController: NavController,
+    viewModel: SocialLoginViewModel,
+    accessToken: String
+) {
 
     val keyboardController = LocalSoftwareKeyboardController.current
     val scrollState = rememberScrollState()
+
+    viewModel.accessToken = accessToken
 
     LinkedOutTheme {
         Scaffold(
@@ -282,7 +322,7 @@ fun LoginPage(navController: NavController, viewModel: SocialLoginViewModel) {
                     IdTextField(viewModel)
                     PwTextField(viewModel)
 
-                    LoginBtn(navController = navController, viewModel)
+                    LoginBtn(navController = navController,viewModel)
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -358,7 +398,7 @@ fun IdTextField(viewModel: SocialLoginViewModel) {
         value = text,
         onValueChange = { new ->
             text = new
-            viewModel.userId.value = text
+            viewModel.userId = text
         },
         label = {
             Text(
@@ -393,7 +433,7 @@ fun PwTextField(viewModel: SocialLoginViewModel) {
         value = text,
         onValueChange = { new ->
             text = new
-            viewModel.userPw.value = text
+            viewModel.userPw = text
         },
         label = { Text("비밀번호", color = Color(0xFF919191), fontSize = 14.sp) }, // 힌트를 라벨로 설정합니다.
         colors = TextFieldDefaults.colors(
@@ -426,16 +466,16 @@ fun PwTextField(viewModel: SocialLoginViewModel) {
 }
 
 @Composable
-fun LoginBtn(navController: NavController, viewModel: SocialLoginViewModel) {
+fun LoginBtn(
+    navController: NavController,
+    viewModel: SocialLoginViewModel
+) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     Button(
         shape = RoundedCornerShape(10.dp),
         onClick = {
-            Log.d(
-                "로그인 id pw",
-                "${viewModel.userId.value}, ${viewModel.userPw.value} " /*todo 유저 로그인 진입 로직 구현 필요. */
-            )
+            viewModel.login(navController)
         },
         colors = ButtonDefaults.buttonColors(
             containerColor = if (isSystemInDarkTheme()) {

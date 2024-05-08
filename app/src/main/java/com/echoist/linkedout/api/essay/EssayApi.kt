@@ -2,6 +2,7 @@ package com.echoist.linkedout.api.essay
 
 import com.echoist.linkedout.data.WritingUserInfo
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -20,18 +21,24 @@ interface EssayApi{
      * 응답에는 아래 메시지 필드 추가
      * "message": "review has been requested.."
      */
-    @FormUrlEncoded
+
+
+    data class EssayData(
+        val title: String,
+        val content: String,
+        val linkedOut: Boolean = false,
+        val published: Boolean = false,
+        val categoryId: Int = 0,
+        val thumbnail: String = "",
+        val linkedOutGauge: Int = 1,
+        val id : String = ""
+    )
+
     @POST("api/essay")
     suspend fun writeEssay(
         //todo 쿼리로 보내지말고 바디로보내기~
         @Header("Authorization") accessToken: String,
-        @Field("title") title: String,
-        @Field("content") content: String,
-        @Field("linkedOutGauge") linkedOutGauge: Int = 0,
-        @Field("categoryId") categoryId: Int = 0,
-        @Field("thumbnail") thumbnail: String = "",
-        @Field("published") published: Boolean = false,
-        @Field("linkedOut") linkedOut: Boolean = false
+        @Body essayData: EssayData
     ): Response<WritingUserInfo>
 
 

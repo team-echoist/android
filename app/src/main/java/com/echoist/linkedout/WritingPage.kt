@@ -1,6 +1,5 @@
 package com.echoist.linkedout
 
-import android.content.res.Configuration
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -45,13 +44,11 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layout
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.getSelectedText
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -112,13 +109,23 @@ fun MarkDownBtn(viewModel: WritingViewModel) {
 //@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 //@PreviewScreenSizes
 @Composable
-fun WritingPage(navController: NavController, viewModel: WritingViewModel) {
+fun WritingPage(
+    navController: NavController,
+    viewModel: WritingViewModel,
+    accessToken: String
+) {
+
+    viewModel.accessToken = accessToken
+
     val isKeyBoardOpened by keyboardAsState()
 
     val scrollState = rememberScrollState()
     val focusState = viewModel.focusState
 
     val background = if (isSystemInDarkTheme()) Color.Black else Color.White
+
+
+    Log.d("tokentoken",accessToken)
 
     LinkedOutTheme {
         Box {
@@ -177,14 +184,12 @@ fun WritingPage(navController: NavController, viewModel: WritingViewModel) {
             }
         }
     }
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun PreviewWritingPage() {
-    WritingPage(navController = NavController(LocalContext.current), WritingViewModel())
-}
 
 @Composable
-fun WritingTopAppBar(navController: NavController, viewModel: WritingViewModel) {
+fun WritingTopAppBar(
+    navController: NavController,
+    viewModel: WritingViewModel
+) {
     val isKeyboardOpen by keyboardAsState() //keyBoard.Opened
     val textState = viewModel.title
     val focusRequester = remember { FocusRequester() }
@@ -288,7 +293,7 @@ fun WritingTopAppBar(navController: NavController, viewModel: WritingViewModel) 
                 modifier = Modifier
                     .padding(end = 20.dp, top = 15.dp)
                     .clickable {
-                        navController.navigate("WritingCompletePage")
+                        navController.navigate("WritingCompletePage/${viewModel.accessToken}")
                         /* todo 서버로 제목과 내용 보내는 기능 필요합니다.
                         *   사진 넣는 방식도 구현 필요합니다.  */
                     }

@@ -64,11 +64,17 @@ import java.time.format.DateTimeFormatter
 @Preview
 @Composable
 fun PreviewWritingPage2() {
-    WritingCompletePage(navController = rememberNavController(), WritingViewModel())
+    WritingCompletePage(navController = rememberNavController(), WritingViewModel(),"token"
+    )
 }
 
 @Composable
-fun WritingCompletePage(navController: NavController, viewModel: WritingViewModel) {
+fun WritingCompletePage(
+    navController: NavController,
+    viewModel: WritingViewModel,
+    accessToken: String
+) {
+    viewModel.accessToken = accessToken
 
     val scrollState = rememberScrollState()
     val isBottomSheetOpen = remember {

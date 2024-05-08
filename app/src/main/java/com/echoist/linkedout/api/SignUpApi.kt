@@ -7,7 +7,7 @@ import retrofit2.http.POST
 import retrofit2.http.Query
 
 interface SignUpApi {
-    @GET("auth/check-email")
+    @GET("auth/check")
     suspend fun emailDuplicateConfirm(
         @Query("email") userEmail: String
     ): Response<Unit>
@@ -24,4 +24,9 @@ interface SignUpApi {
         val gender : String = "",
         val oauthInfo : String = ""
     )
+
+    @POST("auth/login")
+    suspend fun login(
+        @Body userAccount : UserAccount
+    ): Response<Unit>
 }

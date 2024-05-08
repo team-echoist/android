@@ -35,16 +35,15 @@ import com.echoist.linkedout.ui.theme.LinkedOutTheme
 @Preview
 @Composable
 fun PrevHomePage() {
-    HomePage(navController = rememberNavController())
 }
 @Composable
-fun HomePage(navController: NavController) {
+fun HomePage(navController: NavController, accessToken : String) {
 
     LinkedOutTheme {
         Scaffold(
             topBar = { CustomTopAppBar(navController) },
             bottomBar = { MyBottomNavigation(navController) },
-            floatingActionButton = { WriteFTB(navController) },
+            floatingActionButton = { WriteFTB(navController,accessToken) },
             content = {
                 Column(modifier = Modifier.padding(it)) {
 
@@ -56,12 +55,12 @@ fun HomePage(navController: NavController) {
 
 
 @Composable
-fun WriteFTB(navController: NavController) {
+fun WriteFTB(navController: NavController, accessToken: String) {
 
 
     FloatingActionButton(
         modifier = Modifier.padding(end = 25.dp, bottom = 25.dp),
-        onClick = { navController.navigate("WritingPage")},
+        onClick = { navController.navigate("WritingPage/$accessToken")},
         shape = RoundedCornerShape(100.dp),
         containerColor =  if (isSystemInDarkTheme()) Color.White else Color.Gray
     ) {

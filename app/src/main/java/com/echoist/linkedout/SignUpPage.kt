@@ -175,7 +175,7 @@ fun SignUpPage(navController: NavController,
                                 .fillMaxWidth()
                                 .height(100.dp)
                                 .padding(start = 20.dp, end = 20.dp, top = 43.dp),
-                            onClick = { /*TODO 회원가입 기능구현 및 화면이동*/
+                            onClick = {
                             viewModel.getUserEmailCheck(navController)
                             }
                         ) {
