@@ -71,25 +71,25 @@ class SignUpViewModel : ViewModel() {
     //이메일 중복검사 2차
     private suspend fun emailVerify(navController: NavController) { //코루틴스코프에서 순차적으로 수행된다. 뷰모델스코프는 위에걸로
 
-            try {
-                val userAccount = SignUpApi.UserAccount(userEmail, userPw)
-                val response = authApi.emailVerify(userAccount)
+        try {
+            val userAccount = SignUpApi.UserAccount(userEmail, userPw)
+            val response = authApi.emailVerify(userAccount)
 
-                if (response.code() == 201) {
-                    Log.e("authApiSuccess2", "${response.raw()}")
-                    Log.e("authApiSuccess2", "${response.headers()}")
-                    Log.e("authApiSuccess2", "${response.code()}")
+            if (response.code() == 201) {
+                Log.e("authApiSuccess2", "${response.raw()}")
+                Log.e("authApiSuccess2", "${response.headers()}")
+                Log.e("authApiSuccess2", "${response.code()}")
 
-                    navController.navigate("LoginPage")
-                } else {
-                    Log.e("authApiFailed2", "Failed : ${response.headers()}")
-                    Log.e("authApiSuccess2", "${response.code()}")
-                }
-
-            } catch (e: Exception) {
-                // api 요청 실패
-                Log.e("writeEssayApiFailed2", "Failed: ${e.message}")
+                navController.navigate("LoginPage")
+            } else {
+                Log.e("authApiFailed2", "Failed : ${response.headers()}")
+                Log.e("authApiSuccess2", "${response.code()}")
             }
+
+        } catch (e: Exception) {
+            // api 요청 실패
+            Log.e("writeEssayApiFailed2", "Failed: ${e.message}")
+        }
 
     }
 

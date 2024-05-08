@@ -20,11 +20,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WritingViewModel @Inject constructor(
-)
-    : ViewModel() {
-        private val socialLoginViewModel = SocialLoginViewModel()
+) : ViewModel() {
+    private val socialLoginViewModel = SocialLoginViewModel()
 
     var accessToken by mutableStateOf("")
+
     init { // 아마 이 뷰모델이 관계없는 뷰모델이라 안되는거. 방법은 내일 생각해보자
         accessToken = socialLoginViewModel.accessToken
     }
@@ -40,7 +40,7 @@ class WritingViewModel @Inject constructor(
     var isHashTagClicked by mutableStateOf(false)
     var hashTagText by mutableStateOf("")
     var hashTagList by mutableStateOf(mutableStateListOf<String>())
-    var isTextFeatOpened  = mutableStateOf(false)
+    var isTextFeatOpened = mutableStateOf(false)
 
 
     private val moshi = Moshi.Builder()
@@ -72,10 +72,11 @@ class WritingViewModel @Inject constructor(
                     published = published,
                     linkedOut = linkedOut
                 )
-                val response = api.writeEssay(accessToken,
+                val response = api.writeEssay(
+                    accessToken,
                     essayData = essayData
                 )
-                if (response.isSuccessful){
+                if (response.isSuccessful) {
                     accessToken = (response.headers()["authorization"].toString())
                     Log.e("writeEssayApiSuccess 성공!", "${response.headers()}")
                     Log.e("writeEssayApiSuccess", response.body()?.data?.title!!)
@@ -87,9 +88,7 @@ class WritingViewModel @Inject constructor(
                         }
 
                     }
-                }
-
-                else {
+                } else {
                     Log.e("writeEssayApiFailed token", "Failed to write essay: $accessToken")
 
                     Log.e("writeEssayApiFailed1", "Failed to write essay: ${response.code()}")
@@ -137,9 +136,9 @@ class WritingViewModel @Inject constructor(
         viewModelScope.launch {
             try {
 
-                val response = api.deleteEssay(accessToken,)/*todo 토큰값. 매번변경*/
+                val response = api.deleteEssay(accessToken)/*todo 토큰값. 매번변경*/
 
-                if (response.isSuccessful){
+                if (response.isSuccessful) {
                     Log.e("writeEssayApiSuccess", "${response.headers()}")
                     Log.e("writeEssayApiSuccess", "${response.code()}")
                     navController.navigate("HOME") {
