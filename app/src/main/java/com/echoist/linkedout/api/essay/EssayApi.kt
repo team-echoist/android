@@ -1,11 +1,12 @@
 package com.echoist.linkedout.api.essay
 
 import com.echoist.linkedout.data.WritingUserInfo
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
 import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.PUT
@@ -23,26 +24,25 @@ interface EssayApi{
      */
 
 
+    @JsonClass(generateAdapter = true)
     data class EssayData(
-        val title: String,
-        val content: String,
-        val linkedOut: Boolean = false,
-        val published: Boolean = false,
-        val categoryId: Int = 0,
-        val thumbnail: String = "",
-        val linkedOutGauge: Int = 1,
-        val id : String = ""
+        @Json(name = "title")val title: String,
+        @Json(name = "content")val content: String,
+        @Json(name = "linkedOut")val linkedOut: Boolean = false,
+        @Json(name = "published")val published: Boolean = false,
+        @Json(name = "categoryId")val categoryId: Int? = null,
+        @Json(name = "thumbnail")val thumbnail: String? = null,
+        @Json(name = "linkedOutGauge")val linkedOutGauge: Int = 1
+
     )
 
     @POST("api/essay")
     suspend fun writeEssay(
-        //todo 쿼리로 보내지말고 바디로보내기~
         @Header("Authorization") accessToken: String,
         @Body essayData: EssayData
     ): Response<WritingUserInfo>
 
 
-    @FormUrlEncoded
     @PUT("api/essay/:essayId")
     suspend fun modifyEssay(
         @Header("Authorization") accessToken: String,

@@ -76,6 +76,7 @@ class SignUpViewModel : ViewModel() {
                 val response = authApi.emailVerify(userAccount)
 
                 if (response.code() == 201) {
+                    Log.e("authApiSuccess2", "${response.raw()}")
                     Log.e("authApiSuccess2", "${response.headers()}")
                     Log.e("authApiSuccess2", "${response.code()}")
 

@@ -272,9 +272,13 @@ class SocialLoginViewModel @Inject constructor() : ViewModel() {
                 val userAccount = SignUpApi.UserAccount(userId, userPw)
                 val response = authApi.login(userAccount)
 
+
                 if (response.isSuccessful) {
                     Log.d("tokentoken",response.headers()["authorization"].toString())
                     accessToken = (response.headers()["authorization"].toString())
+                    Log.e("authApiSuccess2", response.body()?.success.toString())
+                    Log.e("authApiSuccess2", response.message())
+                    Log.e("authApiSuccess2", "${response.raw()}")
                     Log.e("authApiSuccess3", "로그인 성공! ${response.headers()["authorization"]}") // 이값을 항상 헤더에 넣을것.
                     Log.e("authApiSuccess3", "${response.code()}")
                     Log.e("authApiSuccess3 헤더", "${response.headers()}")

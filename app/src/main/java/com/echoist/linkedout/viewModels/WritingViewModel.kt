@@ -66,8 +66,8 @@ class WritingViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val essayData = EssayApi.EssayData(
-                    title.value.toString(),
-                    content.value.toString(),
+                    title.value.text,
+                    content.value.text,
                     linkedOutGauge = ringTouchedTime.value,
                     published = published,
                     linkedOut = linkedOut
@@ -77,9 +77,11 @@ class WritingViewModel @Inject constructor(
                 )
                 if (response.isSuccessful){
                     accessToken = (response.headers()["authorization"].toString())
-                    Log.e("writeEssayApiSuccess", "${response.headers()}")
+                    Log.e("writeEssayApiSuccess 성공!", "${response.headers()}")
+                    Log.e("writeEssayApiSuccess", response.body()?.data?.title!!)
+
                     Log.e("writeEssayApiSuccess", "${response.code()}")
-                    navController.navigate("HOME") {
+                    navController.navigate("HOME/$accessToken") {
                         popUpTo("HOME") {
                             inclusive = false
                         }
@@ -88,19 +90,17 @@ class WritingViewModel @Inject constructor(
                 }
 
                 else {
-                    Log.e("writeEssayApiFailed token", "Failed to write essay: ${accessToken}")
-                    Log.e("writeEssayApiFailed token", "Failed to write essay: ${title.value}")
-                    Log.e("writeEssayApiFailed token", "Failed to write essay: ${content.value}")
+                    Log.e("writeEssayApiFailed token", "Failed to write essay: $accessToken")
 
-                    //todo header 파싱 ㄱㄱ.
                     Log.e("writeEssayApiFailed1", "Failed to write essay: ${response.code()}")
-                    Log.e("writeEssayApiFailed1", "Failed to write essay: ${response.errorBody()}")
-                    Log.e("writeEssayApiFailed1", "Failed to write essay: ${response.message()}")
 
                 }
 
             } catch (e: Exception) {
                 // api 요청 실패
+                e.printStackTrace()
+
+                Log.e("writeEssayApiFailed 아예", "Failed to write essay: ${e.printStackTrace()}")
                 Log.e("writeEssayApiFailed 아예", "Failed to write essay: ${e.message}")
             }
         }

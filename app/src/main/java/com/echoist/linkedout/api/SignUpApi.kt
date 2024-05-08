@@ -28,5 +28,11 @@ interface SignUpApi {
     @POST("auth/login")
     suspend fun login(
         @Body userAccount : UserAccount
-    ): Response<Unit>
+    ): Response<LoginResponse>
+
+    data class LoginResponse(
+        val success: Boolean,
+        val timestamp: String,
+        val path: String
+    )
 }
