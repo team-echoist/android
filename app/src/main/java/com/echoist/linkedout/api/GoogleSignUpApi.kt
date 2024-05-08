@@ -12,7 +12,6 @@ interface GoogleSignUpApi {
 
     data class UserGoogleAccount(
         val token : String,
-        val id : String,
-        val email : String
+        val id : String
     )
 }

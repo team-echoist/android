@@ -132,8 +132,7 @@ class SocialLoginViewModel @Inject constructor() : ViewModel() {
             try {
                 val userAccount = GoogleSignUpApi.UserGoogleAccount(
                     googleUserToken,
-                    googleUserId,
-                    googleUserEmail
+                    googleUserId
                 )
                 val response = googleAuthApi.googleLogin(userAccount)
 
@@ -170,7 +169,7 @@ class SocialLoginViewModel @Inject constructor() : ViewModel() {
                 Log.e(TAG, "카카오계정으로 로그인 실패", error)
             } else if (token != null) {
                 kakaoLoginstate.value = true
-                navController.navigate("HOME")
+                navController.navigate("HOME/$accessToken")
                 Log.i(TAG, "카카오계정으로 로그인 성공 ${token.accessToken} ")
             }
         }
@@ -251,7 +250,7 @@ class SocialLoginViewModel @Inject constructor() : ViewModel() {
                 Log.d("Naver_getState", NaverIdLoginSDK.getState().toString())
 
                 naverLoginstate.value = true
-                navController.navigate("HOME")
+                navController.navigate("HOME/$accessToken")
                 // 로그인 성공 시 유저 정보 획득
                 getNaverUserInfo()
             }
@@ -343,7 +342,7 @@ class SocialLoginViewModel @Inject constructor() : ViewModel() {
                     Log.e("authApiSuccess3", "${response.code()}")
                     Log.e("authApiSuccess3 헤더", "${response.headers()}")
 
-                    val encodedUrl = URLEncoder.encode(
+                    val encodedUrl = URLEncoder.encode( // http 인코드
                         "android-app://androidx.navigation/HOME/$accessToken",
                         StandardCharsets.UTF_8.toString()
                     )
@@ -361,8 +360,6 @@ class SocialLoginViewModel @Inject constructor() : ViewModel() {
             }
         }
     }
-
-
 }
 
 

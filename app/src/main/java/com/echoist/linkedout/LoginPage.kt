@@ -84,7 +84,6 @@ class LoginPage : ComponentActivity() {
         super.onStart()
         //카카오 sdk 초기화
         KakaoSdk.init(this, BuildConfig.kakao_native_app_key)
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -363,11 +362,7 @@ fun LoginPage(
                     }
 
                     SocialLoginBar(navController, viewModel)
-
-
                 }
-
-
             }
         )
     }
