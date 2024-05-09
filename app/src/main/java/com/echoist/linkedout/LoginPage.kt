@@ -1,7 +1,9 @@
 package com.echoist.linkedout
 
+import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
+import android.view.ViewTreeObserver
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -37,6 +39,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,6 +51,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -57,17 +62,23 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.LoginSuccessDialog
+import com.echoist.linkedout.viewModels.SignUpViewModel
 import com.echoist.linkedout.viewModels.SocialLoginViewModel
 import com.echoist.linkedout.viewModels.WritingViewModel
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.kakao.sdk.common.KakaoSdk
 import com.kakao.sdk.common.util.Utility
 import com.navercorp.nid.NaverIdLoginSDK
 import dagger.hilt.android.AndroidEntryPoint
+
 
 @AndroidEntryPoint
 class LoginPage : ComponentActivity() {
@@ -75,32 +86,45 @@ class LoginPage : ComponentActivity() {
         super.onStart()
         //카카오 sdk 초기화
         KakaoSdk.init(this, BuildConfig.kakao_native_app_key)
-
+        Firebase.auth.signOut()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
-
         super.onCreate(savedInstanceState)
 
         val viewModel : SocialLoginViewModel by viewModels()
         val writingViewModel : WritingViewModel by viewModels()
-
+        val signUpViewModel : SignUpViewModel by viewModels()
 
         setContent {
             val keyHash = Utility.getKeyHash(this)
             Log.d("Hash", keyHash)
             val navController = rememberNavController()
-
             NavHost(navController = navController, startDestination = "OnBoarding") {
                 composable("OnBoarding") {
                     OnBoardingPage(navController)
                 }
-                composable("LoginPage") {
-                   LoginPage(navController = navController, viewModel = viewModel)
+                composable("LoginPage"){navBackStackEntry ->
+                    LoginPage(
+                        navController = navController,
+                        viewModel = viewModel,
+                       "emptyToken"
+                    )
+
                 }
-                composable("HOME") {
-                    HomePage(navController)
+                composable("SIGNUP") {
+                    SignUpPage(navController, signUpViewModel)
+                }
+                composable(
+                    "HOME/{accessToken}",
+                    arguments = listOf(navArgument("accessToken") {
+                        type = NavType.StringType
+                    })
+                ) {navBackStackEntry->
+                    HomePage(
+                        navController,
+                        navBackStackEntry.arguments?.getString("accessToken").toString()
+                    )
                 }
                 composable("MYLOG") {
                     //mylog page
@@ -111,11 +135,31 @@ class LoginPage : ComponentActivity() {
                 composable("SETTINGS") {
                     //settings page
                 }
-                composable("WritingPage") {
-                    WritingPage(navController,writingViewModel)
+                composable(
+                    "WritingPage/{accessToken}",
+                    arguments = listOf(
+                        navArgument("accessToken") {
+                        type = NavType.StringType
+                    })
+                ) {navBackStackEntry->
+                    WritingPage(
+                        navController,
+                        writingViewModel,
+                        navBackStackEntry.arguments?.getString("accessToken").toString()
+                    )
                 }
-                composable("WritingCompletePage") {
-                    WritingCompletePage(navController,writingViewModel)
+                composable(
+                    "WritingCompletePage/{accessToken}",
+                    arguments = listOf(
+                        navArgument("accessToken") {
+                            type = NavType.StringType
+                        })
+                ) {navBackStackEntry->
+                    WritingCompletePage(
+                        navController,
+                        writingViewModel,
+                        navBackStackEntry.arguments?.getString("accessToken").toString()
+                    )
                 }
             }
 
@@ -227,12 +271,16 @@ fun AppleLoginBtn(navController: NavController, viewModel: SocialLoginViewModel)
 
 
 @Composable
-fun LoginPage(navController: NavController, viewModel: SocialLoginViewModel) {
+fun LoginPage(
+    navController: NavController,
+    viewModel: SocialLoginViewModel,
+    accessToken: String
+) {
 
-    var rememberId by remember { mutableStateOf("") }
-    var rememberPw by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
     val scrollState = rememberScrollState()
+
+    viewModel.accessToken = accessToken
 
     LinkedOutTheme {
         Scaffold(
@@ -275,7 +323,7 @@ fun LoginPage(navController: NavController, viewModel: SocialLoginViewModel) {
                     IdTextField(viewModel)
                     PwTextField(viewModel)
 
-                    LoginBtn(navController = navController, viewModel)
+                    LoginBtn(navController = navController,viewModel)
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -284,7 +332,7 @@ fun LoginPage(navController: NavController, viewModel: SocialLoginViewModel) {
                     ) {
                         UnderlineText(text = "아이디 찾기") { } //아이디찾기 페이지 이동
                         UnderlineText(text = "비밀번호 재설정") { } //비밀번호 재설정 페이지 이동
-                        UnderlineText(text = "회원가입") { } // 회원가입 페이지 이동
+                        UnderlineText(text = "회원가입") { navController.navigate("SIGNUP") } // 회원가입 페이지 이동
                     }
                     Spacer(modifier = Modifier.height(150.dp))
 
@@ -316,11 +364,7 @@ fun LoginPage(navController: NavController, viewModel: SocialLoginViewModel) {
                     }
 
                     SocialLoginBar(navController, viewModel)
-
-
                 }
-
-
             }
         )
     }
@@ -351,7 +395,7 @@ fun IdTextField(viewModel: SocialLoginViewModel) {
         value = text,
         onValueChange = { new ->
             text = new
-            viewModel.userId.value = text
+            viewModel.userId = text
         },
         label = {
             Text(
@@ -386,7 +430,7 @@ fun PwTextField(viewModel: SocialLoginViewModel) {
         value = text,
         onValueChange = { new ->
             text = new
-            viewModel.userPw.value = text
+            viewModel.userPw = text
         },
         label = { Text("비밀번호", color = Color(0xFF919191), fontSize = 14.sp) }, // 힌트를 라벨로 설정합니다.
         colors = TextFieldDefaults.colors(
@@ -419,16 +463,16 @@ fun PwTextField(viewModel: SocialLoginViewModel) {
 }
 
 @Composable
-fun LoginBtn(navController: NavController, viewModel: SocialLoginViewModel) {
+fun LoginBtn(
+    navController: NavController,
+    viewModel: SocialLoginViewModel
+) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     Button(
         shape = RoundedCornerShape(10.dp),
         onClick = {
-            Log.d(
-                "로그인 id pw",
-                "${viewModel.userId.value}, ${viewModel.userPw.value} " /*todo 유저 로그인 진입 로직 구현 필요. */
-            )
+            viewModel.login(navController)
         },
         colors = ButtonDefaults.buttonColors(
             containerColor = if (isSystemInDarkTheme()) {
@@ -462,6 +506,36 @@ fun UnderlineText(
             .clickable { onClick() }
 
     )
+}
+
+enum class Keyboard {
+    Opened, Closed
+}
+
+@Composable
+fun keyboardAsState(): State<Keyboard> {
+    val keyboardState = remember { mutableStateOf(Keyboard.Closed) }
+    val view = LocalView.current
+    DisposableEffect(view) {
+        val onGlobalListener = ViewTreeObserver.OnGlobalLayoutListener {
+            val rect = Rect()
+            view.getWindowVisibleDisplayFrame(rect)
+            val screenHeight = view.rootView.height
+            val keypadHeight = screenHeight - rect.bottom
+            keyboardState.value = if (keypadHeight > screenHeight * 0.15) {
+                Keyboard.Opened
+            } else {
+                Keyboard.Closed
+            }
+        }
+        view.viewTreeObserver.addOnGlobalLayoutListener(onGlobalListener)
+
+        onDispose {
+            view.viewTreeObserver.removeOnGlobalLayoutListener(onGlobalListener)
+        }
+    }
+
+    return keyboardState
 }
 
 

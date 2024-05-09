@@ -38,6 +38,7 @@ fun PrevOnBoardingPage(){
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun OnBoardingPage(navController: NavController) {
+    val accessToken = "emptyToken"
 
     Box(
         modifier = Modifier

@@ -1,10 +1,12 @@
 package com.echoist.linkedout.api.essay
 
 import com.echoist.linkedout.data.WritingUserInfo
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
 import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.PUT
@@ -20,23 +22,28 @@ interface EssayApi{
      * 응답에는 아래 메시지 필드 추가
      * "message": "review has been requested.."
      */
-    @FormUrlEncoded
-    @POST("/api/essay")
+
+
+    @JsonClass(generateAdapter = true)
+    data class EssayData(
+        @Json(name = "title")val title: String,
+        @Json(name = "content")val content: String,
+        @Json(name = "linkedOut")val linkedOut: Boolean = false,
+        @Json(name = "published")val published: Boolean = false,
+        @Json(name = "categoryId")val categoryId: Int? = null,
+        @Json(name = "thumbnail")val thumbnail: String? = null,
+        @Json(name = "linkedOutGauge")val linkedOutGauge: Int = 1
+
+    )
+
+    @POST("api/essay")
     suspend fun writeEssay(
-        //todo 쿼리로 보내지말고 바디로보내기~
         @Header("Authorization") accessToken: String,
-        @Field("title") title: String,
-        @Field("content") content: String,
-        @Field("linkedOutGauge") linkedOutGauge: Int = 0,
-        @Field("categoryId") categoryId: Int = 0,
-        @Field("thumbnail") thumbnail: String = "",
-        @Field("published") published: Boolean = false,
-        @Field("linkedOut") linkedOut: Boolean = false
+        @Body essayData: EssayData
     ): Response<WritingUserInfo>
 
 
-    @FormUrlEncoded
-    @PUT("/api/essay/:essayId")
+    @PUT("api/essay/:essayId")
     suspend fun modifyEssay(
         @Header("Authorization") accessToken: String,
         @Field("title") title: String = "",
@@ -48,7 +55,7 @@ interface EssayApi{
         @Field("linkedOut") linkedOut: Boolean = false
     ): Response<WritingUserInfo>
 
-    @DELETE("/api/essay/:essayId")
+    @DELETE("api/essay/:essayId")
     suspend fun deleteEssay(
         @Header("Authorization") accessToken: String
     ): Response<WritingUserInfo>

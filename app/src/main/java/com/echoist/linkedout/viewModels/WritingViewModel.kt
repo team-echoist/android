@@ -1,11 +1,15 @@
 package com.echoist.linkedout.viewModels
 
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.echoist.linkedout.Token
 import com.echoist.linkedout.api.essay.EssayApi
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -16,11 +20,15 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Inject
 
 @HiltViewModel
-class WritingViewModel @Inject constructor()
-    : ViewModel() {
+class WritingViewModel @Inject constructor(
+) : ViewModel() {
+    private val socialLoginViewModel = SocialLoginViewModel()
 
-    private var accessToken = mutableStateOf("") // 토큰값을 계속 갱신하며, 이 값을 헤더로 요청보낸다.
+    var accessToken by mutableStateOf("")
 
+    init { // 아마 이 뷰모델이 관계없는 뷰모델이라 안되는거. 방법은 내일 생각해보자
+        accessToken = socialLoginViewModel.accessToken
+    }
     var focusState = mutableStateOf(false)
     var title = mutableStateOf(TextFieldValue(""))
     var content = mutableStateOf(TextFieldValue(""))
@@ -28,6 +36,15 @@ class WritingViewModel @Inject constructor()
     var ringTouchedTime = mutableStateOf(5)
     var isCanCelClicked = mutableStateOf(false)
     var isDeleteClicked = mutableStateOf(false)
+
+    var latitute by mutableStateOf("")
+    var longitude by mutableStateOf("")
+
+    var isHashTagClicked by mutableStateOf(false)
+    var hashTagText by mutableStateOf("")
+    var hashTagList by mutableStateOf(mutableStateListOf<String>())
+    var isTextFeatOpened = mutableStateOf(false)
+
 
 
     private val moshi = Moshi.Builder()
@@ -37,7 +54,7 @@ class WritingViewModel @Inject constructor()
 
     private val api = Retrofit
         .Builder()
-        .baseUrl("https://www.linkedoutapp.com")
+        .baseUrl("https://www.linkedoutapp.com/")
         .addConverterFactory(MoshiConverterFactory.create(moshi))
         .build()
         .create(EssayApi::class.java)
@@ -46,42 +63,49 @@ class WritingViewModel @Inject constructor()
     //에세이 작성 후 서버에 post
     //api 통신 성공했을시에만 화면 이동
     fun writeEssay(
-        navController: NavController,
-        published: Boolean = false,
-        linkedOut: Boolean = false
+        navController: NavController, //저장할래요는 기본 둘다 false
+        published: Boolean = false, //나눠볼래요
+        linkedOut: Boolean = false //놓아줄래요
     ) {
         viewModelScope.launch {
             try {
-                val response = api.writeEssay(/*todo 토큰값. 매번변경*/ "Bearer ${accessToken.value}}",
+                val essayData = EssayApi.EssayData(
                     title.value.text,
                     content.value.text,
                     linkedOutGauge = ringTouchedTime.value,
                     published = published,
                     linkedOut = linkedOut
                 )
-                if (response.isSuccessful){
-                    Log.e("writeEssayApiSuccess", "${response.headers()}")
+                val response = api.writeEssay(
+                    accessToken,
+                    essayData = essayData
+                )
+                if (response.isSuccessful) {
+                    accessToken = (response.headers()["authorization"].toString())
+                    Token.accessToken = accessToken
+                    Log.e("writeEssayApiSuccess 성공!", "${response.headers()}")
+                    Log.e("writeEssayApiSuccess", response.body()?.data?.title!!)
+
                     Log.e("writeEssayApiSuccess", "${response.code()}")
-                    navController.navigate("HOME") {
+                    navController.navigate("HOME/$accessToken") {
                         popUpTo("HOME") {
                             inclusive = false
                         }
+
                     }
-                }
+                } else {
+                    Log.e("writeEssayApiFailed token", "Failed to write essay: $accessToken")
 
-                else {
-                    Log.e("writeEssayApiFailed", "Failed to write essay: ${response.headers()}")
-                    //todo header 파싱 ㄱㄱ.
-                    Log.e("writeEssayApiFailed", "Failed to write essay: ${response.code()}")
-                    Log.e("writeEssayApiFailed", "Failed to write essay: ${response.errorBody()}")
-                    Log.e("writeEssayApiFailed", "Failed to write essay: ${response.message()}")
+                    Log.e("writeEssayApiFailed1", "Failed to write essay: ${response.code()}")
 
                 }
-
 
             } catch (e: Exception) {
                 // api 요청 실패
-                Log.e("writeEssayApiFailed", "Failed to write essay: ${e.message}")
+                e.printStackTrace()
+
+                Log.e("writeEssayApiFailed 아예", "Failed to write essay: ${e.printStackTrace()}")
+                Log.e("writeEssayApiFailed 아예", "Failed to write essay: ${e.message}")
             }
         }
     }
@@ -92,7 +116,7 @@ class WritingViewModel @Inject constructor()
         viewModelScope.launch {
             try {
 
-                val response = api.modifyEssay(/*todo 토큰값. 매번변경*/ accessToken.value,
+                val response = api.modifyEssay(/*todo 토큰값. 매번변경*/ accessToken,
                     title.value.text,
                     content.value.text
                 )
@@ -117,9 +141,9 @@ class WritingViewModel @Inject constructor()
         viewModelScope.launch {
             try {
 
-                val response = api.deleteEssay(accessToken.value,)/*todo 토큰값. 매번변경*/
+                val response = api.deleteEssay(accessToken)/*todo 토큰값. 매번변경*/
 
-                if (response.isSuccessful){
+                if (response.isSuccessful) {
                     Log.e("writeEssayApiSuccess", "${response.headers()}")
                     Log.e("writeEssayApiSuccess", "${response.code()}")
                     navController.navigate("HOME") {
@@ -137,6 +161,8 @@ class WritingViewModel @Inject constructor()
                 Log.e("writeEssayApiFailed", "Failed to write essay: ${e.message}")
             }
         }
-
     }
+
+
+
 }

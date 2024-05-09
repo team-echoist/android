@@ -102,6 +102,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.firebase.auth.ktx)
     implementation(libs.androidx.compose.material)
+    implementation(libs.androidx.media3.extractor)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -111,10 +112,12 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    implementation("androidx.compose.material:material-icons-extended:1.6.7")
     implementation ("com.squareup.retrofit2:retrofit:2.11.0")
     implementation ("com.squareup.retrofit2:converter-moshi:2.11.0")
     implementation ("com.squareup.moshi:moshi-kotlin:1.15.1")
     implementation ("com.google.dagger:hilt-android:2.44")
+    implementation ("androidx.hilt:hilt-navigation-compose:1.0.0")
 
     implementation ("com.github.bumptech.glide:compose:1.0.0-beta01")
     implementation ("com.github.skydoves:landscapist-glide:1.4.7")
@@ -148,6 +151,14 @@ dependencies {
 
     implementation ("com.google.accompanist:accompanist-pager:0.20.1") //view pager
     implementation ("com.google.accompanist:accompanist-pager-indicators:0.20.1")
+
+    implementation("tech.thdev:extensions-compose-keyboard-state:1.4.0-alpha03")
+
+    implementation("io.github.mr0xf00:easycrop:0.1.1")
+    implementation ("io.github.rroohit:ImageCropView:2.2.0")
+    implementation(( "com.vanniktech:android-image-cropper:4.5.0" ))
+
+
 }
 
 

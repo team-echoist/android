@@ -1,20 +1,38 @@
 package com.echoist.linkedout.data
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 data class WritingUserInfo(
-
-    @SerializedName("id") val id: Int,
-    @SerializedName("createdAt") val createdAt: String,
-    @SerializedName("updatedAt") val updatedAt: String,
-    @SerializedName("published") val published: Boolean,
-    @SerializedName("linkedOut") val linkedOut: Boolean,
-    @SerializedName("categoryId") val categoryId: Int,
-    @SerializedName("linkedOutGauge") val linkedOutGauge: Int,
-    @SerializedName("thumbnail") val thumbnail: String,
-    @SerializedName("title") val title: String,
-    @SerializedName("content") val content: String,
-    @SerializedName("message") val message: String = ""
-
+    @Json(name = "data")
+    val data: Data,
+    @Json(name = "path")
+    val path: String,
+    @Json(name = "success")
+    val success: Boolean,
+    @Json(name = "timestamp")
+    val timestamp: String
+)
+@JsonClass(generateAdapter = true)
+data class Data(
+    @Json(name = "content")
+    val content: String?,
+    @Json(name = "createdDate")
+    val createdDate: String?,
+    @Json(name = "id")
+    val id: Int?, // todo essay id값 받아서 내가 쓴 글들은 room에 저장해놔야할듯?
+    @Json(name = "linkedOut")
+    val linkedOut: Boolean?,
+    @Json(name = "linkedOutGauge")
+    val linkedOutGauge: Int?,
+    @Json(name = "published")
+    val published: Boolean,
+    @Json(name = "thumbnail")
+    val thumbnail: String?,
+    @Json(name = "title")
+    val title: String?,
+    @Json(name = "updatedDate")
+    val updatedDate: String?
 )
 
