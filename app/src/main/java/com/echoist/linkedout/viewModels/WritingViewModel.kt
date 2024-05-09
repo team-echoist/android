@@ -9,6 +9,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.echoist.linkedout.Token
 import com.echoist.linkedout.api.essay.EssayApi
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -28,7 +29,6 @@ class WritingViewModel @Inject constructor(
     init { // 아마 이 뷰모델이 관계없는 뷰모델이라 안되는거. 방법은 내일 생각해보자
         accessToken = socialLoginViewModel.accessToken
     }
-
     var focusState = mutableStateOf(false)
     var title = mutableStateOf(TextFieldValue(""))
     var content = mutableStateOf(TextFieldValue(""))
@@ -37,10 +37,14 @@ class WritingViewModel @Inject constructor(
     var isCanCelClicked = mutableStateOf(false)
     var isDeleteClicked = mutableStateOf(false)
 
+    var latitute by mutableStateOf("")
+    var longitude by mutableStateOf("")
+
     var isHashTagClicked by mutableStateOf(false)
     var hashTagText by mutableStateOf("")
     var hashTagList by mutableStateOf(mutableStateListOf<String>())
     var isTextFeatOpened = mutableStateOf(false)
+
 
 
     private val moshi = Moshi.Builder()
@@ -78,6 +82,7 @@ class WritingViewModel @Inject constructor(
                 )
                 if (response.isSuccessful) {
                     accessToken = (response.headers()["authorization"].toString())
+                    Token.accessToken = accessToken
                     Log.e("writeEssayApiSuccess 성공!", "${response.headers()}")
                     Log.e("writeEssayApiSuccess", response.body()?.data?.title!!)
 
@@ -156,6 +161,8 @@ class WritingViewModel @Inject constructor(
                 Log.e("writeEssayApiFailed", "Failed to write essay: ${e.message}")
             }
         }
-
     }
+
+
+
 }

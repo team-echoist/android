@@ -65,7 +65,7 @@ fun WriteFTB(navController: NavController, accessToken: String) {
         containerColor =  if (isSystemInDarkTheme()) Color.White else Color.Gray
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.edit_ftb),
+            painter = painterResource(id = R.drawable.ftb_edit),
             contentDescription = "edit",
             modifier = Modifier.size(20.dp),
             tint = if (isSystemInDarkTheme()) Color.Black else Color.White

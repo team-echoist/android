@@ -100,7 +100,6 @@ class LoginPage : ComponentActivity() {
             val keyHash = Utility.getKeyHash(this)
             Log.d("Hash", keyHash)
             val navController = rememberNavController()
-
             NavHost(navController = navController, startDestination = "OnBoarding") {
                 composable("OnBoarding") {
                     OnBoardingPage(navController)

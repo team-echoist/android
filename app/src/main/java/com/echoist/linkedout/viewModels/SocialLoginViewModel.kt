@@ -20,6 +20,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.echoist.linkedout.BuildConfig
+import com.echoist.linkedout.Token
 import com.echoist.linkedout.api.GoogleSignUpApi
 import com.echoist.linkedout.api.NaverApiService
 import com.echoist.linkedout.api.SignUpApi
@@ -139,6 +140,7 @@ class SocialLoginViewModel @Inject constructor() : ViewModel() {
                 if (response.isSuccessful) {
                     Log.d("tokentoken", response.headers()["authorization"].toString())
                     accessToken = (response.headers()["authorization"].toString())
+                    Token.accessToken = accessToken
                     Log.e("authApiSuccess2", response.message())
 
                     navController.navigate("HOME/$accessToken")

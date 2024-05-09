@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -22,9 +23,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -36,7 +34,9 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -44,23 +44,30 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.getSelectedText
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.colintheshots.twain.MarkdownText
 import com.echoist.linkedout.data.FuncItem
 import com.echoist.linkedout.data.FuncItemData
 import com.echoist.linkedout.data.HashTagBtn
 import com.echoist.linkedout.data.HashTagTextField
 import com.echoist.linkedout.data.TextItem
+import com.echoist.linkedout.gps.RequestPermissionsUtil
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.WritingViewModel
-
+object Token {
+    var accessToken: String by mutableStateOf("token")
+}
 @Composable
 fun MarkDownBtn(viewModel: WritingViewModel) {
     //todo 코드정리와 마크다운 어디까지 구현해서 쓸지 생각필요.
@@ -105,6 +112,12 @@ fun MarkDownBtn(viewModel: WritingViewModel) {
 
 }
 
+@Preview
+@Composable
+fun PrevWritingPage(){
+    WritingPage(navController = rememberNavController(), viewModel = WritingViewModel(), accessToken = "")
+
+}
 
 //@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 //@PreviewScreenSizes
@@ -133,9 +146,7 @@ fun WritingPage(
                 .background(background)
                 .fillMaxSize()) {
                 Column(modifier = Modifier
-
                     .verticalScroll(scrollState)
-
                 )
                 {
                     WritingTopAppBar(navController = navController, viewModel)
@@ -178,6 +189,7 @@ fun WritingPage(
 
                         TextEditBar(viewModel)
                         KeyboardLocationFunc(viewModel)
+
                         }
                     }
                 }
@@ -206,7 +218,7 @@ fun WritingTopAppBar(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            if (isKeyboardOpen == Keyboard.Opened){
+            if (isKeyboardOpen == Keyboard.Opened || viewModel.isTextFeatOpened.value){
                 Icon(
                     imageVector = Icons.Default.Done,
                     contentDescription = "keyboardDown",
@@ -398,7 +410,7 @@ fun WritingCancelCard(viewModel: WritingViewModel, navController: NavController)
                     modifier = Modifier
                         .padding(top = 20.dp, bottom = 20.dp)
                         .clickable {
-                            navController.navigate("HOME")
+                            navController.navigate("HOME/${viewModel.accessToken}")
                             viewModel.isCanCelClicked.value = false
                             viewModel.isTextFeatOpened.value = false
                             viewModel.hashTagList.clear()
@@ -454,19 +466,31 @@ fun WritingCancelCard(viewModel: WritingViewModel, navController: NavController)
 @Composable
 fun KeyboardLocationFunc(viewModel: WritingViewModel) {
     val keyboardController = LocalSoftwareKeyboardController.current
+    val requestPermissionsUtil = RequestPermissionsUtil(LocalContext.current,viewModel)
 
     val funcItems = listOf(
-        FuncItemData("인용구", Icons.Default.FavoriteBorder) {},
-        FuncItemData("인용구", Icons.Default.FavoriteBorder) {},
-        FuncItemData("위치", Icons.Default.LocationOn) {},
-        FuncItemData("쓰다 만 글", Icons.Default.FavoriteBorder) {},
-        FuncItemData("감정 해시태그", Icons.Default.ThumbUp) {
-            viewModel.isHashTagClicked = true
+        FuncItemData("인용구", R.drawable.pw_eye) {},
+        FuncItemData("인용구", R.drawable.pw_eye) {},
+        FuncItemData("위치", R.drawable.keyboard_location) {
+            requestPermissionsUtil.RequestLocation()
+            if (requestPermissionsUtil.isLocationPermitted()) {
+                requestPermissionsUtil.RequestLocationUpdates()
+
+            }
+            else{
+                requestPermissionsUtil.RequestLocationUpdates()
+                Log.d("MainActivity", "위치 권한 거부")
+            }
+
+        },
+        FuncItemData("쓰다 만 글", R.drawable.pw_eye) {},
+        FuncItemData("감정 해시태그", R.drawable.keyboard_hashtag) {
+            viewModel.isHashTagClicked = !viewModel.isHashTagClicked
             Log.d("tagtag", "tag")
         },
-        FuncItemData("맞춤법 검사", Icons.Default.FavoriteBorder) {},
-        FuncItemData("이미지", Icons.Default.FavoriteBorder) {},
-        FuncItemData("이미지", Icons.Default.FavoriteBorder) {},
+        FuncItemData("맞춤법 검사", R.drawable.pw_eye) {},
+        FuncItemData("이미지", R.drawable.keyboard_img) {},
+        FuncItemData("이미지", R.drawable.pw_eye) {},
     )
     Box(
         modifier = Modifier
@@ -492,6 +516,7 @@ fun KeyboardLocationFunc(viewModel: WritingViewModel) {
 @Composable
 fun TextEditBar(viewModel: WritingViewModel){
     val keyboardController = LocalSoftwareKeyboardController.current
+    var isKeyboardApeared by remember { mutableStateOf(true) }
     
     Row(
         modifier = Modifier
@@ -502,7 +527,7 @@ fun TextEditBar(viewModel: WritingViewModel){
     ) {
         if (viewModel.isHashTagClicked){
             Spacer(modifier = Modifier.width(20.dp))
-            TextItem(icon = R.drawable.hashtag){}
+            TextItem(icon = R.drawable.keyboard_hashtag){}
             HashTagTextField(viewModel = viewModel)
         }
         else{
@@ -511,17 +536,26 @@ fun TextEditBar(viewModel: WritingViewModel){
             TextItem(icon = R.drawable.ring){}
             TextItem(icon = R.drawable.ring){}
             TextItem(icon = R.drawable.ring){}
-            TextItem(icon = R.drawable.ring){}
+            Icon(
+                painter = painterResource(id = R.drawable.edit_bar_more),
+                contentDescription = "icon",
+                modifier = Modifier
+                    .size(40.dp)
+                    .padding(end = 14.dp)
+                    .clickable {
+                        isKeyboardApeared = !isKeyboardApeared
+                        if (isKeyboardApeared) keyboardController?.show() else keyboardController?.hide()
+                        viewModel.isTextFeatOpened.value = true
+                    },
+                tint = Color.Unspecified
+            )
             Box (modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
                 Row {
                     TextItem(icon = R.drawable.ring){}
                     VerticalDivider(modifier = Modifier
                         .height(34.dp)
                         .padding(end = 12.dp), thickness = 1.dp)
-                    TextItem(icon = R.drawable.ring){
-                        keyboardController?.hide()
-                        viewModel.isTextFeatOpened.value = true
-                    }
+                    TextItem(icon = R.drawable.ring){}
 
                 }
             }
