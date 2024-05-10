@@ -192,7 +192,7 @@ class SocialLoginViewModel @Inject constructor() : ViewModel() {
                     UserApiClient.instance.loginWithKakaoAccount(context, callback = callback)
                 } else if (token != null) {
                     kakaoLoginstate.value = true
-                    navController.navigate("HOME")
+                    navController.navigate("HOME/$accessToken")
                     Log.i(TAG, "카카오톡으로 로그인 성공 ${token.accessToken}")
                 }
             }

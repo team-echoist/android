@@ -126,7 +126,6 @@ fun SignUpPage(
                                         !viewModel.agreement_teen
                                     viewModel.agreement_marketing =
                                         !viewModel.agreement_marketing
-                                    //todo 약관동의마다 백엔드 기능 구현해야할것.
                                 },
                             tint = if (viewModel.agreement_service &&
                                 viewModel.agreement_collection &&

@@ -5,8 +5,10 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,6 +29,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -34,15 +37,16 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -71,6 +75,7 @@ fun PreviewWritingPage2() {
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WritingCompletePage(
     navController: NavController,
@@ -78,54 +83,38 @@ fun WritingCompletePage(
     accessToken: String
 ) {
     viewModel.accessToken = accessToken
-
     val scrollState = rememberScrollState()
-    val isBottomSheetOpen = remember {
-        mutableStateOf(true)
-    }
-
+    val scaffoldState = androidx.compose.material3.rememberBottomSheetScaffoldState()
     LinkedOutTheme {
-        // MyApp()
-        Scaffold(modifier = Modifier.pointerInput(Unit) {
-            detectTapGestures(onTap = {
-                viewModel.isDeleteClicked.value = false
-            })
-        },
-            topBar = { CompleteAppBar(navController = navController, viewModel) },
-            bottomBar = {
-                AnimatedVisibility(visible = viewModel.isDeleteClicked.value, exit = fadeOut()) {
-                    WritingDeleteCard(viewModel = viewModel, navController = navController)
-                }
-            }
+        BottomSheetScaffold(
+            scaffoldState = scaffoldState,
+            sheetContent = {
+                WritingCompletePager(viewModel = viewModel, navController = navController)},
+
+            sheetPeekHeight = 56.dp
         ) {
-            Box {
-                Column(
-                    modifier = Modifier
-                        .padding(it)
-                        .verticalScroll(scrollState)
-                )
-                {
+            Scaffold(
+                modifier = Modifier
+                    .pointerInput(Unit) {
+                        detectTapGestures(onTap = {
+                            viewModel.isDeleteClicked.value = false
+                        })
+                    }.fillMaxSize()
+                    .background(Color.Black),
+                topBar = { CompleteAppBar(navController = navController, viewModel) },
+            ) {
+                Box(modifier = Modifier.verticalScroll(scrollState).fillMaxSize()) {
+                    Column(
+                        modifier = Modifier
+                            .padding(it)
+                            .padding(bottom = 67.dp)
+                    ) {
+                        CompleteTitle(viewModel = viewModel)
+                        CompleteContents(viewModel = viewModel)
+                        CompleteNickName()
+                        CompleteDate(viewModel = viewModel)
 
-                    // todo 이미지 있으면 올리고 없으면 무시하는형태.
 
-                    CompleteTitle(viewModel = viewModel)
-
-                    CompleteContents(viewModel = viewModel)
-                    CompleteNickName()
-                    CompleteDate(viewModel = viewModel)
-                    if (isBottomSheetOpen.value) {
-                        BottomSheet(
-                            closeSheet = {
-                                isBottomSheetOpen.value = false
-                                viewModel.ringTouchedTime.value = 5
-                            },
-
-                            viewModel = viewModel,
-                            navController = navController
-                        )
-                    }
-                    Button(onClick = { isBottomSheetOpen.value = true }) {
-                        Text(text = "bottom sheet open")
                     }
 
                 }
@@ -135,20 +124,33 @@ fun WritingCompletePage(
                         .padding(bottom = 67.dp),
                     contentAlignment = Alignment.BottomCenter
                 ) {
-                    Column {
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Spacer(modifier = Modifier.height(50.dp))
                         LocationGroup(viewModel = viewModel)
                         Spacer(modifier = Modifier.height(21.dp))
                         HashTagGroup(viewModel = viewModel)
                     }
                 }
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(bottom = 40.dp),
+                    contentAlignment = Alignment.BottomCenter
+                ){
+                    AnimatedVisibility(
+                        visible = viewModel.isDeleteClicked.value,
+                        exit = fadeOut()
+                    ) {
+                        WritingDeleteCard(viewModel = viewModel, navController = navController)
+                    }
+                }
+
             }
-
-
         }
-
-
     }
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -248,14 +250,23 @@ fun BottomSheet(
     navController: NavController
 ) {
     val sheetState = rememberModalBottomSheetState()
+    var isExpanded by remember { mutableStateOf(false) }
+    val scaffoldState = androidx.compose.material3.rememberBottomSheetScaffoldState()
+    BottomSheetScaffold(
+        sheetContent = {
+            WritingCompletePager(viewModel = viewModel, navController = navController)
+        },
+        sheetPeekHeight = 56.dp,
+        scaffoldState = scaffoldState
+    ){}
 
-    ModalBottomSheet(
-        containerColor = Color.White,
-        onDismissRequest = { closeSheet() },
-        sheetState = sheetState
-    ) {
-        WritingCompletePager(viewModel = viewModel, navController = navController)
-    }
+//    ModalBottomSheet(
+//        containerColor = Color.White,
+//        onDismissRequest = { closeSheet() },
+//        sheetState = sheetState
+//    ) {
+//        WritingCompletePager(viewModel = viewModel, navController = navController)
+//    }
 
 
 }
@@ -321,11 +332,13 @@ fun RingImg(viewModel: WritingViewModel) {
             .height(45.dp)
             .clickable { viewModel.ringTouchedTime.value += 1 }
     )
+
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun WritingCompletePager(viewModel: WritingViewModel, navController: NavController) {
+    val scrollState = rememberScrollState()
     val pagerstate = rememberPagerState {
         2
     }
@@ -365,7 +378,7 @@ fun WritingCompletePager(viewModel: WritingViewModel, navController: NavControll
                         ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                                contentDescription = "nextpage"
+                                contentDescription = "nextpage",
                             )
                         }
 
@@ -373,15 +386,16 @@ fun WritingCompletePager(viewModel: WritingViewModel, navController: NavControll
 
                     Spacer(modifier = Modifier.height(51.dp))
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(scrollState),
                         horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Text(text = "#깨달음") //todo 해시태그 어떻게 만들지 구현필요합니다.
-                        Spacer(modifier = Modifier.width(22.dp))
-                        Text(text = "#깨달음")
-                        Spacer(modifier = Modifier.width(22.dp))
-                        Text(text = "#깨달음")
+                        viewModel.hashTagList.forEach {it->
+                            Text(text = "#$it", color = Color(0xFF686868))
+                            Spacer(modifier = Modifier.width(22.dp))
+                        }
                     }
 
                 }
@@ -472,7 +486,7 @@ fun WritingDeleteCard(viewModel: WritingViewModel, navController: NavController)
                     Text(
                         fontSize = 14.sp,
                         modifier = Modifier.padding(top = 18.dp, bottom = 18.dp),
-                        text = "삭제된 글은 복구할 수 없습니다. 삭제하시겠습니까?.",
+                        text = "삭제된 글은 복구할 수 없습니다. 삭제하시겠습니까?",
                         textAlign = TextAlign.Center,
                         color = Color.White
                     )
@@ -485,8 +499,9 @@ fun WritingDeleteCard(viewModel: WritingViewModel, navController: NavController)
                         modifier = Modifier
                             .padding(top = 20.dp, bottom = 20.dp)
                             .clickable {
-                                viewModel.isDeleteClicked.value = false
-                                viewModel.deleteEssay(navController)
+                                viewModel.isDeleteClicked.value = false //얘는 작성중 취소이므로 서버에 올린게없음.
+                                navController.popBackStack("OnBoarding", false) //onboarding까지 전부 삭제.
+                                navController.navigate("HOME/${viewModel.accessToken}")
                             },
                         fontSize = 16.sp,
                         text = "삭제하기",

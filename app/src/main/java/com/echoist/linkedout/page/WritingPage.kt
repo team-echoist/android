@@ -139,8 +139,7 @@ fun WritingPage(
             }
             Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(bottom = 80.dp),
+                    .fillMaxSize(),
                 contentAlignment = Alignment.BottomCenter
             ) { //키보드 자리에 들어갈 컴포 넣기
                 Column {
@@ -171,7 +170,10 @@ fun WritingPage(
                             }
                         }
                     } else if (isKeyBoardOpened == Keyboard.Closed && !viewModel.isTextFeatOpened.value)
-                        HashTagGroup(viewModel = viewModel)
+                        Column {
+                            HashTagGroup(viewModel = viewModel)
+                            Spacer(modifier = Modifier.height(80.dp))
+                        }
 
                     if (isKeyBoardOpened == Keyboard.Opened || viewModel.isTextFeatOpened.value) {
 
