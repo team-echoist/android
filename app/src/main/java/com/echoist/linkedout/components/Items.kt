@@ -469,12 +469,6 @@ fun BottomSheetDemo() {
 
 }
 
-@Preview
-@Composable
-fun PreviewBottomSheetDemo() {
-    CompletePage(navController = rememberNavController(), viewModel = WritingViewModel(), accessToken = "")
-}
-
 
 
 
