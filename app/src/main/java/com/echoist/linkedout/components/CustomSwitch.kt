@@ -1,4 +1,4 @@
-package com.echoist.linkedout.custom.component
+package com.echoist.linkedout.components
 
 import android.util.Log
 import androidx.compose.foundation.background

@@ -20,10 +20,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.echoist.linkedout.BuildConfig
-import com.echoist.linkedout.Token
 import com.echoist.linkedout.api.GoogleSignUpApi
 import com.echoist.linkedout.api.NaverApiService
 import com.echoist.linkedout.api.SignUpApi
+import com.echoist.linkedout.page.Token
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException

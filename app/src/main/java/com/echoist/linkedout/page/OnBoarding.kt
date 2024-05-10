@@ -1,4 +1,4 @@
-package com.echoist.linkedout
+package com.echoist.linkedout.page
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background

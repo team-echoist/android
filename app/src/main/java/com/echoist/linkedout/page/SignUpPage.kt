@@ -1,4 +1,4 @@
-package com.echoist.linkedout
+package com.echoist.linkedout.page
 
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.echoist.linkedout.R
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.SignUpViewModel
 

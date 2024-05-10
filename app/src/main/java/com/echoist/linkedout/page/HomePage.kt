@@ -1,4 +1,4 @@
-package com.echoist.linkedout
+package com.echoist.linkedout.page
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.echoist.linkedout.R
 import com.echoist.linkedout.data.BottomNavItem
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 

@@ -1,4 +1,4 @@
-package com.echoist.linkedout
+package com.echoist.linkedout.page
 
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
@@ -55,16 +55,17 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.colintheshots.twain.MarkdownText
-import com.echoist.linkedout.data.FuncItem
-import com.echoist.linkedout.data.FuncItemData
-import com.echoist.linkedout.data.HashTagBtn
-import com.echoist.linkedout.data.HashTagGroup
-import com.echoist.linkedout.data.HashTagTextField
-import com.echoist.linkedout.data.LocationBox
-import com.echoist.linkedout.data.LocationBtn
-import com.echoist.linkedout.data.LocationGroup
-import com.echoist.linkedout.data.LocationTextField
-import com.echoist.linkedout.data.TextItem
+import com.echoist.linkedout.R
+import com.echoist.linkedout.components.FuncItem
+import com.echoist.linkedout.components.FuncItemData
+import com.echoist.linkedout.components.HashTagBtn
+import com.echoist.linkedout.components.HashTagGroup
+import com.echoist.linkedout.components.HashTagTextField
+import com.echoist.linkedout.components.LocationBox
+import com.echoist.linkedout.components.LocationBtn
+import com.echoist.linkedout.components.LocationGroup
+import com.echoist.linkedout.components.LocationTextField
+import com.echoist.linkedout.components.TextItem
 import com.echoist.linkedout.gps.RequestPermissionsUtil
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.WritingViewModel

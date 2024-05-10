@@ -1,4 +1,4 @@
-package com.echoist.linkedout.data
+package com.echoist.linkedout.components
 
 import android.app.Activity
 import android.content.res.Configuration

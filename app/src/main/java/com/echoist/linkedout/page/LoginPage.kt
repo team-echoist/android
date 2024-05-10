@@ -1,4 +1,4 @@
-package com.echoist.linkedout
+package com.echoist.linkedout.page
 
 import android.graphics.Rect
 import android.os.Bundle
@@ -67,6 +67,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.echoist.linkedout.BuildConfig
+import com.echoist.linkedout.R
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.LoginSuccessDialog
 import com.echoist.linkedout.viewModels.SignUpViewModel

@@ -1,4 +1,4 @@
-package com.echoist.linkedout
+package com.echoist.linkedout.page
 
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
@@ -55,8 +55,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.colintheshots.twain.MarkdownText
-import com.echoist.linkedout.data.HashTagGroup
-import com.echoist.linkedout.data.LocationGroup
+import com.echoist.linkedout.R
+import com.echoist.linkedout.components.HashTagGroup
+import com.echoist.linkedout.components.LocationGroup
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.WritingViewModel
 import java.time.LocalDateTime
