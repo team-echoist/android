@@ -66,7 +66,8 @@ import java.time.format.DateTimeFormatter
 @Preview
 @Composable
 fun PreviewWritingPage2() {
-    WritingCompletePage(navController = rememberNavController(), WritingViewModel(),"token"
+    WritingCompletePage(
+        navController = rememberNavController(), WritingViewModel(), "token"
     )
 }
 
@@ -85,7 +86,7 @@ fun WritingCompletePage(
 
     LinkedOutTheme {
         // MyApp()
-        Scaffold(modifier = Modifier.pointerInput(Unit){
+        Scaffold(modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = {
                 viewModel.isDeleteClicked.value = false
             })
@@ -133,7 +134,7 @@ fun WritingCompletePage(
                         .fillMaxSize()
                         .padding(bottom = 67.dp),
                     contentAlignment = Alignment.BottomCenter
-                ){
+                ) {
                     Column {
                         LocationGroup(viewModel = viewModel)
                         Spacer(modifier = Modifier.height(21.dp))

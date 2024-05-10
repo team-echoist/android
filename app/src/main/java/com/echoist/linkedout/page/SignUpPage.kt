@@ -55,140 +55,141 @@ import com.echoist.linkedout.viewModels.SignUpViewModel
 @Preview
 
 @Composable
-fun PrevSignUpPage(){
+fun PrevSignUpPage() {
     SignUpPage(navController = rememberNavController(), viewModel = SignUpViewModel())
 }
+
 @Composable
-fun SignUpPage(navController: NavController,
-               viewModel: SignUpViewModel){
+fun SignUpPage(
+    navController: NavController,
+    viewModel: SignUpViewModel
+) {
 
     val keyboardController = LocalSoftwareKeyboardController.current
     val scrollState = rememberScrollState()
 
-        LinkedOutTheme {
-            Scaffold(
-                modifier = Modifier.pointerInput(Unit) { //배경 터치 시 키보드 숨김
-                    detectTapGestures(onTap = {
-                        keyboardController?.hide()
-                    })
-                },
-                content = {
-                    Column(
+    LinkedOutTheme {
+        Scaffold(
+            modifier = Modifier.pointerInput(Unit) { //배경 터치 시 키보드 숨김
+                detectTapGestures(onTap = {
+                    keyboardController?.hide()
+                })
+            },
+            content = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(it)
+                ) {
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "arrowback",
+                        tint = if (isSystemInDarkTheme()) {
+                            Color.White
+
+                        } else Color.Gray,
                         modifier = Modifier
-                            .fillMaxSize()
-                            .padding(it)
-                    ) {
-                        Spacer(modifier = Modifier.height(20.dp))
+
+                            .padding(16.dp)
+                            .clickable { navController.popBackStack() } //뒤로가기
+                    )
+                    Spacer(modifier = Modifier.height(30.dp))
+                    Text(
+                        text = "이메일로 가입하기",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.padding(start = 16.dp),
+                        color = if (isSystemInDarkTheme()) Color.White else Color.Gray
+                    )
+                    Text(
+                        text = "회원 서비스 이용을 위해 회원가입을 해주세요.",
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(start = 16.dp, bottom = 32.dp),
+                        color = if (isSystemInDarkTheme()) Color(0xFF919191) else Color.Gray
+                    )
+                    EmailTextField(viewModel)
+                    PwTextField(viewModel)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "arrowback",
-                            tint = if (isSystemInDarkTheme()) {
-                                Color.White
-
-                            }
-
-                            else Color.Gray,
+                            imageVector = Icons.Default.Done,
+                            contentDescription = "check",
                             modifier = Modifier
-
-                                .padding(16.dp)
-                                .clickable { navController.popBackStack() } //뒤로가기
-                        )
-                        Spacer(modifier = Modifier.height(30.dp))
-                        Text(
-                            text = "이메일로 가입하기",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.padding(start = 16.dp),
-                            color = if (isSystemInDarkTheme()) Color.White else Color.Gray
-                        )
-                        Text(
-                            text = "회원 서비스 이용을 위해 회원가입을 해주세요.",
-                            fontSize = 16.sp,
-                            modifier = Modifier.padding(start = 16.dp, bottom = 32.dp),
-                            color = if (isSystemInDarkTheme()) Color(0xFF919191) else Color.Gray
-                        )
-                        EmailTextField(viewModel)
-                        PwTextField(viewModel)
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Default.Done,
-                                contentDescription = "check",
-                                modifier = Modifier
-                                    .padding(start = 16.dp)
-                                    .size(25.dp)
-                                    .clickable {
-                                        viewModel.agreement_service =
-                                            !viewModel.agreement_service
-                                        viewModel.agreement_collection =
-                                            !viewModel.agreement_collection
-                                        viewModel.agreement_teen =
-                                            !viewModel.agreement_teen
-                                        viewModel.agreement_marketing =
-                                            !viewModel.agreement_marketing
-                                        //todo 약관동의마다 백엔드 기능 구현해야할것.
-                                    },
-                                tint = if (viewModel.agreement_service &&
-                                    viewModel.agreement_collection &&
-                                    viewModel.agreement_teen &&
-                                    viewModel.agreement_marketing
-                                )
-                                    Color.White
-                                else Color(0xFF919191)
+                                .padding(start = 16.dp)
+                                .size(25.dp)
+                                .clickable {
+                                    viewModel.agreement_service =
+                                        !viewModel.agreement_service
+                                    viewModel.agreement_collection =
+                                        !viewModel.agreement_collection
+                                    viewModel.agreement_teen =
+                                        !viewModel.agreement_teen
+                                    viewModel.agreement_marketing =
+                                        !viewModel.agreement_marketing
+                                    //todo 약관동의마다 백엔드 기능 구현해야할것.
+                                },
+                            tint = if (viewModel.agreement_service &&
+                                viewModel.agreement_collection &&
+                                viewModel.agreement_teen &&
+                                viewModel.agreement_marketing
                             )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(text = "전체 동의")
-                        }
-                        AgreementText(
-                            text = "(필수)  서비스  이용약관  동의",
-                            {
-                                viewModel.agreement_service =
-                                    !viewModel.agreement_service
-                            }
-                            ,if (viewModel.agreement_service) Color.White else Color(0xFF919191)
+                                Color.White
+                            else Color(0xFF919191)
                         )
-                        AgreementText(
-                            text = "(필수)  개인정보  수집  및  이용  동의",
-                            {
-                                viewModel.agreement_collection =
-                                    !viewModel.agreement_collection
-                            }
-                            ,if (viewModel.agreement_collection) Color.White else Color(0xFF919191)
-                        )
-                        AgreementText(
-                            text = "(필수)   만  14세  이상입니다",
-                            { viewModel.agreement_teen = !viewModel.agreement_teen }
-                            ,if (viewModel.agreement_teen) Color.White else Color(0xFF919191)
-                        )
-                        AgreementText(
-                            text = "(선택)   마케팅  정보  수신  동의",
-                            {
-                                viewModel.agreement_marketing =
-                                    !viewModel.agreement_marketing
-                            }
-                            ,if (viewModel.agreement_marketing) Color.White else Color(0xFF919191)
-                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(text = "전체 동의")
+                    }
+                    AgreementText(
+                        text = "(필수)  서비스  이용약관  동의",
+                        {
+                            viewModel.agreement_service =
+                                !viewModel.agreement_service
+                        }, if (viewModel.agreement_service) Color.White else Color(0xFF919191)
+                    )
+                    AgreementText(
+                        text = "(필수)  개인정보  수집  및  이용  동의",
+                        {
+                            viewModel.agreement_collection =
+                                !viewModel.agreement_collection
+                        }, if (viewModel.agreement_collection) Color.White else Color(0xFF919191)
+                    )
+                    AgreementText(
+                        text = "(필수)   만  14세  이상입니다",
+                        { viewModel.agreement_teen = !viewModel.agreement_teen },
+                        if (viewModel.agreement_teen) Color.White else Color(0xFF919191)
+                    )
+                    AgreementText(
+                        text = "(선택)   마케팅  정보  수신  동의",
+                        {
+                            viewModel.agreement_marketing =
+                                !viewModel.agreement_marketing
+                        }, if (viewModel.agreement_marketing) Color.White else Color(0xFF919191)
+                    )
 
-                        Button(
-                            shape = RoundedCornerShape(16.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE4A89E), disabledContainerColor = Color(0xFF868686)),
-                            enabled = viewModel.agreement_service && viewModel.agreement_collection && viewModel.agreement_teen && !viewModel.userEmailError,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(100.dp)
-                                .padding(start = 20.dp, end = 20.dp, top = 43.dp),
-                            onClick = {
+                    Button(
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFE4A89E),
+                            disabledContainerColor = Color(0xFF868686)
+                        ),
+                        enabled = viewModel.agreement_service && viewModel.agreement_collection && viewModel.agreement_teen && !viewModel.userEmailError,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(100.dp)
+                            .padding(start = 20.dp, end = 20.dp, top = 43.dp),
+                        onClick = {
                             viewModel.getUserEmailCheck(navController)
-                            }
-                        ) {
-                            Text(text = "회원가입")
                         }
-
+                    ) {
+                        Text(text = "회원가입")
                     }
 
-
                 }
-            )
-        }
+
+
+            }
+        )
+    }
 
 }
 
@@ -202,11 +203,10 @@ fun EmailTextField(viewModel: SignUpViewModel) {
             isError = viewModel.userEmailError,
             onValueChange = { new ->
                 viewModel.userEmail = new
-                if (new.isNotEmpty() && viewModel.isEmailValid(viewModel.userEmail)){
+                if (new.isNotEmpty() && viewModel.isEmailValid(viewModel.userEmail)) {
                     viewModel.userEmailError = false
                     errorText = ""
-                }
-                else {
+                } else {
                     viewModel.userEmailError = true
                     errorText = "올바르지 않은 이메일 형식입니다."
                 }
@@ -234,7 +234,7 @@ fun EmailTextField(viewModel: SignUpViewModel) {
                 .fillMaxWidth()
                 .padding(start = 16.dp, end = 16.dp, bottom = 14.dp)
         )
-        if (viewModel.userEmailError){
+        if (viewModel.userEmailError) {
             if (errorText.isNotEmpty())
                 Text(
                     text = errorText,
@@ -255,7 +255,7 @@ fun PwTextField(viewModel: SignUpViewModel) {
         value = viewModel.userPw,
         onValueChange = { new ->
             if (new.length <= 20)
-            viewModel.userPw = new
+                viewModel.userPw = new
         },
         label = { Text("비밀번호", color = Color(0xFF919191), fontSize = 14.sp) }, // 힌트를 라벨로 설정합니다.
         colors = TextFieldDefaults.colors(
@@ -264,7 +264,7 @@ fun PwTextField(viewModel: SignUpViewModel) {
             focusedTextColor = Color.White,
             unfocusedTextColor = Color.White,
             focusedContainerColor = if (isSystemInDarkTheme()) Color(0xFF252525) else Color.Black,
-            unfocusedContainerColor = if (isSystemInDarkTheme()) Color(0xFF252525) else Color.Black ,
+            unfocusedContainerColor = if (isSystemInDarkTheme()) Color(0xFF252525) else Color.Black,
             errorTextColor = Color.Red,
             errorContainerColor = if (isSystemInDarkTheme()) Color(0xFF252525) else Color.Black,
             errorIndicatorColor = Color.Transparent
@@ -291,7 +291,7 @@ fun PwTextField(viewModel: SignUpViewModel) {
 }
 
 @Composable
-fun AgreementText(text : String, clickable : () -> Unit, color: Color){
+fun AgreementText(text: String, clickable: () -> Unit, color: Color) {
 
 
     Spacer(modifier = Modifier.height(10.dp))

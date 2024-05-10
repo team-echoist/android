@@ -76,10 +76,15 @@ object Token {
 
 @Preview
 @Composable
-fun PrevWritingPage(){
-    WritingPage(navController = rememberNavController(), viewModel = WritingViewModel(), accessToken = "")
+fun PrevWritingPage() {
+    WritingPage(
+        navController = rememberNavController(),
+        viewModel = WritingViewModel(),
+        accessToken = ""
+    )
 
 }
+
 @Composable
 fun WritingPage(
     navController: NavController,
@@ -97,15 +102,18 @@ fun WritingPage(
     val background = if (isSystemInDarkTheme()) Color.Black else Color.White
 
 
-    Log.d("tokentoken",accessToken)
+    Log.d("tokentoken", accessToken)
 
     LinkedOutTheme {
         Box {
-            Column(modifier = Modifier
-                .background(background)
-                .fillMaxSize()) {
-                Column(modifier = Modifier
-                    .verticalScroll(scrollState)
+            Column(
+                modifier = Modifier
+                    .background(background)
+                    .fillMaxSize()
+            ) {
+                Column(
+                    modifier = Modifier
+                        .verticalScroll(scrollState)
                 )
                 {
                     WritingTopAppBar(navController = navController, viewModel)
@@ -129,16 +137,19 @@ fun WritingPage(
                 }
 
             }
-            Box(modifier = Modifier
-                .fillMaxSize().padding(bottom = 80.dp),
-                contentAlignment = Alignment.BottomCenter){ //키보드 자리에 들어갈 컴포 넣기
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 80.dp),
+                contentAlignment = Alignment.BottomCenter
+            ) { //키보드 자리에 들어갈 컴포 넣기
                 Column {
                     AnimatedVisibility(visible = viewModel.isCanCelClicked.value) {
                         WritingCancelCard(viewModel = viewModel, navController = navController)
 
                     }
                     //장소 찍는
-                    if (viewModel.longitude.isNotEmpty()&&viewModel.latitute.isNotEmpty()&&viewModel.isTextFeatOpened.value){
+                    if (viewModel.longitude.isNotEmpty() && viewModel.latitute.isNotEmpty() && viewModel.isTextFeatOpened.value) {
                         Row {
                             LocationBox(viewModel = viewModel)
                             Spacer(modifier = Modifier.width(2.dp))
@@ -148,33 +159,31 @@ fun WritingPage(
                                 }
                             }
                         }
-                    }
-                    else if (isKeyBoardOpened == Keyboard.Closed && !viewModel.isTextFeatOpened.value){
+                    } else if (isKeyBoardOpened == Keyboard.Closed && !viewModel.isTextFeatOpened.value) {
                         LocationGroup(viewModel = viewModel)
                         Spacer(modifier = Modifier.height(10.dp))
                     }
                     //해시태그 찍는
-                    if (viewModel.hashTagList.isNotEmpty()&&viewModel.isTextFeatOpened.value) {
+                    if (viewModel.hashTagList.isNotEmpty() && viewModel.isTextFeatOpened.value) {
                         Row {
                             viewModel.hashTagList.forEach {
                                 HashTagBtn(viewModel = viewModel, text = it)
                             }
                         }
-                    }
-                    else if (isKeyBoardOpened == Keyboard.Closed && !viewModel.isTextFeatOpened.value)
+                    } else if (isKeyBoardOpened == Keyboard.Closed && !viewModel.isTextFeatOpened.value)
                         HashTagGroup(viewModel = viewModel)
 
-                    if (isKeyBoardOpened == Keyboard.Opened ||  viewModel.isTextFeatOpened.value){
+                    if (isKeyBoardOpened == Keyboard.Opened || viewModel.isTextFeatOpened.value) {
 
                         TextEditBar(viewModel)
                         KeyboardLocationFunc(viewModel)
 
-                        }
                     }
                 }
             }
         }
     }
+}
 
 @Composable
 fun WritingTopAppBar(
@@ -197,7 +206,7 @@ fun WritingTopAppBar(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            if (isKeyboardOpen == Keyboard.Opened || viewModel.isTextFeatOpened.value){
+            if (isKeyboardOpen == Keyboard.Opened || viewModel.isTextFeatOpened.value) {
                 Icon(
                     imageVector = Icons.Default.Done,
                     contentDescription = "keyboardDown",
@@ -212,8 +221,7 @@ fun WritingTopAppBar(
                         },
                     tint = Color.White
                 )
-            }
-            else{
+            } else {
                 Text(
                     text = "취소",
                     color = Color(0xFF686868),
@@ -448,7 +456,7 @@ fun WritingCancelCard(viewModel: WritingViewModel, navController: NavController)
 @Composable
 fun KeyboardLocationFunc(viewModel: WritingViewModel) {
     val keyboardController = LocalSoftwareKeyboardController.current
-    val requestPermissionsUtil = RequestPermissionsUtil(LocalContext.current,viewModel)
+    val requestPermissionsUtil = RequestPermissionsUtil(LocalContext.current, viewModel)
 
     val funcItems = listOf(
         FuncItemData("인용구", R.drawable.pw_eye) {},
@@ -460,8 +468,7 @@ fun KeyboardLocationFunc(viewModel: WritingViewModel) {
             if (requestPermissionsUtil.isLocationPermitted()) {
                 requestPermissionsUtil.RequestLocationUpdates()
 
-            }
-            else{
+            } else {
                 requestPermissionsUtil.RequestLocationUpdates()
                 Log.d("MainActivity", "위치 권한 거부")
             }
@@ -493,17 +500,18 @@ fun KeyboardLocationFunc(viewModel: WritingViewModel) {
             horizontalArrangement = Arrangement.Center
         ) {
             items(funcItems) {
-                FuncItem(it.text, it.icon,it.clickable)
+                FuncItem(it.text, it.icon, it.clickable)
             }
         }
     }
 }
+
 @Composable
-fun TextEditBar(viewModel: WritingViewModel){
+fun TextEditBar(viewModel: WritingViewModel) {
     val keyboardController = LocalSoftwareKeyboardController.current
     var isKeyboardApeared by remember { mutableStateOf(true) }
-    val requestPermissionsUtil = RequestPermissionsUtil(LocalContext.current,viewModel)
-    
+    val requestPermissionsUtil = RequestPermissionsUtil(LocalContext.current, viewModel)
+
     Row(
         modifier = Modifier
             .background(Color(0xFF1D1D1D))
@@ -511,12 +519,11 @@ fun TextEditBar(viewModel: WritingViewModel){
             .height(50.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (viewModel.isHashTagClicked && !viewModel.isLocationClicked){
+        if (viewModel.isHashTagClicked && !viewModel.isLocationClicked) {
             Spacer(modifier = Modifier.width(20.dp))
-            TextItem(icon = R.drawable.keyboard_hashtag){}
+            TextItem(icon = R.drawable.keyboard_hashtag) {}
             HashTagTextField(viewModel = viewModel)
-        }
-        else if (viewModel.isLocationClicked && !viewModel.isHashTagClicked){
+        } else if (viewModel.isLocationClicked && !viewModel.isHashTagClicked) {
             Spacer(modifier = Modifier.width(15.dp))
             Icon(
                 tint = Color(0xFF616FED),
@@ -528,13 +535,12 @@ fun TextEditBar(viewModel: WritingViewModel){
                     .clickable { requestPermissionsUtil.RequestLocationUpdates() }
             )
             LocationTextField(viewModel = viewModel)
-        }
-        else{
+        } else {
 
             Spacer(modifier = Modifier.width(20.dp))
-            TextItem(icon = R.drawable.ring){}
-            TextItem(icon = R.drawable.ring){}
-            TextItem(icon = R.drawable.ring){}
+            TextItem(icon = R.drawable.ring) {}
+            TextItem(icon = R.drawable.ring) {}
+            TextItem(icon = R.drawable.ring) {}
             Icon(
                 painter = painterResource(id = R.drawable.edit_bar_more),
                 contentDescription = "icon",
@@ -548,13 +554,15 @@ fun TextEditBar(viewModel: WritingViewModel){
                     },
                 tint = Color.Unspecified
             )
-            Box (modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
                 Row {
-                    TextItem(icon = R.drawable.ring){}
-                    VerticalDivider(modifier = Modifier
-                        .height(34.dp)
-                        .padding(end = 12.dp), thickness = 1.dp)
-                    TextItem(icon = R.drawable.ring){}
+                    TextItem(icon = R.drawable.ring) {}
+                    VerticalDivider(
+                        modifier = Modifier
+                            .height(34.dp)
+                            .padding(end = 12.dp), thickness = 1.dp
+                    )
+                    TextItem(icon = R.drawable.ring) {}
 
                 }
             }
