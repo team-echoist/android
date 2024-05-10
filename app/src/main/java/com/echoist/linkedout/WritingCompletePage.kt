@@ -56,7 +56,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.colintheshots.twain.MarkdownText
 import com.echoist.linkedout.data.HashTagGroup
-import com.echoist.linkedout.data.ImagePickerScreen
+import com.echoist.linkedout.data.LocationGroup
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.WritingViewModel
 import java.time.LocalDateTime
@@ -105,8 +105,6 @@ fun WritingCompletePage(
                 {
 
                     // todo 이미지 있으면 올리고 없으면 무시하는형태.
-                    ImagePickerScreen()
-
 
                     CompleteTitle(viewModel = viewModel)
 
@@ -135,7 +133,11 @@ fun WritingCompletePage(
                         .padding(bottom = 67.dp),
                     contentAlignment = Alignment.BottomCenter
                 ){
-                    HashTagGroup(viewModel = viewModel)
+                    Column {
+                        LocationGroup(viewModel = viewModel)
+                        Spacer(modifier = Modifier.height(21.dp))
+                        HashTagGroup(viewModel = viewModel)
+                    }
                 }
             }
 

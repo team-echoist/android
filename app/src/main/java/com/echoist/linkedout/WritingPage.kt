@@ -23,7 +23,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -48,8 +48,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.input.getSelectedText
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -60,56 +58,19 @@ import com.colintheshots.twain.MarkdownText
 import com.echoist.linkedout.data.FuncItem
 import com.echoist.linkedout.data.FuncItemData
 import com.echoist.linkedout.data.HashTagBtn
+import com.echoist.linkedout.data.HashTagGroup
 import com.echoist.linkedout.data.HashTagTextField
+import com.echoist.linkedout.data.LocationBox
+import com.echoist.linkedout.data.LocationBtn
+import com.echoist.linkedout.data.LocationGroup
+import com.echoist.linkedout.data.LocationTextField
 import com.echoist.linkedout.data.TextItem
 import com.echoist.linkedout.gps.RequestPermissionsUtil
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.WritingViewModel
+
 object Token {
     var accessToken: String by mutableStateOf("token")
-}
-@Composable
-fun MarkDownBtn(viewModel: WritingViewModel) {
-    //todo 코드정리와 마크다운 어디까지 구현해서 쓸지 생각필요.
-    val selection = viewModel.content.value.selection
-    // 선택된 텍스트의 시작 위치
-    val start = selection.start
-    // 선택된 텍스트의 끝 위치
-    val end = selection.end
-    val selectText = viewModel.content.value.getSelectedText() //selected text
-    // 선택된 텍스트 앞에 '*'을 붙임
-    val boldText = if (start != end) "**$selectText**" else selectText
-    val italicText = if (start != end) "*$selectText*" else selectText
-    val header1Text = if (start != end) "# $selectText" else selectText
-    val header2Text = if (start != end) "## $selectText" else selectText
-
-
-// 이전 텍스트에서 선택된 부분을 대체
-    val new_bold = viewModel.content.value.text.replaceRange(start, end, boldText)
-    val new_italic = viewModel.content.value.text.replaceRange(start, end, italicText)
-    val new_header1 = viewModel.content.value.text.replaceRange(start, end, header1Text)
-    val new_header2 = viewModel.content.value.text.replaceRange(start, end, header2Text)
-
-
-// 변경된 텍스트를 ViewModel에 설정
-
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .background(Color(0xFF1D1D1D)), horizontalArrangement = Arrangement.Center ) {
-        Button(onClick = { viewModel.content.value = TextFieldValue(new_bold) }) {
-            Text(text = "bold", color = Color.White)
-        }
-        Button(onClick = { viewModel.content.value = TextFieldValue(new_italic) }) {
-            Text(text = "italic", color = Color.White)
-        }
-        Button(onClick = { viewModel.content.value = TextFieldValue(new_header1) }) {
-            Text(text = "header1", color = Color.White)
-        }
-        Button(onClick = { viewModel.content.value = TextFieldValue(new_header2) }) {
-            Text(text = "header2", color = Color.White)
-        }
-    }
-
 }
 
 @Preview
@@ -118,9 +79,6 @@ fun PrevWritingPage(){
     WritingPage(navController = rememberNavController(), viewModel = WritingViewModel(), accessToken = "")
 
 }
-
-//@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
-//@PreviewScreenSizes
 @Composable
 fun WritingPage(
     navController: NavController,
@@ -171,20 +129,40 @@ fun WritingPage(
 
             }
             Box(modifier = Modifier
-                .fillMaxSize(),
+                .fillMaxSize().padding(bottom = 80.dp),
                 contentAlignment = Alignment.BottomCenter){ //키보드 자리에 들어갈 컴포 넣기
                 Column {
                     AnimatedVisibility(visible = viewModel.isCanCelClicked.value) {
                         WritingCancelCard(viewModel = viewModel, navController = navController)
 
                     }
-                    if (viewModel.hashTagList.isNotEmpty()) {
+                    //장소 찍는
+                    if (viewModel.longitude.isNotEmpty()&&viewModel.latitute.isNotEmpty()&&viewModel.isTextFeatOpened.value){
+                        Row {
+                            LocationBox(viewModel = viewModel)
+                            Spacer(modifier = Modifier.width(2.dp))
+                            Row {
+                                viewModel.locationList.forEach {
+                                    LocationBtn(viewModel = viewModel, text = it)
+                                }
+                            }
+                        }
+                    }
+                    else if (isKeyBoardOpened == Keyboard.Closed && !viewModel.isTextFeatOpened.value){
+                        LocationGroup(viewModel = viewModel)
+                        Spacer(modifier = Modifier.height(10.dp))
+                    }
+                    //해시태그 찍는
+                    if (viewModel.hashTagList.isNotEmpty()&&viewModel.isTextFeatOpened.value) {
                         Row {
                             viewModel.hashTagList.forEach {
                                 HashTagBtn(viewModel = viewModel, text = it)
                             }
                         }
                     }
+                    else if (isKeyBoardOpened == Keyboard.Closed && !viewModel.isTextFeatOpened.value)
+                        HashTagGroup(viewModel = viewModel)
+
                     if (isKeyBoardOpened == Keyboard.Opened ||  viewModel.isTextFeatOpened.value){
 
                         TextEditBar(viewModel)
@@ -227,6 +205,7 @@ fun WritingTopAppBar(
                         .clickable {
                             viewModel.isTextFeatOpened.value = false
                             viewModel.isHashTagClicked = false
+                            viewModel.isLocationClicked = false
                             keyboardController?.hide()
                             focusState.value = false
                         },
@@ -413,7 +392,9 @@ fun WritingCancelCard(viewModel: WritingViewModel, navController: NavController)
                             navController.navigate("HOME/${viewModel.accessToken}")
                             viewModel.isCanCelClicked.value = false
                             viewModel.isTextFeatOpened.value = false
+                            viewModel.isLocationClicked = false
                             viewModel.hashTagList.clear()
+                            viewModel.locationList.clear()
                         },
                     fontSize = 16.sp,
                     text = "작성취소",
@@ -472,6 +453,8 @@ fun KeyboardLocationFunc(viewModel: WritingViewModel) {
         FuncItemData("인용구", R.drawable.pw_eye) {},
         FuncItemData("인용구", R.drawable.pw_eye) {},
         FuncItemData("위치", R.drawable.keyboard_location) {
+            viewModel.isHashTagClicked = false
+            viewModel.isLocationClicked = !viewModel.isLocationClicked
             requestPermissionsUtil.RequestLocation()
             if (requestPermissionsUtil.isLocationPermitted()) {
                 requestPermissionsUtil.RequestLocationUpdates()
@@ -485,6 +468,7 @@ fun KeyboardLocationFunc(viewModel: WritingViewModel) {
         },
         FuncItemData("쓰다 만 글", R.drawable.pw_eye) {},
         FuncItemData("감정 해시태그", R.drawable.keyboard_hashtag) {
+            viewModel.isLocationClicked = false
             viewModel.isHashTagClicked = !viewModel.isHashTagClicked
             Log.d("tagtag", "tag")
         },
@@ -517,6 +501,7 @@ fun KeyboardLocationFunc(viewModel: WritingViewModel) {
 fun TextEditBar(viewModel: WritingViewModel){
     val keyboardController = LocalSoftwareKeyboardController.current
     var isKeyboardApeared by remember { mutableStateOf(true) }
+    val requestPermissionsUtil = RequestPermissionsUtil(LocalContext.current,viewModel)
     
     Row(
         modifier = Modifier
@@ -525,10 +510,23 @@ fun TextEditBar(viewModel: WritingViewModel){
             .height(50.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (viewModel.isHashTagClicked){
+        if (viewModel.isHashTagClicked && !viewModel.isLocationClicked){
             Spacer(modifier = Modifier.width(20.dp))
             TextItem(icon = R.drawable.keyboard_hashtag){}
             HashTagTextField(viewModel = viewModel)
+        }
+        else if (viewModel.isLocationClicked && !viewModel.isHashTagClicked){
+            Spacer(modifier = Modifier.width(15.dp))
+            Icon(
+                tint = Color(0xFF616FED),
+                imageVector = Icons.Default.LocationOn,
+                contentDescription = "location",
+                modifier = Modifier
+                    .size(50.dp)
+                    .padding(end = 14.dp)
+                    .clickable { requestPermissionsUtil.RequestLocationUpdates() }
+            )
+            LocationTextField(viewModel = viewModel)
         }
         else{
 
@@ -560,16 +558,5 @@ fun TextEditBar(viewModel: WritingViewModel){
                 }
             }
         }
-
-
     }
 }
-
-
-
-
-
-
-
-
-

@@ -1,17 +1,13 @@
 package com.echoist.linkedout.data
 
 import android.app.Activity
-import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
-import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -62,7 +58,6 @@ import com.canhub.cropper.CropImageContractOptions
 import com.canhub.cropper.CropImageOptions
 import com.echoist.linkedout.R
 import com.echoist.linkedout.viewModels.WritingViewModel
-import java.io.FileNotFoundException
 
 class FuncItemData(val text : String, var icon: Int, var clickable: () -> Unit )
 
@@ -105,7 +100,6 @@ fun FuncItem(text : String, icon: Int, clickable: () -> Unit){
 
     }
 }
-
 @Composable
 fun TextItem(icon : Int, clickable : () -> Unit){
     val color =  if (isSystemInDarkTheme()) Color.White else Color.Black
@@ -120,7 +114,62 @@ fun TextItem(icon : Int, clickable : () -> Unit){
             .clickable { clickable() }
     )
 }
+@Composable
+fun LocationTextField(viewModel: WritingViewModel){
 
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart){
+        TextField(
+            value = viewModel.locationText,
+            colors = TextFieldDefaults.colors(
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedTextColor = Color.White,
+                unfocusedTextColor = Color.White,
+                focusedContainerColor = if (isSystemInDarkTheme()) Color.Transparent else Color.Black,
+                unfocusedContainerColor = if (isSystemInDarkTheme()) Color.Transparent else Color.Black
+
+
+            ),
+            placeholder = { Text(text = "장소 이름을 입력해주세요.", color = Color.Gray, fontSize = 12.sp)},
+            onValueChange = {
+                if (it.isNotEmpty() && (it.last() == '\n')) {
+                    val trimmedText = it.trim()
+                    if (trimmedText.isNotBlank()) {
+                        viewModel.locationList.add(trimmedText)
+                        viewModel.locationText = ""
+                    }
+                }
+                else viewModel.locationText = it
+            }
+        )
+    }
+
+
+}
+@Composable
+fun LocationBox(viewModel: WritingViewModel){
+    Button(modifier = Modifier.padding(bottom = 15.dp),
+        onClick = {
+        }) {
+        Text(text =  "${viewModel.longitude} ${viewModel.latitute}", fontSize = 14.sp)
+    }
+
+}
+@Composable
+fun LocationBtn(viewModel: WritingViewModel,text: String){
+    Button(modifier = Modifier.padding(bottom = 15.dp),
+        onClick = {
+            viewModel.locationList.remove(text)
+        }) {
+        Text(text = text, fontSize = 14.sp)
+        Spacer(modifier = Modifier.width(2.dp))
+        Icon(
+            imageVector = Icons.Default.Close,
+            contentDescription = "",
+            modifier = Modifier.size(16.dp)
+        )
+    }
+}
 
 @Composable
 fun HashTagTextField(viewModel: WritingViewModel){
@@ -150,18 +199,66 @@ fun HashTagTextField(viewModel: WritingViewModel){
     )
 
 }
-@Preview
 @Composable
-fun prev(){
-    val viewModel = remember { WritingViewModel() }
-    Column {
-        HashTagBtn(viewModel = viewModel, text = "")
+fun LocationGroup(viewModel: WritingViewModel){
+    val scrollState = rememberScrollState()
+    Box(modifier = Modifier.size(350.dp,50.dp)){
+        Image( painter = painterResource(id = R.drawable.group_location),
+            contentDescription = "hashtagGroup")
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.CenterStart
+        ){
+            Column(
+                modifier = Modifier.fillMaxHeight(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Row(
+                    modifier = Modifier
+                        .padding(start = 74.dp)
+                        .width(220.dp)
+                        .horizontalScroll(scrollState),
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    viewModel.locationList.forEach {
+                        Text(text = it)
+                        Spacer(modifier = Modifier.width(13.dp))
+                    }
+                }
+                Text( modifier = Modifier
+                    .padding(start = 74.dp)
+                    .width(220.dp),
+                    text = "${viewModel.longitude} ${viewModel.latitute}",
+                    fontSize = 12.sp,
+                    color = Color.Gray)
+
+            }
+
+
+        }
+
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.CenterEnd
+        ){
+            Text(
+                fontSize = 16.sp,
+                text = "편집",
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier
+                    .padding(end = 11.5.dp)
+                    .clickable { /* todo 해시태그 편집기능 */ }
+            )
+        }
     }
+
 }
 
 @Composable
 fun HashTagBtn(viewModel: WritingViewModel,text: String){
-    Button(onClick = {
+    Button(modifier = Modifier.padding(bottom = 15.dp),
+        onClick = {
         viewModel.hashTagList.remove(text)
     }) {
         Text(text = text, fontSize = 14.sp)
@@ -178,7 +275,7 @@ fun HashTagBtn(viewModel: WritingViewModel,text: String){
 fun HashTagGroup(viewModel: WritingViewModel){
     val scrollState = rememberScrollState()
     Box(modifier = Modifier.size(350.dp,50.dp)){
-        Image( painter = painterResource(id = R.drawable.hashtag_group),
+        Image( painter = painterResource(id = R.drawable.group_hashtag),
             contentDescription = "hashtagGroup")
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -216,61 +313,8 @@ fun HashTagGroup(viewModel: WritingViewModel){
     }
 
 }
-@Composable
-fun GalleryImagePicker(onImageSelected: (Bitmap) -> Unit) {
-    val context = LocalContext.current
 
-    val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
-        uri?.let { imageUri ->
-            // 선택한 이미지의 Uri에서 비트맵을 생성합니다.
-            val bitmap = uriToBitmap(context, imageUri)
-            // 생성된 비트맵을 콜백으로 전달합니다.
-            bitmap?.let { onImageSelected(it) }
-        }
-    }
-
-    Button(onClick = { launcher.launch("image/*") }) {
-        Text(text = "갤러리에서 이미지 선택")
-    }
-}
-
-@Composable
-fun ImagePickerScreen() {
-    var selectedImageBitmap by remember { mutableStateOf<Bitmap?>(null) }
-
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        GalleryImagePicker { bitmap ->
-            selectedImageBitmap = bitmap
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        selectedImageBitmap?.let { bitmap ->
-            // 선택한 이미지를 비트맵으로 표시합니다.
-            Image(
-                bitmap = bitmap.asImageBitmap(),
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize()
-            )
-        }
-    }
-}
-
-// Uri에서 비트맵으로 변환하는 함수
-fun uriToBitmap(context: Context, uri: Uri): Bitmap? {
-    return try {
-        val inputStream = context.contentResolver.openInputStream(uri)
-        BitmapFactory.decodeStream(inputStream)
-    } catch (e: FileNotFoundException) {
-        e.printStackTrace()
-        null
-    }
-}
-
+//사진 자르기
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyApp() {

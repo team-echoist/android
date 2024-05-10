@@ -43,6 +43,12 @@ class WritingViewModel @Inject constructor(
     var isHashTagClicked by mutableStateOf(false)
     var hashTagText by mutableStateOf("")
     var hashTagList by mutableStateOf(mutableStateListOf<String>())
+
+    var locationText by mutableStateOf("")
+    var locationList by mutableStateOf(mutableStateListOf<String>())
+    var isLocationClicked by mutableStateOf(false)
+
+
     var isTextFeatOpened = mutableStateOf(false)
 
 
