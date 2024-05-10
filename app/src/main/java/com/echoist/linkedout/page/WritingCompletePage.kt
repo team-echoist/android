@@ -208,7 +208,7 @@ fun CompleteContents(viewModel: WritingViewModel) {
         markdown = viewModel.content.value.text,
         fontSize = 16.sp,
         color = Color(0xFFB4B4B4),
-        modifier = Modifier.padding(start = 25.dp, bottom = 42.dp)
+        modifier = Modifier.padding(start = 25.dp, bottom = 42.dp, end = 25.dp)
     )
 }
 
