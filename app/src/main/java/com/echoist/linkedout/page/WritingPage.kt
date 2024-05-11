@@ -179,7 +179,7 @@ fun WritingPage(
                     if (isKeyBoardOpened == Keyboard.Opened || viewModel.isTextFeatOpened.value) {
 
                         TextEditBar(viewModel)
-                        KeyboardLocationFunc(viewModel)
+                        KeyboardLocationFunc(viewModel,navController)
 
                     }
                 }
@@ -466,7 +466,7 @@ fun WritingCancelCard(viewModel: WritingViewModel, navController: NavController)
 }
 
 @Composable
-fun KeyboardLocationFunc(viewModel: WritingViewModel) {
+fun KeyboardLocationFunc(viewModel: WritingViewModel,navController: NavController) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val requestPermissionsUtil = RequestPermissionsUtil(LocalContext.current, viewModel)
 
@@ -493,7 +493,7 @@ fun KeyboardLocationFunc(viewModel: WritingViewModel) {
             Log.d("tagtag", "tag")
         },
         FuncItemData("맞춤법 검사", R.drawable.keyboard_spelling) {},
-        FuncItemData("이미지", R.drawable.keyboard_img) {},
+        FuncItemData("이미지", R.drawable.keyboard_img) {navController.navigate("CropImagePage")},
         FuncItemData("이미지", R.drawable.pw_eye) {},
     )
     Box(

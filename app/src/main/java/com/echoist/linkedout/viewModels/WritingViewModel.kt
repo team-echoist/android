@@ -1,6 +1,8 @@
 package com.echoist.linkedout.viewModels
 
+import android.graphics.Bitmap
 import android.util.Log
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -47,6 +49,8 @@ class WritingViewModel @Inject constructor(
     var locationText by mutableStateOf("")
     var locationList by mutableStateOf(mutableStateListOf<String>())
     var isLocationClicked by mutableStateOf(false)
+
+    var imageBitmap : MutableState<Bitmap?> = mutableStateOf(null)
 
 
     var isTextFeatOpened = mutableStateOf(false)

@@ -1,5 +1,6 @@
 package com.echoist.linkedout.page
 
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeOut
@@ -53,6 +54,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -61,6 +64,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.colintheshots.twain.MarkdownText
 import com.echoist.linkedout.R
 import com.echoist.linkedout.components.HashTagGroup
@@ -78,7 +83,9 @@ fun PreviewWritingPage2() {
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class,
+    ExperimentalGlideComposeApi::class
+)
 @Composable
 fun WritingCompletePage(
     navController: NavController,
@@ -90,6 +97,10 @@ fun WritingCompletePage(
     val scaffoldState = androidx.compose.material3.rememberBottomSheetScaffoldState(
         bottomSheetState =  rememberStandardBottomSheetState(initialValue = SheetValue.Expanded)
     )
+
+    val bitmap: Bitmap? = viewModel.imageBitmap.value
+    val imageBitmap: ImageBitmap? = bitmap?.asImageBitmap()
+
     LinkedOutTheme {
         BottomSheetScaffold(
             scaffoldState = scaffoldState,
@@ -104,24 +115,26 @@ fun WritingCompletePage(
                         detectTapGestures(onTap = {
                             viewModel.isDeleteClicked.value = false
                         })
-                    }.fillMaxSize()
+                    }
+                    .fillMaxSize()
                     .background(Color.Black),
                 topBar = { CompleteAppBar(navController = navController, viewModel) },
             ) {
-                Box(modifier = Modifier.verticalScroll(scrollState).fillMaxSize()) {
+                Box(modifier = Modifier
+                    .verticalScroll(scrollState)
+                    .fillMaxSize()) {
                     Column(
                         modifier = Modifier
                             .padding(it)
                             .padding(bottom = 67.dp)
                     ) {
+                        GlideImage(model = imageBitmap!!, contentDescription = "image") //비트맵형식으로 보여준다.
+                        Image(bitmap = imageBitmap, contentDescription = "")
                         CompleteTitle(viewModel = viewModel)
                         CompleteContents(viewModel = viewModel)
                         CompleteNickName()
                         CompleteDate(viewModel = viewModel)
-
-
                     }
-
                 }
                 Box(
                     modifier = Modifier
@@ -505,7 +518,10 @@ fun WritingDeleteCard(viewModel: WritingViewModel, navController: NavController)
                             .padding(top = 20.dp, bottom = 20.dp)
                             .clickable {
                                 viewModel.isDeleteClicked.value = false //얘는 작성중 취소이므로 서버에 올린게없음.
-                                navController.popBackStack("OnBoarding", false) //onboarding까지 전부 삭제.
+                                navController.popBackStack(
+                                    "OnBoarding",
+                                    false
+                                ) //onboarding까지 전부 삭제.
                                 navController.navigate("HOME/${viewModel.accessToken}")
                             },
                         fontSize = 16.sp,
