@@ -65,7 +65,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
 import com.colintheshots.twain.MarkdownText
 import com.echoist.linkedout.R
 import com.echoist.linkedout.components.HashTagGroup
@@ -128,8 +127,9 @@ fun WritingCompletePage(
                             .padding(it)
                             .padding(bottom = 67.dp)
                     ) {
-                        GlideImage(model = imageBitmap!!, contentDescription = "image") //비트맵형식으로 보여준다.
-                        Image(bitmap = imageBitmap, contentDescription = "")
+                        Box(contentAlignment = Alignment.Center) {
+                            Image(bitmap = imageBitmap!!, contentDescription = "image")
+                        }
                         CompleteTitle(viewModel = viewModel)
                         CompleteContents(viewModel = viewModel)
                         CompleteNickName()
