@@ -3,11 +3,7 @@ package com.echoist.linkedout.page
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.EaseInBack
-import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -41,8 +37,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,7 +46,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -606,16 +599,3 @@ fun TextEditBar(viewModel: WritingViewModel) {
         }
     }
 }
-//선언
-@Composable
-fun animateOffsetAsState(targetOffset: Offset): State<Offset> {
-    val offsetAnimation = remember { Animatable(targetOffset, Offset.VectorConverter) }
-    LaunchedEffect(targetOffset) {
-        offsetAnimation.animateTo(
-            targetValue = targetOffset,
-            animationSpec = tween(durationMillis = 800, easing = EaseInBack),
-        )
-    }
-    return offsetAnimation.asState()
-}
-
