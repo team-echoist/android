@@ -132,7 +132,7 @@ fun LocationTextField(viewModel: WritingViewModel){
 
 
             ),
-            placeholder = { Text(text = "장소 이름을 입력해주세요.", color = Color.Gray, fontSize = 12.sp)},
+            placeholder = { Text(text = "장소를 입력하고 줄을 띄워주세요", color = Color.Gray, fontSize = 12.sp)},
             onValueChange = {
                 if (it.isNotEmpty() && (it.last() == '\n')) {
                     val trimmedText = it.trim()
