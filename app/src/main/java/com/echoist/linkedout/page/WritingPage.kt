@@ -56,6 +56,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.colintheshots.twain.MarkdownText
 import com.echoist.linkedout.R
+import com.echoist.linkedout.components.BlankWarningAlert
 import com.echoist.linkedout.components.FuncItem
 import com.echoist.linkedout.components.FuncItemData
 import com.echoist.linkedout.components.HashTagBtn
@@ -198,6 +199,8 @@ fun WritingTopAppBar(
     val focusState = viewModel.focusState
     val keyboardController = LocalSoftwareKeyboardController.current
 
+    var isContentNotEmpty = remember { mutableStateOf(false) }
+
 
     Column(
         modifier = Modifier
@@ -295,16 +298,23 @@ fun WritingTopAppBar(
                 modifier = Modifier
                     .padding(end = 20.dp, top = 15.dp)
                     .clickable {
-                        navController.navigate("WritingCompletePage/${viewModel.accessToken}")
-                        /* todo 서버로 제목과 내용 보내는 기능 필요합니다.
-                        *   사진 넣는 방식도 구현 필요합니다.  */
+                        if (viewModel.title.value.text.isNotEmpty() && viewModel.content.value.text.isNotEmpty())
+                            navController.navigate("WritingCompletePage/${viewModel.accessToken}")
+                        else {
+                            isContentNotEmpty.value = true
+                        }
                     }
 
             )
-
         }
         MyDivider(viewModel)
 
+    }
+    //컨텐츠가 비어있다면 경고
+    if (isContentNotEmpty.value){
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+            BlankWarningAlert(isContentNotEmpty)
+        }
     }
 
 }
@@ -461,8 +471,8 @@ fun KeyboardLocationFunc(viewModel: WritingViewModel) {
     val requestPermissionsUtil = RequestPermissionsUtil(LocalContext.current, viewModel)
 
     val funcItems = listOf(
-        FuncItemData("인용구", R.drawable.pw_eye) {},
-        FuncItemData("인용구", R.drawable.pw_eye) {},
+        FuncItemData("인용구", R.drawable.keyboard_quote) {},
+        FuncItemData("구분선", R.drawable.keyboard_divider) {},
         FuncItemData("위치", R.drawable.keyboard_location) {
             viewModel.isHashTagClicked = false
             viewModel.isLocationClicked = !viewModel.isLocationClicked
@@ -476,13 +486,13 @@ fun KeyboardLocationFunc(viewModel: WritingViewModel) {
             }
 
         },
-        FuncItemData("쓰다 만 글", R.drawable.pw_eye) {},
+        FuncItemData("쓰다 만 글", R.drawable.keyboard_storage) {},
         FuncItemData("감정 해시태그", R.drawable.keyboard_hashtag) {
             viewModel.isLocationClicked = false
             viewModel.isHashTagClicked = !viewModel.isHashTagClicked
             Log.d("tagtag", "tag")
         },
-        FuncItemData("맞춤법 검사", R.drawable.pw_eye) {},
+        FuncItemData("맞춤법 검사", R.drawable.keyboard_spelling) {},
         FuncItemData("이미지", R.drawable.keyboard_img) {},
         FuncItemData("이미지", R.drawable.pw_eye) {},
     )
@@ -540,11 +550,20 @@ fun TextEditBar(viewModel: WritingViewModel) {
         } else {
 
             Spacer(modifier = Modifier.width(20.dp))
-            TextItem(icon = R.drawable.ring) {}
-            TextItem(icon = R.drawable.ring) {}
-            TextItem(icon = R.drawable.ring) {}
             Icon(
-                painter = painterResource(id = R.drawable.edit_bar_more),
+                painter = painterResource(id = R.drawable.editbar_thick),
+                contentDescription = "icon",
+                tint = if (isSystemInDarkTheme()) Color.White else Color.Black,
+                modifier = Modifier
+                    .size(30.dp)
+                    .padding(end = 14.dp)
+                    .clickable { }
+            )
+
+            TextItem(icon = R.drawable.editbar_alignment) {}
+            TextItem(icon = R.drawable.editbar_underline) {}
+            Icon(
+                painter = painterResource(id = R.drawable.editbar_more),
                 contentDescription = "icon",
                 modifier = Modifier
                     .size(40.dp)
@@ -557,14 +576,14 @@ fun TextEditBar(viewModel: WritingViewModel) {
                 tint = Color.Unspecified
             )
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
-                Row {
-                    TextItem(icon = R.drawable.ring) {}
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    TextItem(icon = R.drawable.editbar_folder) {}
                     VerticalDivider(
                         modifier = Modifier
                             .height(34.dp)
                             .padding(end = 12.dp), thickness = 1.dp
                     )
-                    TextItem(icon = R.drawable.ring) {}
+                    TextItem(icon = R.drawable.editbar_next) {}
 
                 }
             }

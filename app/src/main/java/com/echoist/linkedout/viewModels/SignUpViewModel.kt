@@ -57,7 +57,6 @@ class SignUpViewModel : ViewModel() {
                     Log.e("authApiFailed1", "Failed : ${response.errorBody()}")
 
                     Log.e("authApiSuccess", "${response.code()}")
-                    //todo header 파싱 ㄱㄱ 는 회원가입부터 작동
                 }
 
             } catch (e: Exception) {

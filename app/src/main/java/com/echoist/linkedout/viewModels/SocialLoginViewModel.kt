@@ -348,6 +348,7 @@ class SocialLoginViewModel @Inject constructor() : ViewModel() {
                         "android-app://androidx.navigation/HOME/$accessToken",
                         StandardCharsets.UTF_8.toString()
                     )
+                    navController.popBackStack("OnBoarding", false) //onboarding까지 전부 삭제.
                     navController.navigate("HOME/$accessToken")
                 } else {
                     Log.e("authApiFailed2", "Failed : ${response.headers().get("authorization")}")
