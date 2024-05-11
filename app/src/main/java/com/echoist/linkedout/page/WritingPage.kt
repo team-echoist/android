@@ -3,6 +3,11 @@ package com.echoist.linkedout.page
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.EaseInBack
+import androidx.compose.animation.core.VectorConverter
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,6 +20,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -35,6 +41,8 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,11 +52,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -100,10 +109,7 @@ fun WritingPage(
     viewModel.accessToken = accessToken
 
     val isKeyBoardOpened by keyboardAsState()
-
     val scrollState = rememberScrollState()
-    val focusState = viewModel.focusState
-
     val background = if (isSystemInDarkTheme()) Color.Black else Color.White
 
     val bitmap: Bitmap? = viewModel.imageBitmap.value
@@ -121,6 +127,7 @@ fun WritingPage(
             ) {
                 Column(
                     modifier = Modifier
+                        .fillMaxSize()
                         .verticalScroll(scrollState)
                 )
                 {
@@ -132,16 +139,7 @@ fun WritingPage(
                         markdown = viewModel.content.value.text,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(start = 20.dp)
-                            .layout { measurable, constraints ->
-                                val placeable = measurable.measure(constraints)
-                                layout(placeable.width, placeable.height) {
-                                    placeable.place(
-                                        x = 0,
-                                        y = if (focusState.value) 100 else 0
-                                    )
-                                }
-                            },
+                            .padding(start = 20.dp, top = 80.dp),
                         color = Color.White
                     )
                     if (bitmap!=null){
@@ -165,31 +163,43 @@ fun WritingPage(
                     }
                     //장소 찍는
                     if (viewModel.longitude.isNotEmpty() && viewModel.latitute.isNotEmpty() && viewModel.isTextFeatOpened.value) {
-                        Row {
-                            LocationBox(viewModel = viewModel)
-                            Spacer(modifier = Modifier.width(2.dp))
+                        if (viewModel.isLocationClicked){
                             Row {
-                                viewModel.locationList.forEach {
-                                    LocationBtn(viewModel = viewModel, text = it)
+                                LocationBox(viewModel = viewModel)
+                                Spacer(modifier = Modifier.width(2.dp))
+                                Row {
+                                    viewModel.locationList.forEach {
+                                        LocationBtn(viewModel = viewModel, text = it)
+                                    }
                                 }
                             }
                         }
+
                     } else if (isKeyBoardOpened == Keyboard.Closed && !viewModel.isTextFeatOpened.value) {
-                        LocationGroup(viewModel = viewModel)
-                        Spacer(modifier = Modifier.height(10.dp))
+                        if (viewModel.locationList.isNotEmpty() || viewModel.longitude.isNotEmpty()){
+                            LocationGroup(viewModel = viewModel)
+                            Spacer(modifier = Modifier.height(10.dp))
+                        }
+
                     }
                     //해시태그 찍는
                     if (viewModel.hashTagList.isNotEmpty() && viewModel.isTextFeatOpened.value) {
-                        Row {
-                            viewModel.hashTagList.forEach {
-                                HashTagBtn(viewModel = viewModel, text = it)
+                        if (viewModel.isHashTagClicked){
+                            Row {
+                                viewModel.hashTagList.forEach {
+                                    HashTagBtn(viewModel = viewModel, text = it)
+                                }
                             }
                         }
+
                     } else if (isKeyBoardOpened == Keyboard.Closed && !viewModel.isTextFeatOpened.value)
-                        Column {
-                            HashTagGroup(viewModel = viewModel)
-                            Spacer(modifier = Modifier.height(80.dp))
+                        if (viewModel.hashTagList.isNotEmpty()){
+                            Column {
+                                HashTagGroup(viewModel = viewModel)
+                                Spacer(modifier = Modifier.height(80.dp))
+                            }
                         }
+
 
                     if (isKeyBoardOpened == Keyboard.Opened || viewModel.isTextFeatOpened.value) {
 
@@ -213,6 +223,7 @@ fun WritingTopAppBar(
     val focusRequester = remember { FocusRequester() }
     val focusState = viewModel.focusState
     val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
 
     var isContentNotEmpty = remember { mutableStateOf(false) }
 
@@ -233,7 +244,8 @@ fun WritingTopAppBar(
                     modifier = Modifier
                         .padding(start = 20.dp, top = 15.dp)
                         .clickable {
-                            focusRequester.freeFocus()
+                            focusManager.clearFocus()
+                            viewModel.titleFocusState.value = false
                             viewModel.isTextFeatOpened.value = false
                             viewModel.isHashTagClicked = false
                             viewModel.isLocationClicked = false
@@ -262,25 +274,20 @@ fun WritingTopAppBar(
                 modifier = Modifier
                     .weight(1f) // 텍스트 필드와 완료 버튼을 균등하게 확장 // 오른쪽 여백 추가
             ) {
+                val xdp = animateDpAsState(targetValue = if (viewModel.titleFocusState.value) (-40).dp else 0.dp, label = "").value
+                val ydp = animateDpAsState(targetValue = if (viewModel.titleFocusState.value) 50.dp else 0.dp, label = "").value
                 TextField(
                     modifier = Modifier
-                        .layout { measurable, constraints ->
-                            val placeable = measurable.measure(constraints)
-                            layout(placeable.width, placeable.height) {
-                                placeable.place(
-                                    x = if (focusState.value) -115 else 0,
-                                    y = if (focusState.value) 120 else 0
-                                )
-                            }
-                        }
+                        .offset(x = xdp, y = ydp)
                         .focusRequester(focusRequester = focusRequester)
                         .onFocusChanged {
-                            focusState.value = it.isFocused
+                            viewModel.titleFocusState.value = it.isFocused
                         },
+
                     placeholder = {
                         Box(
                             modifier = Modifier.fillMaxWidth(),
-                            contentAlignment = if (focusState.value) Alignment.CenterStart else Alignment.Center
+                            contentAlignment = if (viewModel.titleFocusState.value) Alignment.CenterStart else Alignment.Center
                         ) {
                             Text(
                                 text = "제목을 입력하세요",
@@ -292,8 +299,8 @@ fun WritingTopAppBar(
                     value = textState.value,
                     onValueChange = { textState.value = it },
                     textStyle = TextStyle(
-                        textAlign = if (focusState.value) TextAlign.Start else TextAlign.Center,
-                        fontSize = if (focusState.value) 20.sp else 16.sp
+                        textAlign = if (viewModel.titleFocusState.value) TextAlign.Start else TextAlign.Center,
+                        fontSize = if (viewModel.titleFocusState.value) 20.sp else 16.sp
                     ),
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = Color.Transparent,
@@ -341,17 +348,12 @@ fun ContentTextField(viewModel: WritingViewModel) {
     val content = viewModel.content
     val focusState = viewModel.focusState
 
+    val ydp = animateDpAsState(targetValue = if (viewModel.titleFocusState.value) 40.dp else 0.dp, label = "").value
+
     TextField(
+
         modifier = Modifier
-            .layout { measurable, constraints ->
-                val placeable = measurable.measure(constraints)
-                layout(placeable.width, placeable.height) {
-                    placeable.place(
-                        x = 0,
-                        y = if (focusState.value) 100 else 0
-                    )
-                }
-            }
+            .offset(x = 0.dp, y = ydp)
             .onFocusChanged { focusState.value = it.isFocused }
             .fillMaxWidth()
             .padding(5.dp),
@@ -359,7 +361,7 @@ fun ContentTextField(viewModel: WritingViewModel) {
         onValueChange = {
             content.value = it
         },
-        label = {
+        placeholder = {
             Text(
                 text = "내용을 입력하세요",
                 color = Color(0xFF686868)
@@ -379,22 +381,23 @@ fun ContentTextField(viewModel: WritingViewModel) {
 
 @Composable
 fun MyDivider(viewModel: WritingViewModel) {
-    val focusState = viewModel.focusState
 
-    HorizontalDivider(thickness = 1.dp, modifier = Modifier
-        .padding(
-            start = 20.dp,
-            end = 20.dp
+    val ydp = animateDpAsState(
+        targetValue = if (viewModel.titleFocusState.value) 40.dp else 0.dp,
+        label = ""
+    ).value
+
+    Box(
+        modifier = Modifier
+            .padding(start = 20.dp, end = 20.dp)
+            .offset(x = 0.dp, y = ydp)
+    ) {
+        HorizontalDivider(
+            thickness = 1.dp,
+            modifier = Modifier.fillMaxWidth(),
+            color = Color(0xFF202020)
         )
-        .layout { measurable, constraints ->
-            val placeable = measurable.measure(constraints)
-            layout(placeable.width, placeable.height) {
-                placeable.place(
-                    x = 0,
-                    y = if (focusState.value) 100 else 0
-                )
-            }
-        })
+    }
 }
 
 @Composable
@@ -603,3 +606,16 @@ fun TextEditBar(viewModel: WritingViewModel) {
         }
     }
 }
+//선언
+@Composable
+fun animateOffsetAsState(targetOffset: Offset): State<Offset> {
+    val offsetAnimation = remember { Animatable(targetOffset, Offset.VectorConverter) }
+    LaunchedEffect(targetOffset) {
+        offsetAnimation.animateTo(
+            targetValue = targetOffset,
+            animationSpec = tween(durationMillis = 800, easing = EaseInBack),
+        )
+    }
+    return offsetAnimation.asState()
+}
+

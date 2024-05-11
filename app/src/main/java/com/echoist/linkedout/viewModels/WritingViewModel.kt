@@ -32,6 +32,8 @@ class WritingViewModel @Inject constructor(
         accessToken = socialLoginViewModel.accessToken
     }
     var focusState = mutableStateOf(false)
+    var titleFocusState = mutableStateOf(false)
+
     var title = mutableStateOf(TextFieldValue(""))
     var content = mutableStateOf(TextFieldValue(""))
     var date = mutableStateOf("")
@@ -56,6 +58,7 @@ class WritingViewModel @Inject constructor(
 
     var isTextFeatOpened = mutableStateOf(false)
     fun initialize() {
+        titleFocusState.value = false
         focusState.value = false
         title.value = TextFieldValue("")
         content.value = TextFieldValue("")
