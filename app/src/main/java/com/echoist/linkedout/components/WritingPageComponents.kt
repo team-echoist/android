@@ -267,7 +267,10 @@ fun LocationGroup(viewModel: WritingViewModel){
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier
                     .padding(end = 11.5.dp)
-                    .clickable { /* todo 해시태그 편집기능 */ }
+                    .clickable {
+                        viewModel.isLocationClicked = true
+                        viewModel.isTextFeatOpened.value = true
+                    }
             )
         }
     }
@@ -326,7 +329,8 @@ fun HashTagGroup(viewModel: WritingViewModel){
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier
                     .padding(end = 11.5.dp)
-                    .clickable { /* todo 해시태그 편집기능 */ }
+                    .clickable { viewModel.isHashTagClicked = true
+                        viewModel.isTextFeatOpened.value = true }
             )
         }
     }

@@ -141,10 +141,15 @@ fun WritingCompletePage(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Spacer(modifier = Modifier.height(50.dp))
-                        LocationGroup(viewModel = viewModel)
-                        Spacer(modifier = Modifier.height(21.dp))
-                        HashTagGroup(viewModel = viewModel)
+                        if (viewModel.locationList.isNotEmpty() || viewModel.longitude.isNotEmpty()){
+                            Spacer(modifier = Modifier.height(50.dp))
+                            LocationGroup(viewModel = viewModel)
+                        }
+                        if (viewModel.hashTagList.isNotEmpty()){
+                            Spacer(modifier = Modifier.height(10.dp))
+                            HashTagGroup(viewModel = viewModel)
+                        }
+
                     }
                 }
                 //바텀시트 올라와있으면 패딩값 추가
