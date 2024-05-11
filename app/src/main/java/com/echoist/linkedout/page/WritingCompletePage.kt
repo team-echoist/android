@@ -130,6 +130,7 @@ fun WritingCompletePage(
                         Box(contentAlignment = Alignment.Center) {
                             Image(bitmap = imageBitmap!!, contentDescription = "image")
                         }
+                        Spacer(modifier = Modifier.height(20.dp))
                         CompleteTitle(viewModel = viewModel)
                         CompleteContents(viewModel = viewModel)
                         CompleteNickName()

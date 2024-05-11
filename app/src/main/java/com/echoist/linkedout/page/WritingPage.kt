@@ -1,7 +1,9 @@
 package com.echoist.linkedout.page
 
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -43,6 +45,8 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -102,6 +106,9 @@ fun WritingPage(
 
     val background = if (isSystemInDarkTheme()) Color.Black else Color.White
 
+    val bitmap: Bitmap? = viewModel.imageBitmap.value
+    val imageBitmap: ImageBitmap? = bitmap?.asImageBitmap()
+
 
     Log.d("tokentoken", accessToken)
 
@@ -118,6 +125,8 @@ fun WritingPage(
                 )
                 {
                     WritingTopAppBar(navController = navController, viewModel)
+
+
                     ContentTextField(viewModel = viewModel)
                     MarkdownText(
                         markdown = viewModel.content.value.text,
@@ -135,6 +144,12 @@ fun WritingPage(
                             },
                         color = Color.White
                     )
+                    if (bitmap!=null){
+                        Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(top = 100.dp)) {
+                            Image(bitmap = imageBitmap!!, contentDescription = "image")
+                        }
+                    }
+
                 }
 
             }

@@ -51,6 +51,7 @@ class WritingViewModel @Inject constructor(
     var isLocationClicked by mutableStateOf(false)
 
     var imageBitmap : MutableState<Bitmap?> = mutableStateOf(null)
+    //todo image bitmap 레트로핏으로 보내는방법
 
 
     var isTextFeatOpened = mutableStateOf(false)
