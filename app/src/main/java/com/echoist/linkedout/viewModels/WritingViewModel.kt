@@ -55,6 +55,25 @@ class WritingViewModel @Inject constructor(
 
 
     var isTextFeatOpened = mutableStateOf(false)
+    fun initialize() {
+        focusState.value = false
+        title.value = TextFieldValue("")
+        content.value = TextFieldValue("")
+        date.value = ""
+        ringTouchedTime.value = 5
+        isCanCelClicked.value = false
+        isDeleteClicked.value = false
+        latitute = ""
+        longitude = ""
+        isHashTagClicked = false
+        hashTagText = ""
+        hashTagList = mutableStateListOf()
+        locationText = ""
+        locationList = mutableStateListOf()
+        isLocationClicked = false
+        imageBitmap = mutableStateOf(null)
+        isTextFeatOpened.value = false
+    }
 
 
 

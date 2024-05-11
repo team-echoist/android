@@ -233,11 +233,13 @@ fun WritingTopAppBar(
                     modifier = Modifier
                         .padding(start = 20.dp, top = 15.dp)
                         .clickable {
+                            focusRequester.freeFocus()
                             viewModel.isTextFeatOpened.value = false
                             viewModel.isHashTagClicked = false
                             viewModel.isLocationClicked = false
                             keyboardController?.hide()
                             focusState.value = false
+
                         },
                     tint = Color.White
                 )
@@ -426,11 +428,7 @@ fun WritingCancelCard(viewModel: WritingViewModel, navController: NavController)
                         .padding(top = 20.dp, bottom = 20.dp)
                         .clickable {
                             navController.navigate("HOME/${viewModel.accessToken}")
-                            viewModel.isCanCelClicked.value = false
-                            viewModel.isTextFeatOpened.value = false
-                            viewModel.isLocationClicked = false
-                            viewModel.hashTagList.clear()
-                            viewModel.locationList.clear()
+                            viewModel.initialize()
                         },
                     fontSize = 16.sp,
                     text = "작성취소",

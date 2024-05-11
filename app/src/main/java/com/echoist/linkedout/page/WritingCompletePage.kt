@@ -26,7 +26,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
@@ -44,13 +43,8 @@ import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -64,7 +58,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.colintheshots.twain.MarkdownText
 import com.echoist.linkedout.R
 import com.echoist.linkedout.components.HashTagGroup
@@ -82,9 +75,7 @@ fun PreviewWritingPage2() {
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class,
-    ExperimentalGlideComposeApi::class
-)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WritingCompletePage(
     navController: NavController,
@@ -92,9 +83,10 @@ fun WritingCompletePage(
     accessToken: String
 ) {
     viewModel.accessToken = accessToken
+    val bottomSheetState = rememberStandardBottomSheetState(initialValue = SheetValue.Expanded)
     val scrollState = rememberScrollState()
     val scaffoldState = androidx.compose.material3.rememberBottomSheetScaffoldState(
-        bottomSheetState =  rememberStandardBottomSheetState(initialValue = SheetValue.Expanded)
+        bottomSheetState = bottomSheetState
     )
 
     val bitmap: Bitmap? = viewModel.imageBitmap.value
@@ -127,8 +119,10 @@ fun WritingCompletePage(
                             .padding(it)
                             .padding(bottom = 67.dp)
                     ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Image(bitmap = imageBitmap!!, contentDescription = "image")
+                        if (imageBitmap != null){
+                            Box(contentAlignment = Alignment.Center) {
+                                Image(bitmap = imageBitmap, contentDescription = "image")
+                            }
                         }
                         Spacer(modifier = Modifier.height(20.dp))
                         CompleteTitle(viewModel = viewModel)
@@ -153,10 +147,12 @@ fun WritingCompletePage(
                         HashTagGroup(viewModel = viewModel)
                     }
                 }
+                //바텀시트 올라와있으면 패딩값 추가
+                val expandDp =  if (bottomSheetState.currentValue == SheetValue.Expanded) 350.dp else 40.dp
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(bottom = 40.dp),
+                        .padding(bottom = expandDp),
                     contentAlignment = Alignment.BottomCenter
                 ){
                     AnimatedVisibility(
@@ -258,36 +254,6 @@ fun CompleteDate(viewModel: WritingViewModel) {
             modifier = Modifier.padding(end = 25.dp)
         )
     }
-}
-
-//꼭 버튼으로만 다 닫고 올리고 해야하는가?
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun BottomSheet(
-    viewModel: WritingViewModel,
-    closeSheet: () -> Unit,
-    navController: NavController
-) {
-    val sheetState = rememberModalBottomSheetState()
-    var isExpanded by remember { mutableStateOf(false) }
-    val scaffoldState = androidx.compose.material3.rememberBottomSheetScaffoldState()
-    BottomSheetScaffold(
-        sheetContent = {
-            WritingCompletePager(viewModel = viewModel, navController = navController)
-        },
-        sheetPeekHeight = 56.dp,
-        scaffoldState = scaffoldState
-    ){}
-
-//    ModalBottomSheet(
-//        containerColor = Color.White,
-//        onDismissRequest = { closeSheet() },
-//        sheetState = sheetState
-//    ) {
-//        WritingCompletePager(viewModel = viewModel, navController = navController)
-//    }
-
-
 }
 
 @Composable
@@ -439,6 +405,7 @@ fun WritingCompletePager(viewModel: WritingViewModel, navController: NavControll
                         Button(
                             onClick = { /*TODO 저장할래요 기능 구현필요*/
                                 viewModel.writeEssay(navController = navController)
+                                viewModel.initialize()
                             },
                             modifier = Modifier.padding(bottom = 16.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1D1D1D))
@@ -448,6 +415,7 @@ fun WritingCompletePager(viewModel: WritingViewModel, navController: NavControll
                         Button(
                             onClick = { /*TODO 나눠볼래요 기능 구현필요*/
                                 viewModel.writeEssay(navController, published = true)
+                                viewModel.initialize()
                             },
                             modifier = Modifier.padding(bottom = 16.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1D1D1D))
@@ -458,6 +426,7 @@ fun WritingCompletePager(viewModel: WritingViewModel, navController: NavControll
                         Button(
                             onClick = { /*TODO 놓아줄래요 기능 구현필요*/
                                 viewModel.writeEssay(navController, linkedOut = true)
+                                viewModel.initialize()
                             },
                             modifier = Modifier.padding(bottom = 30.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1D1D1D))
@@ -485,6 +454,7 @@ fun WritingCompletePager(viewModel: WritingViewModel, navController: NavControll
         }
     }
 }
+//todo page 이동시 뷰모델 초기화하는 함수 따로 작성하기.
 
 @Composable
 fun WritingDeleteCard(viewModel: WritingViewModel, navController: NavController) {
@@ -518,7 +488,7 @@ fun WritingDeleteCard(viewModel: WritingViewModel, navController: NavController)
                         modifier = Modifier
                             .padding(top = 20.dp, bottom = 20.dp)
                             .clickable {
-                                viewModel.isDeleteClicked.value = false //얘는 작성중 취소이므로 서버에 올린게없음.
+                                viewModel.initialize()
                                 navController.popBackStack(
                                     "OnBoarding",
                                     false
