@@ -68,9 +68,9 @@ interface EssayApi{
     suspend fun readEssay(
         @Header("Authorization") accessToken: String,
         @Query("published") published: Boolean? = false,
-        @Query("categoryId") categoryId: Int?= 1,
-        @Query("page") page: Int?= 1,
-        @Query("limit") limit: Int?= 10,
-    ): EssayInfo
+        @Query("categoryId") categoryId: String= "",
+        @Query("page") page:  String= "",
+        @Query("limit") limit:  String= "",
+    ): Response<EssayInfo>
 
 }

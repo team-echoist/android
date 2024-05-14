@@ -41,6 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.data.EssayItem
@@ -148,15 +149,15 @@ fun Essaychip(
     }
 }
 
-@Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun prevessay(){
-    EssayListItem(item = EssayItem("content","2024",1,false,3,false,"","title","2424"))
-}
 
-@OptIn(ExperimentalGlideComposeApi::class)
+@OptIn(ExperimentalGlideComposeApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun EssayListItem(item: EssayItem){
+fun EssayListItem(
+    item: EssayItem,
+    pagerState: PagerState,
+    viewModel: MyLogViewModel,
+    navController: NavController
+){
     val color = if (isSystemInDarkTheme()) {
         Color.White
     } else {
@@ -164,61 +165,10 @@ fun EssayListItem(item: EssayItem){
     }
     Box(modifier = Modifier
         .fillMaxWidth()
-        .height(180.dp)){
-        if (item.thumbnail != null){
-            Box(modifier = Modifier.fillMaxSize()){
-                GlideImage(model = item.thumbnail, contentDescription = "")
-
-            }
+        .clickable {
+            viewModel.detailEssay = item
+            navController.navigate("MyLogDetailPage")
         }
-        //타이틀
-        Column(modifier = Modifier
-            .fillMaxSize()
-            .padding(top = 20.dp, start = 20.dp, end = 20.dp)) {
-            Text(
-                text = item.title,
-                color = color,
-                fontSize = 20.sp,
-
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-            Text(
-                text = item.content,
-                maxLines = 3,
-                color = color,
-                overflow = TextOverflow.Ellipsis
-            )
-
-        }
-        Box(contentAlignment = Alignment.TopEnd, modifier = Modifier
-            .fillMaxSize()
-            .padding(end = 20.dp, top = 20.dp)) {
-            Icon(imageVector = Icons.Default.Commit, contentDescription = "", tint = color,)
-        }
-
-        Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier
-            .fillMaxSize()
-            .padding(end = 20.dp, bottom = 20.dp)) {
-            Text(text = item.createdDate, fontSize = 10.sp, color = Color(0xFF686868))
-        }
-        Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier
-            .fillMaxSize()) {
-            HorizontalDivider(color = Color(0xFF686868))
-        }
-
-    }
-}
-
-@OptIn(ExperimentalGlideComposeApi::class)
-@Composable
-fun EssayListItem2(item: EssayItem){
-    val color = if (isSystemInDarkTheme()) {
-        Color.White
-    } else {
-        Color.Black
-    }
-    Box(modifier = Modifier
-        .fillMaxWidth()
         .height(180.dp)){
         if (item.thumbnail != null){
             Box(modifier = Modifier.fillMaxSize()){
@@ -236,11 +186,14 @@ fun EssayListItem2(item: EssayItem){
                     fontSize = 20.sp,
 
                     )
-                Spacer(modifier = Modifier.width(10.dp))
-                Surface(color = Color(0xFFFFBB36), modifier = Modifier.size(45.dp,18.dp), shape = CircleShape) {
+                if (pagerState.currentPage == 1){
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Surface(color = Color(0xFFFFBB36), modifier = Modifier.size(45.dp,18.dp), shape = CircleShape) {
 
-                    Text(text = "Out", textAlign = TextAlign.Center, modifier = Modifier.padding(bottom = 1.dp))
+                        Text(text = "Out", textAlign = TextAlign.Center, modifier = Modifier.padding(bottom = 1.dp))
+                    }
                 }
+
             }
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -271,41 +224,13 @@ fun EssayListItem2(item: EssayItem){
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun EssayListPage1(viewModel: MyLogViewModel){
-    viewModel.readEssay(false)
-    val item1 = EssayItem("content","2024",1,false,3,false,"","title","2424")
-    val item2 = EssayItem("content","2024",1,false,3,false,"","title","2424")
-    val item3 = EssayItem("content","2024",1,false,3,false,"","title","2424")
-    val item4 = EssayItem("content","2024",1,false,3,false,"","title","2424")
-    val item5 = EssayItem("content","2024",1,false,3,false,"","title","2424")
-    val item6 = EssayItem("content","2024",1,false,3,false,"","title","2424")
-
-
-    val essayList = mutableListOf(item1,item2,item3,item4,item5,item6)
+fun EssayListPage1(viewModel: MyLogViewModel,pagerState: PagerState,navController: NavController){
 
     LazyColumn {
-        items(essayList){it->
-            EssayListItem(item = it)
-        }
-    }
-
-}
-
-@Composable
-fun EssayListPage2(viewModel: MyLogViewModel){
-    viewModel.readEssay(true)
-    val item1 = EssayItem("content","2024",1,false,3,false,"","title","2424")
-    val item2 = EssayItem("content","2024",1,false,3,false,"","title","2424")
-    val item3 = EssayItem("content","2024",1,false,3,false,"","title","2424")
-    val item4 = EssayItem("content","2024",1,false,3,false,"","title","2424")
-    val item5 = EssayItem("content","2024",1,false,3,false,"","title","2424")
-    val item6 = EssayItem("content","2024",1,false,3,false,"","title","2424")
-    val essayList = mutableListOf(item1,item2,item3,item4,item5,item6)
-
-    LazyColumn {
-        items(essayList){
-            EssayListItem2(item = it)
+        items(viewModel.myEssayList){it->
+            EssayListItem(item = it,pagerState,viewModel,navController)
         }
     }
 
@@ -313,11 +238,23 @@ fun EssayListPage2(viewModel: MyLogViewModel){
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun EssayPager(pagerState: PagerState,viewModel: MyLogViewModel) {
+fun EssayListPage2(viewModel: MyLogViewModel,pagerState: PagerState,navController: NavController){
+
+    LazyColumn {
+        items(viewModel.publishedEssayList){
+            EssayListItem(item = it,pagerState,viewModel,navController)
+        }
+    }
+
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun EssayPager(pagerState: PagerState,viewModel: MyLogViewModel,navController: NavController) {
     HorizontalPager(state = pagerState, modifier = Modifier.padding(top = 20.dp)) { page ->
         when (page) {
-            0 -> EssayListPage1(viewModel)
-            1 -> EssayListPage2(viewModel)
+            0 -> EssayListPage1(viewModel,pagerState,navController)
+            1 -> EssayListPage2(viewModel,pagerState,navController)
         }
     }
 }

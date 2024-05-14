@@ -409,7 +409,7 @@ fun WritingCompletePager(viewModel: WritingViewModel, navController: NavControll
                         )
                         Button(
                             onClick = {
-                                viewModel.writeEssay(navController = navController)
+                                viewModel.writeEssay(navController = navController, published = false)
                             },
                             modifier = Modifier.padding(bottom = 16.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1D1D1D))

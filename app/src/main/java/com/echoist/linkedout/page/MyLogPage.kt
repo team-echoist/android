@@ -20,7 +20,8 @@ import com.echoist.linkedout.viewModels.MyLogViewModel
 @Composable
 fun MyLogPage(navController : NavController,viewModel: MyLogViewModel){
     val pagerstate = rememberPagerState { 3 }
-
+    viewModel.readEssay(false)
+    viewModel.readEssay(true)
 
     LinkedOutTheme {
         Scaffold(
@@ -34,7 +35,7 @@ fun MyLogPage(navController : NavController,viewModel: MyLogViewModel){
             floatingActionButton = { WriteFTB(navController,accessToken) },
             content = {
                 Box(Modifier.padding(it)) {
-                    EssayPager(pagerState = pagerstate,viewModel)
+                    EssayPager(pagerState = pagerstate,viewModel, navController = navController)
                 }
             }
         )

@@ -135,6 +135,9 @@ class LoginPage : ComponentActivity() {
                 composable("MYLOG") {
                     MyLogPage(navController = navController,myLogviewModel)
                 }
+                composable("MyLogDetailPage") {
+                    MyLogDetailPage(navController = navController,myLogviewModel)
+                }
                 composable("COMMUNITY") {
                     //community page
                 }
