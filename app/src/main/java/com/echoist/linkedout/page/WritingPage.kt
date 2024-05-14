@@ -423,8 +423,8 @@ fun WritingCancelCard(viewModel: WritingViewModel, navController: NavController)
                     modifier = Modifier
                         .padding(top = 20.dp, bottom = 20.dp)
                         .clickable {
-                            navController.navigate("HOME/${viewModel.accessToken}")
                             viewModel.initialize()
+                            navController.navigate("HOME/${viewModel.accessToken}")
                         },
                     fontSize = 16.sp,
                     text = "작성취소",

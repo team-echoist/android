@@ -122,6 +122,7 @@ class WritingViewModel @Inject constructor(
                     Log.e("writeEssayApiSuccess", "${response.code()}")
                     navController.popBackStack("OnBoarding", false) //onboarding까지 전부 삭제.
                     navController.navigate("HOME/$accessToken")
+                    initialize()
                 } else {
                     Log.e("writeEssayApiFailed token", "Failed to write essay: $accessToken")
 

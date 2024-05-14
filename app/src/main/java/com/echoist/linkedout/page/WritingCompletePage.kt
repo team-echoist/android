@@ -408,9 +408,8 @@ fun WritingCompletePager(viewModel: WritingViewModel, navController: NavControll
                             color = Color.Black
                         )
                         Button(
-                            onClick = { /*TODO 저장할래요 기능 구현필요*/
+                            onClick = {
                                 viewModel.writeEssay(navController = navController)
-                                viewModel.initialize()
                             },
                             modifier = Modifier.padding(bottom = 16.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1D1D1D))
@@ -418,9 +417,8 @@ fun WritingCompletePager(viewModel: WritingViewModel, navController: NavControll
                             Text(text = "저장할래요", color = Color.White)
                         }
                         Button(
-                            onClick = { /*TODO 나눠볼래요 기능 구현필요*/
+                            onClick = {
                                 viewModel.writeEssay(navController, published = true)
-                                viewModel.initialize()
                             },
                             modifier = Modifier.padding(bottom = 16.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1D1D1D))
@@ -429,9 +427,8 @@ fun WritingCompletePager(viewModel: WritingViewModel, navController: NavControll
                             Text(text = "나눠볼래요", color = Color.White)
                         }
                         Button(
-                            onClick = { /*TODO 놓아줄래요 기능 구현필요*/
+                            onClick = {
                                 viewModel.writeEssay(navController, linkedOut = true)
-                                viewModel.initialize()
                             },
                             modifier = Modifier.padding(bottom = 30.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1D1D1D))
@@ -493,12 +490,12 @@ fun WritingDeleteCard(viewModel: WritingViewModel, navController: NavController)
                         modifier = Modifier
                             .padding(top = 20.dp, bottom = 20.dp)
                             .clickable {
-                                viewModel.initialize()
                                 navController.popBackStack(
                                     "OnBoarding",
                                     false
                                 ) //onboarding까지 전부 삭제.
                                 navController.navigate("HOME/${viewModel.accessToken}")
+                                viewModel.initialize()
                             },
                         fontSize = 16.sp,
                         text = "삭제하기",
