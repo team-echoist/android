@@ -1,5 +1,7 @@
 package com.echoist.linkedout.components
 
+import MyLogView1Model
+import MyLogViewModel
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,10 +16,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -33,16 +38,14 @@ import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.data.EssayItem
-import com.echoist.linkedout.viewModels.FakeMyLogViewModel
-import com.echoist.linkedout.viewModels.MyLogView1Model
 
 @Preview
 @Composable
 fun pre(){
-    val viewModel = FakeMyLogViewModel
+    val viewModel = MyLogViewModel()
     Column {
 
-        LastEssayItem(item = FakeMyLogViewModel.detailEssay,viewModel, rememberNavController())
+        LastEssayItem(item = viewModel.detailEssay,viewModel, rememberNavController())
         LastEssayPager(viewModel, rememberNavController())
     }
 }
@@ -62,8 +65,11 @@ fun LastEssayItem(
     Box(modifier = Modifier
         .fillMaxWidth()
         .clickable {
-            viewModel.detailEssay = item
-            navController.navigate("MyLogDetailPage")
+            if (item.id != viewModel.detailEssay.id) {
+                viewModel.detailEssay = item
+                navController.navigate("MyLogDetailPage")
+                viewModel.detailEssayBackStack.push(item)
+            }
         }
         .height(140.dp)) {
         //타이틀
@@ -74,11 +80,24 @@ fun LastEssayItem(
                     .padding(top = 20.dp, start = 20.dp, end = 20.dp)
                     .weight(7f) // Column 비율 조정
             ) {
-                Text(
-                    text = item.title,
-                    color = color,
-                    fontSize = 20.sp,
-                )
+                Row {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(0.7f),
+                        text = item.title,
+                        color = color,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        fontSize = 20.sp,
+                    )
+                    if (item.id == viewModel.detailEssay.id){
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Surface(shape = RoundedCornerShape(60), color = Color.Magenta) {
+                            Text(text = "현재 글",Modifier.padding(start = 5.dp, end = 5.dp))
+                        }
+                    }
+
+                }
+
 
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(
@@ -147,7 +166,12 @@ fun LastEssayPager(viewModel: MyLogView1Model, navController: NavController){
             )
             val essayList =
                 if (viewModel.detailEssay.published) viewModel.publishedEssayList else viewModel.myEssayList
-            val pageItems = essayList.subList(startIndex, endIndex).filter { it.id != viewModel.detailEssay.id }
+            val pageItems = if (endIndex <= essayList.size) {
+                essayList.subList(startIndex, endIndex)
+            } else {
+                essayList.subList(startIndex, essayList.size)
+            }
+
             Column {
                 pageItems.forEach { essay ->
                     LastEssayItem(

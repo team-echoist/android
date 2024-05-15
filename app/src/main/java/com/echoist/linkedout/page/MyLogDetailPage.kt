@@ -1,5 +1,7 @@
 package com.echoist.linkedout.page
 
+import MyLogView1Model
+import MyLogViewModel
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
@@ -48,8 +50,6 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
 import com.echoist.linkedout.components.LastEssayPager
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
-import com.echoist.linkedout.viewModels.MyLogView1Model
-import com.echoist.linkedout.viewModels.MyLogViewModel
 
 @Preview
 @Composable
@@ -165,8 +165,14 @@ fun DetailTopAppBar(navController: NavController,viewModel: MyLogView1Model){
 
                     .padding(start = 20.dp)
                     .clickable {
+                        if (viewModel.detailEssayBackStack.isNotEmpty()){
+                            //todo 뭔가이상해. 왜 안되냐? 그 이전 화면 보여주는코드 다시짜야함
+                            viewModel.detailEssay = viewModel.detailEssayBackStack.pop()
+                        }
                         navController.popBackStack()
                         viewModel.isActionClicked = false
+
+
                     } //뒤로가기
             )
         },

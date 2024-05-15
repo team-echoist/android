@@ -1,5 +1,6 @@
 package com.echoist.linkedout.page
 
+import MyLogViewModel
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,7 +15,6 @@ import com.echoist.linkedout.components.EssayPager
 import com.echoist.linkedout.components.MyLogTopAppBar
 import com.echoist.linkedout.page.Token.accessToken
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
-import com.echoist.linkedout.viewModels.MyLogViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
