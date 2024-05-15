@@ -20,8 +20,7 @@ import com.echoist.linkedout.viewModels.MyLogViewModel
 @Composable
 fun MyLogPage(navController : NavController,viewModel: MyLogViewModel){
     val pagerstate = rememberPagerState { 3 }
-    viewModel.readEssay(false)
-    viewModel.readEssay(true)
+
 
     LinkedOutTheme {
         Scaffold(

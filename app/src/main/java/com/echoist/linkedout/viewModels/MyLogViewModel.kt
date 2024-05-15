@@ -15,11 +15,42 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+interface MyLogView1Model {
+    val myEssayList: List<EssayItem>
+    val publishedEssayList: List<EssayItem>
+    var detailEssay: EssayItem
+    var accessToken: String
+    var isActionClicked: Boolean
 
-class MyLogViewModel : ViewModel() {
-    var myEssayList by mutableStateOf(mutableStateListOf<EssayItem>())
-    var publishedEssayList by mutableStateOf(mutableStateListOf<EssayItem>())
-    var detailEssay by mutableStateOf(EssayItem(
+    fun readEssay(published: Boolean)
+}
+object FakeMyLogViewModel : MyLogView1Model {
+    override val myEssayList: List<EssayItem> = emptyList()
+    override val publishedEssayList: List<EssayItem> = emptyList()
+    override var detailEssay: EssayItem = EssayItem(
+        content = "Fake content",
+        createdDate = "2024-05-15",
+        id = 0,
+        linkedOut = false,
+        linkedOutGauge = 0,
+        published = false,
+        thumbnail = "",
+        title = "Fake title",
+        updatedDate = "2024-05-15"
+    )
+    override var accessToken: String = ""
+    override var isActionClicked: Boolean = false
+
+    override fun readEssay(published: Boolean) {
+        // 가짜 데이터를 반환하므로 아무 동작도 수행하지 않습니다.
+    }
+}
+
+
+class MyLogViewModel : ViewModel(),MyLogView1Model {
+    override var myEssayList by mutableStateOf(mutableStateListOf<EssayItem>())
+    override var publishedEssayList by mutableStateOf(mutableStateListOf<EssayItem>())
+    override var detailEssay by mutableStateOf(EssayItem(
             content = "이 에세이는 예시입니다.",
     createdDate = "2024-05-15",
     id = 1,
@@ -30,8 +61,8 @@ class MyLogViewModel : ViewModel() {
     title = "예시 에세이",
     updatedDate = "2024-05-15"
     ))
-    var accessToken : String = "token"
-    var isActionClicked by mutableStateOf(false)
+    override var accessToken : String = "token"
+    override var isActionClicked by mutableStateOf(false)
 
 
 
@@ -48,14 +79,15 @@ class MyLogViewModel : ViewModel() {
         .create(EssayApi::class.java)
 
     //나만의글, 발행한 글 나눠서 가져오기. Published로
-    fun readEssay(published : Boolean){
+    override fun readEssay(published : Boolean){
+        myEssayList.clear()
+        publishedEssayList.clear()
+
         viewModelScope.launch {
-            myEssayList.clear()
-            publishedEssayList.clear()
+
             try {
                 val response = api.readEssay(accessToken = Token.accessToken,published = published)
-                Log.d("essaylist", response.body()!!.path + response.body()!!.timestamp)
-                Log.d("essaylist",response.body()!!.path + response.body()!!.data)
+                Log.d("essaylist data",response.body()!!.path + response.body()!!.data)
 
 
                 if (response.isSuccessful){
@@ -75,7 +107,11 @@ class MyLogViewModel : ViewModel() {
 
                 }
                 myEssayList.forEach{
-                    Log.d("essaylist",it.title)
+                    Log.d("essaylistmylist",it.title)
+
+                }
+                publishedEssayList.forEach{
+                    Log.d("essaylistpublishedmylist",it.title)
 
                 }
             }catch (e:Exception){

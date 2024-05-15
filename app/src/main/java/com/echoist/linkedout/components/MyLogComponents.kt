@@ -227,24 +227,26 @@ fun EssayListItem(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun EssayListPage1(viewModel: MyLogViewModel,pagerState: PagerState,navController: NavController){
+    viewModel.readEssay(false)
 
-    LazyColumn {
-        items(viewModel.myEssayList){it->
-            EssayListItem(item = it,pagerState,viewModel,navController)
+        LazyColumn {
+            items(viewModel.myEssayList){it->
+                EssayListItem(item = it,pagerState,viewModel,navController)
+            }
         }
-    }
-
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun EssayListPage2(viewModel: MyLogViewModel,pagerState: PagerState,navController: NavController){
+    viewModel.readEssay(true)
 
-    LazyColumn {
-        items(viewModel.publishedEssayList){
-            EssayListItem(item = it,pagerState,viewModel,navController)
+        LazyColumn {
+            items(viewModel.publishedEssayList) {
+                EssayListItem(item = it, pagerState, viewModel, navController)
+            }
         }
-    }
+
 
 }
 

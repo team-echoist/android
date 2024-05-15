@@ -6,7 +6,6 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -20,7 +19,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -38,21 +36,29 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
+import com.echoist.linkedout.components.LastEssayPager
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
+import com.echoist.linkedout.viewModels.MyLogView1Model
 import com.echoist.linkedout.viewModels.MyLogViewModel
 
-@OptIn(ExperimentalFoundationApi::class)
+@Preview
 @Composable
-fun MyLogDetailPage(navController : NavController,viewModel: MyLogViewModel){
-    val pagerstate = rememberPagerState { 3 }
+fun pre(){
+    MyLogDetailPage(navController = NavController(LocalContext.current), viewModel = MyLogViewModel())
+}
+@Composable
+fun MyLogDetailPage(navController : NavController,viewModel: MyLogView1Model){
+    val scrollState = rememberScrollState()
 
     LinkedOutTheme {
         Scaffold(
@@ -60,8 +66,16 @@ fun MyLogDetailPage(navController : NavController,viewModel: MyLogViewModel){
                 DetailTopAppBar(navController = navController,viewModel)
             },
             content = {
-                Box(Modifier.padding(it)) {
-                    DetailEssay(viewModel = viewModel)
+                Box(
+                    Modifier
+                        .padding(it)
+                        .fillMaxSize()
+                , contentAlignment = Alignment.TopCenter) {
+                    Column(Modifier.verticalScroll(scrollState)) {
+                        DetailEssay(viewModel = viewModel)
+                        LastEssayPager(viewModel = viewModel, navController = navController)
+                    }
+                    //수정 옵션
                     AnimatedVisibility(
                         visible = viewModel.isActionClicked,
                         enter = fadeIn(animationSpec = tween(durationMillis = 1000, easing = FastOutSlowInEasing)),
@@ -76,6 +90,7 @@ fun MyLogDetailPage(navController : NavController,viewModel: MyLogViewModel){
                             ModifyOption()
                         }
                     }
+
                 }
             }
         )
@@ -136,7 +151,7 @@ fun OptionItem(text : String,color: Color){
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailTopAppBar(navController: NavController,viewModel: MyLogViewModel){
+fun DetailTopAppBar(navController: NavController,viewModel: MyLogView1Model){
 
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
@@ -175,18 +190,16 @@ fun DetailTopAppBar(navController: NavController,viewModel: MyLogViewModel){
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun DetailEssay(viewModel: MyLogViewModel){
-    val scrollState = rememberScrollState()
+fun DetailEssay(viewModel: MyLogView1Model){
     val essay = viewModel.detailEssay
-    Box(modifier = Modifier.fillMaxSize()){
+    Box{
         Column(modifier = Modifier
             .fillMaxWidth()
-            .verticalScroll(scrollState)
             .padding(start = 20.dp, end = 20.dp)) {
             Spacer(modifier = Modifier.height(170.dp))
             Text(text = essay.title, fontSize = 24.sp, modifier = Modifier)
             Spacer(modifier = Modifier.height(40.dp))
-            Text(text = essay.content, fontSize = 16.sp, modifier = Modifier)
+            Text(text = essay.content, fontSize = 16.sp, modifier = Modifier, color = Color(0xFFB4B4B4))
             Spacer(modifier = Modifier.height(46.dp))
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd){
                 Column {
