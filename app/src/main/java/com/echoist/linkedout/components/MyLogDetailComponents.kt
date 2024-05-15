@@ -142,7 +142,7 @@ fun LastEssayPager(viewModel: MyLogView1Model, navController: NavController){
         HorizontalPager(state = pagerstate) { page ->
             val startIndex = page * 4
             val endIndex = minOf(
-                startIndex + 5,
+                startIndex + 4,
                 if (viewModel.detailEssay.published) viewModel.publishedEssayList.size else viewModel.myEssayList.size
             )
             val essayList =
