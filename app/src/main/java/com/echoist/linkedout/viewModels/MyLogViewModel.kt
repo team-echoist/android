@@ -25,7 +25,6 @@ interface MyLogView1Model {
     var isActionClicked: Boolean
     var detailEssayBackStack : Stack<EssayItem>
 
-    fun readEssay(published: Boolean)
     fun deleteEssay(navController: NavController)
 }
 
@@ -33,6 +32,7 @@ class MyLogViewModel : ViewModel(), MyLogView1Model {
     override var myEssayList by mutableStateOf(mutableStateListOf<EssayItem>())
     override var publishedEssayList by mutableStateOf(mutableStateListOf<EssayItem>())
     override var detailEssayBackStack = Stack<EssayItem>()
+
     override var detailEssay by mutableStateOf(
         EssayItem(
         content = "이 에세이는 예시입니다.",
@@ -59,33 +59,22 @@ class MyLogViewModel : ViewModel(), MyLogView1Model {
         .build()
         .create(EssayApi::class.java)
 
-    override fun readEssay(published: Boolean) {
-        myEssayList.clear()
+    fun readPublishEssay() {
         publishedEssayList.clear()
 
         viewModelScope.launch {
             try {
-                val response = api.readEssay(accessToken = Token.accessToken, published = published)
+                val response = api.readEssay(accessToken = Token.accessToken, published = true)
                 Log.d("essaylist data", response.body()!!.path + response.body()!!.data)
 
                 if (response.isSuccessful) {
                     accessToken = (response.headers()["authorization"].toString())
                     Token.accessToken = accessToken
-                    if (!published) {
-                        response.body()!!.data.essays.forEach {
-                            myEssayList.add(it)
-                        }
-                    } else {
+
                         response.body()!!.data.essays.forEach {
                             publishedEssayList.add(it)
                         }
-                    }
-                }
-                myEssayList.forEach {
-                    Log.d("essaylistmylist", it.title)
-                }
-                publishedEssayList.forEach {
-                    Log.d("essaylistpublishedmylist", it.title)
+
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -94,6 +83,45 @@ class MyLogViewModel : ViewModel(), MyLogView1Model {
             }
         }
     }
+    fun readMyEssay() {
+        myEssayList.clear()
+
+        viewModelScope.launch {
+            try {
+                val response = api.readEssay(accessToken = Token.accessToken, published = false)
+                Log.d("essaylist data", response.body()!!.path + response.body()!!.data)
+
+                if (response.isSuccessful) {
+                    accessToken = (response.headers()["authorization"].toString())
+                    Token.accessToken = accessToken
+                        response.body()!!.data.essays.forEach {
+                            myEssayList.add(it)
+
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.d("exception", e.localizedMessage.toString() + Token.accessToken)
+                Log.d("exception", e.message.toString() + Token.accessToken)
+            }
+        }
+    }
+    fun readPublishEssayThenMyEssay() {
+        viewModelScope.launch {
+            try {
+                // publish된 에세이를 읽습니다.
+                readPublishEssay()
+
+                // publish된 에세이를 읽은 후에 my 에세이를 읽습니다.
+                readMyEssay()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.d("exception", e.localizedMessage.toString() + Token.accessToken)
+                Log.d("exception", e.message.toString() + Token.accessToken)
+            }
+        }
+    }
+
 
     override fun deleteEssay(navController: NavController) {
         viewModelScope.launch {
