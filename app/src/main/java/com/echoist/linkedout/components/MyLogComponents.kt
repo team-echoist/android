@@ -1,7 +1,9 @@
 package com.echoist.linkedout.components
 
 import MyLogViewModel
+import android.content.ContentValues.TAG
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -71,9 +73,8 @@ fun MyLogTopAppBar(){
 }
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun EssayChips(pagerState: PagerState){
+fun EssayChips(pagerState: PagerState,viewModel: MyLogViewModel){
     val coroutineScope = rememberCoroutineScope()
-    var color = Color(0xFF686868)
 
     Box(modifier = Modifier
         .fillMaxWidth()
@@ -88,7 +89,7 @@ fun EssayChips(pagerState: PagerState){
             .fillMaxWidth()
             .padding(start = 17.dp)) {
             Essaychip(
-                text = "나만의 글 3",
+                text = "나만의 글 ${viewModel.myEssayList.size}",
                 65.dp,
                 {
                     coroutineScope.launch {
@@ -99,7 +100,7 @@ fun EssayChips(pagerState: PagerState){
                 color = if (pagerState.currentPage == 0) Color.White else Color.Gray
             )
             Essaychip(
-                text = "발행한 글 3",
+                text = "발행한 글 ${viewModel.publishedEssayList.size}",
                 65.dp,
                 {
                     coroutineScope.launch {
@@ -123,7 +124,6 @@ fun EssayChips(pagerState: PagerState){
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Essaychip(
     text: String,
@@ -167,7 +167,9 @@ fun EssayListItem(
         .fillMaxWidth()
         .clickable {
             viewModel.detailEssay = item
+            viewModel.detailEssayBackStack.push(item)
             navController.navigate("MyLogDetailPage")
+            Log.d(TAG, "pushpush: ${viewModel.detailEssayBackStack}")
         }
         .height(180.dp)){
         if (item.thumbnail != null){

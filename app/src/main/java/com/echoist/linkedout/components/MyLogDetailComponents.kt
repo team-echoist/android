@@ -2,6 +2,8 @@ package com.echoist.linkedout.components
 
 import MyLogView1Model
 import MyLogViewModel
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -69,6 +71,7 @@ fun LastEssayItem(
                 viewModel.detailEssay = item
                 navController.navigate("MyLogDetailPage")
                 viewModel.detailEssayBackStack.push(item)
+                Log.d(TAG, "pushpush: ${viewModel.detailEssayBackStack}")
             }
         }
         .height(140.dp)) {

@@ -27,7 +27,7 @@ fun MyLogPage(navController : NavController,viewModel: MyLogViewModel){
             topBar = {
                 Column {
                     MyLogTopAppBar()
-                    EssayChips(pagerstate)
+                    EssayChips(pagerstate,viewModel)
                 }
             },
             bottomBar = { MyBottomNavigation(navController) },

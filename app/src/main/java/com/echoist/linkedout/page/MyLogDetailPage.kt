@@ -2,6 +2,8 @@ package com.echoist.linkedout.page
 
 import MyLogView1Model
 import MyLogViewModel
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
@@ -165,10 +167,14 @@ fun DetailTopAppBar(navController: NavController,viewModel: MyLogView1Model){
 
                     .padding(start = 20.dp)
                     .clickable {
-                        if (viewModel.detailEssayBackStack.isNotEmpty()){
-                            //todo 뭔가이상해. 왜 안되냐? 그 이전 화면 보여주는코드 다시짜야함
-                            viewModel.detailEssay = viewModel.detailEssayBackStack.pop()
+                        if (viewModel.detailEssayBackStack.isNotEmpty()) {
+                            viewModel.detailEssayBackStack.pop()
+                            Log.d(TAG, "pushpushpop: ${viewModel.detailEssayBackStack}")
+                            if (viewModel.detailEssayBackStack.isNotEmpty()) {
+                                viewModel.detailEssay = viewModel.detailEssayBackStack.peek()
+                            }
                         }
+
                         navController.popBackStack()
                         viewModel.isActionClicked = false
 
