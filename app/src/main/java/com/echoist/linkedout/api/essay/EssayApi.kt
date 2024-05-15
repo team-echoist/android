@@ -12,6 +12,7 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.PUT
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface EssayApi{
@@ -58,12 +59,13 @@ interface EssayApi{
         @Field("linkedOut") linkedOut: Boolean = false
     ): Response<WritingUserInfo>
 
-    @DELETE("api/essays/:essayId")
-    suspend fun deleteEssay(
-        @Header("Authorization") accessToken: String
-    ): Response<WritingUserInfo>
 
-    //todo null 값 안들어가는거 확인해야할듯
+    @DELETE("api/essays/{essayId}")
+    suspend fun deleteEssay(
+        @Header("Authorization") accessToken: String,
+        @Path("essayId") essayId: String = "0"
+    ): Response<Unit>
+
     @GET("api/essays")
     suspend fun readEssay(
         @Header("Authorization") accessToken: String,

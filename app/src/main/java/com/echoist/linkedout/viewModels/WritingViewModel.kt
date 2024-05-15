@@ -167,31 +167,7 @@ class WritingViewModel @Inject constructor(
         }
     }
 
-    fun deleteEssay(navController: NavController) {
-        viewModelScope.launch {
-            try {
 
-                val response = api.deleteEssay(accessToken)/*todo 토큰값. 매번변경*/
-
-                if (response.isSuccessful) {
-                    Log.e("writeEssayApiSuccess", "${response.headers()}")
-                    Log.e("writeEssayApiSuccess", "${response.code()}")
-                    navController.navigate("HOME") {
-                        popUpTo("HOME") {
-                            inclusive = false
-                        }
-                    }
-                }
-                if (response.code() == 202) {
-                    //블랙리스트 코드 이동
-                }
-
-            } catch (e: Exception) {
-                // api 요청 실패
-                Log.e("writeEssayApiFailed", "Failed to write essay: ${e.message}")
-            }
-        }
-    }
 
 
 

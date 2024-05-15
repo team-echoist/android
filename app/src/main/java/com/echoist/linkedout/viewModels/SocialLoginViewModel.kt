@@ -141,6 +141,7 @@ class SocialLoginViewModel @Inject constructor() : ViewModel() {
                     Log.d("tokentoken", response.headers()["authorization"].toString())
                     accessToken = (response.headers()["authorization"].toString())
                     Token.accessToken = accessToken
+                    Log.d(TAG, "tokentoken"+Token.accessToken)
                     Log.e("authApiSuccess2", response.message())
 
                     navController.navigate("HOME/$accessToken")

@@ -78,7 +78,7 @@ import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.WritingViewModel
 
 object Token {
-    var accessToken: String by mutableStateOf("token")
+    var accessToken: String = "token"
 }
 
 @Preview

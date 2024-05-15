@@ -59,7 +59,7 @@ fun pre(){
     MyLogDetailPage(navController = NavController(LocalContext.current), viewModel = MyLogViewModel())
 }
 @Composable
-fun MyLogDetailPage(navController : NavController,viewModel: MyLogView1Model){
+fun MyLogDetailPage(navController : NavController,viewModel: MyLogViewModel){
     val scrollState = rememberScrollState()
 
     LinkedOutTheme {
@@ -89,7 +89,7 @@ fun MyLogDetailPage(navController : NavController,viewModel: MyLogView1Model){
                                 .padding(end = 23.dp),
                             contentAlignment = Alignment.TopEnd
                         ){
-                            ModifyOption()
+                            ModifyOption(viewModel,navController = navController)
                         }
                     }
 
@@ -101,7 +101,7 @@ fun MyLogDetailPage(navController : NavController,viewModel: MyLogView1Model){
 }
 
 @Composable
-fun ModifyOption(){
+fun ModifyOption(viewModel: MyLogViewModel, navController: NavController){
     Surface(modifier = Modifier.size(180.dp,250.dp), shape = RoundedCornerShape(2)){
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -117,20 +117,30 @@ fun ModifyOption(){
 
             }
             HorizontalDivider()
-            OptionItem(text = "수정",Color.White)
+            OptionItem(text = "수정",Color.White){}
             HorizontalDivider()
-            OptionItem(text = "발행",Color.White)
+            OptionItem(text = "발행",Color.White){}
             HorizontalDivider()
-            OptionItem(text = "Linked-out",Color.White)
+            OptionItem(text = "Linked-out",Color.White){}
             HorizontalDivider()
-            OptionItem(text = "삭제",Color.Red)
+            OptionItem(text = "삭제",Color.Red){
+                viewModel.deleteEssay(navController = navController)
+                Log.d(TAG, "ModifyOption: dd")
+            }
 
         }
     }
 }
 @Composable
-fun OptionItem(text : String,color: Color){
-    Box(modifier =Modifier.size(180.dp,44.dp)){
+fun OptionItem(
+    text: String,
+    color: Color,
+    onClick: () -> Unit
+){
+    Box(
+        Modifier
+            .size(180.dp, 44.dp)
+            .clickable { onClick() }){
         Box(modifier = Modifier
             .fillMaxSize()
             .padding(
