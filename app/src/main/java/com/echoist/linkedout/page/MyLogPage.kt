@@ -26,6 +26,9 @@ fun MyLogPage(navController : NavController,viewModel: MyLogViewModel){
         Scaffold(
             topBar = {
                 Column {
+                    viewModel.readEssay(published = true)
+                    viewModel.readEssay(published = false)
+
                     MyLogTopAppBar()
                     EssayChips(pagerstate,viewModel)
                 }

@@ -229,7 +229,6 @@ fun EssayListItem(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun EssayListPage1(viewModel: MyLogViewModel,pagerState: PagerState,navController: NavController){
-    viewModel.readEssay(false)
 
         LazyColumn {
             items(viewModel.myEssayList){it->
@@ -241,7 +240,6 @@ fun EssayListPage1(viewModel: MyLogViewModel,pagerState: PagerState,navControlle
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun EssayListPage2(viewModel: MyLogViewModel,pagerState: PagerState,navController: NavController){
-    viewModel.readEssay(true)
 
         LazyColumn {
             items(viewModel.publishedEssayList) {
