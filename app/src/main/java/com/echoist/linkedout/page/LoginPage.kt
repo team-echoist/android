@@ -86,6 +86,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class LoginPage : ComponentActivity() {
+
     override fun onStart() {
         super.onStart()
         //카카오 sdk 초기화

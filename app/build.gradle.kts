@@ -103,6 +103,10 @@ dependencies {
     implementation(libs.firebase.auth.ktx)
     implementation(libs.androidx.compose.material)
     implementation(libs.androidx.media3.extractor)
+    implementation(libs.material)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.activity)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -162,7 +166,10 @@ dependencies {
     implementation ("androidx.media3:media3-exoplayer:1.3.1")
     implementation ("androidx.media3:media3-exoplayer-dash:1.3.1")
     implementation ("androidx.media3:media3-ui:1.3.1")
-    implementation ("androidx.compose.foundation:foundation:1.6.6")
+    implementation ("androidx.compose.foundation:foundation:1.6.7")
+
+    //splash
+    implementation ("androidx.core:core-splashscreen:1.0.1")
 
 
 }
