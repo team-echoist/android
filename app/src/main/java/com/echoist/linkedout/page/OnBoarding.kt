@@ -1,5 +1,7 @@
 package com.echoist.linkedout.page
 
+import android.net.Uri
+import android.view.ViewGroup
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,16 +20,26 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.media3.common.MediaItem
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.AspectRatioFrameLayout
+import androidx.media3.ui.PlayerView
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.echoist.linkedout.R
 
 @Preview
 @Composable
@@ -51,22 +63,26 @@ fun OnBoardingPage(navController: NavController) {
             when (page) {
                 0 -> OnBoardingPager(
                     mainText = "오직 나만을 위한 글쓰기",
-                    subText = "모든 글쓰기 활동은 '필명'으로 진행됩니다.\n여러 관계에서 벗어나\n솔직한 나를 표현해보세요."
+                    subText = "모든 글쓰기 활동은 '필명'으로 진행됩니다.\n여러 관계에서 벗어나\n솔직한 나를 표현해보세요.",
+                    R.raw.onboarding1
                 )
 
                 1 -> OnBoardingPager(
                     mainText = "글의 행방 결정하기",
-                    subText = "작성한 글은 3가지 방향으로 보낼 수 있어요.\n원하는 방법으로 감정을 해소하세요."
+                    subText = "작성한 글은 3가지 방향으로 보낼 수 있어요.\n원하는 방법으로 감정을 해소하세요.",
+                    R.raw.onboarding2
                 )
 
                 2 -> OnBoardingPager(
                     mainText = "에세이 엮기",
-                    subText = "써두었던 글을 모아\n나만의 에세이 모음집을 만들 수 있어요."
+                    subText = "써두었던 글을 모아\n나만의 에세이 모음집을 만들 수 있어요.",
+                    R.raw.onboarding3
                 )
 
                 3 -> OnBoardingPager(
                     mainText = "다양한 감정 마주하기",
-                    subText = "타인의 솔직한 글을 읽는 경험을 할 수 있어요\n문장 속에 담긴 다양한 감정을 마주해보세요."
+                    subText = "타인의 솔직한 글을 읽는 경험을 할 수 있어요\n문장 속에 담긴 다양한 감정을 마주해보세요.",
+                    R.raw.onboarding4
                 )
             }
         }
@@ -133,13 +149,14 @@ fun OnBoardingPage(navController: NavController) {
 
 
 @Composable
-fun OnBoardingPager(mainText: String, subText: String) {
+fun OnBoardingPager(mainText: String, subText: String,resId: Int) {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        //todo 3d 그래픽 넣을것~~
+
+        VideoPlayer(resId)
 
         Text(text = mainText, color = Color.White, textAlign = TextAlign.Center, fontSize = 20.sp)
         Spacer(modifier = Modifier.height(16.dp))
@@ -148,5 +165,47 @@ fun OnBoardingPager(mainText: String, subText: String) {
 
     }
 }
+
+@androidx.annotation.OptIn(UnstableApi::class)
+@Composable
+fun VideoPlayer(resId: Int) {
+    val context = LocalContext.current
+    val exoPlayer = remember { ExoPlayer.Builder(context).build()}
+   exoPlayer.repeatMode = ExoPlayer.REPEAT_MODE_ALL
+
+
+    AndroidView(
+        factory = { context ->
+            PlayerView(context).apply {
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    400 // 세로 300dp로 설정
+                )
+                player = exoPlayer
+                useController = false
+                resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
+            }
+        },
+        update = { view ->
+            val uri = Uri.parse("android.resource://${context.packageName}/$resId")
+            val mediaItem = MediaItem.fromUri(uri)
+            exoPlayer.apply {
+                setMediaItem(mediaItem)
+                prepare()
+                playWhenReady = true
+            }
+        }
+    )
+
+
+
+    DisposableEffect(Unit) {
+        onDispose {
+            exoPlayer.release()
+        }
+    }
+}
+
+
 
 

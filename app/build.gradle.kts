@@ -158,6 +158,12 @@ dependencies {
     implementation ("io.github.rroohit:ImageCropView:2.2.0")
     implementation(( "com.vanniktech:android-image-cropper:4.5.0" ))
 
+    //동영상 exoplayer
+    implementation ("androidx.media3:media3-exoplayer:1.3.1")
+    implementation ("androidx.media3:media3-exoplayer-dash:1.3.1")
+    implementation ("androidx.media3:media3-ui:1.3.1")
+    implementation ("androidx.compose.foundation:foundation:1.6.6")
+
 
 }
 
