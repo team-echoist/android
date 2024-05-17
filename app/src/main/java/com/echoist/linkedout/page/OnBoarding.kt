@@ -19,7 +19,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -64,7 +63,7 @@ fun OnBoardingPage(navController: NavController) {
 
     LaunchedEffect(key1 = true) {
         if (isChanged) {
-            delay(3000)
+            delay(3800)
             isChanged = false
             Log.d(TAG, "OnBoardingPage: fucking")
         }
@@ -92,7 +91,7 @@ fun OnBoardingPage(navController: NavController) {
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
                         ) {
-                            VideoPlayer(resId = R.raw.onboarding4)
+                            VideoPlayer(resId = R.raw.onboarding5)
 
                         }
                     }
@@ -115,7 +114,7 @@ fun OnBoardingPage(navController: NavController) {
                         OnBoardingPager(
                             mainText = "다양한 감정 마주하기",
                             subText = "타인의 솔직한 글을 읽는 경험을 할 수 있어요\n문장 속에 담긴 다양한 감정을 마주해보세요.",
-                            resId = R.raw.onboarding2
+                            resId = R.raw.onboarding4
                         )
 
 
@@ -139,7 +138,7 @@ fun OnBoardingPage(navController: NavController) {
                     {
                         repeat(4) { iteration ->
                             val color =
-                                if (pagerstate.currentPage == iteration) Color(0xFFE4A89E) else Color.White.copy(
+                                if (pagerstate.currentPage == iteration) Color(0xFF616FED) else Color.White.copy(
                                     alpha = 0.5f
                                 )
                             if (pagerstate.currentPage == iteration) {
@@ -172,7 +171,6 @@ fun OnBoardingPage(navController: NavController) {
                                 200.dp,
                                 50.dp
                             ),
-                            colors = ButtonDefaults.buttonColors(Color(0xFFE4A89E)),
                             onClick = {
                                 navController.navigate("LoginPage")
 
