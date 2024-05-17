@@ -3,6 +3,7 @@ package com.echoist.linkedout.page
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -38,6 +39,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
@@ -45,6 +47,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -94,6 +97,7 @@ fun WritingCompletePage(
 
     LinkedOutTheme {
         BottomSheetScaffold(
+            sheetContainerColor = Color.White,
             scaffoldState = scaffoldState,
             sheetContent = {
                 WritingCompletePager(viewModel = viewModel, navController = navController)},
@@ -261,6 +265,7 @@ fun CompleteDate(viewModel: WritingViewModel) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GroupRingImg(viewModel: WritingViewModel) {
 
@@ -274,24 +279,27 @@ fun GroupRingImg(viewModel: WritingViewModel) {
             else -> R.drawable.pw_eye_off
         }
 
-    Image(
-        painter = painterResource(id = ringImage),
-        contentDescription = null,
-        modifier = Modifier
-            .height(45.dp)
-            .clickable {
-                if (viewModel.ringTouchedTime.value != 1) {
-                    viewModel.ringTouchedTime.value -= 1
+    CompositionLocalProvider(LocalRippleConfiguration provides  null) {
+        Image(
+            painter = painterResource(id = ringImage),
+            contentDescription = null,
+            modifier = Modifier
+                .height(45.dp)
+                .clickable() {
+                    if (viewModel.ringTouchedTime.value != 1) {
+                        viewModel.ringTouchedTime.value -= 1
+                    }
                 }
-            }
-    )
+        )
+    }
+
 
 
 }
 
 @Composable
 fun SingleRing(viewModel: WritingViewModel) {
-    Row {
+    Row(modifier = Modifier.animateContentSize()){
         when (viewModel.ringTouchedTime.value) {
 
             4 -> RingImg(viewModel)
