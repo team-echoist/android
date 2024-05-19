@@ -174,6 +174,7 @@ dependencies {
     implementation ("androidx.compose.material3:material3:1.3.0-alpha06")
 
     implementation ("com.google.accompanist:accompanist-flowlayout:0.24.7-alpha")
+    implementation ("me.saket.extendedspans:extendedspans:1.3.0")
 
 
 }

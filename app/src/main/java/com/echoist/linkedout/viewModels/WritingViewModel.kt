@@ -31,6 +31,7 @@ class WritingViewModel @Inject constructor(
     init { // 아마 이 뷰모델이 관계없는 뷰모델이라 안되는거. 방법은 내일 생각해보자
         accessToken = socialLoginViewModel.accessToken
     }
+
     var focusState = mutableStateOf(false)
     var titleFocusState = mutableStateOf(false)
 
@@ -52,7 +53,7 @@ class WritingViewModel @Inject constructor(
     var locationList by mutableStateOf(mutableStateListOf<String>())
     var isLocationClicked by mutableStateOf(false)
 
-    var imageBitmap : MutableState<Bitmap?> = mutableStateOf(null)
+    var imageBitmap: MutableState<Bitmap?> = mutableStateOf(null)
     //todo image bitmap 레트로핏으로 보내는방법
 
 
@@ -77,7 +78,6 @@ class WritingViewModel @Inject constructor(
         imageBitmap = mutableStateOf(null)
         isTextFeatOpened.value = false
     }
-
 
 
     private val moshi = Moshi.Builder()
@@ -166,9 +166,4 @@ class WritingViewModel @Inject constructor(
             }
         }
     }
-
-
-
-
-
 }

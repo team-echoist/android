@@ -36,7 +36,9 @@ interface EssayApi{
         @Json(name = "published")val published: Boolean = false,
         @Json(name = "categoryId")val categoryId: Int? = null,
         @Json(name = "thumbnail")val thumbnail: String? = null,
-        @Json(name = "linkedOutGauge")val linkedOutGauge: Int = 1
+        @Json(name = "linkedOutGauge")val linkedOutGauge: Int = 1,
+        @Json(name = "hashTagList")val hashTagList: List<String> = listOf() //todo 추후 해시태그 추가
+
 
     )
 
