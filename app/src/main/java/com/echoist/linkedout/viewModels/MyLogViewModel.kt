@@ -60,6 +60,7 @@ class MyLogViewModel : ViewModel(), MyLogView1Model {
         .create(EssayApi::class.java)
 
     fun readPublishEssay() {
+        myEssayList.clear()
         publishedEssayList.clear()
 
         viewModelScope.launch {
@@ -74,6 +75,9 @@ class MyLogViewModel : ViewModel(), MyLogView1Model {
                         response.body()!!.data.essays.forEach {
                             publishedEssayList.add(it)
                         }
+                    publishedEssayList.forEach {
+                        Log.d("TAG", "readPublishedEssay: ${it.title}")
+                    }
 
                 }
             } catch (e: Exception) {
@@ -85,13 +89,16 @@ class MyLogViewModel : ViewModel(), MyLogView1Model {
     }
     fun readMyEssay() {
         myEssayList.clear()
+        publishedEssayList.clear()
+
 
         viewModelScope.launch {
             try {
-                val response = api.readEssay(accessToken = Token.accessToken, published = false)
+                val response = api.readEssay(accessToken = Token.accessToken)
                 Log.d("essaylist data", response.body()!!.path + response.body()!!.data)
 
                 if (response.isSuccessful) {
+                    Log.d("TAG", "readMyEssay: ${response.body()!!.data.essays}")
                     accessToken = (response.headers()["authorization"].toString())
                     Token.accessToken = accessToken
                         response.body()!!.data.essays.forEach {
@@ -99,21 +106,12 @@ class MyLogViewModel : ViewModel(), MyLogView1Model {
 
                     }
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Log.d("exception", e.localizedMessage.toString() + Token.accessToken)
-                Log.d("exception", e.message.toString() + Token.accessToken)
-            }
-        }
-    }
-    fun readPublishEssayThenMyEssay() {
-        viewModelScope.launch {
-            try {
-                // publish된 에세이를 읽습니다.
-                readPublishEssay()
+                myEssayList.forEach {
+                    Log.d("TAG", "readMyEssay: ${it.title}")
 
-                // publish된 에세이를 읽은 후에 my 에세이를 읽습니다.
-                readMyEssay()
+                }
+                Log.d("TAG", "readMyEssay: ${myEssayList.size}")
+
             } catch (e: Exception) {
                 e.printStackTrace()
                 Log.d("exception", e.localizedMessage.toString() + Token.accessToken)
