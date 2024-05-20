@@ -63,6 +63,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
@@ -222,13 +223,15 @@ fun CommunityTopAppBar(pagerState: PagerState){
         },
         actions = {
             Icon(imageVector = Icons.Default.Search, contentDescription = "", Modifier.size(30.dp), tint = color)
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(13.dp))
             Icon(
                 imageVector = Icons.Default.Bookmark,
                 contentDescription = "",
                 Modifier.size(30.dp),
                 tint = color
             )
+            Spacer(modifier = Modifier.width(15.dp))
+
 
         }
     )
@@ -323,7 +326,7 @@ fun SentenceChoice(viewModel: CommunityViewModel){
 
     Box(
         modifier = Modifier
-            .padding(start = 20.dp, end = 20.dp)
+            .padding(start = 20.dp, end = 20.dp, top = 10.dp)
             .fillMaxWidth()
             .height(82.dp),
         contentAlignment = Alignment.Center
@@ -332,7 +335,7 @@ fun SentenceChoice(viewModel: CommunityViewModel){
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart){
             Column {
                 Text(text = "한 문장을 모아", fontWeight = FontWeight.SemiBold, color = color)
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(2.dp))
                 Text(text = "글의 시작을 알리는 문장들을 만나보세요.", color = Color(0xFF696969), fontSize = 12.sp)
 
             }
@@ -342,9 +345,17 @@ fun SentenceChoice(viewModel: CommunityViewModel){
             contentAlignment = Alignment.CenterEnd
         ){
             Row(
+                modifier = Modifier
+                    .background(
+                        color = Color(0xFFCFCFCF), // 배경색 설정
+                        shape = RoundedCornerShape(10.dp) // 원하는 radius 값 설정
+                    )
+                    .padding(start = 10.dp, end = 10.dp, top = 5.dp, bottom = 5.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ){
+                val arrow = if (viewModel.isClicked) R.drawable.arrowup else R.drawable.arrowdown
+
 
                 AnimatedContent(
                     targetState = viewModel.sentenceInfo,
@@ -352,13 +363,13 @@ fun SentenceChoice(viewModel: CommunityViewModel){
                         fadeIn(animationSpec = tween(300)) with fadeOut(animationSpec = tween(300))
                     }, label = ""
                 ) { targetState ->
-                    Text(
-                        fontSize = 12.sp,
-                        text = if (targetState == SentenceInfo.First) "첫 문장" else "마지막 문장",
-                        color = Color.Black
-                    )
+                        Text(
+                            fontSize = 12.sp,
+                            text = if (targetState == SentenceInfo.First) "첫 문장" else "마지막 문장",
+                            color = Color.Black
+                        )
                 }
-                val arrow = if (viewModel.isClicked) R.drawable.arrowup else R.drawable.arrowdown
+                Spacer(modifier = Modifier.width(23.dp))
 
 
                 Crossfade(
@@ -368,9 +379,11 @@ fun SentenceChoice(viewModel: CommunityViewModel){
                     Icon(
                         painter = painterResource(id = currentArrow),
                         contentDescription = "",
-                        modifier = Modifier.clickable {
-                            viewModel.isClicked = !viewModel.isClicked
-                        },
+                        modifier = Modifier
+                            .size(20.dp)
+                            .clickable {
+                                viewModel.isClicked = !viewModel.isClicked
+                            },
                         tint = Color.Black
                     )
                 }
@@ -390,7 +403,7 @@ fun ChoiceBox(viewModel: CommunityViewModel){
         shape = RoundedCornerShape(20),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFCFCFCF)),
         modifier = Modifier.size(
-            100.dp,
+            104.dp,
             70.dp)
     ) {
         Column(
@@ -436,14 +449,16 @@ fun TodaysLogTitle(){
         .background(Color.Black)
         .fillMaxWidth()
         .padding(start = 20.dp, end = 20.dp)
-        .height(90.dp)){
+        .height(95.dp)){
         Column(
-            verticalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxSize()
         ) {
+            Spacer(modifier = Modifier.height(26.dp))
             Text(text = "오늘의 글", fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = Color(0xFF616FED))
             Spacer(modifier = Modifier.height(4.dp))
             Text(text = "오늘 쓰여진 다양하고 솔직한 글들을 읽어보세요", fontSize = 12.sp, color = Color(0xFF696969))
+            Spacer(modifier = Modifier.height(22.dp))
+
 
         }
     }
@@ -476,7 +491,7 @@ fun CommunityListItem(
                 modifier = Modifier
                     .fillMaxHeight()
                     .weight(7f)
-                    .padding(top = 20.dp, start = 20.dp, end = 20.dp)// Column 비율 조정
+                    .padding(top = 0.dp, start = 20.dp, end = 20.dp)// Column 비율 조정
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
                     Text(
@@ -540,9 +555,8 @@ fun RandomCommunityPage(viewModel: CommunityViewModel,navController : NavControl
         item {
             Column {
                 SentenceChoice(viewModel)
-                Spacer(modifier = Modifier.height(10.dp))
                 RandomSentences()
-                Spacer(modifier = Modifier.height(40.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
                 TodaysLogTitle()
 
@@ -602,16 +616,16 @@ fun SubscribeUserList(viewModel: CommunityViewModel){
 
 
 }
-//
-//@Preview
-//@Composable
-//fun prev(){
-//    Column {
-//        SubscribeUserItem(item = CommunityViewModel().detailEssay, viewModel = CommunityViewModel())
-//        CommunityListItem(item = CommunityViewModel().detailEssay, viewModel = CommunityViewModel(), navController = rememberNavController())
-//        SubscribeUserList(viewModel = CommunityViewModel())
-//    }
-//}
+
+@Preview
+@Composable
+fun prev(){
+    Column {
+        SubscribeUserItem(item = CommunityViewModel().detailEssay, viewModel = CommunityViewModel())
+        CommunityListItem(item = CommunityViewModel().detailEssay, viewModel = CommunityViewModel(), navController = rememberNavController())
+        SubscribeUserList(viewModel = CommunityViewModel())
+    }
+}
 
 @Composable
 fun SubscribePage(viewModel: CommunityViewModel,navController : NavController,pagerstate : PagerState){

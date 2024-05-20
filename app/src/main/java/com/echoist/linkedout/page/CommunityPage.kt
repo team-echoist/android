@@ -47,6 +47,8 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
             },
             bottomBar = { MyBottomNavigation(navController) },
             content = {
+                Box(modifier = Modifier.padding(it))
+
                     Box(modifier = Modifier.padding(top = 50.dp, bottom = 80.dp)){
                         CommunityPager(viewModel = viewModel, pagerState = pagerstate, navController = navController)
 
@@ -69,7 +71,7 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(top = 155.dp, end = 10.dp), contentAlignment = Alignment.TopEnd
+                            .padding(top = 165.dp, end = 18.dp), contentAlignment = Alignment.TopEnd
                     ) {
                         ChoiceBox(viewModel)
                     }
