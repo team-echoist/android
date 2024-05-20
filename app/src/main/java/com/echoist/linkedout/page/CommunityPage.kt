@@ -9,9 +9,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Scaffold
@@ -27,45 +25,32 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.echoist.linkedout.components.ChoiceBox
 import com.echoist.linkedout.components.CommunityChips
+import com.echoist.linkedout.components.CommunityPager
 import com.echoist.linkedout.components.CommunityTopAppBar
-import com.echoist.linkedout.components.RandomSentences
-import com.echoist.linkedout.components.SentenceChoice
-import com.echoist.linkedout.components.TodaysLogTitle
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
 
 @Composable
 fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
-    val pagerstate = rememberPagerState { 3 }
+    val pagerstate = rememberPagerState { 2 }
     val hasCalledApi = remember { mutableStateOf(false) }
+    val color = if (pagerstate.currentPage ==0)Color(0xFFD9D9D9) else Color.Black
 
     LinkedOutTheme {
         Scaffold(
+            modifier = Modifier.background(color),
             topBar = {
-                Column {
-
-                    CommunityTopAppBar()
-                    CommunityChips()
+                Column(Modifier.background(color)) {
+                    CommunityTopAppBar(pagerstate)
+                    CommunityChips(pagerstate)
                 }
             },
             bottomBar = { MyBottomNavigation(navController) },
             content = {
+                    Box(modifier = Modifier.padding(top = 50.dp, bottom = 80.dp)){
+                        CommunityPager(viewModel = viewModel, pagerState = pagerstate, navController = navController)
 
-                Column(
-                    Modifier
-                        .background(Color(0xFFD9D9D9))
-                        .padding(it)
-                        .padding(top = 20.dp)
-                ) {
-                    SentenceChoice(viewModel)
-                    Spacer(modifier = Modifier.height(10.dp))
-                    RandomSentences()
-                    Spacer(modifier = Modifier.height(40.dp))
-
-                    TodaysLogTitle()
-
-
-                }
+                    }
                 AnimatedVisibility(
                     visible = viewModel.isClicked,
                     enter = fadeIn(
@@ -84,15 +69,19 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(top = 175.dp, end = 10.dp), contentAlignment = Alignment.TopEnd
+                            .padding(top = 155.dp, end = 10.dp), contentAlignment = Alignment.TopEnd
                     ) {
                         ChoiceBox(viewModel)
                     }
                 }
+
+
             }
         )
     }
 }
+
+
 
 @Preview
 @Composable

@@ -226,7 +226,6 @@ fun EssayListItem(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun EssayListPage1(viewModel: MyLogViewModel,pagerState: PagerState,navController: NavController){
 
@@ -237,7 +236,6 @@ fun EssayListPage1(viewModel: MyLogViewModel,pagerState: PagerState,navControlle
         }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun EssayListPage2(viewModel: MyLogViewModel,pagerState: PagerState,navController: NavController){
 

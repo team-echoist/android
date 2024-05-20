@@ -1,9 +1,9 @@
 package com.echoist.linkedout.components
 
 import android.content.ContentValues
-import android.content.res.Configuration
 import android.util.Log
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -12,17 +12,25 @@ import androidx.compose.animation.with
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
@@ -32,6 +40,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -48,15 +57,18 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
+import com.echoist.linkedout.data.EssayItem
 import com.echoist.linkedout.viewModels.CommunityViewModel
 import com.echoist.linkedout.viewModels.SentenceInfo
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 import me.saket.extendedspans.ExtendedSpans
 import me.saket.extendedspans.RoundedCornerSpanPainter
@@ -198,22 +210,24 @@ fun RandomSentences() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun CommunityTopAppBar(){
+fun CommunityTopAppBar(pagerState: PagerState){
+    val color = if (pagerState.currentPage ==0)Color.Black else Color.White
+
+
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
         title = {
-            Text(text = "커뮤니티", fontWeight = FontWeight.Bold, color = Color.Black)
+            Text(text = "커뮤니티", fontWeight = FontWeight.Bold, color = color)
         },
         actions = {
-            Icon(imageVector = Icons.Default.Search, contentDescription = "", Modifier.size(30.dp), tint = Color.Black)
+            Icon(imageVector = Icons.Default.Search, contentDescription = "", Modifier.size(30.dp), tint = color)
             Spacer(modifier = Modifier.width(16.dp))
             Icon(
                 imageVector = Icons.Default.Bookmark,
                 contentDescription = "",
                 Modifier.size(30.dp),
-                tint = Color.Black
+                tint = color
             )
 
         }
@@ -221,11 +235,8 @@ fun CommunityTopAppBar(){
 }
 
 
-@OptIn(ExperimentalPagerApi::class)
-@Preview
 @Composable
-fun CommunityChips(){
-    val pagerState = rememberPagerState()
+fun CommunityChips(pagerState: PagerState){
     val coroutineScope = rememberCoroutineScope()
     val color = if (pagerState.currentPage == 0) Color.Black else Color.White
 
@@ -342,18 +353,28 @@ fun SentenceChoice(viewModel: CommunityViewModel){
                     }, label = ""
                 ) { targetState ->
                     Text(
+                        fontSize = 12.sp,
                         text = if (targetState == SentenceInfo.First) "첫 문장" else "마지막 문장",
                         color = Color.Black
                     )
                 }
-                Icon(
-                    painter = painterResource(id = R.drawable.arrowdown),
-                    contentDescription = "",
-                    modifier = Modifier.clickable {
-                        viewModel.isClicked = !viewModel.isClicked
-                    }
-                    , tint = Color.Black
-                )
+                val arrow = if (viewModel.isClicked) R.drawable.arrowup else R.drawable.arrowdown
+
+
+                Crossfade(
+                    targetState = arrow,
+                    animationSpec = tween(durationMillis = 200), label = ""
+                ) { currentArrow ->
+                    Icon(
+                        painter = painterResource(id = currentArrow),
+                        contentDescription = "",
+                        modifier = Modifier.clickable {
+                            viewModel.isClicked = !viewModel.isClicked
+                        },
+                        tint = Color.Black
+                    )
+                }
+
             }
 
             }
@@ -369,7 +390,7 @@ fun ChoiceBox(viewModel: CommunityViewModel){
         shape = RoundedCornerShape(20),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFCFCFCF)),
         modifier = Modifier.size(
-            120.dp,
+            100.dp,
             70.dp)
     ) {
         Column(
@@ -384,6 +405,7 @@ fun ChoiceBox(viewModel: CommunityViewModel){
                         viewModel.isClicked = false
                         viewModel.sentenceInfo = SentenceInfo.First
                     },
+                fontSize = 12.sp,
                 color = color
             )
             Spacer(modifier = Modifier.height(6.dp))
@@ -399,6 +421,7 @@ fun ChoiceBox(viewModel: CommunityViewModel){
                         viewModel.sentenceInfo = SentenceInfo.Last
 
                     },
+                fontSize = 12.sp,
                 color = color
             )
 
@@ -425,6 +448,202 @@ fun TodaysLogTitle(){
         }
     }
 }
+
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun CommunityListItem(
+    item: EssayItem,
+    viewModel: CommunityViewModel,
+    navController: NavController
+) {
+    val weight = if (item.thumbnail != null) 1f else 7f
+    val color = if (isSystemInDarkTheme()) {
+        Color.White
+    } else {
+        Color.Black
+    }
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .background(Color.Black)
+        .clickable {
+            viewModel.detailEssay = item
+        }
+        .height(140.dp)) {
+        //타이틀
+        Row {
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(7f)
+                    .padding(top = 20.dp, start = 20.dp, end = 20.dp)// Column 비율 조정
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+                    Text(
+                        modifier = Modifier,
+                        text = item.title,
+                        color = color,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    Text(text = "   • 10 분", fontSize = 10.sp,color = Color(0xFF686868))
+
+                }
+
+
+                Spacer(modifier = Modifier.height(10.dp))
+                Text(
+                    text = item.content,
+                    maxLines = 2,
+                    color = color,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+
+            if (item.thumbnail != null) {
+                GlideImage(
+                    model = item.thumbnail,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(110.dp)
+                        .padding(start = 20.dp, top = 20.dp, bottom = 20.dp)
+                        .weight(3f) // 이미지 비율 조정
+                )
+            }
+        }
+
+
+        Box(
+            contentAlignment = Alignment.BottomStart, modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 20.dp, bottom = 10.dp)
+        ) {
+            Text(text = item.nickName, fontSize = 10.sp, color = Color(0xFF686868))
+        }
+        Box(
+            contentAlignment = Alignment.BottomEnd, modifier = Modifier
+                .fillMaxSize()
+        ) {
+            HorizontalDivider(color = Color(0xFF686868))
+        }
+
+    }
+}
+
+@Composable
+fun RandomCommunityPage(viewModel: CommunityViewModel,navController : NavController){
+    LazyColumn(
+        Modifier
+            .background(Color(0xFFD9D9D9))
+            .padding(top = 20.dp)
+    ) {
+        item {
+            Column {
+                SentenceChoice(viewModel)
+                Spacer(modifier = Modifier.height(10.dp))
+                RandomSentences()
+                Spacer(modifier = Modifier.height(40.dp))
+
+                TodaysLogTitle()
+
+            }
+        }
+        items(viewModel.randomList){it->
+            CommunityListItem(item = it, viewModel = viewModel, navController = navController)
+        }
+
+
+    }
+
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun SubscribeUserItem(item : EssayItem, viewModel: CommunityViewModel){
+    Box(
+        modifier = Modifier.size(70.dp, 86.dp),
+        contentAlignment = Alignment.Center
+    ){
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ){
+            Surface(
+                shape = CircleShape,
+                modifier = Modifier.size(50.dp),
+                color = Color.Gray // Unspecified
+            ) {
+                GlideImage(
+                    model = item.thumbnail,
+                    contentDescription = null,
+                    modifier = Modifier
+                )
+            }
+            Text(text = item.nickName, fontSize = 12.sp)
+        }
+    }
+}
+
+@Composable
+fun SubscribeUserList(viewModel: CommunityViewModel){
+    Row(
+        modifier = Modifier.background(Color.Black),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        LazyRow(Modifier.weight(9f)) { // todo subscribeList 받아와야할것
+            items(viewModel.subscribeList) { it ->
+                SubscribeUserItem(item = it, viewModel = viewModel)
+            }
+        }
+        Text(text = "전체", modifier = Modifier.weight(1f))
+    }
+
+
+
+}
+//
+//@Preview
+//@Composable
+//fun prev(){
+//    Column {
+//        SubscribeUserItem(item = CommunityViewModel().detailEssay, viewModel = CommunityViewModel())
+//        CommunityListItem(item = CommunityViewModel().detailEssay, viewModel = CommunityViewModel(), navController = rememberNavController())
+//        SubscribeUserList(viewModel = CommunityViewModel())
+//    }
+//}
+
+@Composable
+fun SubscribePage(viewModel: CommunityViewModel,navController : NavController,pagerstate : PagerState){
+    val color = if (pagerstate.currentPage ==0)Color(0xFFD9D9D9) else Color.Black
+
+    LazyColumn(
+        Modifier
+            .background(color)
+            .padding(top = 40.dp)
+    ) {
+        item {
+            SubscribeUserList(viewModel)
+
+        }
+        items(viewModel.randomList){it->
+            CommunityListItem(item = it, viewModel = viewModel, navController = navController)
+        }
+
+
+    }
+}
+
+@Composable
+fun CommunityPager(pagerState: PagerState, viewModel: CommunityViewModel, navController: NavController) {
+    HorizontalPager(state = pagerState, modifier = Modifier.padding(top = 20.dp)) { page ->
+        when (page) {
+            0 -> RandomCommunityPage(viewModel,navController)
+            1 -> SubscribePage(viewModel,navController,pagerState)
+        }
+    }
+}
+
 
 
 

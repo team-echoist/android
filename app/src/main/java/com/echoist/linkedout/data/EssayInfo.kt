@@ -29,6 +29,8 @@ data class Essays(
 
 @JsonClass(generateAdapter = true)
 data class EssayItem(
+    @Json(name = "nickName")
+    val nickName: String = "구루브",
     @Json(name = "content")
     val content: String,
     @Json(name = "createdDate")
