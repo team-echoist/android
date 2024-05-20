@@ -101,7 +101,8 @@ class MyLogViewModel : ViewModel(), MyLogView1Model {
                     Log.d("TAG", "readMyEssay: ${response.body()!!.data.essays}")
                     accessToken = (response.headers()["authorization"].toString())
                     Token.accessToken = accessToken
-                        response.body()!!.data.essays.forEach {
+
+                    response.body()!!.data.essays.forEach {
                             myEssayList.add(it)
 
                     }

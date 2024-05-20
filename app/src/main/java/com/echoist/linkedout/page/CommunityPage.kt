@@ -35,7 +35,7 @@ import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
 
 @Composable
-fun CommunityPage(navController : NavController,viewModel: CommunityViewModel){
+fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
     val pagerstate = rememberPagerState { 3 }
     val hasCalledApi = remember { mutableStateOf(false) }
 
@@ -51,39 +51,51 @@ fun CommunityPage(navController : NavController,viewModel: CommunityViewModel){
             bottomBar = { MyBottomNavigation(navController) },
             content = {
 
-                    Column(
-                        Modifier
-                            .background(Color(0xFFD9D9D9))
-                            .padding(it)
-                            .padding(top = 20.dp)) {
-                        SentenceChoice(viewModel)
-                        Spacer(modifier = Modifier.height(10.dp))
-                        RandomSentences()
-                        Spacer(modifier = Modifier.height(40.dp))
+                Column(
+                    Modifier
+                        .background(Color(0xFFD9D9D9))
+                        .padding(it)
+                        .padding(top = 20.dp)
+                ) {
+                    SentenceChoice(viewModel)
+                    Spacer(modifier = Modifier.height(10.dp))
+                    RandomSentences()
+                    Spacer(modifier = Modifier.height(40.dp))
 
-                        TodaysLogTitle()
+                    TodaysLogTitle()
 
 
-                    }
-                    AnimatedVisibility(
-                        visible = !viewModel.isClicked,
-                        enter = fadeIn(animationSpec = tween(durationMillis = 1000, easing = FastOutSlowInEasing)),
-                        exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
-                    ) {
-                        Box(modifier = Modifier
+                }
+                AnimatedVisibility(
+                    visible = viewModel.isClicked,
+                    enter = fadeIn(
+                        animationSpec = tween(
+                            durationMillis = 1000,
+                            easing = FastOutSlowInEasing
+                        )
+                    ),
+                    exit = fadeOut(
+                        animationSpec = tween(
+                            durationMillis = 500,
+                            easing = LinearEasing
+                        )
+                    )
+                ) {
+                    Box(
+                        modifier = Modifier
                             .fillMaxSize()
-                            .padding(top = 175.dp, end = 10.dp), contentAlignment = Alignment.TopEnd){
-                            ChoiceBox()
-                        }
+                            .padding(top = 175.dp, end = 10.dp), contentAlignment = Alignment.TopEnd
+                    ) {
+                        ChoiceBox(viewModel)
                     }
+                }
             }
         )
     }
-
 }
 
 @Preview
 @Composable
-fun Prev(){
+fun Prev() {
     CommunityPage(navController = rememberNavController(), CommunityViewModel())
 }

@@ -46,5 +46,7 @@ data class EssayItem(
     @Json(name = "title")
     val title: String,
     @Json(name = "updatedDate")
-    val updatedDate: String
+    val updatedDate: String,
+    @Json(name = "hashTagList")val hashTagList: List<String> = listOf() //todo 추후 해시태그 추가
+
 )

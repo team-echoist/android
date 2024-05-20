@@ -3,6 +3,12 @@ package com.echoist.linkedout.components
 import android.content.ContentValues
 import android.content.res.Configuration
 import android.util.Log
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.with
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -48,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.echoist.linkedout.R
 import com.echoist.linkedout.viewModels.CommunityViewModel
+import com.echoist.linkedout.viewModels.SentenceInfo
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
@@ -298,6 +305,7 @@ fun CommunityChips(){
     }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun SentenceChoice(viewModel: CommunityViewModel){
     val color = Color.Black
@@ -318,9 +326,26 @@ fun SentenceChoice(viewModel: CommunityViewModel){
 
             }
         }
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
-            Row (verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center){
-                Text(text = "첫 문장", color = Color.Black)
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.CenterEnd
+        ){
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ){
+
+                AnimatedContent(
+                    targetState = viewModel.sentenceInfo,
+                    transitionSpec = {
+                        fadeIn(animationSpec = tween(300)) with fadeOut(animationSpec = tween(300))
+                    }, label = ""
+                ) { targetState ->
+                    Text(
+                        text = if (targetState == SentenceInfo.First) "첫 문장" else "마지막 문장",
+                        color = Color.Black
+                    )
+                }
                 Icon(
                     painter = painterResource(id = R.drawable.arrowdown),
                     contentDescription = "",
@@ -336,9 +361,9 @@ fun SentenceChoice(viewModel: CommunityViewModel){
         }
     }
 
-@Preview
+
 @Composable
-fun ChoiceBox(){
+fun ChoiceBox(viewModel: CommunityViewModel){
     val color = Color.Black
     Card(
         shape = RoundedCornerShape(20),
@@ -351,12 +376,31 @@ fun ChoiceBox(){
             Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center
         ) {
-            Text(text = "첫 문장", modifier = Modifier.padding(start = 10.dp),color = color)
+            Text(
+                text = "첫 문장",
+                modifier = Modifier
+                    .padding(start = 10.dp)
+                    .clickable {
+                        viewModel.isClicked = false
+                        viewModel.sentenceInfo = SentenceInfo.First
+                    },
+                color = color
+            )
             Spacer(modifier = Modifier.height(6.dp))
             HorizontalDivider(Modifier.fillMaxWidth(),color = Color(0xFFC5C5C5))
             Spacer(modifier = Modifier.height(6.dp),)
 
-            Text(text = "마지막 문장",modifier = Modifier.padding(start = 10.dp),color = color)
+            Text(
+                text = "마지막 문장",
+                modifier = Modifier
+                    .padding(start = 10.dp)
+                    .clickable {
+                        viewModel.isClicked = false
+                        viewModel.sentenceInfo = SentenceInfo.Last
+
+                    },
+                color = color
+            )
 
         }
     }
