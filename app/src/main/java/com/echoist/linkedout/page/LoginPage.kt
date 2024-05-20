@@ -72,6 +72,7 @@ import com.echoist.linkedout.BuildConfig
 import com.echoist.linkedout.R
 import com.echoist.linkedout.components.CropImagePage
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
+import com.echoist.linkedout.viewModels.CommunityViewModel
 import com.echoist.linkedout.viewModels.LoginSuccessDialog
 import com.echoist.linkedout.viewModels.SignUpViewModel
 import com.echoist.linkedout.viewModels.SocialLoginViewModel
@@ -101,6 +102,7 @@ class LoginPage : ComponentActivity() {
         val writingViewModel : WritingViewModel by viewModels()
         val signUpViewModel : SignUpViewModel by viewModels()
         val myLogviewModel : MyLogViewModel by viewModels()
+        val communityViewModel : CommunityViewModel by viewModels()
 
 
         setContent {
@@ -140,6 +142,7 @@ class LoginPage : ComponentActivity() {
                     MyLogDetailPage(navController = navController,myLogviewModel)
                 }
                 composable("COMMUNITY") {
+                    CommunityPage(navController = navController,communityViewModel)
                     //community page
                 }
                 composable("SETTINGS") {

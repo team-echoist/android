@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -29,11 +30,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -49,6 +47,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.echoist.linkedout.R
+import com.echoist.linkedout.viewModels.CommunityViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
@@ -131,8 +130,9 @@ fun RandomSentences() {
     Column {
         Box(
             modifier = Modifier
-                .background(Color.Gray)
+                .fillMaxWidth()
                 .padding(start = 10.dp, end = 6.dp)
+            , contentAlignment = Alignment.Center
 
         ) {
             var layoutResult: TextLayoutResult? = remember { null }
@@ -197,15 +197,16 @@ fun CommunityTopAppBar(){
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
         title = {
-            Text(text = "커뮤니티", fontWeight = FontWeight.Bold)
+            Text(text = "커뮤니티", fontWeight = FontWeight.Bold, color = Color.Black)
         },
         actions = {
-            Icon(imageVector = Icons.Default.Search, contentDescription = "", Modifier.size(30.dp))
+            Icon(imageVector = Icons.Default.Search, contentDescription = "", Modifier.size(30.dp), tint = Color.Black)
             Spacer(modifier = Modifier.width(16.dp))
             Icon(
                 imageVector = Icons.Default.Bookmark,
                 contentDescription = "",
-                Modifier.size(30.dp)
+                Modifier.size(30.dp),
+                tint = Color.Black
             )
 
         }
@@ -297,10 +298,9 @@ fun CommunityChips(){
     }
 }
 
-@Preview
 @Composable
-fun SentenceChoice(){
-    var isClicked by remember { mutableStateOf(false) }
+fun SentenceChoice(viewModel: CommunityViewModel){
+    val color = Color.Black
 
     Box(
         modifier = Modifier
@@ -312,46 +312,76 @@ fun SentenceChoice(){
 
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart){
             Column {
-                Text(text = "한 문장을 모아", fontWeight = FontWeight.SemiBold)
-                Spacer(modifier = Modifier.height(10.dp))
+                Text(text = "한 문장을 모아", fontWeight = FontWeight.SemiBold, color = color)
+                Spacer(modifier = Modifier.height(6.dp))
                 Text(text = "글의 시작을 알리는 문장들을 만나보세요.", color = Color(0xFF696969), fontSize = 12.sp)
+
             }
         }
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
             Row (verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center){
-                Text(text = "첫 문장")
+                Text(text = "첫 문장", color = Color.Black)
                 Icon(
                     painter = painterResource(id = R.drawable.arrowdown),
                     contentDescription = "",
                     modifier = Modifier.clickable {
-                        isClicked = !isClicked
+                        viewModel.isClicked = !viewModel.isClicked
                     }
+                    , tint = Color.Black
                 )
             }
-            if (isClicked){
-                Card(shape = RoundedCornerShape(20), modifier = Modifier.size(
-                    103.dp,
-                    66.dp
-                )) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text(text = "첫 문장")
-                        HorizontalDivider(Modifier.fillMaxWidth())
-                        Text(text = "마지막 문장")
 
-                    }
-                }
             }
 
         }
+    }
 
+@Preview
+@Composable
+fun ChoiceBox(){
+    val color = Color.Black
+    Card(
+        shape = RoundedCornerShape(20),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFCFCFCF)),
+        modifier = Modifier.size(
+            120.dp,
+            70.dp)
+    ) {
+        Column(
+            Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(text = "첫 문장", modifier = Modifier.padding(start = 10.dp),color = color)
+            Spacer(modifier = Modifier.height(6.dp))
+            HorizontalDivider(Modifier.fillMaxWidth(),color = Color(0xFFC5C5C5))
+            Spacer(modifier = Modifier.height(6.dp),)
 
+            Text(text = "마지막 문장",modifier = Modifier.padding(start = 10.dp),color = color)
 
-
+        }
     }
 }
+
+@Preview
+@Composable
+fun TodaysLogTitle(){
+    Box(modifier = Modifier
+        .background(Color.Black)
+        .fillMaxWidth()
+        .padding(start = 20.dp, end = 20.dp)
+        .height(90.dp)){
+        Column(
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Text(text = "오늘의 글", fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = Color(0xFF616FED))
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(text = "오늘 쓰여진 다양하고 솔직한 글들을 읽어보세요", fontSize = 12.sp, color = Color(0xFF696969))
+
+        }
+    }
+}
+
 
 
 

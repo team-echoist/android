@@ -2,13 +2,10 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="AnnotatedClickableText">
-        <State />
-      </entry>
-      <entry key="AnnotatedClickableText (1)">
-        <State />
-      </entry>
       <entry key="CommunityChips">
+        <State />
+      </entry>
+      <entry key="Prev">
         <State />
       </entry>
       <entry key="RandomSentences (1)">
