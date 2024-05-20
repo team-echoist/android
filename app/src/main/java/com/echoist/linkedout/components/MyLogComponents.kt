@@ -71,7 +71,6 @@ fun MyLogTopAppBar(){
         }
     )
 }
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun EssayChips(pagerState: PagerState,viewModel: MyLogViewModel){
     val coroutineScope = rememberCoroutineScope()

@@ -176,6 +176,9 @@ dependencies {
     implementation ("com.google.accompanist:accompanist-flowlayout:0.24.7-alpha")
     implementation ("me.saket.extendedspans:extendedspans:1.3.0")
 
+    //refresh
+    implementation ("com.google.accompanist:accompanist-swiperefresh:0.24.13-rc")
+
 
 }
 
