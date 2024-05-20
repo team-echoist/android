@@ -1,41 +1,47 @@
 package com.echoist.linkedout.page
 
-import android.content.ContentValues.TAG
-import android.util.Log
-import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.material3.Text
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.text.ParagraphStyle
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextLayoutResult
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import kotlinx.coroutines.launch
-import me.saket.extendedspans.ExtendedSpans
-import me.saket.extendedspans.RoundedCornerSpanPainter
-import me.saket.extendedspans.drawBehind
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.echoist.linkedout.components.CommunityChips
+import com.echoist.linkedout.components.CommunityTopAppBar
+import com.echoist.linkedout.ui.theme.LinkedOutTheme
 
+@Composable
+fun CommunityPage(navController : NavController){
+    val pagerstate = rememberPagerState { 3 }
+    val hasCalledApi = remember { mutableStateOf(false) }
 
+    LinkedOutTheme {
+        Scaffold(
+            topBar = {
+                Column {
+
+                    CommunityTopAppBar()
+                    CommunityChips()
+                }
+            },
+            bottomBar = { MyBottomNavigation(navController) },
+            content = {
+                Box(Modifier.padding(it)) {
+                }
+            }
+        )
+    }
+
+}
+
+@Preview
+@Composable
+fun Prev(){
+    CommunityPage(navController = rememberNavController())
+}

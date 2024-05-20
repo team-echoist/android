@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -132,7 +133,7 @@ fun Essaychip(
     // todo pager number값을넣고 그에따른 색 변화, 터쳐블 변화 주기
 ){
 
-    Column(modifier = Modifier.padding(end = 12.dp)) {
+    Column(modifier = Modifier.padding(end = 12.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             fontSize = 14.sp,
             text = text,
