@@ -315,7 +315,7 @@ fun WritingTopAppBar(
                 modifier = Modifier
                     .padding(end = 20.dp, top = 15.dp)
                     .clickable {
-                        if (viewModel.title.value.text.isNotEmpty() && viewModel.content.value.text.isNotEmpty())
+                        if (viewModel.title.value.text.isNotEmpty() && viewModel.content.value.text.length >= viewModel.minLength)
                             navController.navigate("WritingCompletePage/${viewModel.accessToken}")
                         else {
                             isContentNotEmpty.value = true
@@ -343,32 +343,45 @@ fun ContentTextField(viewModel: WritingViewModel) {
 
     val ydp = animateDpAsState(targetValue = if (viewModel.titleFocusState.value) 40.dp else 0.dp, label = "").value
 
-    TextField(
+    Column {
+        TextField(
 
-        modifier = Modifier
-            .offset(x = 0.dp, y = ydp)
-            .onFocusChanged { focusState.value = it.isFocused }
-            .fillMaxWidth()
-            .padding(5.dp),
-        value = content.value,
-        onValueChange = {
-            content.value = it
-        },
-        placeholder = {
-            Text(
-                text = "내용을 입력하세요",
-                color = Color(0xFF686868)
+            modifier = Modifier
+                .offset(x = 0.dp, y = ydp)
+                .onFocusChanged { focusState.value = it.isFocused }
+                .fillMaxWidth()
+                .padding(5.dp),
+            value = content.value,
+            onValueChange = {
+                if (viewModel.maxLength >= it.text.length)
+                    content.value = it
+            },
+            placeholder = {
+                Text(
+                    text = "10자 이상 내용을 입력하세요",
+                    color = Color(0xFF686868)
+                )
+            },
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedTextColor = Color.White,
+                unfocusedTextColor = Color.White
             )
-        },
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = Color.Transparent,
-            unfocusedContainerColor = Color.Transparent,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            focusedTextColor = Color.White,
-            unfocusedTextColor = Color.White
         )
-    )
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Text(
+            text = "${viewModel.content.value.text.length} / ${viewModel.maxLength}",
+            color = Color.Gray,
+            textAlign = TextAlign.End,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+
+
 
 }
 

@@ -77,7 +77,7 @@ fun BlankWarningAlert(dialogState: MutableState<Boolean>){
                 Text(text = "확인")
             }
         },
-        text = { Text(text = "제목, 또는 내용이 공백이면 완료할 수 없습니다.") },
+        text = { Text(text = "제목, 또는 내용이 10자 이하면 완료 할 수 없습니다.") },
     )
 }
 

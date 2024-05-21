@@ -1,19 +1,20 @@
-package com.echoist.linkedout.data
-
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class WritingUserInfo(
     @Json(name = "data")
-    val data: Data,
+    val data: Data?,
     @Json(name = "path")
-    val path: String,
+    val path: String?,
     @Json(name = "success")
     val success: Boolean,
+    @Json(name = "error")
+    val error: ErrorData?,
     @Json(name = "timestamp")
-    val timestamp: String
+    val timestamp: String?
 )
+
 @JsonClass(generateAdapter = true)
 data class Data(
     @Json(name = "content")
@@ -36,3 +37,12 @@ data class Data(
     val updatedDate: String?
 )
 
+@JsonClass(generateAdapter = true)
+data class ErrorData(
+    @Json(name = "message")
+    val message: List<String>,
+    @Json(name = "error")
+    val error: String,
+    @Json(name = "statusCode")
+    val statusCode: Int
+)

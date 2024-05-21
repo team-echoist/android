@@ -31,6 +31,8 @@ class WritingViewModel @Inject constructor(
     init { // 아마 이 뷰모델이 관계없는 뷰모델이라 안되는거. 방법은 내일 생각해보자
         accessToken = socialLoginViewModel.accessToken
     }
+    val maxLength = 4000
+    val minLength = 10
 
     var focusState = mutableStateOf(false)
     var titleFocusState = mutableStateOf(false)
@@ -125,9 +127,7 @@ class WritingViewModel @Inject constructor(
                     initialize()
                 } else {
                     Log.e("writeEssayApiFailed token", "Failed to write essay: $accessToken")
-
                     Log.e("writeEssayApiFailed1", "Failed to write essay: ${response.code()}")
-
                 }
 
             } catch (e: Exception) {

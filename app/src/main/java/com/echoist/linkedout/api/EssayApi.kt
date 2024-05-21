@@ -1,7 +1,7 @@
 package com.echoist.linkedout.api
 
+import WritingUserInfo
 import com.echoist.linkedout.data.EssayInfo
-import com.echoist.linkedout.data.WritingUserInfo
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import retrofit2.Response
@@ -37,7 +37,7 @@ interface EssayApi{
         @Json(name = "categoryId")val categoryId: Int? = null,
         @Json(name = "thumbnail")val thumbnail: String? = null,
         @Json(name = "linkedOutGauge")val linkedOutGauge: Int = 1,
-        @Json(name = "hashTagList")val hashTagList: List<String> = listOf() //todo 추후 해시태그 추가
+        @Json(name = "tags")val tags: List<String> = listOf() //todo 추후 해시태그 추가
 
 
     )
