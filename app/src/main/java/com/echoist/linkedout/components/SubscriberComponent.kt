@@ -44,14 +44,14 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
 import com.echoist.linkedout.viewModels.CommunityViewModel
 
-@Preview
-@Composable
-fun PreviewTest() {
-    Column {
-        CommuTopAppBar("test", NavController(LocalContext.current))
-        SubscriberPage(CommunityViewModel(), NavController(LocalContext.current))
-    }
-}
+//@Preview
+//@Composable
+//fun PreviewTest() {
+//    Column {
+//        CommuTopAppBar("test", NavController(LocalContext.current))
+//        SubscriberPage(CommunityViewModel(), NavController(LocalContext.current))
+//    }
+//}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

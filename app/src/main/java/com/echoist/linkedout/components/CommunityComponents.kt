@@ -652,7 +652,7 @@ fun SubscribeUserItem(item: UserApi.UserInfo, viewModel: CommunityViewModel) {
 }
 
 @Composable
-fun SubscribeUserList(viewModel: CommunityViewModel) {
+fun SubscribeUserList(viewModel: CommunityViewModel,navController: NavController) {
     Row(
         modifier = Modifier.background(Color.Black),
         verticalAlignment = Alignment.CenterVertically,
@@ -663,7 +663,11 @@ fun SubscribeUserList(viewModel: CommunityViewModel) {
                 SubscribeUserItem(item = it, viewModel = viewModel)
             }
         }
-        Text(text = "전체", modifier = Modifier.weight(1f))
+        Text(text = "전체", modifier = Modifier
+            .weight(1f)
+            .clickable {
+                navController.navigate("FullSubscriberPage")
+            })
     }
 
 
@@ -679,7 +683,7 @@ fun prev() {
             viewModel = CommunityViewModel(),
             navController = rememberNavController()
         )
-        SubscribeUserList(viewModel = CommunityViewModel())
+        SubscribeUserList(viewModel = CommunityViewModel(), navController = rememberNavController())
     }
 }
 
@@ -698,7 +702,7 @@ fun SubscribePage(
     ) {
         item {
             Column {
-                SubscribeUserList(viewModel)
+                SubscribeUserList(viewModel,navController)
                 Box(
                     modifier = Modifier
 
