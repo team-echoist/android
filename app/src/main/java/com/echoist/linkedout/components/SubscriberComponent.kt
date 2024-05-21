@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -47,7 +49,7 @@ import com.echoist.linkedout.viewModels.CommunityViewModel
 fun PreviewTest() {
     Column {
         CommuTopAppBar("test", NavController(LocalContext.current))
-        SubscriberProfile(CommunityViewModel())
+        SubscriberPage(CommunityViewModel(), NavController(LocalContext.current))
     }
 }
 
@@ -177,3 +179,19 @@ fun SubscriberProfile(viewModel: CommunityViewModel) {
     }
 }
 
+
+@Composable
+fun SubscriberPage(viewModel: CommunityViewModel,navController : NavController){
+    LazyColumn{
+        item {
+            SubscriberProfile(viewModel = viewModel)
+
+        }
+        items(viewModel.randomList){it-> //todo 랜덤리스트에서 구독자 에세이 리스트로 바꿔야함.
+            CommunityListItem(item = it, viewModel = viewModel, navController = navController)
+        }
+
+
+    }
+
+}

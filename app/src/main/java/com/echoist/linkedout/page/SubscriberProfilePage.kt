@@ -9,7 +9,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.echoist.linkedout.components.CommuTopAppBar
-import com.echoist.linkedout.components.SubscriberProfile
+import com.echoist.linkedout.components.SubscriberPage
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
 
@@ -23,17 +23,12 @@ fun SubscriberProfilePage(
         Scaffold(
             topBar = {
                     CommuTopAppBar(text = "프로필",navController)
-
             },
             bottomBar = { MyBottomNavigation(navController) },
             content = {
-
                 Column(modifier = Modifier.padding(it)) {
-                    SubscriberProfile(viewModel = viewModel)
+                    SubscriberPage(viewModel, navController)
                 }
-
-
-
             }
         )
     }
@@ -43,5 +38,4 @@ fun SubscriberProfilePage(
 @Composable
 fun Prev2(){
     SubscriberProfilePage(viewModel = CommunityViewModel(), navController = rememberNavController())
-
 }

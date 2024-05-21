@@ -9,7 +9,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.with
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -156,8 +156,7 @@ fun RandomSentences() {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 10.dp, end = 6.dp)
-            , contentAlignment = Alignment.Center
+                .padding(start = 10.dp, end = 6.dp), contentAlignment = Alignment.Center
 
         ) {
             var layoutResult: TextLayoutResult? = remember { null }
@@ -217,8 +216,8 @@ fun RandomSentences() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CommunityTopAppBar(text : String, pagerState: PagerState){
-    val color = if (pagerState.currentPage ==0)Color.Black else Color.White
+fun CommunityTopAppBar(text: String, pagerState: PagerState) {
+    val color = if (pagerState.currentPage == 0) Color.Black else Color.White
 
 
     TopAppBar(
@@ -227,7 +226,12 @@ fun CommunityTopAppBar(text : String, pagerState: PagerState){
             Text(text = text, fontWeight = FontWeight.Bold, color = color)
         },
         actions = {
-            Icon(imageVector = Icons.Default.Search, contentDescription = "", Modifier.size(30.dp), tint = color)
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = "",
+                Modifier.size(30.dp),
+                tint = color
+            )
             Spacer(modifier = Modifier.width(13.dp))
             Icon(
                 imageVector = Icons.Default.Bookmark,
@@ -244,23 +248,27 @@ fun CommunityTopAppBar(text : String, pagerState: PagerState){
 
 
 @Composable
-fun CommunityChips(pagerState: PagerState){
+fun CommunityChips(pagerState: PagerState) {
     val coroutineScope = rememberCoroutineScope()
     val color = if (pagerState.currentPage == 0) Color.Black else Color.White
 
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .height(26.dp)){
-
-        HorizontalDivider(modifier = Modifier
+    Box(
+        modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 27.dp)
-            , thickness = 1.dp
-            , color = Color(0xFF686868))
+            .height(26.dp)
+    ) {
 
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 17.dp)) {
+        HorizontalDivider(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 27.dp), thickness = 1.dp, color = Color(0xFF686868)
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 17.dp)
+        ) {
             Column(
                 modifier = Modifier
                     .padding(end = 12.dp)
@@ -274,19 +282,21 @@ fun CommunityChips(pagerState: PagerState){
                     text = "랜덤",// 색상을 먼저 적용합니다
                     modifier = Modifier.clickable {
 
-                            coroutineScope.launch {
-                                pagerState.animateScrollToPage(0)
-                            }
+                        coroutineScope.launch {
+                            pagerState.animateScrollToPage(0)
+                        }
 
                     }
                 )
 
                 Spacer(modifier = Modifier.height(4.dp))
-                if (pagerState.currentPage == 0){
-                    HorizontalDivider(modifier = Modifier
-                        .width(65.dp),
+                if (pagerState.currentPage == 0) {
+                    HorizontalDivider(
+                        modifier = Modifier
+                            .width(65.dp),
                         color = color,
-                        thickness = 3.dp)
+                        thickness = 3.dp
+                    )
                 }
 
             }
@@ -311,11 +321,13 @@ fun CommunityChips(pagerState: PagerState){
                 )
 
                 Spacer(modifier = Modifier.height(4.dp))
-                if (pagerState.currentPage == 1){
-                    HorizontalDivider(modifier = Modifier
-                        .width(65.dp),
+                if (pagerState.currentPage == 1) {
+                    HorizontalDivider(
+                        modifier = Modifier
+                            .width(65.dp),
                         color = color,
-                        thickness = 3.dp)
+                        thickness = 3.dp
+                    )
                 }
             }
 
@@ -326,7 +338,7 @@ fun CommunityChips(pagerState: PagerState){
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun SentenceChoice(viewModel: CommunityViewModel){
+fun SentenceChoice(viewModel: CommunityViewModel) {
     val color = Color.Black
 
     Box(
@@ -335,9 +347,9 @@ fun SentenceChoice(viewModel: CommunityViewModel){
             .fillMaxWidth()
             .height(82.dp),
         contentAlignment = Alignment.Center
-    ){
+    ) {
 
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart){
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart) {
             Column {
                 Spacer(modifier = Modifier.height(20.dp))
 
@@ -350,7 +362,7 @@ fun SentenceChoice(viewModel: CommunityViewModel){
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.CenterEnd
-        ){
+        ) {
             Row(
                 modifier = Modifier
                     .background(
@@ -363,21 +375,21 @@ fun SentenceChoice(viewModel: CommunityViewModel){
                     .padding(start = 10.dp, end = 10.dp, top = 5.dp, bottom = 5.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
-            ){
+            ) {
                 val arrow = if (viewModel.isClicked) R.drawable.arrowup else R.drawable.arrowdown
 
 
                 AnimatedContent(
                     targetState = viewModel.sentenceInfo,
                     transitionSpec = {
-                        fadeIn(animationSpec = tween(300)) with fadeOut(animationSpec = tween(300))
+                        fadeIn(animationSpec = tween(300)) togetherWith fadeOut(animationSpec = tween(300))
                     }, label = ""
                 ) { targetState ->
-                        Text(
-                            fontSize = 12.sp,
-                            text = if (targetState == SentenceInfo.First) "첫 문장" else "마지막 문장",
-                            color = Color.Black
-                        )
+                    Text(
+                        fontSize = 12.sp,
+                        text = if (targetState == SentenceInfo.First) "첫 문장" else "마지막 문장",
+                        color = Color.Black
+                    )
                 }
                 Spacer(modifier = Modifier.width(23.dp))
 
@@ -390,29 +402,29 @@ fun SentenceChoice(viewModel: CommunityViewModel){
                         painter = painterResource(id = currentArrow),
                         contentDescription = "",
                         modifier = Modifier
-                            .size(20.dp)
-                            ,
+                            .size(20.dp),
                         tint = Color.Black
                     )
                 }
 
             }
 
-            }
-
         }
+
     }
+}
 
 
 @Composable
-fun ChoiceBox(viewModel: CommunityViewModel){
+fun ChoiceBox(viewModel: CommunityViewModel) {
     val color = Color.Black
     Card(
         shape = RoundedCornerShape(20),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFCFCFCF)),
         modifier = Modifier.size(
             104.dp,
-            70.dp)
+            70.dp
+        )
     ) {
         Column(
             Modifier.fillMaxSize(),
@@ -430,8 +442,8 @@ fun ChoiceBox(viewModel: CommunityViewModel){
                 color = color
             )
             Spacer(modifier = Modifier.height(6.dp))
-            HorizontalDivider(Modifier.fillMaxWidth(),color = Color(0xFFC5C5C5))
-            Spacer(modifier = Modifier.height(6.dp),)
+            HorizontalDivider(Modifier.fillMaxWidth(), color = Color(0xFFC5C5C5))
+            Spacer(modifier = Modifier.height(6.dp))
 
             Text(
                 text = "마지막 문장",
@@ -452,17 +464,24 @@ fun ChoiceBox(viewModel: CommunityViewModel){
 
 @Preview
 @Composable
-fun TodaysLogTitle(){
-    Box(modifier = Modifier
-        .background(Color.Black)
-        .fillMaxWidth()
-        .padding(start = 20.dp, end = 20.dp)
-        .height(95.dp)){
+fun TodaysLogTitle() {
+    Box(
+        modifier = Modifier
+            .background(Color.Black)
+            .fillMaxWidth()
+            .padding(start = 20.dp, end = 20.dp)
+            .height(95.dp)
+    ) {
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
             Spacer(modifier = Modifier.height(26.dp))
-            Text(text = "오늘의 글", fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = Color(0xFF616FED))
+            Text(
+                text = "오늘의 글",
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 16.sp,
+                color = Color(0xFF616FED)
+            )
             Spacer(modifier = Modifier.height(4.dp))
             Text(text = "오늘 쓰여진 다양하고 솔직한 글들을 읽어보세요", fontSize = 12.sp, color = Color(0xFF696969))
             Spacer(modifier = Modifier.height(22.dp))
@@ -500,7 +519,11 @@ fun CommunityListItem(
                     .weight(7f)
                     .padding(top = 0.dp, start = 20.dp, end = 20.dp)// Column 비율 조정
             ) {
-                Row(Modifier.padding(top = 10.dp),verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+                Row(
+                    Modifier.padding(top = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
                     Text(
                         modifier = Modifier,
                         text = item.title,
@@ -508,7 +531,7 @@ fun CommunityListItem(
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                     )
-                    Text(text = "   • 10 분", fontSize = 10.sp,color = Color(0xFF686868))
+                    Text(text = "   • 10 분", fontSize = 10.sp, color = Color(0xFF686868))
 
                 }
 
@@ -553,7 +576,7 @@ fun CommunityListItem(
 }
 
 @Composable
-fun RandomCommunityPage(viewModel: CommunityViewModel,navController : NavController){
+fun RandomCommunityPage(viewModel: CommunityViewModel, navController: NavController) {
     LazyColumn(
         Modifier
             .background(Color(0xFFD9D9D9))
@@ -569,7 +592,7 @@ fun RandomCommunityPage(viewModel: CommunityViewModel,navController : NavControl
 
             }
         }
-        items(viewModel.randomList){it->
+        items(viewModel.randomList) { it ->
             CommunityListItem(item = it, viewModel = viewModel, navController = navController)
         }
 
@@ -580,9 +603,15 @@ fun RandomCommunityPage(viewModel: CommunityViewModel,navController : NavControl
 
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun SubscribeUserItem(item : UserApi.UserInfo, viewModel: CommunityViewModel) {
-    val background  by animateColorAsState(if (viewModel.currentClickedUserId == item.id) Color(0xFF222222) else Color.Transparent, label = "")
-    val backgroundTrans  by animateColorAsState(if (viewModel.currentClickedUserId == item.id) Color.White else Color.White.copy(alpha = 0.4f), label = ""  //todo white값을 unspecified.0.4f로 맞추면될듯
+fun SubscribeUserItem(item: UserApi.UserInfo, viewModel: CommunityViewModel) {
+    val background by animateColorAsState(
+        if (viewModel.currentClickedUserId == item.id) Color(
+            0xFF222222
+        ) else Color.Transparent, label = ""
+    )
+    val backgroundTrans by animateColorAsState(
+        if (viewModel.currentClickedUserId == item.id) Color.White else Color.White.copy(alpha = 0.4f),
+        label = ""  //todo white값을 unspecified.0.4f로 맞추면될듯
     )
 
     CompositionLocalProvider(LocalRippleConfiguration provides null) {
@@ -623,7 +652,7 @@ fun SubscribeUserItem(item : UserApi.UserInfo, viewModel: CommunityViewModel) {
 }
 
 @Composable
-fun SubscribeUserList(viewModel: CommunityViewModel){
+fun SubscribeUserList(viewModel: CommunityViewModel) {
     Row(
         modifier = Modifier.background(Color.Black),
         verticalAlignment = Alignment.CenterVertically,
@@ -638,22 +667,29 @@ fun SubscribeUserList(viewModel: CommunityViewModel){
     }
 
 
-
 }
 
 @Preview
 @Composable
-fun prev(){
+fun prev() {
     Column {
         SubscribeUserItem(item = CommunityViewModel().userItem, viewModel = CommunityViewModel())
-        CommunityListItem(item = CommunityViewModel().detailEssay, viewModel = CommunityViewModel(), navController = rememberNavController())
+        CommunityListItem(
+            item = CommunityViewModel().detailEssay,
+            viewModel = CommunityViewModel(),
+            navController = rememberNavController()
+        )
         SubscribeUserList(viewModel = CommunityViewModel())
     }
 }
 
 @Composable
-fun SubscribePage(viewModel: CommunityViewModel,navController : NavController,pagerstate : PagerState){
-    val color = if (pagerstate.currentPage ==0)Color(0xFFD9D9D9) else Color.Black
+fun SubscribePage(
+    viewModel: CommunityViewModel,
+    navController: NavController,
+    pagerstate: PagerState
+) {
+    val color = if (pagerstate.currentPage == 0) Color(0xFFD9D9D9) else Color.Black
 
     LazyColumn(
         Modifier
@@ -665,12 +701,18 @@ fun SubscribePage(viewModel: CommunityViewModel,navController : NavController,pa
                 SubscribeUserList(viewModel)
                 Box(
                     modifier = Modifier
+
                         .fillMaxSize()
                         .padding(top = 15.dp, end = 20.dp),
                     contentAlignment = Alignment.BottomEnd
-                ){
+                ) {
                     androidx.compose.animation.AnimatedVisibility(visible = viewModel.currentClickedUserId != null) {
-                        Box(modifier = Modifier.background(Color(0xFF191919), shape = RoundedCornerShape(20))){
+                        Box(modifier = Modifier
+                            .clickable {
+                                viewModel.findUser()
+                                navController.navigate("SubscriberPage")
+                            }
+                            .background(Color(0xFF191919), shape = RoundedCornerShape(20))) {
                             Text(
                                 text = "프로필 보기",
                                 fontSize = 12.sp,
@@ -684,7 +726,7 @@ fun SubscribePage(viewModel: CommunityViewModel,navController : NavController,pa
             }
 
         }
-        items(viewModel.randomList){it->
+        items(viewModel.randomList) { it ->
             CommunityListItem(item = it, viewModel = viewModel, navController = navController)
         }
 
@@ -693,11 +735,15 @@ fun SubscribePage(viewModel: CommunityViewModel,navController : NavController,pa
 }
 
 @Composable
-fun CommunityPager(pagerState: PagerState, viewModel: CommunityViewModel, navController: NavController) {
+fun CommunityPager(
+    pagerState: PagerState,
+    viewModel: CommunityViewModel,
+    navController: NavController
+) {
     HorizontalPager(state = pagerState) { page ->
         when (page) {
-            0 -> RandomCommunityPage(viewModel,navController)
-            1 -> SubscribePage(viewModel,navController,pagerState)
+            0 -> RandomCommunityPage(viewModel, navController)
+            1 -> SubscribePage(viewModel, navController, pagerState)
         }
     }
 }

@@ -145,6 +145,9 @@ class LoginPage : ComponentActivity() {
                     CommunityPage(navController = navController,communityViewModel)
                     //community page
                 }
+                composable("SubscriberPage") {
+                   SubscriberProfilePage(viewModel = communityViewModel, navController = navController)
+                }
                 composable("SETTINGS") {
                     //settings page
                 }
