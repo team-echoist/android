@@ -16,7 +16,7 @@ enum class SentenceInfo {
 class CommunityViewModel : ViewModel() {
     var isClicked by mutableStateOf(false)
     var sentenceInfo by mutableStateOf(SentenceInfo.First)
-    var currentClickedItemId by mutableStateOf<Int?>(null) // Add this line
+    var currentClickedUserId by mutableStateOf<Int?>(null) // Add this line
 
 
     var detailEssay by mutableStateOf(
@@ -44,7 +44,7 @@ class CommunityViewModel : ViewModel() {
         )
     )
 
-    var subscribeUserList = mutableStateListOf(
+    var subscribeUserList = mutableStateListOf( //구독유저 리스트 api통신해서 받을것.
         userItem.copy(id = 1),
         userItem.copy(id = 2),
         userItem.copy(id = 3),

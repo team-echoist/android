@@ -217,14 +217,14 @@ fun RandomSentences() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CommunityTopAppBar(pagerState: PagerState){
+fun CommunityTopAppBar(text : String, pagerState: PagerState){
     val color = if (pagerState.currentPage ==0)Color.Black else Color.White
 
 
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
         title = {
-            Text(text = "커뮤니티", fontWeight = FontWeight.Bold, color = color)
+            Text(text = text, fontWeight = FontWeight.Bold, color = color)
         },
         actions = {
             Icon(imageVector = Icons.Default.Search, contentDescription = "", Modifier.size(30.dp), tint = color)
@@ -580,8 +580,10 @@ fun RandomCommunityPage(viewModel: CommunityViewModel,navController : NavControl
 
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun SubscribeUserItem(item : UserApi.UserInfo, viewModel: CommunityViewModel) { // todo item 값 바꿀것 userinfo로
-    val background  by animateColorAsState(if (viewModel.currentClickedItemId == item.id) Color(0xFF222222) else Color.Transparent, label = "")
+fun SubscribeUserItem(item : UserApi.UserInfo, viewModel: CommunityViewModel) {
+    val background  by animateColorAsState(if (viewModel.currentClickedUserId == item.id) Color(0xFF222222) else Color.Transparent, label = "")
+    val backgroundTrans  by animateColorAsState(if (viewModel.currentClickedUserId == item.id) Color.White else Color.White.copy(alpha = 0.4f), label = ""  //todo white값을 unspecified.0.4f로 맞추면될듯
+    )
 
     CompositionLocalProvider(LocalRippleConfiguration provides null) {
 
@@ -591,10 +593,10 @@ fun SubscribeUserItem(item : UserApi.UserInfo, viewModel: CommunityViewModel) { 
                 .background(background, shape = RoundedCornerShape(25))
                 .padding(top = 20.dp)
                 .clickable {
-                    if (viewModel.currentClickedItemId == item.id) {
-                        viewModel.currentClickedItemId = null
+                    if (viewModel.currentClickedUserId == item.id) {
+                        viewModel.currentClickedUserId = null
                     } else {
-                        viewModel.currentClickedItemId = item.id
+                        viewModel.currentClickedUserId = item.id
                     }
                 },
             contentAlignment = Alignment.Center
@@ -606,7 +608,7 @@ fun SubscribeUserItem(item : UserApi.UserInfo, viewModel: CommunityViewModel) { 
                 Surface(
                     shape = CircleShape,
                     modifier = Modifier.size(50.dp),
-                    color = Color.Gray // Unspecified
+                    color = backgroundTrans // Unspecified
                 ) {
                     GlideImage(
                         model = item.profileImage,
@@ -614,7 +616,7 @@ fun SubscribeUserItem(item : UserApi.UserInfo, viewModel: CommunityViewModel) { 
                         modifier = Modifier
                     )
                 }
-                Text(text = item.nickname, fontSize = 12.sp)
+                Text(text = item.nickname, fontSize = 12.sp, color = backgroundTrans)
             }
         }
     }
@@ -667,7 +669,7 @@ fun SubscribePage(viewModel: CommunityViewModel,navController : NavController,pa
                         .padding(top = 15.dp, end = 20.dp),
                     contentAlignment = Alignment.BottomEnd
                 ){
-                    androidx.compose.animation.AnimatedVisibility(visible = viewModel.currentClickedItemId != null) {
+                    androidx.compose.animation.AnimatedVisibility(visible = viewModel.currentClickedUserId != null) {
                         Box(modifier = Modifier.background(Color(0xFF191919), shape = RoundedCornerShape(20))){
                             Text(
                                 text = "프로필 보기",

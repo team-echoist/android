@@ -41,7 +41,7 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
             modifier = Modifier.background(color),
             topBar = {
                 Column(Modifier.background(color)) {
-                    CommunityTopAppBar(pagerstate)
+                    CommunityTopAppBar("커뮤니티",pagerstate)
                     CommunityChips(pagerstate)
                 }
             },
