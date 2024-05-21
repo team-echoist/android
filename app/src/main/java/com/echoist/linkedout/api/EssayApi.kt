@@ -1,4 +1,4 @@
-package com.echoist.linkedout.api.essay
+package com.echoist.linkedout.api
 
 import com.echoist.linkedout.data.EssayInfo
 import com.echoist.linkedout.data.WritingUserInfo

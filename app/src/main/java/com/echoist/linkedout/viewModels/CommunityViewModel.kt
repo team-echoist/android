@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.echoist.linkedout.api.UserApi
 import com.echoist.linkedout.data.EssayItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 
@@ -15,6 +16,8 @@ enum class SentenceInfo {
 class CommunityViewModel : ViewModel() {
     var isClicked by mutableStateOf(false)
     var sentenceInfo by mutableStateOf(SentenceInfo.First)
+    var currentClickedItemId by mutableStateOf<Int?>(null) // Add this line
+
 
     var detailEssay by mutableStateOf(
         EssayItem(
@@ -30,9 +33,28 @@ class CommunityViewModel : ViewModel() {
             updatedDate = "2024-05-15"
         )
     )
+    var userItem by mutableStateOf(
+        UserApi.UserInfo(
+            id = 1,
+            nickname = "구루브",
+            profileImage = "http",
+            password = "1234",
+            gender = "male",
+            birthDate = "0725"
+        )
+    )
+
+    var subscribeUserList = mutableStateListOf(
+        userItem.copy(id = 1),
+        userItem.copy(id = 2),
+        userItem.copy(id = 3),
+        userItem.copy(id = 4),
+        userItem.copy(id = 5),
+        userItem.copy(id = 6),
+        userItem.copy(id = 7)
+    )
 
     var randomList by mutableStateOf(mutableStateListOf(detailEssay,detailEssay,detailEssay,detailEssay))
-    var subscribeList by mutableStateOf(mutableStateListOf(detailEssay,detailEssay,detailEssay,detailEssay,detailEssay,detailEssay,detailEssay))
 
 
 }

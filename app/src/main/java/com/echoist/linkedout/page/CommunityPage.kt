@@ -71,7 +71,7 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(top = 165.dp, end = 18.dp), contentAlignment = Alignment.TopEnd
+                            .padding(top = 155.dp, end = 18.dp), contentAlignment = Alignment.TopEnd
                     ) {
                         ChoiceBox(viewModel)
                     }

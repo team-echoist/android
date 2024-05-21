@@ -11,7 +11,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.echoist.linkedout.api.essay.EssayApi
+import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.page.Token
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory

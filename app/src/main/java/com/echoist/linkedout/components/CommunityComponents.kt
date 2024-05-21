@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -40,11 +41,14 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -67,6 +71,7 @@ import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
+import com.echoist.linkedout.api.UserApi
 import com.echoist.linkedout.data.EssayItem
 import com.echoist.linkedout.viewModels.CommunityViewModel
 import com.echoist.linkedout.viewModels.SentenceInfo
@@ -334,6 +339,8 @@ fun SentenceChoice(viewModel: CommunityViewModel){
 
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart){
             Column {
+                Spacer(modifier = Modifier.height(20.dp))
+
                 Text(text = "한 문장을 모아", fontWeight = FontWeight.SemiBold, color = color)
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(text = "글의 시작을 알리는 문장들을 만나보세요.", color = Color(0xFF696969), fontSize = 12.sp)
@@ -350,6 +357,9 @@ fun SentenceChoice(viewModel: CommunityViewModel){
                         color = Color(0xFFCFCFCF), // 배경색 설정
                         shape = RoundedCornerShape(10.dp) // 원하는 radius 값 설정
                     )
+                    .clickable {
+                        viewModel.isClicked = !viewModel.isClicked
+                    }
                     .padding(start = 10.dp, end = 10.dp, top = 5.dp, bottom = 5.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
@@ -381,9 +391,7 @@ fun SentenceChoice(viewModel: CommunityViewModel){
                         contentDescription = "",
                         modifier = Modifier
                             .size(20.dp)
-                            .clickable {
-                                viewModel.isClicked = !viewModel.isClicked
-                            },
+                            ,
                         tint = Color.Black
                     )
                 }
@@ -472,7 +480,6 @@ fun CommunityListItem(
     viewModel: CommunityViewModel,
     navController: NavController
 ) {
-    val weight = if (item.thumbnail != null) 1f else 7f
     val color = if (isSystemInDarkTheme()) {
         Color.White
     } else {
@@ -493,7 +500,7 @@ fun CommunityListItem(
                     .weight(7f)
                     .padding(top = 0.dp, start = 20.dp, end = 20.dp)// Column 비율 조정
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+                Row(Modifier.padding(top = 10.dp),verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
                     Text(
                         modifier = Modifier,
                         text = item.title,
@@ -571,29 +578,44 @@ fun RandomCommunityPage(viewModel: CommunityViewModel,navController : NavControl
 
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
+@OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun SubscribeUserItem(item : EssayItem, viewModel: CommunityViewModel){
-    Box(
-        modifier = Modifier.size(70.dp, 86.dp),
-        contentAlignment = Alignment.Center
-    ){
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ){
-            Surface(
-                shape = CircleShape,
-                modifier = Modifier.size(50.dp),
-                color = Color.Gray // Unspecified
+fun SubscribeUserItem(item : UserApi.UserInfo, viewModel: CommunityViewModel) { // todo item 값 바꿀것 userinfo로
+    val background  by animateColorAsState(if (viewModel.currentClickedItemId == item.id) Color(0xFF222222) else Color.Transparent, label = "")
+
+    CompositionLocalProvider(LocalRippleConfiguration provides null) {
+
+        Box(
+            modifier = Modifier
+                .width(70.dp)
+                .background(background, shape = RoundedCornerShape(25))
+                .padding(top = 20.dp)
+                .clickable {
+                    if (viewModel.currentClickedItemId == item.id) {
+                        viewModel.currentClickedItemId = null
+                    } else {
+                        viewModel.currentClickedItemId = item.id
+                    }
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                GlideImage(
-                    model = item.thumbnail,
-                    contentDescription = null,
-                    modifier = Modifier
-                )
+                Surface(
+                    shape = CircleShape,
+                    modifier = Modifier.size(50.dp),
+                    color = Color.Gray // Unspecified
+                ) {
+                    GlideImage(
+                        model = item.profileImage,
+                        contentDescription = null,
+                        modifier = Modifier
+                    )
+                }
+                Text(text = item.nickname, fontSize = 12.sp)
             }
-            Text(text = item.nickName, fontSize = 12.sp)
         }
     }
 }
@@ -606,7 +628,7 @@ fun SubscribeUserList(viewModel: CommunityViewModel){
         horizontalArrangement = Arrangement.Center
     ) {
         LazyRow(Modifier.weight(9f)) { // todo subscribeList 받아와야할것
-            items(viewModel.subscribeList) { it ->
+            items(viewModel.subscribeUserList) { it ->
                 SubscribeUserItem(item = it, viewModel = viewModel)
             }
         }
@@ -621,7 +643,7 @@ fun SubscribeUserList(viewModel: CommunityViewModel){
 @Composable
 fun prev(){
     Column {
-        SubscribeUserItem(item = CommunityViewModel().detailEssay, viewModel = CommunityViewModel())
+        SubscribeUserItem(item = CommunityViewModel().userItem, viewModel = CommunityViewModel())
         CommunityListItem(item = CommunityViewModel().detailEssay, viewModel = CommunityViewModel(), navController = rememberNavController())
         SubscribeUserList(viewModel = CommunityViewModel())
     }
@@ -637,7 +659,27 @@ fun SubscribePage(viewModel: CommunityViewModel,navController : NavController,pa
             .padding(top = 40.dp)
     ) {
         item {
-            SubscribeUserList(viewModel)
+            Column {
+                SubscribeUserList(viewModel)
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 15.dp, end = 20.dp),
+                    contentAlignment = Alignment.BottomEnd
+                ){
+                    androidx.compose.animation.AnimatedVisibility(visible = viewModel.currentClickedItemId != null) {
+                        Box(modifier = Modifier.background(Color(0xFF191919), shape = RoundedCornerShape(20))){
+                            Text(
+                                text = "프로필 보기",
+                                fontSize = 12.sp,
+                                modifier = Modifier
+                                    .padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp)
+                            )
+                        }
+                    }
+                }
+
+            }
 
         }
         items(viewModel.randomList){it->
@@ -650,7 +692,7 @@ fun SubscribePage(viewModel: CommunityViewModel,navController : NavController,pa
 
 @Composable
 fun CommunityPager(pagerState: PagerState, viewModel: CommunityViewModel, navController: NavController) {
-    HorizontalPager(state = pagerState, modifier = Modifier.padding(top = 20.dp)) { page ->
+    HorizontalPager(state = pagerState) { page ->
         when (page) {
             0 -> RandomCommunityPage(viewModel,navController)
             1 -> SubscribePage(viewModel,navController,pagerState)

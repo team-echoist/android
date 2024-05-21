@@ -7,7 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.echoist.linkedout.api.essay.EssayApi
+import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.EssayItem
 import com.echoist.linkedout.page.Token
 import com.squareup.moshi.Moshi
