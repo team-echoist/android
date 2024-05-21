@@ -56,7 +56,7 @@ fun LinkedOutTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = TypographyPretendard,
         content = content
     )
 }

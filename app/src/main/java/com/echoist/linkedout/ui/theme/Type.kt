@@ -2,9 +2,11 @@ package com.echoist.linkedout.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.echoist.linkedout.R
 
 // Set of Material typography styles to start with
 val Typography = Typography(
@@ -32,3 +34,24 @@ val Typography = Typography(
     )
     */
 )
+private val Pretended = FontFamily(
+    Font(R.font.pretendard_bold, weight = FontWeight.Bold),
+    Font(R.font.pretendard_extrabold, weight = FontWeight.ExtraBold),
+    Font(R.font.pretendard_extralight, weight = FontWeight.ExtraLight),
+    Font(R.font.pretendard_regular, weight = FontWeight.Normal),
+    Font(R.font.pretendard_semibold, weight = FontWeight.SemiBold),
+    Font(R.font.pretendard_thin, weight = FontWeight.Thin),
+    Font(R.font.pretendard_light, weight = FontWeight.Light),
+
+)
+
+val TypographyPretendard = Typography(
+    bodyMedium = TextStyle(
+        fontFamily = Pretended,
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.5.sp
+    )
+)
+
