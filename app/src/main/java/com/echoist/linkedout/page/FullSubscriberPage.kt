@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,15 +17,21 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
@@ -34,11 +41,12 @@ import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
 
 
-//@Preview
-//@Composable
-//fun Prev3() {
-//    FullSubscriberPage(viewModel = CommunityViewModel(), navController = rememberNavController())
-//}
+@Preview
+@Composable
+fun Prev3() {
+    FullSubscriberPage(viewModel = CommunityViewModel(), navController = rememberNavController())
+}
+
 @Composable
 fun FullSubscriberPage(
     viewModel: CommunityViewModel,
@@ -53,24 +61,30 @@ fun FullSubscriberPage(
             bottomBar = { MyBottomNavigation(navController) },
             content = {
 
-                    LazyColumn(modifier = Modifier
+                LazyColumn(
+                    modifier = Modifier
                         .padding(it)
-                        .padding(top = 30.dp)){
-                        items(viewModel.subscribeUserList){it-> //todo 랜덤리스트에서 구독자 에세이 리스트로 바꿔야함.
-                            SubscriberSimpleItem(item = it,viewModel,navController)
-                            Spacer(modifier = Modifier.height(10.dp))
-
-                        }
-
+                        .padding(top = 30.dp)
+                ) {
+                    items(viewModel.subscribeUserList) { it -> //todo 랜덤리스트에서 구독자 에세이 리스트로 바꿔야함.
+                        SubscriberSimpleItem(item = it, viewModel, navController)
+                        Spacer(modifier = Modifier.height(10.dp))
 
                     }
+                }
+                if (viewModel.unSubscribeClicked) {
 
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
+                        UnsubscribeAlert(viewModel)
+
+                    }
+                }
             }
         )
     }
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
+@OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SubscriberSimpleItem(
     item: UserApi.UserInfo,
@@ -87,14 +101,18 @@ fun SubscriberSimpleItem(
             .height(100.dp)
             .padding(start = 20.dp, end = 20.dp)
     ) {
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .border(width = 2.dp, color = Color.Gray, shape = RoundedCornerShape(20)), contentAlignment = Alignment.CenterStart) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .border(width = 2.dp, color = Color.Gray, shape = RoundedCornerShape(20)),
+            contentAlignment = Alignment.CenterStart
+        ) {
             Row(
                 modifier = Modifier.padding(start = 20.dp, end = 20.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
+
                 GlideImage(
                     model = R.drawable.bottom_nav_3,
                     contentDescription = "profileimage",
@@ -113,14 +131,70 @@ fun SubscriberSimpleItem(
                 .padding(end = 20.dp)
                 .size(73.dp, 24.dp), contentAlignment = Alignment.CenterEnd
         ) {
-            Text(
-                text = "구독중",
-                color = Color(0xFF616FED),
-                fontSize = 12.sp,
-                modifier = Modifier
-                    .background(Color(0xFF191919), shape = RoundedCornerShape(20))
-                    .padding(start = 20.dp, top = 3.dp, end = 20.dp, bottom = 3.dp)
-            )
+            CompositionLocalProvider(LocalRippleConfiguration provides null) {
+                Text(
+                    text = "구독중",
+                    color = Color(0xFF616FED),
+                    fontSize = 12.sp,
+                    modifier = Modifier
+                        .background(Color(0xFF191919), shape = RoundedCornerShape(20))
+                        .padding(start = 20.dp, top = 3.dp, end = 20.dp, bottom = 3.dp)
+                        .clickable { viewModel.unSubscribeClicked = true }
+                )
+            }
         }
     }
+
+}
+
+@Composable
+fun UnsubscribeAlert(viewModel: CommunityViewModel) {
+    Box(
+        modifier = Modifier
+            .background(Color.White.copy(alpha = 0.5f))
+            .fillMaxSize()
+    )
+    Column(
+        Modifier
+            .padding(start = 20.dp, end = 20.dp)
+            .fillMaxWidth()
+    ) {
+        Box(
+            modifier = Modifier
+                .background(Color(0xFF191919), shape = RoundedCornerShape(20))
+                .fillMaxWidth()
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(text = "구독을 취소하시겠습니까?", fontSize = 16.sp)
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(text = "구독 취소 시 업데이트 되는 글이 보이지 않습니다.", fontSize = 16.sp)
+                Spacer(modifier = Modifier.height(15.dp))
+                HorizontalDivider(color = Color(0xFF202020))
+                Spacer(modifier = Modifier.height(18.dp))
+                Text(text = "구독 취소", color = Color.Red, fontSize = 16.sp) // todo 구독취소 기능구현
+                Spacer(modifier = Modifier.height(20.dp))
+
+            }
+        }
+        Spacer(modifier = Modifier.height(14.dp))
+        Box(
+            modifier = Modifier
+                .background(Color(0xFF191919), shape = RoundedCornerShape(20))
+                .fillMaxWidth()
+                .height(64.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clickable { viewModel.unSubscribeClicked = false },
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = "돌아가기", fontSize = 16.sp)
+            }
+        }
+        Spacer(modifier = Modifier.height(20.dp))
+
+    }
+
 }

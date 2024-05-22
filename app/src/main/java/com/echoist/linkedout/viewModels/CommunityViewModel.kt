@@ -22,6 +22,7 @@ class CommunityViewModel : ViewModel() {
     var currentClickedUserId by mutableStateOf<Int?>(null) // Add this line
     var isOptionClicked by mutableStateOf(false)
     var detailEssayBackStack = Stack<EssayItem>()
+    var unSubscribeClicked by mutableStateOf(false)
 
 
 
@@ -64,6 +65,7 @@ class CommunityViewModel : ViewModel() {
         mutableStateListOf(
             detailEssay.copy(
                 id = 2,
+                nickName = "카프카",
                 title = "예시 에세이 2",
                 content = "이 에세이는 예시입니다. 두 번째 에세이입니다.",
                 thumbnail = "http://example.com/image2.jpg"
@@ -71,18 +73,21 @@ class CommunityViewModel : ViewModel() {
             detailEssay.copy(
                 id = 3,
                 title = "예시 에세이 3",
+                nickName = "스물하나",
                 content = "이 에세이는 예시입니다. 세 번째 에세이입니다.",
                 thumbnail = "http://example.com/image3.jpg"
             ),
             detailEssay.copy(
                 id = 4,
                 title = "예시 에세이 4",
+                nickName = "자두천사",
                 content = "이 에세이는 예시입니다. 네 번째 에세이입니다.",
                 thumbnail = "http://example.com/image4.jpg"
             ),
             detailEssay.copy(
                 id = 5,
                 title = "예시 에세이 5",
+                nickName = "사자랑이",
                 content = "이 에세이는 예시입니다. 다섯 번째 에세이입니다.",
                 thumbnail = "http://example.com/image5.jpg"
             )
