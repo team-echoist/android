@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import com.echoist.linkedout.api.UserApi
 import com.echoist.linkedout.data.EssayItem
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.util.Stack
 
 enum class SentenceInfo {
     First,Last
@@ -20,6 +21,8 @@ class CommunityViewModel : ViewModel() {
     var sentenceInfo by mutableStateOf(SentenceInfo.First)
     var currentClickedUserId by mutableStateOf<Int?>(null) // Add this line
     var isOptionClicked by mutableStateOf(false)
+    var detailEssayBackStack = Stack<EssayItem>()
+
 
 
     var detailEssay by mutableStateOf(
@@ -59,10 +62,30 @@ class CommunityViewModel : ViewModel() {
 
     var randomList by mutableStateOf(
         mutableStateListOf(
-            detailEssay,
-            detailEssay,
-            detailEssay,
-            detailEssay
+            detailEssay.copy(
+                id = 2,
+                title = "예시 에세이 2",
+                content = "이 에세이는 예시입니다. 두 번째 에세이입니다.",
+                thumbnail = "http://example.com/image2.jpg"
+            ),
+            detailEssay.copy(
+                id = 3,
+                title = "예시 에세이 3",
+                content = "이 에세이는 예시입니다. 세 번째 에세이입니다.",
+                thumbnail = "http://example.com/image3.jpg"
+            ),
+            detailEssay.copy(
+                id = 4,
+                title = "예시 에세이 4",
+                content = "이 에세이는 예시입니다. 네 번째 에세이입니다.",
+                thumbnail = "http://example.com/image4.jpg"
+            ),
+            detailEssay.copy(
+                id = 5,
+                title = "예시 에세이 5",
+                content = "이 에세이는 예시입니다. 다섯 번째 에세이입니다.",
+                thumbnail = "http://example.com/image5.jpg"
+            )
         )
     )
 

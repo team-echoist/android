@@ -1,6 +1,7 @@
 package com.echoist.linkedout.components
 
 import android.content.ContentValues
+import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.Crossfade
@@ -509,6 +510,9 @@ fun EssayListItem(
         .background(Color.Black)
         .clickable {
             viewModel.detailEssay = item
+            navController.navigate("CommunityDetailPage")
+            viewModel.detailEssayBackStack.push(item)
+            Log.d(TAG, "pushpush: ${viewModel.detailEssayBackStack}")
         }
         .height(140.dp)) {
         //타이틀

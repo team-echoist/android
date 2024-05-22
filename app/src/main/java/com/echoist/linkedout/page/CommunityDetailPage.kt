@@ -1,5 +1,7 @@
 package com.echoist.linkedout.page
 
+import android.content.ContentValues
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
@@ -7,6 +9,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -20,9 +23,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.BookmarkBorder
@@ -50,6 +53,7 @@ import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
+import com.echoist.linkedout.components.EssayListItem
 import com.echoist.linkedout.data.EssayItem
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
@@ -63,24 +67,62 @@ fun CommunityDetailPagePreview() {
 
 @Composable
 fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewModel) {
-    val scrollState = rememberScrollState()
 
     LinkedOutTheme {
         Scaffold(
             topBar = {
                 CommunityTopAppBar(navController = navController, viewModel)
             },
-            content = {
+            content = { it ->
                 Box(
                     Modifier
                         .padding(it)
                         .fillMaxSize(), contentAlignment = Alignment.TopCenter
                 ) {
-                    Column(Modifier.verticalScroll(scrollState)) {
-                        DetailEssay(item = viewModel.detailEssay)
-                        Spacer(modifier = Modifier.height(28.dp))
-                        SubscriberSimpleItem(item = viewModel.userItem, viewModel = viewModel, navController = navController)
+                    LazyColumn {
+                        item {
+                            DetailEssay(item = viewModel.detailEssay)
+                            Spacer(modifier = Modifier.height(28.dp))
+                            SubscriberSimpleItem(
+                                item = viewModel.userItem,
+                                viewModel = viewModel,
+                                navController = navController
+                            )
+                            Spacer(modifier = Modifier.height(36.dp))
+                            Box(
+                                modifier = Modifier
+                                    .height(12.dp)
+                                    .fillMaxWidth()
+                                    .background(Color(0xFF1A1A1A))
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .height(56.dp)
+                                    .fillMaxWidth()
+                                    .padding(start = 20.dp, end = 20.dp),
+                                contentAlignment = Alignment.CenterStart
+                            )
+                            {
+                                Text(
+                                    text = "'${viewModel.userItem.nickname} 아무개'의 이전 글",
+                                    fontSize = 14.sp,
+                                    color = Color(0xFF616FED)
+                                )
+
+                            }
+
+                        }
+                        items(items = viewModel.randomList) { it -> //랜덤리스트 말고 수정할것. 그사람의 리스트로
+                            EssayListItem(
+                                item = it,
+                                viewModel = viewModel,
+                                navController = navController
+                            )
+                        }
+
+
                     }
+
                     //수정 옵션
                     AnimatedVisibility(
                         visible = viewModel.isOptionClicked,
@@ -130,6 +172,13 @@ fun CommunityTopAppBar(navController: NavController, viewModel: CommunityViewMod
                 modifier = Modifier
                     .padding(start = 20.dp)
                     .clickable {
+                        if (viewModel.detailEssayBackStack.isNotEmpty()) {
+                            viewModel.detailEssayBackStack.pop()
+                            Log.d(ContentValues.TAG, "pushpushpop: ${viewModel.detailEssayBackStack}")
+                            if (viewModel.detailEssayBackStack.isNotEmpty()) {
+                                viewModel.detailEssay = viewModel.detailEssayBackStack.peek()
+                            }
+                        }
                         navController.popBackStack()
                     } //뒤로가기
             )
@@ -174,7 +223,7 @@ fun ReportOption(viewModel: CommunityViewModel) {
                 )
             }
             HorizontalDivider()
-            OptionItem(text = "신고하기", Color.Red,{},R.drawable.option_report)
+            OptionItem(text = "신고하기", Color.Red, {}, R.drawable.option_report)
 
         }
     }
@@ -239,8 +288,17 @@ fun DetailEssay(item: EssayItem) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
                         Row {
                             repeat(item.linkedOutGauge) {
-                                Image(painter = painterResource(id = R.drawable.ring), contentDescription = "ring", modifier = Modifier.size(14.dp), colorFilter = ColorFilter.tint(Color(0xFF686868)) )
-                                if (it != item.linkedOutGauge-1) Spacer(modifier = Modifier.width(4.dp))
+                                Image(
+                                    painter = painterResource(id = R.drawable.ring),
+                                    contentDescription = "ring",
+                                    modifier = Modifier.size(14.dp),
+                                    colorFilter = ColorFilter.tint(Color(0xFF686868))
+                                )
+                                if (it != item.linkedOutGauge - 1) Spacer(
+                                    modifier = Modifier.width(
+                                        4.dp
+                                    )
+                                )
                             }
                         }
                     }
@@ -248,16 +306,27 @@ fun DetailEssay(item: EssayItem) {
             }
             Spacer(modifier = Modifier.height(28.dp))
             Row {
-                SuggestionChip(onClick = { /*TODO*/ },  label = { Text("깨달음") }, shape = RoundedCornerShape(50))
+                SuggestionChip(
+                    onClick = { /*TODO*/ },
+                    label = { Text("깨달음") },
+                    shape = RoundedCornerShape(50)
+                )
                 Spacer(modifier = Modifier.width(10.dp))
-                SuggestionChip(onClick = { /*TODO*/ },  label = { Text("놀라움") }, shape = RoundedCornerShape(50))
+                SuggestionChip(
+                    onClick = { /*TODO*/ },
+                    label = { Text("놀라움") },
+                    shape = RoundedCornerShape(50)
+                )
                 Spacer(modifier = Modifier.width(10.dp))
-                SuggestionChip(onClick = { /*TODO*/ },  label = { Text("새로움") }, shape = RoundedCornerShape(50))
+                SuggestionChip(
+                    onClick = { /*TODO*/ },
+                    label = { Text("새로움") },
+                    shape = RoundedCornerShape(50)
+                )
                 Spacer(modifier = Modifier.width(10.dp))
             }
 
         }
 
     }
-
 }
