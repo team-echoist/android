@@ -30,12 +30,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -188,7 +186,7 @@ fun SubscriberPage(viewModel: CommunityViewModel,navController : NavController){
 
         }
         items(viewModel.randomList){it-> //todo 랜덤리스트에서 구독자 에세이 리스트로 바꿔야함.
-            CommunityListItem(item = it, viewModel = viewModel, navController = navController)
+            EssayListItem(item = it, viewModel = viewModel, navController = navController)
         }
 
 

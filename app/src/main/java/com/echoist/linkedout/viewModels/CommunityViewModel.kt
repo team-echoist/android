@@ -19,18 +19,19 @@ class CommunityViewModel : ViewModel() {
     var isClicked by mutableStateOf(false)
     var sentenceInfo by mutableStateOf(SentenceInfo.First)
     var currentClickedUserId by mutableStateOf<Int?>(null) // Add this line
+    var isOptionClicked by mutableStateOf(false)
 
 
     var detailEssay by mutableStateOf(
         EssayItem(
             nickName = "구루브",
             content = "이 에세이는 예시입니다.",
-            createdDate = "2024-05-15",
+            createdDate = "2024년 04월 28일 16:47",
             id = 1,
             linkedOut = true,
             linkedOutGauge = 5,
             published = true,
-            thumbnail = null,
+            thumbnail = "http 값 있어요~",
             title = "예시 에세이",
             updatedDate = "2024-05-15"
         )

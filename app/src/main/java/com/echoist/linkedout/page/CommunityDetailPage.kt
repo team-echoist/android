@@ -1,15 +1,12 @@
 package com.echoist.linkedout.page
 
-import MyLogView1Model
-import MyLogViewModel
-import android.content.ContentValues.TAG
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -28,10 +25,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -40,30 +39,36 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
-import com.echoist.linkedout.components.LastEssayPager
+import com.echoist.linkedout.data.EssayItem
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
+import com.echoist.linkedout.viewModels.CommunityViewModel
 
-//@Preview
-//@Composable
-//fun pre(){
-//    MyLogDetailPage(navController = NavController(LocalContext.current), viewModel = MyLogViewModel())
-//}
+@Preview
 @Composable
-fun MyLogDetailPage(navController: NavController, viewModel: MyLogViewModel) {
+fun CommunityDetailPagePreview() {
+    CommunityDetailPage(rememberNavController(), CommunityViewModel())
+}
+
+
+@Composable
+fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewModel) {
     val scrollState = rememberScrollState()
 
     LinkedOutTheme {
         Scaffold(
             topBar = {
-                DetailTopAppBar(navController = navController, viewModel)
+                CommunityTopAppBar(navController = navController, viewModel)
             },
             content = {
                 Box(
@@ -72,12 +77,13 @@ fun MyLogDetailPage(navController: NavController, viewModel: MyLogViewModel) {
                         .fillMaxSize(), contentAlignment = Alignment.TopCenter
                 ) {
                     Column(Modifier.verticalScroll(scrollState)) {
-                        DetailEssay(viewModel = viewModel)
-                        LastEssayPager(viewModel = viewModel, navController = navController)
+                        DetailEssay(item = viewModel.detailEssay)
+                        Spacer(modifier = Modifier.height(28.dp))
+                        SubscriberSimpleItem(item = viewModel.userItem, viewModel = viewModel, navController = navController)
                     }
                     //수정 옵션
                     AnimatedVisibility(
-                        visible = viewModel.isActionClicked,
+                        visible = viewModel.isOptionClicked,
                         enter = fadeIn(
                             animationSpec = tween(
                                 durationMillis = 1000,
@@ -97,7 +103,7 @@ fun MyLogDetailPage(navController: NavController, viewModel: MyLogViewModel) {
                                 .padding(end = 23.dp),
                             contentAlignment = Alignment.TopEnd
                         ) {
-                            ModifyOption(viewModel, navController = navController)
+                            ReportOption(viewModel = viewModel)
                         }
                     }
 
@@ -108,8 +114,43 @@ fun MyLogDetailPage(navController: NavController, viewModel: MyLogViewModel) {
 
 }
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ModifyOption(viewModel: MyLogViewModel, navController: NavController) {
+fun CommunityTopAppBar(navController: NavController, viewModel: CommunityViewModel) {
+
+    TopAppBar(
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
+        title = { },
+        navigationIcon = {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "arrow back",
+                tint = if (isSystemInDarkTheme()) Color(0xFF727070) else Color.Gray,
+                modifier = Modifier
+                    .padding(start = 20.dp)
+                    .clickable {
+                        navController.popBackStack()
+                    } //뒤로가기
+            )
+        },
+        scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(),
+        actions = {
+            Icon(
+                painter = painterResource(id = R.drawable.more),
+                contentDescription = "",
+                modifier = Modifier
+                    .size(50.dp)
+                    .padding(end = 20.dp)
+                    .clickable {
+                        viewModel.isOptionClicked = !viewModel.isOptionClicked
+                    },
+            )
+        })
+}
+
+@Composable
+fun ReportOption(viewModel: CommunityViewModel) {
     Surface(modifier = Modifier.size(180.dp, 250.dp), shape = RoundedCornerShape(2)) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -129,165 +170,94 @@ fun ModifyOption(viewModel: MyLogViewModel, navController: NavController) {
                 Spacer(modifier = Modifier.width(30.dp))
                 Icon(
                     painter = painterResource(id = R.drawable.text_plus),
-                    contentDescription = "minus"
+                    contentDescription = "plus"
                 )
-
             }
             HorizontalDivider()
-            OptionItem(text = "수정", Color.White,{},R.drawable.ftb_edit)
-            HorizontalDivider()
-            OptionItem(text = "발행", Color.White,{},R.drawable.option_link)
-            HorizontalDivider()
-            OptionItem(text = "Linked-out", Color.White,{},R.drawable.option_linkedout)
-            HorizontalDivider()
-            OptionItem(text = "삭제", Color.Red,{
-                viewModel.deleteEssay(navController = navController)
-                Log.d(TAG, "ModifyOption: dd")
-            },R.drawable.option_trash)
+            OptionItem(text = "신고하기", Color.Red,{},R.drawable.option_report)
 
         }
     }
 }
 
-@Composable
-fun OptionItem(
-    text: String,
-    color: Color,
-    onClick: () -> Unit,
-    iconResource : Int
-) {
-    Box(
-        Modifier
-            .size(180.dp, 44.dp)
-            .clickable { onClick() }) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    start = 20.dp,
-                    end = 20.dp
-                ), contentAlignment = Alignment.CenterStart
-        ) {
-            Text(text = text, fontSize = 16.sp, color = color)
-        }
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    start = 20.dp,
-                    end = 20.dp
-                ), contentAlignment = Alignment.CenterEnd
-        ) {
-            Icon(
-                tint = color,
-                painter = painterResource(id = iconResource),
-                contentDescription = "",
-                modifier = Modifier.size(20.dp)
-            )
-        }
-    }
-}
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DetailTopAppBar(navController: NavController, viewModel: MyLogView1Model) {
-
-    TopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
-        title = { },
-        navigationIcon = {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "arrow back",
-                tint = if (isSystemInDarkTheme()) Color(0xFF727070) else Color.Gray,
-                modifier = Modifier
-                    .padding(start = 20.dp)
-                    .clickable {
-                        if (viewModel.detailEssayBackStack.isNotEmpty()) {
-                            viewModel.detailEssayBackStack.pop()
-                            Log.d(TAG, "pushpushpop: ${viewModel.detailEssayBackStack}")
-                            if (viewModel.detailEssayBackStack.isNotEmpty()) {
-                                viewModel.detailEssay = viewModel.detailEssayBackStack.peek()
-                            }
-                        }
-                        navController.popBackStack()
-                        viewModel.isActionClicked = false
-                    } //뒤로가기
-            )
-        },
-        scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(),
-        actions = {
-            Icon(
-                painter = painterResource(id = R.drawable.more),
-                contentDescription = "",
-                modifier = Modifier
-                    .size(50.dp)
-                    .padding(end = 20.dp)
-                    .clickable {
-                        viewModel.isActionClicked = !viewModel.isActionClicked
-                    },
-            )
-        })
-}
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun DetailEssay(viewModel: MyLogView1Model) {
-    val essay = viewModel.detailEssay
+fun DetailEssay(item: EssayItem) {
     Box {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 20.dp, end = 20.dp)
         ) {
-            Spacer(modifier = Modifier.height(170.dp))
-            Text(text = essay.title, fontSize = 24.sp, modifier = Modifier)
+            if (item.thumbnail != null) {
+                GlideImage(
+                    model = item.thumbnail, contentDescription = "", modifier = Modifier
+                        .fillMaxWidth()
+                        .height(220.dp)
+                )
+            }
+            Row {
+                Text(text = item.title, fontSize = 24.sp, modifier = Modifier)
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+                    Icon(
+                        imageVector = Icons.Default.BookmarkBorder,
+                        contentDescription = "",
+                        Modifier.size(30.dp),
+                    )
+                }
+            }
             Spacer(modifier = Modifier.height(40.dp))
             Text(
-                text = essay.content,
+                text = item.content,
                 fontSize = 16.sp,
                 modifier = Modifier,
                 color = Color(0xFFB4B4B4)
             )
+
             Spacer(modifier = Modifier.height(46.dp))
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
                 Column {
-                    Text(
-                        text = "구루브",
-                        fontSize = 12.sp,
-                        textAlign = TextAlign.End,
-                        color = Color(0xFF686868)
-                    )
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
+                        Text(
+                            text = item.nickName,
+                            fontSize = 12.sp,
+                            textAlign = TextAlign.End,
+                            color = Color(0xFF686868)
+                        )
+                    }
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = essay.createdDate,
-                        fontSize = 12.sp,
-                        textAlign = TextAlign.End,
-                        color = Color(0xFF686868)
-                    )
-
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
+                        Text(
+                            text = item.createdDate,
+                            fontSize = 12.sp,
+                            textAlign = TextAlign.End,
+                            color = Color(0xFF686868)
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
+                        Row {
+                            repeat(item.linkedOutGauge) {
+                                Image(painter = painterResource(id = R.drawable.ring), contentDescription = "ring", modifier = Modifier.size(14.dp), colorFilter = ColorFilter.tint(Color(0xFF686868)) )
+                                if (it != item.linkedOutGauge-1) Spacer(modifier = Modifier.width(4.dp))
+                            }
+                        }
+                    }
                 }
+            }
+            Spacer(modifier = Modifier.height(28.dp))
+            Row {
+                SuggestionChip(onClick = { /*TODO*/ },  label = { Text("깨달음") }, shape = RoundedCornerShape(50))
+                Spacer(modifier = Modifier.width(10.dp))
+                SuggestionChip(onClick = { /*TODO*/ },  label = { Text("놀라움") }, shape = RoundedCornerShape(50))
+                Spacer(modifier = Modifier.width(10.dp))
+                SuggestionChip(onClick = { /*TODO*/ },  label = { Text("새로움") }, shape = RoundedCornerShape(50))
+                Spacer(modifier = Modifier.width(10.dp))
             }
 
         }
-        if (essay.thumbnail != null) {
-            GlideImage(
-                model = essay.thumbnail, contentDescription = "", modifier = Modifier
-                    .fillMaxWidth()
-                    .height(220.dp)
-            )
-        }
+
     }
 
 }
-
-
-
-
-
-
-
-
-
-

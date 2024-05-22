@@ -19,10 +19,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.echoist.linkedout.components.ChoiceBox
 import com.echoist.linkedout.components.CommunityChips
 import com.echoist.linkedout.components.CommunityPager
@@ -30,18 +28,25 @@ import com.echoist.linkedout.components.CommunityTopAppBar
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
 
+//
+//@Preview
+//@Composable
+//fun Prev() {
+//    CommunityPage(navController = rememberNavController(), CommunityViewModel())
+//}
+
 @Composable
 fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
     val pagerstate = rememberPagerState { 2 }
     val hasCalledApi = remember { mutableStateOf(false) }
-    val color = if (pagerstate.currentPage ==0)Color(0xFFD9D9D9) else Color.Black
+    val color = if (pagerstate.currentPage == 0) Color(0xFFD9D9D9) else Color.Black
 
     LinkedOutTheme {
         Scaffold(
             modifier = Modifier.background(color),
             topBar = {
                 Column(Modifier.background(color)) {
-                    CommunityTopAppBar("커뮤니티",pagerstate)
+                    CommunityTopAppBar("커뮤니티", pagerstate)
                     CommunityChips(pagerstate)
                 }
             },
@@ -49,10 +54,14 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
             content = {
                 Box(modifier = Modifier.padding(it))
 
-                    Box(modifier = Modifier.padding(top = 50.dp, bottom = 80.dp)){
-                        CommunityPager(viewModel = viewModel, pagerState = pagerstate, navController = navController)
+                Box(modifier = Modifier.padding(top = 50.dp, bottom = 80.dp)) {
+                    CommunityPager(
+                        viewModel = viewModel,
+                        pagerState = pagerstate,
+                        navController = navController
+                    )
 
-                    }
+                }
                 AnimatedVisibility(
                     visible = viewModel.isClicked,
                     enter = fadeIn(
@@ -77,7 +86,6 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
                     }
                 }
 
-
             }
         )
     }
@@ -85,8 +93,3 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
 
 
 
-@Preview
-@Composable
-fun Prev() {
-    CommunityPage(navController = rememberNavController(), CommunityViewModel())
-}

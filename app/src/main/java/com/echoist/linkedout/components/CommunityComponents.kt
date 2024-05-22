@@ -494,7 +494,7 @@ fun TodaysLogTitle() {
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun CommunityListItem(
+fun EssayListItem(
     item: EssayItem,
     viewModel: CommunityViewModel,
     navController: NavController
@@ -593,7 +593,7 @@ fun RandomCommunityPage(viewModel: CommunityViewModel, navController: NavControl
             }
         }
         items(viewModel.randomList) { it ->
-            CommunityListItem(item = it, viewModel = viewModel, navController = navController)
+            EssayListItem(item = it, viewModel = viewModel, navController = navController)
         }
 
 
@@ -678,7 +678,7 @@ fun SubscribeUserList(viewModel: CommunityViewModel,navController: NavController
 fun prev() {
     Column {
         SubscribeUserItem(item = CommunityViewModel().userItem, viewModel = CommunityViewModel())
-        CommunityListItem(
+        EssayListItem(
             item = CommunityViewModel().detailEssay,
             viewModel = CommunityViewModel(),
             navController = rememberNavController()
@@ -705,7 +705,6 @@ fun SubscribePage(
                 SubscribeUserList(viewModel,navController)
                 Box(
                     modifier = Modifier
-
                         .fillMaxSize()
                         .padding(top = 15.dp, end = 20.dp),
                     contentAlignment = Alignment.BottomEnd
@@ -731,7 +730,7 @@ fun SubscribePage(
 
         }
         items(viewModel.randomList) { it ->
-            CommunityListItem(item = it, viewModel = viewModel, navController = navController)
+            EssayListItem(item = it, viewModel = viewModel, navController = navController)
         }
 
 

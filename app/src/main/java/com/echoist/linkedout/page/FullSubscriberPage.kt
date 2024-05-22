@@ -22,11 +22,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
@@ -36,6 +34,11 @@ import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
 
 
+//@Preview
+//@Composable
+//fun Prev3() {
+//    FullSubscriberPage(viewModel = CommunityViewModel(), navController = rememberNavController())
+//}
 @Composable
 fun FullSubscriberPage(
     viewModel: CommunityViewModel,
@@ -67,16 +70,13 @@ fun FullSubscriberPage(
     }
 }
 
-
-@Preview
-@Composable
-fun Prev3() {
-    FullSubscriberPage(viewModel = CommunityViewModel(), navController = rememberNavController())
-}
-
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun SubscriberSimpleItem(item: UserApi.UserInfo,viewModel: CommunityViewModel,navController: NavController) {
+fun SubscriberSimpleItem(
+    item: UserApi.UserInfo,
+    viewModel: CommunityViewModel,
+    navController: NavController
+) {
     Box(
         modifier = Modifier
             .clickable {
