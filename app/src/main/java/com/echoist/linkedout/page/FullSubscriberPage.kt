@@ -62,7 +62,7 @@ fun FullSubscriberPage(
     LinkedOutTheme {
         Scaffold(
             topBar = {
-                CommuTopAppBar(text = "전체 구독 목록", navController)
+                CommuTopAppBar(text = "전체 구독 목록", navController,viewModel)
             },
             bottomBar = { if (!viewModel.unSubscribeClicked) MyBottomNavigation(navController) },
             content = {
@@ -162,7 +162,7 @@ fun SubscriberSimpleItem(
 fun UnsubscribeAlert(viewModel: CommunityViewModel) {
     Box(
         modifier = Modifier
-            .background(Color.Black.copy(alpha = 0.4f))
+            .background(Color.Black.copy(alpha = 0.6f))
             .fillMaxSize()
 
     )

@@ -22,7 +22,7 @@ fun SubscriberProfilePage(
     LinkedOutTheme {
         Scaffold(
             topBar = {
-                    CommuTopAppBar(text = "프로필",navController)
+                    CommuTopAppBar(text = "프로필",navController,viewModel)
             },
             bottomBar = { MyBottomNavigation(navController) },
             content = {

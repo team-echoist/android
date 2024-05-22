@@ -53,7 +53,7 @@ import com.echoist.linkedout.viewModels.CommunityViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CommuTopAppBar(text: String, navController: NavController) {
+fun CommuTopAppBar(text: String, navController: NavController,viewModel: CommunityViewModel) {
 
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
@@ -66,6 +66,7 @@ fun CommuTopAppBar(text: String, navController: NavController) {
                         .size(30.dp)
                         .clickable {
                             navController.popBackStack()
+                            viewModel.unSubscribeClicked = false
                         }
                 )
                 Spacer(modifier = Modifier.width(12.dp))

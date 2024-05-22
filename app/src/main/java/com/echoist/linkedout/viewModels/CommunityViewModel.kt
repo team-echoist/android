@@ -25,7 +25,6 @@ class CommunityViewModel : ViewModel() {
     var unSubscribeClicked by mutableStateOf(false)
 
 
-
     var detailEssay by mutableStateOf(
         EssayItem(
             nickName = "구루브",
@@ -93,6 +92,7 @@ class CommunityViewModel : ViewModel() {
             )
         )
     )
+
 
     fun findUser() {
         currentClickedUserId?.let { userId ->
