@@ -1,5 +1,11 @@
 package com.echoist.linkedout.page
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -58,7 +64,7 @@ fun FullSubscriberPage(
             topBar = {
                 CommuTopAppBar(text = "전체 구독 목록", navController)
             },
-            bottomBar = { MyBottomNavigation(navController) },
+            bottomBar = { if (!viewModel.unSubscribeClicked) MyBottomNavigation(navController) },
             content = {
 
                 LazyColumn(
@@ -72,8 +78,11 @@ fun FullSubscriberPage(
 
                     }
                 }
-                if (viewModel.unSubscribeClicked) {
-
+                AnimatedVisibility(
+                    visible = viewModel.unSubscribeClicked,
+                    enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)),
+                    exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
+                ) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
                         UnsubscribeAlert(viewModel)
 
@@ -94,8 +103,10 @@ fun SubscriberSimpleItem(
     Box(
         modifier = Modifier
             .clickable {
-                viewModel.userItem = item
-                navController.navigate("SubscriberPage")
+                if (!viewModel.unSubscribeClicked) {
+                    viewModel.userItem = item
+                    navController.navigate("SubscriberPage")
+                }
             }
             .fillMaxWidth()
             .height(100.dp)
@@ -139,7 +150,7 @@ fun SubscriberSimpleItem(
                     modifier = Modifier
                         .background(Color(0xFF191919), shape = RoundedCornerShape(20))
                         .padding(start = 20.dp, top = 3.dp, end = 20.dp, bottom = 3.dp)
-                        .clickable { viewModel.unSubscribeClicked = true }
+                        .clickable { viewModel.unSubscribeClicked = true } //todo 유저 정보 보내기
                 )
             }
         }
@@ -151,8 +162,9 @@ fun SubscriberSimpleItem(
 fun UnsubscribeAlert(viewModel: CommunityViewModel) {
     Box(
         modifier = Modifier
-            .background(Color.White.copy(alpha = 0.5f))
+            .background(Color.Black.copy(alpha = 0.4f))
             .fillMaxSize()
+
     )
     Column(
         Modifier
@@ -166,13 +178,13 @@ fun UnsubscribeAlert(viewModel: CommunityViewModel) {
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Spacer(modifier = Modifier.height(20.dp))
-                Text(text = "구독을 취소하시겠습니까?", fontSize = 16.sp)
+                Text(text = "구독을 취소하시겠습니까?")
                 Spacer(modifier = Modifier.height(6.dp))
-                Text(text = "구독 취소 시 업데이트 되는 글이 보이지 않습니다.", fontSize = 16.sp)
+                Text(text = "구독 취소 시 업데이트 되는 글이 보이지 않습니다.", fontSize = 14.sp, modifier = Modifier.padding(start = 20.dp, end = 20.dp))
                 Spacer(modifier = Modifier.height(15.dp))
                 HorizontalDivider(color = Color(0xFF202020))
                 Spacer(modifier = Modifier.height(18.dp))
-                Text(text = "구독 취소", color = Color.Red, fontSize = 16.sp) // todo 구독취소 기능구현
+                Text(text = "구독 취소", color = Color.Red) // todo 구독취소 기능구현
                 Spacer(modifier = Modifier.height(20.dp))
 
             }
