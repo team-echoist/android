@@ -72,8 +72,8 @@ import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
+import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.api.UserApi
-import com.echoist.linkedout.data.EssayItem
 import com.echoist.linkedout.viewModels.CommunityViewModel
 import com.echoist.linkedout.viewModels.SentenceInfo
 import kotlinx.coroutines.launch
@@ -496,7 +496,7 @@ fun TodaysLogTitle() {
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun EssayListItem(
-    item: EssayItem,
+    item: EssayApi.EssayItem,
     viewModel: CommunityViewModel,
     navController: NavController
 ) {
@@ -567,7 +567,7 @@ fun EssayListItem(
                 .fillMaxSize()
                 .padding(start = 20.dp, bottom = 10.dp)
         ) {
-            Text(text = item.nickName, fontSize = 10.sp, color = Color(0xFF686868))
+            Text(text = item.nickName!!, fontSize = 10.sp, color = Color(0xFF686868))
         }
         Box(
             contentAlignment = Alignment.BottomEnd, modifier = Modifier

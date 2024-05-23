@@ -1,5 +1,6 @@
 package com.echoist.linkedout.viewModels
 
+import android.content.ContentValues.TAG
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.runtime.MutableState
@@ -39,23 +40,27 @@ class WritingViewModel @Inject constructor(
 
     var title = mutableStateOf(TextFieldValue(""))
     var content = mutableStateOf(TextFieldValue(""))
-    var date = mutableStateOf("")
     var ringTouchedTime = mutableStateOf(5)
+    var latitute :Double? by mutableStateOf(null)
+    var longitude :Double? by mutableStateOf(null)
+    var imageBitmap: MutableState<Bitmap?> = mutableStateOf(null)
+    var locationText by mutableStateOf("")
+    var hashTagList by mutableStateOf(mutableStateListOf<String>())
+
+
+
+
+    var date = mutableStateOf("")
     var isCanCelClicked = mutableStateOf(false)
     var isDeleteClicked = mutableStateOf(false)
 
-    var latitute by mutableStateOf("")
-    var longitude by mutableStateOf("")
 
     var isHashTagClicked by mutableStateOf(false)
     var hashTagText by mutableStateOf("")
-    var hashTagList by mutableStateOf(mutableStateListOf<String>())
 
-    var locationText by mutableStateOf("")
     var locationList by mutableStateOf(mutableStateListOf<String>())
     var isLocationClicked by mutableStateOf(false)
 
-    var imageBitmap: MutableState<Bitmap?> = mutableStateOf(null)
     //todo image bitmap 레트로핏으로 보내는방법
 
 
@@ -69,8 +74,8 @@ class WritingViewModel @Inject constructor(
         ringTouchedTime.value = 5
         isCanCelClicked.value = false
         isDeleteClicked.value = false
-        latitute = ""
-        longitude = ""
+        latitute = null
+        longitude = null
         isHashTagClicked = false
         hashTagText = ""
         hashTagList = mutableStateListOf()
@@ -99,20 +104,24 @@ class WritingViewModel @Inject constructor(
     //api 통신 성공했을시에만 화면 이동
     fun writeEssay(
         navController: NavController, //저장할래요는 기본 둘다 false
-        published: Boolean = false, //나눠볼래요
-        linkedOut: Boolean = false //놓아줄래요
+        status : String
     ) {
         viewModelScope.launch {
             try {
-                val essayData = EssayApi.EssayData(
+                val essayData = EssayApi.EssayItem(
                     title.value.text,
                     content.value.text,
                     linkedOutGauge = ringTouchedTime.value,
-                    published = published,
-                    linkedOut = linkedOut
+                    //categoryId = 0, 이값도 넣어야할것
+                    //thumbnail = imageBitmap, bitmap -> url
+                    status = status,
+                    latitude = latitute,
+                    longitude = longitude,
+                    location = locationText.ifEmpty { null },
+                    tags = hashTagList
                 )
                 val response = api.writeEssay(
-                    accessToken,
+                    Token.accessToken,
                     essayData = essayData
                 )
                 if (response.isSuccessful) {
@@ -128,6 +137,9 @@ class WritingViewModel @Inject constructor(
                 } else {
                     Log.e("writeEssayApiFailed token", "Failed to write essay: $accessToken")
                     Log.e("writeEssayApiFailed1", "Failed to write essay: ${response.code()}")
+                    Log.e("writeEssayApiFailed1", "Failed to write essay: ${response.body()}")
+                    Log.e(TAG, "writeEssay: $latitute , $longitude, $locationText 로케이션텍스트 널 ??", )
+
                 }
 
             } catch (e: Exception) {
@@ -142,13 +154,22 @@ class WritingViewModel @Inject constructor(
 
     //에세이 수정 후 서버에 put
 
-    fun modifyEssay(navController: NavController) {
+    fun modifyEssay(navController: NavController,status: String) {
         viewModelScope.launch {
             try {
+                val essayData = EssayApi.EssayItem(
+                    title.value.text,
+                    content.value.text,
+                    linkedOutGauge = ringTouchedTime.value,
+                    status = status,
+                    latitude = latitute,
+                    longitude = longitude,
+                    location = locationText,
+                    tags = hashTagList
+                )
 
                 val response = api.modifyEssay(/*todo 토큰값. 매번변경*/ accessToken,
-                    title.value.text,
-                    content.value.text
+                    essayData = essayData
                 )
 
                 navController.navigate("HOME") {
@@ -161,6 +182,7 @@ class WritingViewModel @Inject constructor(
                 }
 
             } catch (e: Exception) {
+                e.printStackTrace()
                 // api 요청 실패
                 Log.e("writeEssayApiFailed", "Failed to write essay: ${e.message}")
             }

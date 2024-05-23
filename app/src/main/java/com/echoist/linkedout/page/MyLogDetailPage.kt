@@ -261,7 +261,7 @@ fun DetailEssay(viewModel: MyLogView1Model) {
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = essay.createdDate,
+                        text = essay.createdDate!!,
                         fontSize = 12.sp,
                         textAlign = TextAlign.End,
                         color = Color(0xFF686868)

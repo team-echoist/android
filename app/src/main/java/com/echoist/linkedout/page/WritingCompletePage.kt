@@ -145,7 +145,7 @@ fun WritingCompletePage(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        if (viewModel.locationList.isNotEmpty() || viewModel.longitude.isNotEmpty()){
+                        if (viewModel.locationList.isNotEmpty() || viewModel.longitude.toString().isNotEmpty()){
                             Spacer(modifier = Modifier.height(50.dp))
                             LocationGroup(viewModel = viewModel)
                         }
@@ -417,7 +417,7 @@ fun WritingCompletePager(viewModel: WritingViewModel, navController: NavControll
                         )
                         Button(
                             onClick = {
-                                viewModel.writeEssay(navController = navController, published = false)
+                                viewModel.writeEssay(navController = navController, status = "private")
                             },
                             modifier = Modifier.padding(bottom = 16.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1D1D1D))
@@ -426,7 +426,7 @@ fun WritingCompletePager(viewModel: WritingViewModel, navController: NavControll
                         }
                         Button(
                             onClick = {
-                                viewModel.writeEssay(navController, published = true)
+                                viewModel.writeEssay(navController, status = "published")
                             },
                             modifier = Modifier.padding(bottom = 16.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1D1D1D))
@@ -436,7 +436,7 @@ fun WritingCompletePager(viewModel: WritingViewModel, navController: NavControll
                         }
                         Button(
                             onClick = {
-                                viewModel.writeEssay(navController, linkedOut = true)
+                                viewModel.writeEssay(navController, status = "linkedout")
                             },
                             modifier = Modifier.padding(bottom = 30.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1D1D1D))

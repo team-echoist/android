@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.echoist.linkedout.api.EssayApi
-import com.echoist.linkedout.data.EssayItem
 import com.echoist.linkedout.page.Token
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -18,29 +17,28 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.Stack
 
 interface MyLogView1Model {
-    val myEssayList: List<EssayItem>
-    val publishedEssayList: List<EssayItem>
-    var detailEssay: EssayItem
+    val myEssayList: List<EssayApi.EssayItem>
+    val publishedEssayList: List<EssayApi.EssayItem>
+    var detailEssay: EssayApi.EssayItem
     var accessToken: String
     var isActionClicked: Boolean
-    var detailEssayBackStack : Stack<EssayItem>
+    var detailEssayBackStack : Stack<EssayApi.EssayItem>
 
     fun deleteEssay(navController: NavController)
 }
 
 class MyLogViewModel : ViewModel(), MyLogView1Model {
-    override var myEssayList by mutableStateOf(mutableStateListOf<EssayItem>())
-    override var publishedEssayList by mutableStateOf(mutableStateListOf<EssayItem>())
-    override var detailEssayBackStack = Stack<EssayItem>()
+    override var myEssayList by mutableStateOf(mutableStateListOf<EssayApi.EssayItem>())
+    override var publishedEssayList by mutableStateOf(mutableStateListOf<EssayApi.EssayItem>())
+    override var detailEssayBackStack = Stack<EssayApi.EssayItem>()
 
     override var detailEssay by mutableStateOf(
-        EssayItem(
+        EssayApi.EssayItem(
         content = "이 에세이는 예시입니다.",
         createdDate = "2024-05-15",
         id = 1,
-        linkedOut = true,
         linkedOutGauge = 5,
-        published = true,
+        status = "published",
         thumbnail = "https://example.com/thumbnail.jpg",
         title = "예시 에세이",
         updatedDate = "2024-05-15"

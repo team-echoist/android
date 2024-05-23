@@ -39,7 +39,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.echoist.linkedout.data.EssayItem
+import com.echoist.linkedout.api.EssayApi
 
 @Preview
 @Composable
@@ -55,7 +55,7 @@ fun pre(){
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun LastEssayItem(
-    item: EssayItem,
+    item: EssayApi.EssayItem,
     viewModel: MyLogView1Model,
     navController: NavController
 ) {
@@ -129,7 +129,7 @@ fun LastEssayItem(
                 .fillMaxSize()
                 .padding(start = 20.dp, bottom = 10.dp)
         ) {
-            Text(text = item.createdDate, fontSize = 10.sp, color = Color(0xFF686868))
+            Text(text = item.createdDate!!, fontSize = 10.sp, color = Color(0xFF686868))
         }
         Box(
             contentAlignment = Alignment.BottomEnd, modifier = Modifier
@@ -145,7 +145,7 @@ fun LastEssayItem(
 @Composable
 fun LastEssayPager(viewModel: MyLogView1Model, navController: NavController){
 
-    val pageCount = if (viewModel.detailEssay.published) viewModel.publishedEssayList.size/4 +1 else viewModel.myEssayList.size/4 +1
+    val pageCount = if (viewModel.detailEssay.status == "published") viewModel.publishedEssayList.size/4 +1 else viewModel.myEssayList.size/4 +1
     val pagerstate = rememberPagerState { pageCount }
 
     Column {
@@ -165,10 +165,10 @@ fun LastEssayPager(viewModel: MyLogView1Model, navController: NavController){
             val startIndex = page * 4
             val endIndex = minOf(
                 startIndex + 4,
-                if (viewModel.detailEssay.published) viewModel.publishedEssayList.size else viewModel.myEssayList.size
+                if (viewModel.detailEssay.status == "published") viewModel.publishedEssayList.size else viewModel.myEssayList.size
             )
             val essayList =
-                if (viewModel.detailEssay.published) viewModel.publishedEssayList else viewModel.myEssayList
+                if (viewModel.detailEssay.status == "published") viewModel.publishedEssayList else viewModel.myEssayList
             val pageItems = if (endIndex <= essayList.size) {
                 essayList.subList(startIndex, endIndex)
             } else {

@@ -28,10 +28,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowLeft
+import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Surface
@@ -39,6 +42,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -53,10 +62,11 @@ import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
+import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.components.EssayListItem
-import com.echoist.linkedout.data.EssayItem
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
+import kotlinx.coroutines.delay
 
 @Preview
 @Composable
@@ -65,70 +75,109 @@ fun CommunityDetailPagePreview() {
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewModel) {
+    var isClicked by remember { mutableStateOf(false) }
 
     LinkedOutTheme {
         Scaffold(
             topBar = {
-                CommunityTopAppBar(navController = navController, viewModel)
+
+                    CommunityTopAppBar(navController = navController, viewModel)
+
             },
             content = { it ->
-                Box(
-                    Modifier
-                        .padding(it)
-                        .fillMaxSize(), contentAlignment = Alignment.TopCenter
-                ) {
-                    LazyColumn {
-                        item {
-                            DetailEssay(item = viewModel.detailEssay)
-                            Spacer(modifier = Modifier.height(28.dp))
-                            SubscriberSimpleItem(
-                                item = viewModel.userItem,
-                                viewModel = viewModel,
-                                navController = navController
-                            )
-                            Spacer(modifier = Modifier.height(36.dp))
-                            Box(
-                                modifier = Modifier
-                                    .height(12.dp)
-                                    .fillMaxWidth()
-                                    .background(Color(0xFF1A1A1A))
-                            )
-                            Box(
-                                modifier = Modifier
-                                    .height(56.dp)
-                                    .fillMaxWidth()
-                                    .padding(start = 20.dp, end = 20.dp),
-                                contentAlignment = Alignment.CenterStart
-                            )
-                            {
-                                Text(
-                                    text = "'${viewModel.userItem.nickname} 아무개'의 이전 글",
-                                    fontSize = 14.sp,
-                                    color = Color(0xFF616FED)
+                CompositionLocalProvider(LocalRippleConfiguration provides null) {
+                    Box(
+                        Modifier
+                            .clickable { isClicked = !isClicked }
+                            .padding(it)
+                            .fillMaxSize(), contentAlignment = Alignment.TopCenter
+                    ) {
+                        LazyColumn {
+                            item {
+                                DetailEssay(item = viewModel.detailEssay)
+                                Spacer(modifier = Modifier.height(28.dp))
+                                SubscriberSimpleItem(
+                                    item = viewModel.userItem,
+                                    viewModel = viewModel,
+                                    navController = navController
                                 )
+                                Spacer(modifier = Modifier.height(36.dp))
+                                Box(
+                                    modifier = Modifier
+                                        .height(12.dp)
+                                        .fillMaxWidth()
+                                        .background(Color(0xFF1A1A1A))
+                                )
+                                Box(
+                                    modifier = Modifier
+                                        .height(56.dp)
+                                        .fillMaxWidth()
+                                        .padding(start = 20.dp, end = 20.dp),
+                                    contentAlignment = Alignment.CenterStart
+                                )
+                                {
+                                    Text(
+                                        text = "'${viewModel.userItem.nickname} 아무개'의 이전 글",
+                                        fontSize = 14.sp,
+                                        color = Color(0xFF616FED)
+                                    )
+
+                                }
 
                             }
+                            items(items = viewModel.randomList) { it -> //랜덤리스트 말고 수정할것. 그사람의 리스트로
+                                EssayListItem(
+                                    item = it,
+                                    viewModel = viewModel,
+                                    navController = navController
+                                )
+                            }
+
 
                         }
-                        items(items = viewModel.randomList) { it -> //랜덤리스트 말고 수정할것. 그사람의 리스트로
-                            EssayListItem(
-                                item = it,
-                                viewModel = viewModel,
-                                navController = navController
+
+                        //수정 옵션
+                        AnimatedVisibility(
+                            visible = viewModel.isOptionClicked,
+                            enter = fadeIn(
+                                animationSpec = tween(
+                                    durationMillis = 1000,
+                                    easing = FastOutSlowInEasing
+                                )
+                            ),
+                            exit = fadeOut(
+                                animationSpec = tween(
+                                    durationMillis = 500,
+                                    easing = LinearEasing
+                                )
                             )
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(end = 23.dp),
+                                contentAlignment = Alignment.TopEnd
+                            ) {
+                                ReportOption(viewModel = viewModel)
+                            }
                         }
-
 
                     }
+                }
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter){
+                    LaunchedEffect(isClicked) {
+                        delay(3000)
+                        isClicked = false
+                    }
 
-                    //수정 옵션
                     AnimatedVisibility(
-                        visible = viewModel.isOptionClicked,
+                        visible = isClicked,
                         enter = fadeIn(
                             animationSpec = tween(
-                                durationMillis = 1000,
+                                durationMillis = 500,
                                 easing = FastOutSlowInEasing
                             )
                         ),
@@ -139,18 +188,12 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
                             )
                         )
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(end = 23.dp),
-                            contentAlignment = Alignment.TopEnd
-                        ) {
-                            ReportOption(viewModel = viewModel)
-                        }
+                        SequenceBottomBar()
                     }
-
                 }
+
             }
+
         )
     }
 
@@ -174,7 +217,10 @@ fun CommunityTopAppBar(navController: NavController, viewModel: CommunityViewMod
                     .clickable {
                         if (viewModel.detailEssayBackStack.isNotEmpty()) {
                             viewModel.detailEssayBackStack.pop()
-                            Log.d(ContentValues.TAG, "pushpushpop: ${viewModel.detailEssayBackStack}")
+                            Log.d(
+                                ContentValues.TAG,
+                                "pushpushpop: ${viewModel.detailEssayBackStack}"
+                            )
                             if (viewModel.detailEssayBackStack.isNotEmpty()) {
                                 viewModel.detailEssay = viewModel.detailEssayBackStack.peek()
                             }
@@ -232,7 +278,7 @@ fun ReportOption(viewModel: CommunityViewModel) {
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun DetailEssay(item: EssayItem) {
+fun DetailEssay(item: EssayApi.EssayItem) {
     Box {
         Column(
             modifier = Modifier
@@ -269,7 +315,7 @@ fun DetailEssay(item: EssayItem) {
                 Column {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
                         Text(
-                            text = item.nickName,
+                            text = item.nickName!!,
                             fontSize = 12.sp,
                             textAlign = TextAlign.End,
                             color = Color(0xFF686868)
@@ -278,7 +324,7 @@ fun DetailEssay(item: EssayItem) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
                         Text(
-                            text = item.createdDate,
+                            text = item.createdDate!!,
                             fontSize = 12.sp,
                             textAlign = TextAlign.End,
                             color = Color(0xFF686868)
@@ -287,7 +333,7 @@ fun DetailEssay(item: EssayItem) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
                         Row {
-                            repeat(item.linkedOutGauge) {
+                            repeat(item.linkedOutGauge!!) {
                                 Image(
                                     painter = painterResource(id = R.drawable.ring),
                                     contentDescription = "ring",
@@ -330,3 +376,30 @@ fun DetailEssay(item: EssayItem) {
 
     }
 }
+
+@Composable
+fun SequenceBottomBar(){
+    Box(modifier = Modifier
+        .background(Color.Black)
+        .fillMaxWidth()
+        .height(70.dp)){
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart){
+
+            Icon(imageVector = Icons.Default.BookmarkBorder, contentDescription = "bookMark",
+                Modifier
+                    .padding(start = 20.dp)
+                    .size(35.dp))
+        }
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
+            Row {
+                Icon(imageVector = Icons.AutoMirrored.Filled.ArrowLeft, contentDescription = "bookMark",Modifier.size(50.dp))
+                Icon(imageVector = Icons.AutoMirrored.Filled.ArrowRight, contentDescription = "bookMark",Modifier.size(50.dp))
+
+
+            }
+        }
+
+
+    }
+}
+

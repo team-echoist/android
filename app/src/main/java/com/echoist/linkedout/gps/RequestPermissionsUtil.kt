@@ -49,8 +49,8 @@ private fun stringToLongitude(longitudeStr: String): String {
             Log.d("Location_Lat_Lon", "Latitude: ${location.latitude}, Longitude: ${location.longitude}")
             // 이후 여기에서 추가적인 작업을 수행할 수 있습니다.
             locationManager.removeUpdates(this) //메모리 낭비 방지를위해 리스너가 호출될때 한번 빼고는 업데이트를 하지않는다. 실시간x
-            viewModel.longitude = stringToLongitude(location.longitude.toString())
-            viewModel.latitute = stringToLatitude(location.latitude.toString())
+            viewModel.longitude = location.longitude
+            viewModel.latitute = location.latitude
             Log.d("Location_Lat_Lon", "Latitude: ${viewModel.longitude}, Longitude: ${viewModel.latitute}")
 
 

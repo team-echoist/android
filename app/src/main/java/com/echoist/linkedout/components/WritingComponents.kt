@@ -149,8 +149,10 @@ fun LocationTextField(viewModel: WritingViewModel){
 
 
             ),
-            placeholder = { Text(text = "장소를 입력하고 줄을 띄워주세요", color = Color.Gray, fontSize = 12.sp)},
-            onValueChange = {
+            placeholder = {
+                Text(text = "장소를 입력하고 줄을 띄워주세요", color = Color.Gray, fontSize = 12.sp)
+                          },
+            onValueChange = { it ->
                 if (it.isNotEmpty() && (it.last() == '\n')) {
                     val trimmedText = it.trim()
                     if (trimmedText.isNotBlank()) {
@@ -191,8 +193,7 @@ fun LocationBtn(viewModel: WritingViewModel,text: String){
 }
 
 @Composable
-fun HashTagTextField(viewModel: WritingViewModel){
-
+fun HashTagTextField(viewModel: WritingViewModel) {
     TextField(
         value = viewModel.hashTagText,
         colors = TextFieldDefaults.colors(
@@ -202,22 +203,21 @@ fun HashTagTextField(viewModel: WritingViewModel){
             unfocusedTextColor = Color.White,
             focusedContainerColor = if (isSystemInDarkTheme()) Color.Transparent else Color.Black,
             unfocusedContainerColor = if (isSystemInDarkTheme()) Color.Transparent else Color.Black
-
-
         ),
-        onValueChange = {
+        onValueChange = {//태그개수 4개 제한
             if (it.isNotEmpty() && (it.last() == ' ' || it.last() == '\n')) {
                 val trimmedText = it.trim()
-                if (trimmedText.isNotBlank()) {
+                if (trimmedText.isNotBlank() && viewModel.hashTagList.size < 4) {
                     viewModel.hashTagList.add(trimmedText)
                     viewModel.hashTagText = ""
                 }
+            } else {
+                viewModel.hashTagText = it
             }
-            else viewModel.hashTagText = it
         }
     )
-
 }
+
 @Composable
 fun LocationGroup(viewModel: WritingViewModel){
     val scrollState = rememberScrollState()

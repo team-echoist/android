@@ -179,6 +179,8 @@ dependencies {
     //refresh
     implementation ("com.google.accompanist:accompanist-swiperefresh:0.24.13-rc")
 
+    implementation ("com.github.BILLyTheLiTTle:LazyColumns:0.2.7")
+
 
 }
 

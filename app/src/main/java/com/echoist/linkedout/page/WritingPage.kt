@@ -155,7 +155,7 @@ fun WritingPage(
 
                     }
                     //장소 찍는
-                    if (viewModel.longitude.isNotEmpty() && viewModel.latitute.isNotEmpty() && viewModel.isTextFeatOpened.value) {
+                    if (viewModel.longitude != null && viewModel.latitute != null && viewModel.isTextFeatOpened.value) {
                         if (viewModel.isLocationClicked){
                             Row {
                                 LocationBox(viewModel = viewModel)
@@ -169,7 +169,7 @@ fun WritingPage(
                         }
 
                     } else if (isKeyBoardOpened == Keyboard.Closed && !viewModel.isTextFeatOpened.value) {
-                        if (viewModel.locationList.isNotEmpty() || viewModel.longitude.isNotEmpty()){
+                        if (viewModel.locationList.isNotEmpty() || viewModel.longitude!= null){
                             LocationGroup(viewModel = viewModel)
                             Spacer(modifier = Modifier.height(10.dp))
                         }
@@ -192,7 +192,6 @@ fun WritingPage(
                                 Spacer(modifier = Modifier.height(80.dp))
                             }
                         }
-
 
                     if (isKeyBoardOpened == Keyboard.Opened || viewModel.isTextFeatOpened.value) {
 
