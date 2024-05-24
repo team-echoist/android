@@ -172,7 +172,7 @@ fun LocationBox(viewModel: WritingViewModel){
     Button(modifier = Modifier.padding(bottom = 15.dp),
         onClick = {
         }) {
-        Text(text =  "${viewModel.longitude} ${viewModel.latitute}", fontSize = 14.sp)
+        Text(text =  "${viewModel.longitude} ${viewModel.latitude}", fontSize = 14.sp)
     }
 
 }
@@ -248,7 +248,7 @@ fun LocationGroup(viewModel: WritingViewModel){
                 Text( modifier = Modifier
                     .padding(start = 74.dp)
                     .width(220.dp),
-                    text = "${viewModel.longitude} ${viewModel.latitute}",
+                    text = "${viewModel.longitude} ${viewModel.latitude}",
                     fontSize = 12.sp,
                     color = Color.Gray)
 

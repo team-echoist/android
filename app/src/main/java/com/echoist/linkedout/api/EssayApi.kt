@@ -64,7 +64,7 @@ interface EssayApi {
     ): Response<Unit>
 
     @GET("api/essays")
-    suspend fun readEssay(
+    suspend fun readMyEssay(
         @Header("Authorization") accessToken: String,
         @Query("published") published: Boolean? = false,
         @Query("categoryId") categoryId: String = "",

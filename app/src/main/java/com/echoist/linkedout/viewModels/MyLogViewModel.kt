@@ -63,7 +63,7 @@ class MyLogViewModel : ViewModel(), MyLogView1Model {
 
         viewModelScope.launch {
             try {
-                val response = api.readEssay(accessToken = Token.accessToken, published = true)
+                val response = api.readMyEssay(accessToken = Token.accessToken, published = true)
                 Log.d("essaylist data", response.body()!!.path + response.body()!!.data)
 
                 if (response.isSuccessful) {
@@ -92,7 +92,7 @@ class MyLogViewModel : ViewModel(), MyLogView1Model {
 
         viewModelScope.launch {
             try {
-                val response = api.readEssay(accessToken = Token.accessToken)
+                val response = api.readMyEssay(accessToken = Token.accessToken)
                 Log.d("essaylist data", response.body()!!.path + response.body()!!.data)
 
                 if (response.isSuccessful) {

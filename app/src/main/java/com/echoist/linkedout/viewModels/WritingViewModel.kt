@@ -41,8 +41,10 @@ class WritingViewModel @Inject constructor(
     var title = mutableStateOf(TextFieldValue(""))
     var content = mutableStateOf(TextFieldValue(""))
     var ringTouchedTime = mutableStateOf(5)
-    var latitute :Double? by mutableStateOf(null)
+
+    var latitude :Double? by mutableStateOf(null)
     var longitude :Double? by mutableStateOf(null)
+
     var imageBitmap: MutableState<Bitmap?> = mutableStateOf(null)
     var locationText by mutableStateOf("")
     var hashTagList by mutableStateOf(mutableStateListOf<String>())
@@ -74,7 +76,7 @@ class WritingViewModel @Inject constructor(
         ringTouchedTime.value = 5
         isCanCelClicked.value = false
         isDeleteClicked.value = false
-        latitute = null
+        latitude = null
         longitude = null
         isHashTagClicked = false
         hashTagText = ""
@@ -108,6 +110,9 @@ class WritingViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             try {
+
+
+
                 val essayData = EssayApi.EssayItem(
                     title.value.text,
                     content.value.text,
@@ -115,7 +120,7 @@ class WritingViewModel @Inject constructor(
                     //categoryId = 0, 이값도 넣어야할것
                     //thumbnail = imageBitmap, bitmap -> url
                     status = status,
-                    latitude = latitute,
+                    latitude = latitude,
                     longitude = longitude,
                     location = locationText.ifEmpty { null },
                     tags = hashTagList
@@ -138,7 +143,7 @@ class WritingViewModel @Inject constructor(
                     Log.e("writeEssayApiFailed token", "Failed to write essay: $accessToken")
                     Log.e("writeEssayApiFailed1", "Failed to write essay: ${response.code()}")
                     Log.e("writeEssayApiFailed1", "Failed to write essay: ${response.body()}")
-                    Log.e(TAG, "writeEssay: $latitute , $longitude, $locationText 로케이션텍스트 널 ??", )
+                    Log.e(TAG, "writeEssay: $latitude , $longitude, $locationText 로케이션텍스트 널 ??", )
 
                 }
 
@@ -162,7 +167,7 @@ class WritingViewModel @Inject constructor(
                     content.value.text,
                     linkedOutGauge = ringTouchedTime.value,
                     status = status,
-                    latitude = latitute,
+                    latitude = latitude,
                     longitude = longitude,
                     location = locationText,
                     tags = hashTagList

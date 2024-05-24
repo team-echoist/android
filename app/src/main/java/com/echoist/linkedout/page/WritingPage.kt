@@ -155,7 +155,7 @@ fun WritingPage(
 
                     }
                     //장소 찍는
-                    if (viewModel.longitude != null && viewModel.latitute != null && viewModel.isTextFeatOpened.value) {
+                    if (viewModel.longitude != null && viewModel.latitude != null && viewModel.isTextFeatOpened.value) {
                         if (viewModel.isLocationClicked){
                             Row {
                                 LocationBox(viewModel = viewModel)

@@ -5,21 +5,8 @@
       <entry key="CommunityDetailPagePreview">
         <State />
       </entry>
-      <entry key="Prev">
-        <State>
-          <targetSelectedWithDropDown>
-            <Target>
-              <type value="QUICK_BOOT_TARGET" />
-              <deviceKey>
-                <Key>
-                  <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="$USER_HOME$/.android/avd/Client_Test.avd" />
-                </Key>
-              </deviceKey>
-            </Target>
-          </targetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-05-21T08:44:56.831184Z" />
-        </State>
+      <entry key="LineChartExample2">
+        <State />
       </entry>
       <entry key="Prev2">
         <State />
@@ -27,7 +14,7 @@
       <entry key="Prev3">
         <State />
       </entry>
-      <entry key="PreviewTest">
+      <entry key="PrevHomePage">
         <State />
       </entry>
       <entry key="app">
