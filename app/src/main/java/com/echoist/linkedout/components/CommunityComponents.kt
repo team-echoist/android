@@ -35,7 +35,9 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -45,6 +47,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -217,7 +221,7 @@ fun RandomSentences() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CommunityTopAppBar(text: String, pagerState: PagerState) {
+fun CommunityTopAppBar(text: String, pagerState: PagerState,onClick : ()->Unit) {
     val color = if (pagerState.currentPage == 0) Color.Black else Color.White
 
 
@@ -230,7 +234,9 @@ fun CommunityTopAppBar(text: String, pagerState: PagerState) {
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = "",
-                Modifier.size(30.dp),
+                Modifier
+                    .size(30.dp)
+                    .clickable { onClick() },
                 tint = color
             )
             Spacer(modifier = Modifier.width(13.dp))
@@ -753,6 +759,48 @@ fun CommunityPager(
             1 -> SubscribePage(viewModel, navController, pagerState)
         }
     }
+}
+
+@Composable
+fun SearchingBar(viewModel: CommunityViewModel,onClick: () -> Unit){
+    Row (modifier = Modifier
+        .fillMaxWidth()
+        .padding(20.dp), verticalAlignment = Alignment.CenterVertically){
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
+            contentDescription = "back",
+            tint = Color.White,
+            modifier = Modifier.clickable { onClick() }
+        )
+        Spacer(modifier = Modifier.width(10.dp))
+        TextField(
+            shape = RoundedCornerShape(30),
+            modifier = Modifier
+                .weight(1f)
+                .height(50.dp),
+            value = viewModel.searchingText,
+            onValueChange = {
+                viewModel.searchingText = it
+            },
+            singleLine = true,
+            trailingIcon = { if (viewModel.searchingText.isNotEmpty())Icon(
+                imageVector = Icons.Default.Cancel,
+                contentDescription = "cancel",
+                modifier = Modifier.clickable {
+                    viewModel.searchingText = ""
+                }
+            )},
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = Color(0xFF0E0E0E),
+                unfocusedContainerColor = Color(0xFF0E0E0E),
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedTextColor = Color.White,
+                unfocusedTextColor = Color.White
+            )
+        )
+    }
+
 }
 
 

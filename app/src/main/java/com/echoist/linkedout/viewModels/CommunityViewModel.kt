@@ -17,6 +17,8 @@ enum class SentenceInfo {
 }
 @HiltViewModel
 class CommunityViewModel : ViewModel() {
+    var searchingText by mutableStateOf("")
+
     var isClicked by mutableStateOf(false)
     var sentenceInfo by mutableStateOf(SentenceInfo.First)
     var currentClickedUserId by mutableStateOf<Int?>(null) // Add this line

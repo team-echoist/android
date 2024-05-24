@@ -44,6 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -89,6 +90,8 @@ fun HomePage(navController: NavController, accessToken: String) {
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -357,7 +360,7 @@ fun MyDrawableItem(text : String , onClick: () -> Unit) {
     NavigationDrawerItem(
         modifier = Modifier.height(80.dp),
         label = {
-            Text(text = text, color = Color.White)
+            Text(text = text, color = Color.White, fontWeight = FontWeight.SemiBold)
         },
         selected = false,
         onClick = { onClick() },
