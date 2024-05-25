@@ -1,7 +1,5 @@
 package com.echoist.linkedout.components
 
-import MyLogView1Model
-import MyLogViewModel
 import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -41,6 +39,8 @@ import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.api.EssayApi
+import com.echoist.linkedout.viewModels.MyLogView1Model
+import com.echoist.linkedout.viewModels.MyLogViewModel
 
 @Preview
 @Composable

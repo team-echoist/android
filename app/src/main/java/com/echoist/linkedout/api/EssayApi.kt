@@ -3,11 +3,7 @@ package com.echoist.linkedout.api
 import WritingUserInfo
 import com.echoist.linkedout.data.EssayInfo
 import com.squareup.moshi.JsonClass
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -16,7 +12,6 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
-import javax.inject.Inject
 
 interface EssayApi {
 
@@ -66,7 +61,7 @@ interface EssayApi {
     @DELETE("api/essays/{essayId}")
     suspend fun deleteEssay(
         @Header("Authorization") accessToken: String,
-        @Path("essayId") essayId: String = "0"
+        @Path("essayId") essayId: Int = 0
     ): Response<Unit>
 
     @GET("api/essays")
@@ -74,20 +69,7 @@ interface EssayApi {
         @Header("Authorization") accessToken: String,
         @Query("published") published: Boolean? = false,
         @Query("categoryId") categoryId: String = "",
-        @Query("page") page: String = "",
         @Query("limit") limit: String = "",
     ): Response<EssayInfo>
 
-}
-class ApiClient @Inject constructor()  {
-
-    private val moshi = Moshi.Builder()
-        .addLast(KotlinJsonAdapterFactory())
-        .build()
-
-    val api: EssayApi = Retrofit.Builder()
-        .baseUrl("https://www.linkedoutapp.com/")
-        .addConverterFactory(MoshiConverterFactory.create(moshi))
-        .build()
-        .create(EssayApi::class.java)
 }

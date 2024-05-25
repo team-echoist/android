@@ -1,6 +1,5 @@
 package com.echoist.linkedout.components
 
-import MyLogViewModel
 import android.content.ContentValues.TAG
 import android.content.res.Configuration
 import android.util.Log
@@ -75,6 +74,7 @@ import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.api.EssayApi
+import com.echoist.linkedout.viewModels.MyLogViewModel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -257,7 +257,7 @@ fun EssayListItem(
 }
 
 @Composable
-fun EssayListPage1(viewModel: MyLogViewModel,pagerState: PagerState,navController: NavController){
+fun EssayListPage1(viewModel: MyLogViewModel, pagerState: PagerState, navController: NavController){
 
         LazyColumn {
             items(viewModel.myEssayList){it->
@@ -267,7 +267,7 @@ fun EssayListPage1(viewModel: MyLogViewModel,pagerState: PagerState,navControlle
 }
 
 @Composable
-fun EssayListPage2(viewModel: MyLogViewModel,pagerState: PagerState,navController: NavController){
+fun EssayListPage2(viewModel: MyLogViewModel, pagerState: PagerState, navController: NavController){
 
         LazyColumn {
             items(viewModel.publishedEssayList) {
@@ -280,7 +280,7 @@ fun EssayListPage2(viewModel: MyLogViewModel,pagerState: PagerState,navControlle
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun EssayPager(pagerState: PagerState,viewModel: MyLogViewModel,navController: NavController) {
+fun EssayPager(pagerState: PagerState, viewModel: MyLogViewModel, navController: NavController) {
     HorizontalPager(state = pagerState, modifier = Modifier.padding(top = 20.dp)) { page ->
         when (page) {
             0 -> EssayListPage1(viewModel,pagerState,navController)

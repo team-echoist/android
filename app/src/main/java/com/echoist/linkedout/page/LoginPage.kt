@@ -1,6 +1,5 @@
 package com.echoist.linkedout.page
 
-import MyLogViewModel
 import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
@@ -74,6 +73,7 @@ import com.echoist.linkedout.components.CropImagePage
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
 import com.echoist.linkedout.viewModels.LoginSuccessDialog
+import com.echoist.linkedout.viewModels.MyLogViewModel
 import com.echoist.linkedout.viewModels.SignUpViewModel
 import com.echoist.linkedout.viewModels.SocialLoginViewModel
 import com.echoist.linkedout.viewModels.WritingViewModel

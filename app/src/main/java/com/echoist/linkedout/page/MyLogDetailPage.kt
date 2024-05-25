@@ -1,7 +1,5 @@
 package com.echoist.linkedout.page
 
-import MyLogView1Model
-import MyLogViewModel
 import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
@@ -50,6 +48,8 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
 import com.echoist.linkedout.components.LastEssayPager
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
+import com.echoist.linkedout.viewModels.MyLogView1Model
+import com.echoist.linkedout.viewModels.MyLogViewModel
 
 //@Preview
 //@Composable

@@ -12,7 +12,6 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.echoist.linkedout.api.ApiClient
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.page.Token
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,14 +19,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class WritingViewModel @Inject constructor(private val apiClient: ApiClient) : ViewModel() {
-    //private val socialLoginViewModel = SocialLoginViewModel()
+class WritingViewModel @Inject constructor(private val essayApi: EssayApi) : ViewModel() {
 
     var accessToken by mutableStateOf("")
 
-//    init { // 아마 이 뷰모델이 관계없는 뷰모델이라 안되는거. 방법은 내일 생각해보자
-//        accessToken = socialLoginViewModel.accessToken
-//    }
     val maxLength = 4000
     val minLength = 10
 
@@ -84,19 +79,6 @@ class WritingViewModel @Inject constructor(private val apiClient: ApiClient) : V
         isTextFeatOpened.value = false
     }
 
-//
-//    private val moshi = Moshi.Builder()
-//        .addLast(KotlinJsonAdapterFactory())
-//        .build()
-//
-//
-//    private val api = Retrofit
-//        .Builder()
-//        .baseUrl("https://www.linkedoutapp.com/")
-//        .addConverterFactory(MoshiConverterFactory.create(moshi))
-//        .build()
-//        .create(EssayApi::class.java)
-
 
     //에세이 작성 후 서버에 post
     //api 통신 성공했을시에만 화면 이동
@@ -119,7 +101,7 @@ class WritingViewModel @Inject constructor(private val apiClient: ApiClient) : V
                     location = locationText.ifEmpty { null },
                     tags = hashTagList
                 )
-                val response = apiClient.api.writeEssay(
+                val response = essayApi.writeEssay(
                     Token.accessToken,
                     essayData = essayData
                 )
@@ -167,7 +149,7 @@ class WritingViewModel @Inject constructor(private val apiClient: ApiClient) : V
                     tags = hashTagList
                 )
 
-                val response = apiClient.api.modifyEssay(/*todo 토큰값. 매번변경*/ accessToken,
+                val response = essayApi.modifyEssay(/*todo 토큰값. 매번변경*/ accessToken,
                     essayData = essayData
                 )
 

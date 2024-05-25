@@ -22,7 +22,6 @@ import javax.inject.Inject
 class RequestPermissionsUtil @Inject constructor(
     private val context: Context,
     private val viewModel: WritingViewModel
-
 ){
 
 private fun stringToLatitude(latitudeStr: String): String {

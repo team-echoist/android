@@ -1,3 +1,4 @@
+package com.echoist.linkedout.viewModels
 
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -7,9 +8,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.echoist.linkedout.api.ApiClient
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.page.Token
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.util.Stack
 import javax.inject.Inject
@@ -25,7 +26,8 @@ interface MyLogView1Model {
     fun deleteEssay(navController: NavController)
 }
 
-class MyLogViewModel@Inject constructor(private val apiClient: ApiClient) : ViewModel(), MyLogView1Model {
+@HiltViewModel
+class MyLogViewModel@Inject constructor(private val essayApi: EssayApi) : ViewModel(), MyLogView1Model {
     override var myEssayList by mutableStateOf(mutableStateListOf<EssayApi.EssayItem>())
     override var publishedEssayList by mutableStateOf(mutableStateListOf<EssayApi.EssayItem>())
     override var detailEssayBackStack = Stack<EssayApi.EssayItem>()
@@ -51,7 +53,7 @@ class MyLogViewModel@Inject constructor(private val apiClient: ApiClient) : View
 
         viewModelScope.launch {
             try {
-                val response = apiClient.api.readMyEssay(accessToken = Token.accessToken, published = true)
+                val response = essayApi.readMyEssay(accessToken = Token.accessToken, published = true)
                 Log.d("essaylist data", response.body()!!.path + response.body()!!.data)
 
                 if (response.isSuccessful) {
@@ -81,7 +83,7 @@ class MyLogViewModel@Inject constructor(private val apiClient: ApiClient) : View
 
         viewModelScope.launch {
             try {
-                val response = apiClient.api.readMyEssay(accessToken = Token.accessToken)
+                val response = essayApi.readMyEssay(accessToken = Token.accessToken)
                 Log.d("essaylist data", response.body()!!.path + response.body()!!.data)
 
                 if (response.isSuccessful) {
@@ -112,7 +114,7 @@ class MyLogViewModel@Inject constructor(private val apiClient: ApiClient) : View
     override fun deleteEssay(navController: NavController) {
         viewModelScope.launch {
             try {
-                val response = apiClient.api.deleteEssay(accessToken,detailEssay.id.toString())
+                val response = essayApi.deleteEssay(accessToken,detailEssay.id!!)
 
                 Log.d("writeEssayApiSuccess2", "writeEssayApiSuccess: ${response.isSuccessful}")
                 Log.d("writeEssayApiFailed", "deleteEssaytoken: ${Token.accessToken}")
