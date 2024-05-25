@@ -186,7 +186,7 @@ fun SubscriberPage(viewModel: CommunityViewModel,navController : NavController){
             SubscriberProfile(viewModel = viewModel)
 
         }
-        items(viewModel.randomList){it-> //todo 랜덤리스트에서 구독자 에세이 리스트로 바꿔야함.
+        items(viewModel.randomList!!){it-> //todo 랜덤리스트에서 구독자 에세이 리스트로 바꿔야함.
             EssayListItem(item = it, viewModel = viewModel, navController = navController)
         }
 

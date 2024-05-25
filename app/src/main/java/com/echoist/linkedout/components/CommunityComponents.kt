@@ -1,6 +1,5 @@
 package com.echoist.linkedout.components
 
-import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.compose.animation.AnimatedContent
@@ -188,8 +187,7 @@ fun RandomSentences() {
                                     .firstOrNull()
                                     ?.let { annotation ->
                                         when (annotation.item) {
-                                            "Sentence1" -> Log.d(
-                                                ContentValues.TAG,
+                                            "Sentence1" -> Log.d(TAG,
                                                 "AnnotatedClickableText: ta"
                                             )
 
@@ -658,7 +656,7 @@ fun SubscribeUserItem(item: UserInfo, viewModel: CommunityViewModel) {
                         modifier = Modifier
                     )
                 }
-                Text(text = item.nickname!!!!, fontSize = 12.sp, color = backgroundTrans)
+                Text(text = item.nickname!!, fontSize = 12.sp, color = backgroundTrans)
             }
         }
     }
@@ -743,7 +741,7 @@ fun SubscribePage(
             }
 
         }
-        items(viewModel.randomList) { it ->
+        items(viewModel.followingList) { it ->
             EssayListItem(item = it, viewModel = viewModel, navController = navController)
         }
 

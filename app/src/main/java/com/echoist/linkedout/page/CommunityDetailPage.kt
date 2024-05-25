@@ -317,17 +317,19 @@ fun DetailEssay(item: EssayApi.EssayItem) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
                 Column {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
-                        Text(
-                            text = if (item.author?.nickname != null) item.author.nickname else "",
-                            fontSize = 12.sp,
-                            textAlign = TextAlign.End,
-                            color = Color(0xFF686868)
-                        )
+                        (if (item.author !=null) item.author.nickname else "")?.let {
+                            Text(
+                                text = it,
+                                fontSize = 12.sp,
+                                textAlign = TextAlign.End,
+                                color = Color(0xFF686868)
+                            )
+                        }
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
                         Text(
-                            text = item.createdDate!!,
+                            text = item.createdDate ?: "",
                             fontSize = 12.sp,
                             textAlign = TextAlign.End,
                             color = Color(0xFF686868)
@@ -355,28 +357,16 @@ fun DetailEssay(item: EssayApi.EssayItem) {
             }
             Spacer(modifier = Modifier.height(28.dp))
             Row {
-                SuggestionChip(
-                    onClick = { /*TODO*/ },
-                    label = { Text("깨달음") },
-                    shape = RoundedCornerShape(50)
-                )
-                Spacer(modifier = Modifier.width(10.dp))
-                SuggestionChip(
-                    onClick = { /*TODO*/ },
-                    label = { Text("놀라움") },
-                    shape = RoundedCornerShape(50)
-                )
-                Spacer(modifier = Modifier.width(10.dp))
-                SuggestionChip(
-                    onClick = { /*TODO*/ },
-                    label = { Text("새로움") },
-                    shape = RoundedCornerShape(50)
-                )
-                Spacer(modifier = Modifier.width(10.dp))
+                repeat(item.tags!!.size){
+                    SuggestionChip(
+                        onClick = { /*TODO*/ },
+                        label = { Text(item.tags[it].name) },
+                        shape = RoundedCornerShape(50)
+                    )
+                    if (it != item.tags.size-1) Spacer(modifier = Modifier.width(10.dp))
+                }
             }
-
         }
-
     }
 }
 

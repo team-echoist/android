@@ -98,7 +98,13 @@ interface EssayApi {
     @GET("api/essays/recommend")
     suspend fun readRandomEssays(
         @Header("Authorization") accessToken: String,
-        @Query("limit") limit: Int = 100, //이 값은 기본 10 수정가능
+        @Query("limit") limit: Int = 20, //이 값은 기본 10 수정가능
+    ): Response<EssayListResponse>
+
+    @GET("api/essays/followings")
+    suspend fun readFollowingEssays(
+        @Header("Authorization") accessToken: String,
+        @Query("limit") limit: Int = 20, //이 값은 기본 10 수정가능
     ): Response<EssayListResponse>
 
 }

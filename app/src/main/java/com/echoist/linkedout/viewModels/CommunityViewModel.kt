@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -44,7 +45,7 @@ class CommunityViewModel @Inject constructor(val essayApi: EssayApi) : ViewModel
             thumbnail = "http 값 있어요~",
             title = "예시 에세이",
             updatedDate = "2024-05-15",
-            tags = listOf(EssayApi.Tag(1,"tag"),EssayApi.Tag(1,"tag"),EssayApi.Tag(1,"tag"))
+            tags = listOf(EssayApi.Tag(1,"tag"),EssayApi.Tag(1,"tag"))
         )
     )
     var userItem by mutableStateOf(
@@ -68,34 +69,8 @@ class CommunityViewModel @Inject constructor(val essayApi: EssayApi) : ViewModel
         userItem.copy(id = 7, nickname = "사자랑이")
     )
 
-    var randomList by mutableStateOf(
-        mutableStateListOf(
-            detailEssay.copy(
-                id = 2,
-                title = "예시 에세이 2",
-                content = "이 에세이는 예시입니다. 두 번째 에세이입니다.",
-                thumbnail = "http://example.com/image2.jpg"
-            ),
-            detailEssay.copy(
-                id = 3,
-                title = "예시 에세이 3",
-                content = "이 에세이는 예시입니다. 세 번째 에세이입니다.",
-                thumbnail = "http://example.com/image3.jpg"
-            ),
-            detailEssay.copy(
-                id = 4,
-                title = "예시 에세이 4",
-                content = "이 에세이는 예시입니다. 네 번째 에세이입니다.",
-                thumbnail = "http://example.com/image4.jpg"
-            ),
-            detailEssay.copy(
-                id = 5,
-                title = "예시 에세이 5",
-                content = "이 에세이는 예시입니다. 다섯 번째 에세이입니다.",
-                thumbnail = "http://example.com/image5.jpg"
-            )
-        )
-    )
+    var randomList : SnapshotStateList<EssayApi.EssayItem> = mutableStateListOf(detailEssay)
+    var followingList : SnapshotStateList<EssayApi.EssayItem> = mutableStateListOf(detailEssay)
 
 
     fun findUser() {
@@ -113,8 +88,35 @@ class CommunityViewModel @Inject constructor(val essayApi: EssayApi) : ViewModel
     fun readRandomEssays(){
         viewModelScope.launch {
             try {
-                val response = essayApi.readRandomEssays(Token.accessToken, 100)
+                val response = essayApi.readRandomEssays(Token.accessToken)
                 randomList = response.body()!!.data.essays.toMutableStateList()
+                Log.d(TAG, "readRandomEssays: ${response.body()!!.data.essays.toMutableStateList()}")
+
+                Log.d(TAG, "readRandomEssays: 성공입니다 $randomList")
+
+
+                // API 호출 결과 처리 (예: response 데이터 사용)
+            } catch (e: Exception) {
+
+                // 예외 처리
+                e.printStackTrace()
+                Log.d(TAG, "readRandomEssays: ${e.message}")
+                Log.d(TAG, "readRandomEssays: ${e.cause}")
+                Log.d(TAG, "readRandomEssays: ${e.localizedMessage}")
+
+            } finally {
+                isApiFinished = true
+            }
+
+        }
+
+    }
+
+    fun readFollowingEssays(){
+        viewModelScope.launch {
+            try {
+                val response = essayApi.readFollowingEssays(Token.accessToken)
+                followingList = response.body()!!.data.essays.toMutableStateList()
                 Log.d(TAG, "readRandomEssays: ${response.body()!!.data.essays.toMutableStateList()}")
 
                 Log.d(TAG, "readRandomEssays: 성공입니다 $randomList")
