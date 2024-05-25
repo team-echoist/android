@@ -7,14 +7,12 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.echoist.linkedout.api.ApiClient
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.page.Token
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.launch
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.Stack
+import javax.inject.Inject
 
 interface MyLogView1Model {
     val myEssayList: List<EssayApi.EssayItem>
@@ -27,7 +25,7 @@ interface MyLogView1Model {
     fun deleteEssay(navController: NavController)
 }
 
-class MyLogViewModel : ViewModel(), MyLogView1Model {
+class MyLogViewModel@Inject constructor(private val apiClient: ApiClient) : ViewModel(), MyLogView1Model {
     override var myEssayList by mutableStateOf(mutableStateListOf<EssayApi.EssayItem>())
     override var publishedEssayList by mutableStateOf(mutableStateListOf<EssayApi.EssayItem>())
     override var detailEssayBackStack = Stack<EssayApi.EssayItem>()
@@ -47,27 +45,18 @@ class MyLogViewModel : ViewModel(), MyLogView1Model {
     override var accessToken: String = "token"
     override var isActionClicked by mutableStateOf(false)
 
-    private val moshi = Moshi.Builder()
-        .addLast(KotlinJsonAdapterFactory())
-        .build()
-
-    private val api = Retrofit.Builder()
-        .baseUrl("https://www.linkedoutapp.com/")
-        .addConverterFactory(MoshiConverterFactory.create(moshi))
-        .build()
-        .create(EssayApi::class.java)
-
     fun readPublishEssay() {
         myEssayList.clear()
         publishedEssayList.clear()
 
         viewModelScope.launch {
             try {
-                val response = api.readMyEssay(accessToken = Token.accessToken, published = true)
+                val response = apiClient.api.readMyEssay(accessToken = Token.accessToken, published = true)
                 Log.d("essaylist data", response.body()!!.path + response.body()!!.data)
 
                 if (response.isSuccessful) {
                     accessToken = (response.headers()["authorization"].toString())
+
                     Token.accessToken = accessToken
 
                         response.body()!!.data.essays.forEach {
@@ -92,7 +81,7 @@ class MyLogViewModel : ViewModel(), MyLogView1Model {
 
         viewModelScope.launch {
             try {
-                val response = api.readMyEssay(accessToken = Token.accessToken)
+                val response = apiClient.api.readMyEssay(accessToken = Token.accessToken)
                 Log.d("essaylist data", response.body()!!.path + response.body()!!.data)
 
                 if (response.isSuccessful) {
@@ -123,7 +112,7 @@ class MyLogViewModel : ViewModel(), MyLogView1Model {
     override fun deleteEssay(navController: NavController) {
         viewModelScope.launch {
             try {
-                val response = api.deleteEssay(accessToken,detailEssay.id.toString())
+                val response = apiClient.api.deleteEssay(accessToken,detailEssay.id.toString())
 
                 Log.d("writeEssayApiSuccess2", "writeEssayApiSuccess: ${response.isSuccessful}")
                 Log.d("writeEssayApiFailed", "deleteEssaytoken: ${Token.accessToken}")

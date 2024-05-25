@@ -69,13 +69,13 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
                         drawerShape = RectangleShape,
                         drawerContainerColor = Color.Black
                     ) {
-                        SearchingBar(viewModel = viewModel){
+                        SearchingBar(viewModel = viewModel,{
                             scope.launch {
                                 drawerState.apply {
                                     if (isClosed) open() else close()
                                 }
                             }
-                        }
+                        },drawerState)
 
 
                         // ...other drawer items

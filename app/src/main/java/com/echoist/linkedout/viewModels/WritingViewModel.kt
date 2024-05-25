@@ -12,26 +12,22 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.echoist.linkedout.api.ApiClient
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.page.Token
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Inject
 
 @HiltViewModel
-class WritingViewModel @Inject constructor(
-) : ViewModel() {
-    private val socialLoginViewModel = SocialLoginViewModel()
+class WritingViewModel @Inject constructor(private val apiClient: ApiClient) : ViewModel() {
+    //private val socialLoginViewModel = SocialLoginViewModel()
 
     var accessToken by mutableStateOf("")
 
-    init { // 아마 이 뷰모델이 관계없는 뷰모델이라 안되는거. 방법은 내일 생각해보자
-        accessToken = socialLoginViewModel.accessToken
-    }
+//    init { // 아마 이 뷰모델이 관계없는 뷰모델이라 안되는거. 방법은 내일 생각해보자
+//        accessToken = socialLoginViewModel.accessToken
+//    }
     val maxLength = 4000
     val minLength = 10
 
@@ -88,18 +84,18 @@ class WritingViewModel @Inject constructor(
         isTextFeatOpened.value = false
     }
 
-
-    private val moshi = Moshi.Builder()
-        .addLast(KotlinJsonAdapterFactory())
-        .build()
-
-
-    private val api = Retrofit
-        .Builder()
-        .baseUrl("https://www.linkedoutapp.com/")
-        .addConverterFactory(MoshiConverterFactory.create(moshi))
-        .build()
-        .create(EssayApi::class.java)
+//
+//    private val moshi = Moshi.Builder()
+//        .addLast(KotlinJsonAdapterFactory())
+//        .build()
+//
+//
+//    private val api = Retrofit
+//        .Builder()
+//        .baseUrl("https://www.linkedoutapp.com/")
+//        .addConverterFactory(MoshiConverterFactory.create(moshi))
+//        .build()
+//        .create(EssayApi::class.java)
 
 
     //에세이 작성 후 서버에 post
@@ -110,8 +106,6 @@ class WritingViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             try {
-
-
 
                 val essayData = EssayApi.EssayItem(
                     title.value.text,
@@ -125,7 +119,7 @@ class WritingViewModel @Inject constructor(
                     location = locationText.ifEmpty { null },
                     tags = hashTagList
                 )
-                val response = api.writeEssay(
+                val response = apiClient.api.writeEssay(
                     Token.accessToken,
                     essayData = essayData
                 )
@@ -173,7 +167,7 @@ class WritingViewModel @Inject constructor(
                     tags = hashTagList
                 )
 
-                val response = api.modifyEssay(/*todo 토큰값. 매번변경*/ accessToken,
+                val response = apiClient.api.modifyEssay(/*todo 토큰값. 매번변경*/ accessToken,
                     essayData = essayData
                 )
 

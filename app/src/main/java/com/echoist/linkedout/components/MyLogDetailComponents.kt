@@ -35,6 +35,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -44,7 +45,7 @@ import com.echoist.linkedout.api.EssayApi
 @Preview
 @Composable
 fun pre(){
-    val viewModel = MyLogViewModel()
+    val viewModel : MyLogViewModel = viewModel()
     Column {
 
         LastEssayItem(item = viewModel.detailEssay,viewModel, rememberNavController())

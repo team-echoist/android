@@ -11,12 +11,13 @@ import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.api.UserApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.Stack
+import javax.inject.Inject
 
 enum class SentenceInfo {
     First,Last
 }
 @HiltViewModel
-class CommunityViewModel : ViewModel() {
+class CommunityViewModel @Inject constructor() : ViewModel() {
     var searchingText by mutableStateOf("")
 
     var isClicked by mutableStateOf(false)

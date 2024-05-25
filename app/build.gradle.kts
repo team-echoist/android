@@ -4,6 +4,8 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    kotlin("kapt")    // kapt 플러그인 추가
+    id("com.google.dagger.hilt.android")
     id("com.google.gms.google-services")
 
 }
@@ -81,7 +83,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.0"
     }
     packaging {
         resources {
@@ -120,8 +122,10 @@ dependencies {
     implementation ("com.squareup.retrofit2:retrofit:2.11.0")
     implementation ("com.squareup.retrofit2:converter-moshi:2.11.0")
     implementation ("com.squareup.moshi:moshi-kotlin:1.15.1")
-    implementation ("com.google.dagger:hilt-android:2.44")
+
+    implementation ("com.google.dagger:hilt-android:2.48")
     implementation ("androidx.hilt:hilt-navigation-compose:1.0.0")
+    kapt("com.google.dagger:hilt-android-compiler:2.48")
 
     implementation ("com.github.bumptech.glide:compose:1.0.0-beta01")
     implementation ("com.github.skydoves:landscapist-glide:1.4.7")

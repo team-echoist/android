@@ -9,13 +9,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.echoist.linkedout.api.SignUpApi
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import com.echoist.linkedout.api.SignUpApiClient
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
+import javax.inject.Inject
 
-class SignUpViewModel : ViewModel() {
+@HiltViewModel
+class SignUpViewModel @Inject constructor(
+    private val signUpApiClient: SignUpApiClient
+) : ViewModel() {
     private var accessToken = mutableStateOf("") // 토큰값을 계속 갱신하며, 이 값을 헤더로 요청보낸다.
 
     var userEmail by mutableStateOf("")
@@ -31,23 +33,11 @@ class SignUpViewModel : ViewModel() {
         return Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
-    private val moshi = Moshi.Builder()
-        .addLast(KotlinJsonAdapterFactory())
-        .build()
-
-
-    private val authApi = Retrofit
-        .Builder()
-        .baseUrl("https://www.linkedoutapp.com/api/")
-        .addConverterFactory(MoshiConverterFactory.create(moshi))
-        .build()
-        .create(SignUpApi::class.java)
-
     //이메일 중복검사 1차
     fun getUserEmailCheck(navController: NavController) {
         viewModelScope.launch {
             try {
-                val response = authApi.emailDuplicateConfirm(userEmail)
+                val response = signUpApiClient.api.emailDuplicateConfirm(userEmail)
 
                 if (response.code() == 200) {
                     Log.e("authApiSuccess1", "${response.code()}")
@@ -72,7 +62,7 @@ class SignUpViewModel : ViewModel() {
 
         try {
             val userAccount = SignUpApi.UserAccount(userEmail, userPw)
-            val response = authApi.emailVerify(userAccount)
+            val response = signUpApiClient.api.emailVerify(userAccount)
 
             if (response.code() == 201) {
                 Log.e("authApiSuccess2", "${response.raw()}")

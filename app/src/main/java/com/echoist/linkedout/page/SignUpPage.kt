@@ -45,6 +45,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.echoist.linkedout.R
@@ -56,7 +57,8 @@ import com.echoist.linkedout.viewModels.SignUpViewModel
 
 @Composable
 fun PrevSignUpPage() {
-    SignUpPage(navController = rememberNavController(), viewModel = SignUpViewModel())
+    val viewModel : SignUpViewModel = viewModel()
+    SignUpPage(navController = rememberNavController(), viewModel = viewModel)
 }
 
 @Composable
