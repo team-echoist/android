@@ -6,10 +6,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.echoist.linkedout.api.EssayApi
-import com.echoist.linkedout.api.UserApi
+import com.echoist.linkedout.data.UserInfo
+import com.echoist.linkedout.page.Token
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import java.util.Stack
 import javax.inject.Inject
 
@@ -17,7 +21,8 @@ enum class SentenceInfo {
     First,Last
 }
 @HiltViewModel
-class CommunityViewModel @Inject constructor() : ViewModel() {
+class CommunityViewModel @Inject constructor(val essayApi: EssayApi) : ViewModel() {
+    var isApiFinished by mutableStateOf(false)
     var searchingText by mutableStateOf("")
 
     var isClicked by mutableStateOf(false)
@@ -30,7 +35,7 @@ class CommunityViewModel @Inject constructor() : ViewModel() {
 
     var detailEssay by mutableStateOf(
         EssayApi.EssayItem(
-            nickName = "구루브",
+            author = UserInfo(1,"groove"),
             content = "이 에세이는 예시입니다.",
             createdDate = "2024년 04월 28일 16:47",
             id = 1,
@@ -38,11 +43,12 @@ class CommunityViewModel @Inject constructor() : ViewModel() {
             status = "published",
             thumbnail = "http 값 있어요~",
             title = "예시 에세이",
-            updatedDate = "2024-05-15"
+            updatedDate = "2024-05-15",
+            tags = listOf(EssayApi.Tag(1,"tag"),EssayApi.Tag(1,"tag"),EssayApi.Tag(1,"tag"))
         )
     )
     var userItem by mutableStateOf(
-        UserApi.UserInfo(
+        UserInfo(
             id = 1,
             nickname = "구루브",
             profileImage = "http",
@@ -66,7 +72,6 @@ class CommunityViewModel @Inject constructor() : ViewModel() {
         mutableStateListOf(
             detailEssay.copy(
                 id = 2,
-                nickName = "카프카",
                 title = "예시 에세이 2",
                 content = "이 에세이는 예시입니다. 두 번째 에세이입니다.",
                 thumbnail = "http://example.com/image2.jpg"
@@ -74,21 +79,18 @@ class CommunityViewModel @Inject constructor() : ViewModel() {
             detailEssay.copy(
                 id = 3,
                 title = "예시 에세이 3",
-                nickName = "스물하나",
                 content = "이 에세이는 예시입니다. 세 번째 에세이입니다.",
                 thumbnail = "http://example.com/image3.jpg"
             ),
             detailEssay.copy(
                 id = 4,
                 title = "예시 에세이 4",
-                nickName = "자두천사",
                 content = "이 에세이는 예시입니다. 네 번째 에세이입니다.",
                 thumbnail = "http://example.com/image4.jpg"
             ),
             detailEssay.copy(
                 id = 5,
                 title = "예시 에세이 5",
-                nickName = "사자랑이",
                 content = "이 에세이는 예시입니다. 다섯 번째 에세이입니다.",
                 thumbnail = "http://example.com/image5.jpg"
             )
@@ -101,10 +103,37 @@ class CommunityViewModel @Inject constructor() : ViewModel() {
             val user = subscribeUserList.find { it.id == userId }
             if (user != null) {
                 userItem = user
-                Log.d(TAG, "User found: ${userItem.nickname}")
+                Log.d(TAG, "User found: ${userItem.nickname!!}")
             } else {
                 Log.d(TAG, "User not found with ID: $userId")
             }
         }
+    }
+
+    fun readRandomEssays(){
+        viewModelScope.launch {
+            try {
+                val response = essayApi.readRandomEssays(Token.accessToken, 100)
+                randomList = response.body()!!.data.essays.toMutableStateList()
+                Log.d(TAG, "readRandomEssays: ${response.body()!!.data.essays.toMutableStateList()}")
+
+                Log.d(TAG, "readRandomEssays: 성공입니다 $randomList")
+
+
+                // API 호출 결과 처리 (예: response 데이터 사용)
+            } catch (e: Exception) {
+
+                // 예외 처리
+                e.printStackTrace()
+                Log.d(TAG, "readRandomEssays: ${e.message}")
+                Log.d(TAG, "readRandomEssays: ${e.cause}")
+                Log.d(TAG, "readRandomEssays: ${e.localizedMessage}")
+
+            } finally {
+                isApiFinished = true
+            }
+
+        }
+
     }
 }

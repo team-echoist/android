@@ -1,7 +1,8 @@
 package com.echoist.linkedout.api
 
-import WritingUserInfo
-import com.echoist.linkedout.data.EssayInfo
+import SingleEssayResponse
+import com.echoist.linkedout.data.EssayListResponse
+import com.echoist.linkedout.data.UserInfo
 import com.squareup.moshi.JsonClass
 import retrofit2.Response
 import retrofit2.http.Body
@@ -25,6 +26,27 @@ interface EssayApi {
      * 응답에는 아래 메시지 필드 추가
      * "message": "review has been requested.."
      */
+    //보내는 용 string tag list
+    @JsonClass(generateAdapter = true)
+    data class WritingEssayItem(
+        val title: String,
+        val content: String,
+        val status: String? = null,
+        val categoryId: Int? = null,
+        val thumbnail: String? = null,
+        val linkedOutGauge: Int? = null,
+        val latitude: Double? = null,
+        val longitude: Double? = null,
+        val location: String? = null,
+        val tags: List<String>? = null,//보내는 용 string tag list
+        val createdDate: String? = null,
+        val updatedDate: String? = null,
+        val id: Int? = null,
+        val nickName: String? = null,
+        val author: UserInfo? = null,
+    )
+
+    //받는용 Tag List id와 name으로 구별하여받음.
     @JsonClass(generateAdapter = true)
     data class EssayItem(
         val title: String,
@@ -36,26 +58,27 @@ interface EssayApi {
         val latitude: Double? = null,
         val longitude: Double? = null,
         val location: String? = null,
-        val tags: List<String>? = null,
+        val tags: List<Tag>? = null, //받는용 Tag List id와 name으로 구별하여받음.
         val createdDate: String? = null,
         val updatedDate: String? = null,
         val id: Int? = null,
-        val nickName: String? = null,
-        val author: UserApi.UserInfo? = null,
+        val author: UserInfo? = null,
     )
+
+    data class Tag(val id : Int, val name : String)
 
     @POST("api/essays")
     suspend fun writeEssay(
         @Header("Authorization") accessToken: String,
-        @Body essayData: EssayItem
-    ): Response<WritingUserInfo>
+        @Body essayData: WritingEssayItem
+    ): Response<SingleEssayResponse>
 
 
     @PUT("api/essays/:essayId") //바디로 바꿔야함
     suspend fun modifyEssay(
         @Header("Authorization") accessToken: String,
-        @Body essayData: EssayItem
-    ): Response<WritingUserInfo>
+        @Body essayData: WritingEssayItem
+    ): Response<SingleEssayResponse>
 
 
     @DELETE("api/essays/{essayId}")
@@ -69,7 +92,13 @@ interface EssayApi {
         @Header("Authorization") accessToken: String,
         @Query("published") published: Boolean? = false,
         @Query("categoryId") categoryId: String = "",
-        @Query("limit") limit: String = "",
-    ): Response<EssayInfo>
+        @Query("limit") limit: Int = 100, //이 값은 기본 10 수정가능
+    ): Response<EssayListResponse>
+
+    @GET("api/essays/recommend")
+    suspend fun readRandomEssays(
+        @Header("Authorization") accessToken: String,
+        @Query("limit") limit: Int = 100, //이 값은 기본 10 수정가능
+    ): Response<EssayListResponse>
 
 }

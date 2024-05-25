@@ -57,6 +57,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -71,7 +72,9 @@ import kotlinx.coroutines.delay
 @Preview
 @Composable
 fun CommunityDetailPagePreview() {
-    CommunityDetailPage(rememberNavController(), CommunityViewModel())
+    val viewModel : CommunityViewModel = viewModel()
+
+    CommunityDetailPage(rememberNavController(), viewModel)
 }
 
 
@@ -120,7 +123,7 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
                                 )
                                 {
                                     Text(
-                                        text = "'${viewModel.userItem.nickname} 아무개'의 이전 글",
+                                        text = "'${viewModel.userItem.nickname!!} 아무개'의 이전 글",
                                         fontSize = 14.sp,
                                         color = Color(0xFF616FED)
                                     )
@@ -315,7 +318,7 @@ fun DetailEssay(item: EssayApi.EssayItem) {
                 Column {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
                         Text(
-                            text = item.nickName!!,
+                            text = if (item.author?.nickname != null) item.author.nickname else "",
                             fontSize = 12.sp,
                             textAlign = TextAlign.End,
                             color = Color(0xFF686868)

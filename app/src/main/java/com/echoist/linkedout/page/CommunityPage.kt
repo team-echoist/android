@@ -27,11 +27,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.echoist.linkedout.components.ChoiceBox
 import com.echoist.linkedout.components.CommunityChips
 import com.echoist.linkedout.components.CommunityPager
@@ -42,11 +40,12 @@ import com.echoist.linkedout.viewModels.CommunityViewModel
 import kotlinx.coroutines.launch
 
 
-@Preview
-@Composable
-fun Prev() {
-    CommunityPage(navController = rememberNavController(), CommunityViewModel())
-}
+//@Preview
+//@Composable
+//fun Prev() {
+//    val viewModel : CommunityViewModel = viewModel()
+//    CommunityPage(rememberNavController(), viewModel)
+//}
 
 @Composable
 fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
@@ -57,6 +56,13 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
     val pagerstate = rememberPagerState { 2 }
     val hasCalledApi = remember { mutableStateOf(false) }
     val color = if (pagerstate.currentPage == 0) Color(0xFFD9D9D9) else Color.Black
+
+    //화면 새로 생길때 한번씩만 호출되게끔
+    if (!hasCalledApi.value) {
+        viewModel.readRandomEssays()
+
+        hasCalledApi.value = true
+    }
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl ) {
         ModalNavigationDrawer(

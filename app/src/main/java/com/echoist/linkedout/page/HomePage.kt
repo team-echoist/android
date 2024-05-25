@@ -54,8 +54,8 @@ import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
-import com.echoist.linkedout.api.UserApi
 import com.echoist.linkedout.data.BottomNavItem
+import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
@@ -77,7 +77,7 @@ fun HomePage(navController: NavController, accessToken: String) {
 
     val userItem by remember {
         mutableStateOf(
-            UserApi.UserInfo(
+            UserInfo(
                 id = 1,
                 nickname = "구루브",
                 profileImage = "http",
@@ -231,7 +231,7 @@ fun MyBottomNavigation(navController: NavController) {
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun MyProfile(item: UserApi.UserInfo) {
+fun MyProfile(item: UserInfo) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -247,7 +247,7 @@ fun MyProfile(item: UserApi.UserInfo) {
             Spacer(modifier = Modifier.width(20.dp))
             Column {
                 Row {
-                    Text(text = item.nickname, color = Color(0xFF616FED))
+                    Text(text = item.nickname!!, color = Color(0xFF616FED))
                     Text(text = " 아무개", color = Color.White)
                 }
                 Spacer(modifier = Modifier.height(7.dp))

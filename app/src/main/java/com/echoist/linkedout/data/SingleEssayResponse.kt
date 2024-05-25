@@ -1,16 +1,13 @@
+
 import com.echoist.linkedout.api.EssayApi
-import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
+// data를 리스트형태가 아닌 아이템 하나 단일구조로 받을때의
 @JsonClass(generateAdapter = true)
-data class WritingUserInfo(
-    @Json(name = "data")
+data class SingleEssayResponse(
     val data: EssayApi.EssayItem?,
-    @Json(name = "path")
     val path: String?,
-    @Json(name = "success")
     val success: Boolean,
-    @Json(name = "timestamp")
     val timestamp: String?
 )
 

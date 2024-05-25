@@ -73,13 +73,14 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
 import com.echoist.linkedout.api.EssayApi
-import com.echoist.linkedout.api.UserApi
+import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.viewModels.CommunityViewModel
 import com.echoist.linkedout.viewModels.SentenceInfo
 import kotlinx.coroutines.launch
@@ -575,7 +576,7 @@ fun EssayListItem(
                 .fillMaxSize()
                 .padding(start = 20.dp, bottom = 10.dp)
         ) {
-            Text(text = item.nickName!!, fontSize = 10.sp, color = Color(0xFF686868))
+            Text(text = if (item.author?.nickname != null) item.author.nickname else "", fontSize = 10.sp, color = Color(0xFF686868))
         }
         Box(
             contentAlignment = Alignment.BottomEnd, modifier = Modifier
@@ -615,7 +616,7 @@ fun RandomCommunityPage(viewModel: CommunityViewModel, navController: NavControl
 
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun SubscribeUserItem(item: UserApi.UserInfo, viewModel: CommunityViewModel) {
+fun SubscribeUserItem(item: UserInfo, viewModel: CommunityViewModel) {
     val background by animateColorAsState(
         if (viewModel.currentClickedUserId == item.id) Color(
             0xFF222222
@@ -657,7 +658,7 @@ fun SubscribeUserItem(item: UserApi.UserInfo, viewModel: CommunityViewModel) {
                         modifier = Modifier
                     )
                 }
-                Text(text = item.nickname, fontSize = 12.sp, color = backgroundTrans)
+                Text(text = item.nickname!!!!, fontSize = 12.sp, color = backgroundTrans)
             }
         }
     }
@@ -688,14 +689,15 @@ fun SubscribeUserList(viewModel: CommunityViewModel,navController: NavController
 @Preview
 @Composable
 fun prev() {
+    val viewModel : CommunityViewModel = viewModel()
     Column {
-        SubscribeUserItem(item = CommunityViewModel().userItem, viewModel = CommunityViewModel())
+        SubscribeUserItem(item = viewModel.userItem, viewModel = viewModel)
         EssayListItem(
-            item = CommunityViewModel().detailEssay,
-            viewModel = CommunityViewModel(),
+            item = viewModel.detailEssay,
+            viewModel = viewModel,
             navController = rememberNavController()
         )
-        SubscribeUserList(viewModel = CommunityViewModel(), navController = rememberNavController())
+        SubscribeUserList(viewModel = viewModel, navController = rememberNavController())
     }
 }
 

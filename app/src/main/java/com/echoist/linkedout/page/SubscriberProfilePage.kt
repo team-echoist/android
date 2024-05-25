@@ -6,6 +6,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.echoist.linkedout.components.CommuTopAppBar
@@ -37,5 +38,6 @@ fun SubscriberProfilePage(
 @Preview
 @Composable
 fun Prev2(){
-    SubscriberProfilePage(viewModel = CommunityViewModel(), navController = rememberNavController())
+    val viewModel : CommunityViewModel = viewModel()
+    SubscriberProfilePage(viewModel = viewModel, navController = rememberNavController())
 }

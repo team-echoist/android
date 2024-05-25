@@ -36,13 +36,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
-import com.echoist.linkedout.api.UserApi
 import com.echoist.linkedout.components.CommuTopAppBar
+import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
 
@@ -50,7 +51,9 @@ import com.echoist.linkedout.viewModels.CommunityViewModel
 @Preview
 @Composable
 fun Prev3() {
-    FullSubscriberPage(viewModel = CommunityViewModel(), navController = rememberNavController())
+    val viewModel : CommunityViewModel = viewModel()
+
+    FullSubscriberPage(viewModel = viewModel, navController = rememberNavController())
 }
 
 @Composable
@@ -96,7 +99,7 @@ fun FullSubscriberPage(
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SubscriberSimpleItem(
-    item: UserApi.UserInfo,
+    item: UserInfo,
     viewModel: CommunityViewModel,
     navController: NavController
 ) {
@@ -130,7 +133,7 @@ fun SubscriberSimpleItem(
                     modifier = Modifier.size(60.dp)
                 )
                 Spacer(modifier = Modifier.width(17.dp))
-                Text(text = "${item.nickname} ", fontSize = 16.sp)
+                Text(text = "${item.nickname!!} ", fontSize = 16.sp)
                 Text(text = "아무개", fontSize = 16.sp, color = Color(0xFF656565))
 
             }

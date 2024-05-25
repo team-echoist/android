@@ -1,6 +1,6 @@
 package com.echoist.linkedout.data
 
-data class NaverApiUserInfo(
+data class NaverUserResponse(
     val message: String,
     val response: Response,
     val resultcode: String

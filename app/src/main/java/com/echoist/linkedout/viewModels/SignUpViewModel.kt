@@ -9,14 +9,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.echoist.linkedout.api.SignUpApi
-import com.echoist.linkedout.api.SignUpApiClient
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
-    private val signUpApiClient: SignUpApiClient
+    private val signUpApi : SignUpApi
 ) : ViewModel() {
     private var accessToken = mutableStateOf("") // 토큰값을 계속 갱신하며, 이 값을 헤더로 요청보낸다.
 
@@ -37,7 +36,7 @@ class SignUpViewModel @Inject constructor(
     fun getUserEmailCheck(navController: NavController) {
         viewModelScope.launch {
             try {
-                val response = signUpApiClient.api.emailDuplicateConfirm(userEmail)
+                val response = signUpApi.emailDuplicateConfirm(userEmail)
 
                 if (response.code() == 200) {
                     Log.e("authApiSuccess1", "${response.code()}")
@@ -62,7 +61,7 @@ class SignUpViewModel @Inject constructor(
 
         try {
             val userAccount = SignUpApi.UserAccount(userEmail, userPw)
-            val response = signUpApiClient.api.emailVerify(userAccount)
+            val response = signUpApi.emailVerify(userAccount)
 
             if (response.code() == 201) {
                 Log.e("authApiSuccess2", "${response.raw()}")

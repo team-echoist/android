@@ -5,7 +5,7 @@ import com.echoist.linkedout.api.EssayApi
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class EssayInfo(
+data class EssayListResponse(
     val data: Essays,
     val path: String,
     val success: Boolean,
@@ -14,5 +14,5 @@ data class EssayInfo(
 @JsonClass(generateAdapter = true)
 data class Essays(
     val essays: List<EssayApi.EssayItem>,
-    val total: Int,
+    val total: Int? = null,
 )

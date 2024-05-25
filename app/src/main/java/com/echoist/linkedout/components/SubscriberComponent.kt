@@ -99,7 +99,7 @@ fun SubscriberProfile(viewModel: CommunityViewModel) {
                     fontWeight = FontWeight.Bold
                 )
             ) {
-                append("${viewModel.userItem.nickname} ")
+                append("${viewModel.userItem.nickname!!} ")
             }
             append("아무개")
         }.toAnnotatedString()

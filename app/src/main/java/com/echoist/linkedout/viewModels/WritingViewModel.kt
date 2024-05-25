@@ -89,7 +89,7 @@ class WritingViewModel @Inject constructor(private val essayApi: EssayApi) : Vie
         viewModelScope.launch {
             try {
 
-                val essayData = EssayApi.EssayItem(
+                val essayData = EssayApi.WritingEssayItem(
                     title.value.text,
                     content.value.text,
                     linkedOutGauge = ringTouchedTime.value,
@@ -138,7 +138,7 @@ class WritingViewModel @Inject constructor(private val essayApi: EssayApi) : Vie
     fun modifyEssay(navController: NavController,status: String) {
         viewModelScope.launch {
             try {
-                val essayData = EssayApi.EssayItem(
+                val essayData = EssayApi.WritingEssayItem(
                     title.value.text,
                     content.value.text,
                     linkedOutGauge = ringTouchedTime.value,
