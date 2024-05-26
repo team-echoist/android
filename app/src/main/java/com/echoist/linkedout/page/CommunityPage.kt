@@ -60,10 +60,12 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
     //화면 새로 생길때 한번씩만 호출되게끔
     if (!hasCalledApi.value) {
         viewModel.readRandomEssays()
-
+        viewModel.readFollowingEssays()
         hasCalledApi.value = true
     }
-
+    if (pagerstate.currentPage == 1){
+        viewModel.isClicked = false
+    }
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl ) {
         ModalNavigationDrawer(
             drawerState = drawerState,
@@ -122,13 +124,13 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
                                 visible = viewModel.isClicked,
                                 enter = fadeIn(
                                     animationSpec = tween(
-                                        durationMillis = 1000,
+                                        durationMillis = 500,
                                         easing = FastOutSlowInEasing
                                     )
                                 ),
                                 exit = fadeOut(
                                     animationSpec = tween(
-                                        durationMillis = 500,
+                                        durationMillis = 300,
                                         easing = LinearEasing
                                     )
                                 )

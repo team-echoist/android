@@ -23,17 +23,25 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LocalRippleConfiguration
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -43,9 +51,11 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
 import com.echoist.linkedout.components.CommuTopAppBar
+import com.echoist.linkedout.components.SearchingBar
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
+import kotlinx.coroutines.launch
 
 
 @Preview
@@ -61,39 +71,82 @@ fun FullSubscriberPage(
     viewModel: CommunityViewModel,
     navController: NavController
 ) {
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
 
-    LinkedOutTheme {
-        Scaffold(
-            topBar = {
-                CommuTopAppBar(text = "전체 구독 목록", navController,viewModel)
-            },
-            bottomBar = { if (!viewModel.unSubscribeClicked) MyBottomNavigation(navController) },
-            content = {
+    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+        ModalNavigationDrawer(
+            drawerState = drawerState,
+            drawerContent = {
+                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
 
-                LazyColumn(
-                    modifier = Modifier
-                        .padding(it)
-                        .padding(top = 30.dp)
-                ) {
-                    items(viewModel.subscribeUserList) { it -> //todo 랜덤리스트에서 구독자 에세이 리스트로 바꿔야함.
-                        SubscriberSimpleItem(item = it, viewModel, navController)
-                        Spacer(modifier = Modifier.height(10.dp))
+                    ModalDrawerSheet(
+                        modifier = Modifier.fillMaxSize(),
+                        drawerShape = RectangleShape,
+                        drawerContainerColor = Color.Black
+                    ) {
+                        SearchingBar(viewModel = viewModel, {
+                            scope.launch {
+                                drawerState.apply {
+                                    if (isClosed) open() else close()
+                                }
+                            }
+                        }, drawerState)
 
+
+                        // ...other drawer items
                     }
                 }
-                AnimatedVisibility(
-                    visible = viewModel.unSubscribeClicked,
-                    enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)),
-                    exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
-                ) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
-                        UnsubscribeAlert(viewModel)
+            },
+            content = {
+                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
 
+                    LinkedOutTheme {
+                        Scaffold(
+                            topBar = {
+                                CommuTopAppBar(text = "전체 구독 목록", navController,viewModel){
+                                    scope.launch {
+                                        drawerState.apply {
+                                            if (isClosed) open() else close()
+                                        }
+                                    }
+                                }
+                            },
+                            bottomBar = { if (!viewModel.unSubscribeClicked) MyBottomNavigation(navController) },
+                            content = {
+
+                                LazyColumn(
+                                    modifier = Modifier
+                                        .padding(it)
+                                        .padding(top = 30.dp)
+                                ) {
+                                    items(viewModel.subscribeUserList) { it -> //todo 랜덤리스트에서 구독자 에세이 리스트로 바꿔야함.
+                                        SubscriberSimpleItem(item = it, viewModel, navController)
+                                        Spacer(modifier = Modifier.height(10.dp))
+
+                                    }
+                                }
+                                AnimatedVisibility(
+                                    visible = viewModel.unSubscribeClicked,
+                                    enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)),
+                                    exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
+                                ) {
+                                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
+                                        UnsubscribeAlert(viewModel)
+
+                                    }
+                                }
+                            }
+                        )
                     }
                 }
             }
         )
+
+
     }
+
+
 }
 
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)

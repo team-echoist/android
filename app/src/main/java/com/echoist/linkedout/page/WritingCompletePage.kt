@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -335,7 +334,6 @@ fun RingImg(viewModel: WritingViewModel) {
 
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun WritingCompletePager(viewModel: WritingViewModel, navController: NavController) {
     val scrollState = rememberScrollState()

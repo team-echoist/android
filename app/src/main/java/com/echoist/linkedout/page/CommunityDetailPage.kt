@@ -131,6 +131,7 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
                                 }
 
                             }
+                            //todo 글쓴이의 이전 글 띄우기
                             items(items = viewModel.randomList) { it -> //랜덤리스트 말고 수정할것. 그사람의 리스트로
                                 EssayListItem(
                                     item = it,

@@ -117,9 +117,9 @@ class CommunityViewModel @Inject constructor(val essayApi: EssayApi) : ViewModel
             try {
                 val response = essayApi.readFollowingEssays(Token.accessToken)
                 followingList = response.body()!!.data.essays.toMutableStateList()
-                Log.d(TAG, "readRandomEssays: ${response.body()!!.data.essays.toMutableStateList()}")
+                Log.d(TAG, "readRandomEssaysfollow: ${response.body()!!.data.essays.toMutableStateList()}")
 
-                Log.d(TAG, "readRandomEssays: 성공입니다 $randomList")
+                Log.d(TAG, "readRandomEssaysfollow: 성공입니다 $randomList")
 
 
                 // API 호출 결과 처리 (예: response 데이터 사용)
@@ -127,9 +127,9 @@ class CommunityViewModel @Inject constructor(val essayApi: EssayApi) : ViewModel
 
                 // 예외 처리
                 e.printStackTrace()
-                Log.d(TAG, "readRandomEssays: ${e.message}")
-                Log.d(TAG, "readRandomEssays: ${e.cause}")
-                Log.d(TAG, "readRandomEssays: ${e.localizedMessage}")
+                Log.d(TAG, "readRandomEssaysfollow2: ${e.message}")
+                Log.d(TAG, "readRandomEssaysfollow3: ${e.cause}")
+                Log.d(TAG, "readRandomEssaysfollow4: ${e.localizedMessage}")
 
             } finally {
                 isApiFinished = true

@@ -53,7 +53,12 @@ import com.echoist.linkedout.viewModels.CommunityViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CommuTopAppBar(text: String, navController: NavController,viewModel: CommunityViewModel) {
+fun CommuTopAppBar(
+    text: String,
+    navController: NavController,
+    viewModel: CommunityViewModel,
+    onClick: () -> Unit
+) {
 
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
@@ -75,7 +80,9 @@ fun CommuTopAppBar(text: String, navController: NavController,viewModel: Communi
             }
         },
         actions = {
-            Icon(imageVector = Icons.Default.Search, contentDescription = "", Modifier.size(30.dp))
+            Icon(imageVector = Icons.Default.Search, contentDescription = "", Modifier.size(30.dp).clickable {
+                onClick()
+            })
             Spacer(modifier = Modifier.width(13.dp))
             Icon(
                 imageVector = Icons.Default.Bookmark,

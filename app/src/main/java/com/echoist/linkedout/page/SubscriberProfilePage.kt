@@ -1,43 +1,88 @@
 package com.echoist.linkedout.page
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.echoist.linkedout.components.CommuTopAppBar
+import com.echoist.linkedout.components.SearchingBar
 import com.echoist.linkedout.components.SubscriberPage
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun SubscriberProfilePage(
     viewModel: CommunityViewModel,
     navController: NavController
-){
+) {
 
-    LinkedOutTheme {
-        Scaffold(
-            topBar = {
-                    CommuTopAppBar(text = "프로필",navController,viewModel)
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+
+    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+        ModalNavigationDrawer(
+            drawerState = drawerState,
+            drawerContent = {
+                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+
+                    ModalDrawerSheet(
+                        modifier = Modifier.fillMaxSize(),
+                        drawerShape = RectangleShape,
+                        drawerContainerColor = Color.Black
+                    ) {
+                        SearchingBar(viewModel = viewModel, {
+                            scope.launch {
+                                drawerState.apply {
+                                    if (isClosed) open() else close()
+                                }
+                            }
+                        }, drawerState)
+
+
+                        // ...other drawer items
+                    }
+                }
             },
-            bottomBar = { MyBottomNavigation(navController) },
             content = {
-                Column(modifier = Modifier.padding(it)) {
-                    SubscriberPage(viewModel, navController)
+                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+
+                    LinkedOutTheme {
+                        Scaffold(
+                            topBar = {
+                                CommuTopAppBar(text = "프로필", navController, viewModel){
+                                    scope.launch {
+                                        drawerState.apply {
+                                            if (isClosed) open() else close()
+                                        }
+                                    }
+                                }
+                            },
+                            bottomBar = { MyBottomNavigation(navController) },
+                            content = {
+                                Column(modifier = Modifier.padding(it)) {
+                                    SubscriberPage(viewModel, navController)
+                                }
+                            }
+                        )
+                    }
                 }
             }
         )
-    }
-}
 
-@Preview
-@Composable
-fun Prev2(){
-    val viewModel : CommunityViewModel = viewModel()
-    SubscriberProfilePage(viewModel = viewModel, navController = rememberNavController())
+
+    }
 }

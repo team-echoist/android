@@ -187,7 +187,8 @@ fun RandomSentences() {
                                     .firstOrNull()
                                     ?.let { annotation ->
                                         when (annotation.item) {
-                                            "Sentence1" -> Log.d(TAG,
+                                            "Sentence1" -> Log.d(
+                                                TAG,
                                                 "AnnotatedClickableText: ta"
                                             )
 
@@ -516,7 +517,7 @@ fun EssayListItem(
         .fillMaxWidth()
         .background(Color.Black)
         .clickable {
-            viewModel.detailEssay = item
+            viewModel.detailEssay = item // 클릭했을때 뷰모델에 디테일 에세이 저장
             navController.navigate("CommunityDetailPage")
             viewModel.detailEssayBackStack.push(item)
             Log.d(TAG, "pushpush: ${viewModel.detailEssayBackStack}")
@@ -786,11 +787,12 @@ fun SearchingBar(viewModel: CommunityViewModel,onClick: () -> Unit,drawerState: 
             shape = RoundedCornerShape(30),
             modifier = Modifier
                 .weight(1f)
-                .height(50.dp),
+                .height(55.dp),
             value = viewModel.searchingText,
             onValueChange = {
                 viewModel.searchingText = it
             },
+            placeholder = {Text(text = "검색", color = Color(0xFF686868))},
             singleLine = true,
             trailingIcon = { if (viewModel.searchingText.isNotEmpty())Icon(
                 imageVector = Icons.Default.Cancel,
@@ -800,8 +802,8 @@ fun SearchingBar(viewModel: CommunityViewModel,onClick: () -> Unit,drawerState: 
                 }
             )},
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color(0xFF0E0E0E),
-                unfocusedContainerColor = Color(0xFF0E0E0E),
+                focusedContainerColor = Color(0xFF222222),
+                unfocusedContainerColor = Color(0xFF222222),
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
                 focusedTextColor = Color.White,

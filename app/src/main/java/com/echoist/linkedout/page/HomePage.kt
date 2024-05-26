@@ -1,7 +1,15 @@
 package com.echoist.linkedout.page
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +25,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -38,6 +48,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -47,6 +58,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -72,8 +84,11 @@ fun PrevHomePage() {
     HomePage(navController = rememberNavController(), accessToken = "")
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomePage(navController: NavController, accessToken: String) {
+
+    var isLogoutClicked by remember { mutableStateOf(false) }
 
     val userItem by remember {
         mutableStateOf(
@@ -91,8 +106,6 @@ fun HomePage(navController: NavController, accessToken: String) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-
-
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -104,20 +117,30 @@ fun HomePage(navController: NavController, accessToken: String) {
                 HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
                 LineChartExample()
                 HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
-                MyDrawableItem("상점") {}
+                ShopDrawerItem()
                 HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
-                MyDrawableItem("공지사항") {}
-                HorizontalDivider(thickness = 1.dp, color = Color(0xFF191919))
-                MyDrawableItem("로그인 정보") {}
-
-
+                MyDrawableItem("화면 설정") {}
+                MyDrawableItem("알림 설정") {}
+                MyDrawableItem("공지 사항") {}
+                MyDrawableItem("고객지원") {}
+                LogoutBtn{isLogoutClicked = true}
                 // ...other drawer items
             }
+            AnimatedVisibility(
+                visible = isLogoutClicked,
+                enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)),
+                exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
+            ){
+                LogoutBox({isLogoutClicked = false},{isLogoutClicked = false})
+            }
+
         }
+
     ) {
         LinkedOutTheme {
             Scaffold(
                 topBar = {
+
                     CustomTopAppBar {
                         scope.launch {
                             drawerState.apply {
@@ -358,17 +381,91 @@ fun createLineData(): LineData {
 @Composable
 fun MyDrawableItem(text : String , onClick: () -> Unit) {
     NavigationDrawerItem(
-        modifier = Modifier.height(80.dp),
+        modifier = Modifier.height(70.dp),
         label = {
-            Text(text = text, color = Color.White, fontWeight = FontWeight.SemiBold)
+            Text(text = text, color = Color(0xFF797979), fontWeight = FontWeight.SemiBold)
         },
         selected = false,
         onClick = { onClick() },
-        badge = {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
-                contentDescription = "forward"
-            )
-        }
     )
+}
+
+@Composable
+fun ShopDrawerItem() {
+    NavigationDrawerItem(
+        modifier = Modifier.height(80.dp),
+        label = {
+            Text(text = "상점", color = Color.White, fontWeight = FontWeight.SemiBold)
+        },
+        selected = false,
+        onClick = { },
+        badge = { Icon(imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos, contentDescription = "navigate")}
+    )
+}
+
+@Composable
+fun LogoutBtn( isLogoutClicked :()-> Unit){
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .padding(bottom = 70.dp, end = 20.dp), contentAlignment = Alignment.BottomEnd){
+        Box(
+            modifier = Modifier
+                .size(80.dp, 36.dp)
+                .background(Color(0xFF191919), shape = RoundedCornerShape(20))
+                .clickable { isLogoutClicked() },
+            contentAlignment = Alignment.Center
+        ){
+            Text(text = "로그아웃", fontSize = 12.sp, color = Color(0xFF606060))
+        }
+    }
+}
+
+@Composable
+fun LogoutBox( isCancelClicked: () ->Unit, isLogoutClicked: () -> Unit){
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter){
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .background(Color(0xFF121212), shape = RoundedCornerShape(20))
+            .height(243.dp), contentAlignment = Alignment.Center){
+            Column(
+                modifier = Modifier.padding(20.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(text = "로그아웃하시겠습니까?", color = Color.White, fontWeight = FontWeight.SemiBold)
+                Spacer(modifier = Modifier.height(48.dp))
+                Row {
+                    Button(
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(
+                                0xFF868686
+                            )
+                        ),
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(61.dp),
+                        onClick = { isCancelClicked() },
+                        shape = RoundedCornerShape(20)
+                    ) {
+                        Text(text = "취소", color = Color.Black,fontWeight = FontWeight.SemiBold)
+
+                    }
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Button(
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF616FED)),
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(61.dp),
+                        onClick = { isLogoutClicked()
+                                  /*TODO*/ },
+                        shape = RoundedCornerShape(20)
+                    ) {
+                        Text(text = "로그아웃", color = Color.Black, fontWeight = FontWeight.SemiBold)
+
+                    }
+                }
+
+            }
+        }
+    }
 }
