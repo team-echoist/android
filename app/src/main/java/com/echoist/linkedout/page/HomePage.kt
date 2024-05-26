@@ -421,6 +421,7 @@ fun LogoutBtn( isLogoutClicked :()-> Unit){
 
 @Composable
 fun LogoutBox( isCancelClicked: () ->Unit, isLogoutClicked: () -> Unit){
+    Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(0.4f)))
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter){
         Box(modifier = Modifier
             .fillMaxWidth()
