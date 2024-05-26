@@ -52,7 +52,6 @@ fun pre(){
         LastEssayPager(viewModel, rememberNavController())
     }
 }
-//todo write 할 때 빼고 essayitem 2로 사용해야할듯
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun LastEssayItem(

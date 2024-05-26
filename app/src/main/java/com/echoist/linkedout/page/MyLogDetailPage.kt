@@ -239,7 +239,7 @@ fun DetailEssay(viewModel: MyLogView1Model) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp)
+                .padding(horizontal = 20.dp)
         ) {
             Spacer(modifier = Modifier.height(170.dp))
             Text(text = essay.title, fontSize = 24.sp, modifier = Modifier)

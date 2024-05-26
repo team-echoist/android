@@ -84,7 +84,6 @@ fun PrevHomePage() {
     HomePage(navController = rememberNavController(), accessToken = "")
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomePage(navController: NavController, accessToken: String) {
 
@@ -123,7 +122,7 @@ fun HomePage(navController: NavController, accessToken: String) {
                 MyDrawableItem("알림 설정") {}
                 MyDrawableItem("공지 사항") {}
                 MyDrawableItem("고객지원") {}
-                LogoutBtn{isLogoutClicked = true}
+                LogoutBtn{isLogoutClicked = true} //todo logout 기능 만들기
                 // ...other drawer items
             }
             AnimatedVisibility(
@@ -297,7 +296,7 @@ fun LineChartExample(modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxWidth()
             .height(130.dp)
-            .padding(start = 20.dp, end = 20.dp),
+            .padding(horizontal = 20.dp),
         factory = { context ->
             LineChart(context).apply {
                 data = lineData

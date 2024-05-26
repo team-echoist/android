@@ -160,7 +160,6 @@ fun Essaychip(
     dividerWidth: Dp,
     clickable: () -> Unit,
     color: Color
-    // todo pager number값을넣고 그에따른 색 변화, 터쳐블 변화 주기
 ){
 
     Column(modifier = Modifier.padding(end = 12.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {

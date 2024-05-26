@@ -396,7 +396,7 @@ fun MyDivider(viewModel: WritingViewModel) {
 
     Box(
         modifier = Modifier
-            .padding(start = 20.dp, end = 20.dp)
+            .padding(horizontal = 20.dp)
             .offset(x = 0.dp, y = ydp)
     ) {
         HorizontalDivider(
@@ -410,7 +410,7 @@ fun MyDivider(viewModel: WritingViewModel) {
 @Composable
 fun WritingCancelCard(viewModel: WritingViewModel, navController: NavController) {
     Column(
-        modifier = Modifier.padding(start = 20.dp, end = 20.dp),
+        modifier = Modifier.padding(horizontal = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {

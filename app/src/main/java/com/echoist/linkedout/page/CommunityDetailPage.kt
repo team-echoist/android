@@ -118,7 +118,7 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
                                     modifier = Modifier
                                         .height(56.dp)
                                         .fillMaxWidth()
-                                        .padding(start = 20.dp, end = 20.dp),
+                                        .padding(horizontal = 20.dp),
                                     contentAlignment = Alignment.CenterStart
                                 )
                                 {
@@ -287,7 +287,7 @@ fun DetailEssay(item: EssayApi.EssayItem) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp)
+                .padding(horizontal = 20.dp)
         ) {
             if (item.thumbnail != null) {
                 GlideImage(
@@ -360,7 +360,7 @@ fun DetailEssay(item: EssayApi.EssayItem) {
             Row {
                 repeat(item.tags!!.size){
                     SuggestionChip(
-                        onClick = { /*TODO*/ },
+                        onClick = { },
                         label = { Text(item.tags[it].name) },
                         shape = RoundedCornerShape(50)
                     )

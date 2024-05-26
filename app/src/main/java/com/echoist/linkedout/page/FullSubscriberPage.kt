@@ -166,7 +166,7 @@ fun SubscriberSimpleItem(
             }
             .fillMaxWidth()
             .height(100.dp)
-            .padding(start = 20.dp, end = 20.dp)
+            .padding(horizontal = 20.dp)
     ) {
         Box(
             modifier = Modifier
@@ -175,7 +175,7 @@ fun SubscriberSimpleItem(
             contentAlignment = Alignment.CenterStart
         ) {
             Row(
-                modifier = Modifier.padding(start = 20.dp, end = 20.dp),
+                modifier = Modifier.padding(horizontal = 20.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
@@ -224,7 +224,7 @@ fun UnsubscribeAlert(viewModel: CommunityViewModel) {
     )
     Column(
         Modifier
-            .padding(start = 20.dp, end = 20.dp)
+            .padding(horizontal = 20.dp)
             .fillMaxWidth()
     ) {
         Box(
@@ -236,7 +236,7 @@ fun UnsubscribeAlert(viewModel: CommunityViewModel) {
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(text = "구독을 취소하시겠습니까?")
                 Spacer(modifier = Modifier.height(6.dp))
-                Text(text = "구독 취소 시 업데이트 되는 글이 보이지 않습니다.", fontSize = 14.sp, modifier = Modifier.padding(start = 20.dp, end = 20.dp))
+                Text(text = "구독 취소 시 업데이트 되는 글이 보이지 않습니다.", fontSize = 14.sp, modifier = Modifier.padding(horizontal = 20.dp))
                 Spacer(modifier = Modifier.height(15.dp))
                 HorizontalDivider(color = Color(0xFF202020))
                 Spacer(modifier = Modifier.height(18.dp))

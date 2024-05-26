@@ -3,7 +3,6 @@ package com.echoist.linkedout.data
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
-    //todo 수정 해야 할것. 작성한 글 리스트
     @JsonClass(generateAdapter = true)
     data class UserInfo(
 

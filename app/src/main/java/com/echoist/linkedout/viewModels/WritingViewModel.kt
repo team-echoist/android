@@ -149,9 +149,12 @@ class WritingViewModel @Inject constructor(private val essayApi: EssayApi) : Vie
                     tags = hashTagList
                 )
 
-                val response = essayApi.modifyEssay(/*todo 토큰값. 매번변경*/ accessToken,
+
+                val response = essayApi.modifyEssay( Token.accessToken,
                     essayData = essayData
                 )
+                accessToken = (response.headers()["authorization"].toString())
+                Token.accessToken = accessToken
 
                 navController.navigate("HOME") {
                     popUpTo("HOME") {

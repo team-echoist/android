@@ -471,7 +471,7 @@ fun WritingDeleteCard(viewModel: WritingViewModel, navController: NavController)
 
     if (viewModel.isDeleteClicked.value) {
         Column(
-            modifier = Modifier.padding(start = 20.dp, end = 20.dp),
+            modifier = Modifier.padding(horizontal = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {

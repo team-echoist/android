@@ -40,6 +40,7 @@ import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
+import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.viewModels.CommunityViewModel
 
 //@Preview
@@ -96,7 +97,7 @@ fun CommuTopAppBar(
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun SubscriberProfile(viewModel: CommunityViewModel) {
+fun Profile(userInfo: UserInfo) {
 
     val annotatedString = remember {
         AnnotatedString.Builder().apply {
@@ -106,7 +107,7 @@ fun SubscriberProfile(viewModel: CommunityViewModel) {
                     fontWeight = FontWeight.Bold
                 )
             ) {
-                append("${viewModel.userItem.nickname!!} ")
+                append("${userInfo.nickname!!} ")
             }
             append("아무개")
         }.toAnnotatedString()
@@ -115,7 +116,7 @@ fun SubscriberProfile(viewModel: CommunityViewModel) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 20.dp, end = 20.dp),
+            .padding(horizontal = 20.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -190,10 +191,10 @@ fun SubscriberProfile(viewModel: CommunityViewModel) {
 fun SubscriberPage(viewModel: CommunityViewModel,navController : NavController){
     LazyColumn{
         item {
-            SubscriberProfile(viewModel = viewModel)
+            Profile(viewModel.userItem)
 
         }
-        items(viewModel.randomList!!){it-> //todo 랜덤리스트에서 구독자 에세이 리스트로 바꿔야함.
+        items(viewModel.randomList){it-> //todo 랜덤리스트에서 구독자 에세이 리스트로 바꿔야함.
             EssayListItem(item = it, viewModel = viewModel, navController = navController)
         }
 
