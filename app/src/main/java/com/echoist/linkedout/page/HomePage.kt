@@ -69,6 +69,7 @@ import com.echoist.linkedout.R
 import com.echoist.linkedout.data.BottomNavItem
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
+import com.echoist.linkedout.viewModels.HomeViewModel
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
@@ -78,29 +79,10 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import kotlinx.coroutines.launch
 
 
-@Preview
 @Composable
-fun PrevHomePage() {
-    HomePage(navController = rememberNavController(), accessToken = "")
-}
-
-@Composable
-fun HomePage(navController: NavController, accessToken: String) {
+fun HomePage(navController: NavController,viewModel: HomeViewModel) {
 
     var isLogoutClicked by remember { mutableStateOf(false) }
-
-    val userItem by remember {
-        mutableStateOf(
-            UserInfo(
-                id = 1,
-                nickname = "구루브",
-                profileImage = "http",
-                password = "1234",
-                gender = "male",
-                birthDate = "0725"
-            )
-        )
-    }
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -112,7 +94,7 @@ fun HomePage(navController: NavController, accessToken: String) {
                 drawerShape = RectangleShape,
                 drawerContainerColor = Color(0xE6141414)
             ) {
-                MyProfile(item = userItem)
+                MyProfile(item = viewModel.userItem)
                 HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
                 LineChartExample()
                 HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
@@ -149,7 +131,7 @@ fun HomePage(navController: NavController, accessToken: String) {
                     }
                 },
                 bottomBar = { MyBottomNavigation(navController) },
-                floatingActionButton = { WriteFTB(navController, accessToken) },
+                floatingActionButton = { WriteFTB(navController) },
                 content = {
                     Column(modifier = Modifier.padding(it)) {
 
@@ -162,12 +144,12 @@ fun HomePage(navController: NavController, accessToken: String) {
 
 
 @Composable
-fun WriteFTB(navController: NavController, accessToken: String) {
+fun WriteFTB(navController: NavController) {
 
 
     FloatingActionButton(
         modifier = Modifier.padding(end = 25.dp, bottom = 25.dp),
-        onClick = { navController.navigate("WritingPage/$accessToken") },
+        onClick = { navController.navigate("WritingPage") },
         shape = RoundedCornerShape(100.dp),
         containerColor = if (isSystemInDarkTheme()) Color.White else Color.Gray
     ) {

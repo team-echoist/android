@@ -39,7 +39,6 @@ import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.api.EssayApi
-import com.echoist.linkedout.viewModels.MyLogView1Model
 import com.echoist.linkedout.viewModels.MyLogViewModel
 
 @Preview
@@ -56,7 +55,7 @@ fun pre(){
 @Composable
 fun LastEssayItem(
     item: EssayApi.EssayItem,
-    viewModel: MyLogView1Model,
+    viewModel: MyLogViewModel,
     navController: NavController
 ) {
     val color = if (isSystemInDarkTheme()) {
@@ -143,7 +142,7 @@ fun LastEssayItem(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun LastEssayPager(viewModel: MyLogView1Model, navController: NavController){
+fun LastEssayPager(viewModel: MyLogViewModel, navController: NavController){
 
     val pageCount = if (viewModel.detailEssay.status == "published") viewModel.publishedEssayList.size/4 +1 else viewModel.myEssayList.size/4 +1
     val pagerstate = rememberPagerState { pageCount }

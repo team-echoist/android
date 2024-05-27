@@ -14,7 +14,6 @@ import androidx.navigation.NavController
 import com.echoist.linkedout.components.EssayChips
 import com.echoist.linkedout.components.EssayPager
 import com.echoist.linkedout.components.MyLogTopAppBar
-import com.echoist.linkedout.page.Token.accessToken
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.MyLogViewModel
 
@@ -43,7 +42,7 @@ fun MyLogPage(navController : NavController,viewModel: MyLogViewModel){
                 }
             },
             bottomBar = { MyBottomNavigation(navController) },
-            floatingActionButton = { WriteFTB(navController,accessToken) },
+            floatingActionButton = { WriteFTB(navController) },
             content = {
                 Box(Modifier.padding(it)) {
                     EssayPager(pagerState = pagerstate,viewModel, navController = navController)

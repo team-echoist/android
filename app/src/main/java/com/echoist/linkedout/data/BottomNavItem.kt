@@ -1,7 +1,6 @@
 package com.echoist.linkedout.data
 
 import com.echoist.linkedout.R
-import com.echoist.linkedout.page.Token
 
 sealed class BottomNavItem(
     val title: String,
@@ -12,7 +11,7 @@ sealed class BottomNavItem(
         BottomNavItem(
             "HOME",
             R.drawable.bottom_nav_1,
-            "HOME/${Token}" //
+            "HOME" //
         )
 
     data object MyLog :

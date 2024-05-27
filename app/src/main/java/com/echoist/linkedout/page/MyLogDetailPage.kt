@@ -48,7 +48,6 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
 import com.echoist.linkedout.components.LastEssayPager
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
-import com.echoist.linkedout.viewModels.MyLogView1Model
 import com.echoist.linkedout.viewModels.MyLogViewModel
 
 //@Preview
@@ -191,7 +190,7 @@ fun OptionItem(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailTopAppBar(navController: NavController, viewModel: MyLogView1Model) {
+fun DetailTopAppBar(navController: NavController, viewModel: MyLogViewModel) {
 
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
@@ -233,7 +232,7 @@ fun DetailTopAppBar(navController: NavController, viewModel: MyLogView1Model) {
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun DetailEssay(viewModel: MyLogView1Model) {
+fun DetailEssay(viewModel: MyLogViewModel) {
     val essay = viewModel.detailEssay
     Box {
         Column(

@@ -79,7 +79,7 @@ import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.WritingViewModel
 
 object Token {
-    var accessToken: String = "token"
+    var accessToken: String = "EMPTYTOKEN"
 }
 
 @Preview
@@ -88,8 +88,7 @@ fun PrevWritingPage() {
     val viewModel : WritingViewModel = viewModel()
     WritingPage(
         navController = rememberNavController(),
-        viewModel = viewModel,
-        accessToken = ""
+        viewModel = viewModel
     )
 
 }
@@ -98,10 +97,7 @@ fun PrevWritingPage() {
 fun WritingPage(
     navController: NavController,
     viewModel: WritingViewModel,
-    accessToken: String
 ) {
-
-    viewModel.accessToken = accessToken
 
     val isKeyBoardOpened by keyboardAsState()
     val scrollState = rememberScrollState()
@@ -111,7 +107,6 @@ fun WritingPage(
     val imageBitmap: ImageBitmap? = bitmap?.asImageBitmap()
 
 
-    Log.d("tokentoken", accessToken)
 
     LinkedOutTheme {
         Box {

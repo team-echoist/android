@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.echoist.linkedout.api.EssayApi
+import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.page.Token
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -18,7 +19,6 @@ import javax.inject.Inject
 interface MyLogView1Model {
     val myEssayList: List<EssayApi.EssayItem>
     val publishedEssayList: List<EssayApi.EssayItem>
-    var detailEssay: EssayApi.EssayItem
     var accessToken: String
     var isActionClicked: Boolean
     var detailEssayBackStack : Stack<EssayApi.EssayItem>
@@ -27,25 +27,19 @@ interface MyLogView1Model {
 }
 
 @HiltViewModel
-class MyLogViewModel@Inject constructor(private val essayApi: EssayApi) : ViewModel(), MyLogView1Model {
+class MyLogViewModel @Inject constructor(
+    private val essayApi: EssayApi,
+    private val exampleItems: ExampleItems
+) : ViewModel(), MyLogView1Model {
+
     override var myEssayList by mutableStateOf(mutableStateListOf<EssayApi.EssayItem>())
     override var publishedEssayList by mutableStateOf(mutableStateListOf<EssayApi.EssayItem>())
     override var detailEssayBackStack = Stack<EssayApi.EssayItem>()
 
-    override var detailEssay by mutableStateOf(
-        EssayApi.EssayItem(
-        content = "이 에세이는 예시입니다.",
-        createdDate = "2024-05-15",
-        id = 1,
-        linkedOutGauge = 5,
-        status = "published",
-        thumbnail = "https://example.com/thumbnail.jpg",
-        title = "예시 에세이",
-        updatedDate = "2024-05-15"
-    )
-    )
     override var accessToken: String = "token"
     override var isActionClicked by mutableStateOf(false)
+
+    var detailEssay by mutableStateOf(exampleItems.detailEssay)
 
     fun readPublishEssay() {
         myEssayList.clear()
@@ -104,7 +98,7 @@ class MyLogViewModel@Inject constructor(private val essayApi: EssayApi) : ViewMo
 
             } catch (e: Exception) {
                 e.printStackTrace()
-                Log.d("exception", e.localizedMessage.toString() + Token.accessToken)
+                Log.d("exception", (e.localizedMessage?.toString() ?: "") + Token.accessToken)
                 Log.d("exception", e.message.toString() + Token.accessToken)
             }
         }
@@ -114,11 +108,11 @@ class MyLogViewModel@Inject constructor(private val essayApi: EssayApi) : ViewMo
     override fun deleteEssay(navController: NavController) {
         viewModelScope.launch {
             try {
-                val response = essayApi.deleteEssay(accessToken,detailEssay.id!!)
+                val response = essayApi.deleteEssay(accessToken,exampleItems.detailEssay.id!!)
 
                 Log.d("writeEssayApiSuccess2", "writeEssayApiSuccess: ${response.isSuccessful}")
                 Log.d("writeEssayApiFailed", "deleteEssaytoken: ${Token.accessToken}")
-                Log.d("writeEssayApiFailed", "deleteEssayid: ${detailEssay.id}")
+                Log.d("writeEssayApiFailed", "deleteEssayid: ${exampleItems.detailEssay.id}")
 
                 Log.d("writeEssayApiFailed", "deleteEssay: ${response.errorBody()}")
                 Log.d("writeEssayApiFailed", "deleteEssay: ${response.code()}")

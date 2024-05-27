@@ -72,6 +72,7 @@ import com.echoist.linkedout.R
 import com.echoist.linkedout.components.CropImagePage
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
+import com.echoist.linkedout.viewModels.HomeViewModel
 import com.echoist.linkedout.viewModels.LoginSuccessDialog
 import com.echoist.linkedout.viewModels.MyLogViewModel
 import com.echoist.linkedout.viewModels.SignUpViewModel
@@ -99,10 +100,11 @@ class LoginPage : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val homeViewModel : HomeViewModel by viewModels()
         val viewModel : SocialLoginViewModel by viewModels()
         val writingViewModel : WritingViewModel by viewModels()
         val signUpViewModel : SignUpViewModel by viewModels()
-        val myLogviewModel : MyLogViewModel by viewModels()
+        val myLogViewModel : MyLogViewModel by viewModels()
         val communityViewModel : CommunityViewModel by viewModels()
 
 
@@ -114,33 +116,20 @@ class LoginPage : ComponentActivity() {
                 composable("OnBoarding") {
                     OnBoardingPage(navController)
                 }
-                composable("LoginPage"){navBackStackEntry ->
-                    LoginPage(
-                        navController = navController,
-                        viewModel = viewModel,
-                       "emptyToken"
-                    )
-
+                composable("LoginPage"){
+                    LoginPage(navController = navController, viewModel = viewModel,)
                 }
                 composable("SIGNUP") {
                     SignUpPage(navController, signUpViewModel)
                 }
-                composable(
-                    "HOME/{accessToken}",
-                    arguments = listOf(navArgument("accessToken") {
-                        type = NavType.StringType
-                    })
-                ) {navBackStackEntry->
-                    HomePage(
-                        navController,
-                        navBackStackEntry.arguments?.getString("accessToken").toString()
-                    )
+                composable("HOME") {
+                    HomePage(navController,homeViewModel)
                 }
                 composable("MYLOG") {
-                    MyLogPage(navController = navController,myLogviewModel)
+                    MyLogPage(navController = navController,myLogViewModel)
                 }
                 composable("MyLogDetailPage") {
-                    MyLogDetailPage(navController = navController,myLogviewModel)
+                    MyLogDetailPage(navController = navController,myLogViewModel)
                 }
                 composable("COMMUNITY") {
                     CommunityPage(navController = navController,communityViewModel)
@@ -160,18 +149,8 @@ class LoginPage : ComponentActivity() {
                     MyPage(navController = navController)
                     //settings page
                 }
-                composable(
-                    "WritingPage/{accessToken}",
-                    arguments = listOf(
-                        navArgument("accessToken") {
-                        type = NavType.StringType
-                    })
-                ) {navBackStackEntry->
-                    WritingPage(
-                        navController,
-                        writingViewModel,
-                        navBackStackEntry.arguments?.getString("accessToken").toString()
-                    )
+                composable("WritingPage") {navBackStackEntry->
+                    WritingPage(navController, writingViewModel)
                 }
                 composable(
                     "WritingCompletePage/{accessToken}",
@@ -301,14 +280,12 @@ fun AppleLoginBtn(navController: NavController, viewModel: SocialLoginViewModel)
 @Composable
 fun LoginPage(
     navController: NavController,
-    viewModel: SocialLoginViewModel,
-    accessToken: String
+    viewModel: SocialLoginViewModel
 ) {
 
     val keyboardController = LocalSoftwareKeyboardController.current
     val scrollState = rememberScrollState()
 
-    viewModel.accessToken = accessToken
 
     LinkedOutTheme {
         Scaffold(

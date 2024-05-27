@@ -70,7 +70,7 @@ class SocialLoginViewModel @Inject constructor() : ViewModel() {
         context: Context
     ) {
         val token = BuildConfig.google_native_api_key //토큰값 -> local.properties 통해 git ignore
-
+        Token.accessToken = token
         // Google 로그인을 구성합니다.
         val gso = GoogleSignInOptions
             .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -144,7 +144,7 @@ class SocialLoginViewModel @Inject constructor() : ViewModel() {
                     Log.d(TAG, "tokentoken"+Token.accessToken)
                     Log.e("authApiSuccess2", response.message())
 
-                    navController.navigate("HOME/$accessToken")
+                    navController.navigate("HOME")
                 } else {
                     Log.e("authApiFailed2", "Failed : ${response.headers().get("authorization")}")
                     Log.e("authApifailed32", "${response.code()}")
