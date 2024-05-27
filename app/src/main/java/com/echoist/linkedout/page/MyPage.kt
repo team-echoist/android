@@ -224,7 +224,7 @@ fun SettingBar(text : String, onClick : ()-> Unit){
 fun RecentEssayItem(item: EssayApi.EssayItem){
     Box(modifier = Modifier.size(150.dp,120.dp)){
         Column {
-            Text(text = item.title)
+            Text(text = item.title!!)
             Spacer(modifier = Modifier.height(10.dp))
             Text(text = item.content, maxLines = 3, overflow = TextOverflow.Ellipsis, fontSize = 10.sp)
         }

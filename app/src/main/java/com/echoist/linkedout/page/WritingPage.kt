@@ -312,7 +312,7 @@ fun WritingTopAppBar(
                     .padding(end = 20.dp, top = 15.dp)
                     .clickable {
                         if (viewModel.title.value.text.isNotEmpty() && viewModel.content.value.text.length >= viewModel.minLength)
-                            navController.navigate("WritingCompletePage/${viewModel.accessToken}")
+                            navController.navigate("WritingCompletePage")
                         else {
                             isContentNotEmpty.value = true
                         }
@@ -433,7 +433,7 @@ fun WritingCancelCard(viewModel: WritingViewModel, navController: NavController)
                         .padding(top = 20.dp, bottom = 20.dp)
                         .clickable {
                             viewModel.initialize()
-                            navController.navigate("HOME/${viewModel.accessToken}")
+                            navController.navigate("HOME")
                         },
                     fontSize = 16.sp,
                     text = "작성취소",

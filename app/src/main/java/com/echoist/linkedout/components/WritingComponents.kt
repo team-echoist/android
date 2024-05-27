@@ -453,7 +453,7 @@ fun CropImagePage(navController: NavController,viewModel: WritingViewModel) {
     }
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter){
         Button(onClick = {
-            navController.navigate("WritingPage/$accessToken")
+            navController.navigate("WritingPage")
         }) {
             Text(text = "완료")
         }

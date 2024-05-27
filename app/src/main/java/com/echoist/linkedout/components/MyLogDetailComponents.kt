@@ -85,7 +85,7 @@ fun LastEssayItem(
                 Row {
                     Text(
                         modifier = Modifier.fillMaxWidth(0.7f),
-                        text = item.title,
+                        text = item.title!!,
                         color = color,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,

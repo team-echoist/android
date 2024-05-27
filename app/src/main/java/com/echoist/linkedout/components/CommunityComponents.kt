@@ -87,9 +87,11 @@ import me.saket.extendedspans.ExtendedSpans
 import me.saket.extendedspans.RoundedCornerSpanPainter
 import me.saket.extendedspans.drawBehind
 
-@Preview
 @Composable
-fun RandomSentences() {
+fun RandomSentences(viewModel: CommunityViewModel) {
+
+    val oneSentenceList = if (viewModel.sentenceInfo == SentenceInfo.First) viewModel.firstSentences else viewModel.lastSentences
+
     val annotatedString = buildAnnotatedString {
         withStyle(style = ParagraphStyle(lineHeight = 40.sp)) { // 원하는 줄 간격 설정
             pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence1")
@@ -100,7 +102,7 @@ fun RandomSentences() {
                     fontSize = 14.sp,
                 )
             ) {
-                append("이원영은 초파리를 좋아했다.       ")
+                append("${oneSentenceList[0].content}       ")
 
             }
             pop()
@@ -113,7 +115,7 @@ fun RandomSentences() {
                     fontSize = 14.sp,
                 )
             ) {
-                append("빗소리가 커서 괜찮지 않냐고 물었지만 사실 너무 커서 무서웠다. 무서웠지만? 무서웠어        ")
+                append("${oneSentenceList[1].content}          ")
 
             }
             pop()
@@ -126,7 +128,7 @@ fun RandomSentences() {
                     fontSize = 14.sp,
                 )
             ) {
-                append("살짝 열린 창문 사이로 몇분 전 내가 비탈이 보였다.        ")
+                append("${oneSentenceList[2].content}        ")
 
             }
             pop()
@@ -139,7 +141,20 @@ fun RandomSentences() {
                     fontSize = 14.sp,
                 )
             ) {
-                append(" 빗소리가 커서 괜찮지 않냐 너무 커서 무서웠다.  ")
+                append(" ${oneSentenceList[3].content}        ")
+
+            }
+            pop()
+
+            pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence4")
+            withStyle(
+                style = SpanStyle(
+                    color = Color.White,
+                    background = Color.Black,
+                    fontSize = 14.sp,
+                )
+            ) {
+                append(" ${oneSentenceList[4].content}  ")
 
             }
             pop()
@@ -167,55 +182,66 @@ fun RandomSentences() {
 
         ) {
             var layoutResult: TextLayoutResult? = remember { null }
-
-            Text(
-                text = remember("text") {
-                    extendedSpans.extend(annotatedString)
-                },
-                modifier = Modifier
-                    .drawBehind(extendedSpans)
-                    .pointerInput(Unit) {
-                        detectTapGestures { offsetPosition ->
-                            layoutResult?.let {
-                                val position = it.getOffsetForPosition(offsetPosition)
-                                annotatedString
-                                    .getStringAnnotations(
-                                        tag = "SentenceTag",
-                                        start = position,
-                                        end = position
-                                    )
-                                    .firstOrNull()
-                                    ?.let { annotation ->
-                                        when (annotation.item) {
-                                            "Sentence1" -> Log.d(
-                                                TAG,
-                                                "AnnotatedClickableText: ta"
-                                            )
-
-                                            "Sentence2" -> Log.d(
-                                                "tag",
-                                                "AnnotatedClickableText: Sentence 2 clicked"
-                                            )
-
-                                            "Sentence3" -> Log.d(
-                                                "tag",
-                                                "AnnotatedClickableText: Sentence 3 clicked"
-                                            )
-
-                                            "Sentence4" -> Log.d(
-                                                "tag",
-                                                "AnnotatedClickableText: Sentence 4 clicked"
-                                            )
-                                        }
-                                    }
-                            }
-                        }
+            if (viewModel.isApiFinished){
+                Text(
+                    text = remember("text") {
+                        extendedSpans.extend(annotatedString)
                     },
-                onTextLayout = {
-                    layoutResult = it
-                    extendedSpans.onTextLayout(it)
-                }
-            )
+                    modifier = Modifier
+                        .drawBehind(extendedSpans)
+                        .pointerInput(Unit) {
+                            detectTapGestures { offsetPosition ->
+                                layoutResult?.let {
+                                    val position = it.getOffsetForPosition(offsetPosition)
+                                    annotatedString
+                                        .getStringAnnotations(
+                                            tag = "SentenceTag",
+                                            start = position,
+                                            end = position
+                                        )
+                                        .firstOrNull()
+                                        ?.let { annotation ->
+                                            when (annotation.item) {
+                                                "Sentence1" -> {
+                                                    Log.d(
+                                                        TAG,
+                                                        "AnnotatedClickableText: ta"
+                                                    )
+                                                    viewModel.detailEssay = oneSentenceList[0]
+                                                    //todo navigate to detail
+                                                }
+
+                                                "Sentence2" -> Log.d(
+                                                    "tag",
+                                                    "AnnotatedClickableText: Sentence 2 clicked"
+                                                )
+
+                                                "Sentence3" -> Log.d(
+                                                    "tag",
+                                                    "AnnotatedClickableText: Sentence 3 clicked"
+                                                )
+
+                                                "Sentence4" -> Log.d(
+                                                    "tag",
+                                                    "AnnotatedClickableText: Sentence 4 clicked"
+                                                )
+
+                                                "Sentence5" -> Log.d(
+                                                    "tag",
+                                                    "AnnotatedClickableText: Sentence 4 clicked"
+                                                )
+                                            }
+                                        }
+                                }
+                            }
+                        },
+                    onTextLayout = {
+                        layoutResult = it
+                        extendedSpans.onTextLayout(it)
+                    }
+                )
+            }
+
         }
     }
 
@@ -517,10 +543,16 @@ fun EssayListItem(
         .fillMaxWidth()
         .background(Color.Black)
         .clickable {
-            viewModel.detailEssay = item // 클릭했을때 뷰모델에 디테일 에세이 저장
-            navController.navigate("CommunityDetailPage")
-            viewModel.detailEssayBackStack.push(item)
-            Log.d(TAG, "pushpush: ${viewModel.detailEssayBackStack}")
+            viewModel.readDetailEssay(item.id!!)
+            if (viewModel.isApiFinished2) {
+                navController.navigate("CommunityDetailPage")
+                Log.d(TAG, "EssayListItem: ${viewModel.detailEssay}")
+
+                viewModel.detailEssayBackStack.push(viewModel.detailEssay)
+                Log.d(TAG, "pushpush: ${viewModel.detailEssayBackStack}")
+            }
+
+
         }
         .height(140.dp)) {
         //타이틀
@@ -538,7 +570,7 @@ fun EssayListItem(
                 ) {
                     Text(
                         modifier = Modifier,
-                        text = item.title,
+                        text = item.title!!,
                         color = color,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
@@ -597,7 +629,7 @@ fun RandomCommunityPage(viewModel: CommunityViewModel, navController: NavControl
         item {
             Column {
                 SentenceChoice(viewModel)
-                RandomSentences()
+                RandomSentences(viewModel)
                 Spacer(modifier = Modifier.height(20.dp))
 
                 TodaysLogTitle()

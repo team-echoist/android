@@ -221,7 +221,7 @@ fun MyBottomNavigation(navController: NavController) {
                 icon = {
                     Icon(
                         painter = painterResource(id = item.icon),
-                        contentDescription = item.title,
+                        contentDescription = item.title!!,
                         modifier = Modifier.size(32.dp),
                         tint = if (currentRoute == item.screenRoute) Color.White else Color(
                             0xFF686868

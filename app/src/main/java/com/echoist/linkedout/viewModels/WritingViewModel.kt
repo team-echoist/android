@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -31,7 +32,7 @@ class WritingViewModel @Inject constructor(private val essayApi: EssayApi) : Vie
 
     var title = mutableStateOf(TextFieldValue(""))
     var content = mutableStateOf(TextFieldValue(""))
-    var ringTouchedTime = mutableStateOf(5)
+    var ringTouchedTime = mutableIntStateOf(5)
 
     var latitude :Double? by mutableStateOf(null)
     var longitude :Double? by mutableStateOf(null)
@@ -113,7 +114,7 @@ class WritingViewModel @Inject constructor(private val essayApi: EssayApi) : Vie
 
                     Log.e("writeEssayApiSuccess", "${response.code()}")
                     navController.popBackStack("OnBoarding", false) //onboarding까지 전부 삭제.
-                    navController.navigate("HOME/$accessToken")
+                    navController.navigate("HOME")
                     initialize()
                 } else {
                     Log.e("writeEssayApiFailed token", "Failed to write essay: $accessToken")

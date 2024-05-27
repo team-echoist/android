@@ -12,10 +12,11 @@ import javax.inject.Singleton
 @Singleton
 class ExampleItems @Inject constructor(){
 
-    var detailEssay by mutableStateOf(
+
+        var detailEssay by mutableStateOf(
         EssayApi.EssayItem(
             author = UserInfo(1,"groove"),
-            content = "이 에세이는 예시입니다.",
+            content = "이 에세이는 예시입니다.123123",
             createdDate = "2024년 04월 28일 16:47",
             id = 1,
             linkedOutGauge = 5,
@@ -49,4 +50,7 @@ class ExampleItems @Inject constructor(){
 
     var randomList : SnapshotStateList<EssayApi.EssayItem> = mutableStateListOf(detailEssay,detailEssay,detailEssay,detailEssay)
     var followingList : SnapshotStateList<EssayApi.EssayItem> = mutableStateListOf(detailEssay)
+    var firstSentences : SnapshotStateList<EssayApi.EssayItem> = mutableStateListOf(detailEssay,detailEssay,detailEssay,detailEssay,detailEssay)
+    var lastSentences : SnapshotStateList<EssayApi.EssayItem> = mutableStateListOf(detailEssay,detailEssay,detailEssay,detailEssay,detailEssay)
+    var previousEssayList: SnapshotStateList<EssayApi.EssayItem> =  mutableStateListOf(detailEssay,detailEssay,detailEssay,detailEssay,detailEssay)
 }

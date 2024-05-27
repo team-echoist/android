@@ -1,6 +1,7 @@
 package com.echoist.linkedout.api
 
 import SingleEssayResponse
+import com.echoist.linkedout.data.DetailEssayResponse
 import com.echoist.linkedout.data.EssayListResponse
 import com.echoist.linkedout.data.UserInfo
 import com.squareup.moshi.JsonClass
@@ -49,7 +50,7 @@ interface EssayApi {
     //받는용 Tag List id와 name으로 구별하여받음.
     @JsonClass(generateAdapter = true)
     data class EssayItem(
-        val title: String,
+        val title: String? = null,
         val content: String,
         val status: String? = null,
         val categoryId: Int? = null,
@@ -106,5 +107,20 @@ interface EssayApi {
         @Header("Authorization") accessToken: String,
         @Query("limit") limit: Int = 20, //이 값은 기본 10 수정가능
     ): Response<EssayListResponse>
+
+    @GET("api/essays/sentence")
+    suspend fun readOneSentences(
+        @Header("Authorization") accessToken: String,
+        @Query("type") type : String,
+        @Query("limit") limit: Int = 20, //이 값은 기본 10 수정가능
+    ): Response<EssayListResponse>
+
+    @GET("api/essays/{essayId}")
+    suspend fun readDetailEssay(
+        @Header("Authorization") accessToken: String,
+        @Path("essayId") essayId: Int = 0
+    ): Response<DetailEssayResponse>
+
+
 
 }

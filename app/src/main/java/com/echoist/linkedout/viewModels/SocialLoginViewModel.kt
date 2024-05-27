@@ -172,7 +172,7 @@ class SocialLoginViewModel @Inject constructor() : ViewModel() {
                 Log.e(TAG, "카카오계정으로 로그인 실패", error)
             } else if (token != null) {
                 kakaoLoginstate.value = true
-                navController.navigate("HOME/$accessToken")
+                navController.navigate("HOMEaccessToken")
                 Log.i(TAG, "카카오계정으로 로그인 성공 ${token.accessToken} ")
             }
         }
@@ -193,7 +193,7 @@ class SocialLoginViewModel @Inject constructor() : ViewModel() {
                     UserApiClient.instance.loginWithKakaoAccount(context, callback = callback)
                 } else if (token != null) {
                     kakaoLoginstate.value = true
-                    navController.navigate("HOME/$accessToken")
+                    navController.navigate("HOMEaccessToken")
                     Log.i(TAG, "카카오톡으로 로그인 성공 ${token.accessToken}")
                 }
             }
@@ -253,7 +253,7 @@ class SocialLoginViewModel @Inject constructor() : ViewModel() {
                 Log.d("Naver_getState", NaverIdLoginSDK.getState().toString())
 
                 naverLoginstate.value = true
-                navController.navigate("HOME/$accessToken")
+                navController.navigate("HOMEaccessToken")
                 // 로그인 성공 시 유저 정보 획득
                 getNaverUserInfo()
             }
@@ -346,11 +346,11 @@ class SocialLoginViewModel @Inject constructor() : ViewModel() {
                     Log.e("authApiSuccess3 헤더", "${response.headers()}")
 
                     val encodedUrl = URLEncoder.encode( // http 인코드
-                        "android-app://androidx.navigation/HOME/$accessToken",
+                        "android-app://androidx.navigation/HOMEaccessToken",
                         StandardCharsets.UTF_8.toString()
                     )
                     navController.popBackStack("OnBoarding", false) //onboarding까지 전부 삭제.
-                    navController.navigate("HOME/$accessToken")
+                    navController.navigate("HOMEaccessToken")
                 } else {
                     Log.e("authApiFailed2", "Failed : ${response.headers().get("authorization")}")
                     Log.e("authApifailed32", "${response.code()}")

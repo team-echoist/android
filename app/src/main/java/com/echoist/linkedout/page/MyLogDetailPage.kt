@@ -241,7 +241,7 @@ fun DetailEssay(viewModel: MyLogViewModel) {
                 .padding(horizontal = 20.dp)
         ) {
             Spacer(modifier = Modifier.height(170.dp))
-            Text(text = essay.title, fontSize = 24.sp, modifier = Modifier)
+            Text(text = essay.title!!, fontSize = 24.sp, modifier = Modifier)
             Spacer(modifier = Modifier.height(40.dp))
             Text(
                 text = essay.content,

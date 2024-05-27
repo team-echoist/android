@@ -16,3 +16,15 @@ data class Essays(
     val essays: List<EssayApi.EssayItem>,
     val total: Int? = null,
 )
+
+data class DetailEssayResponse(
+    val data: EssaysWithPrevious,
+    val path: String,
+    val success: Boolean,
+    val timestamp: String)
+
+data class EssaysWithPrevious(
+    val essay: EssayApi.EssayItem,
+    val previous: List<EssayApi.EssayItem>? = null,
+)
+

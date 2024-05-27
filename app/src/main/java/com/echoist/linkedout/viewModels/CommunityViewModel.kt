@@ -1,5 +1,6 @@
 package com.echoist.linkedout.viewModels
 
+import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -9,6 +10,7 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.echoist.linkedout.api.EssayApi
+import com.echoist.linkedout.api.ReadDetailEssayRepo
 import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.page.Token
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,16 +19,20 @@ import java.util.Stack
 import javax.inject.Inject
 
 enum class SentenceInfo {
-    First,Last
+    First, Last
 }
+
 @HiltViewModel
 class CommunityViewModel @Inject constructor(
     private val essayApi: EssayApi,
-    private val exampleItems: ExampleItems
+    private val exampleItems: ExampleItems,
+    private val readDetailEssayRepo: ReadDetailEssayRepo
 ) : ViewModel() {
-    private var isApiFinished by mutableStateOf(false)
+
+    var isApiFinished by mutableStateOf(false)
     var searchingText by mutableStateOf("")
 
+    var isApiFinished2 by mutableStateOf(false)
     var isClicked by mutableStateOf(false)
     var sentenceInfo by mutableStateOf(SentenceInfo.First)
     var currentClickedUserId by mutableStateOf<Int?>(null) // Add this line
@@ -34,12 +40,14 @@ class CommunityViewModel @Inject constructor(
     var detailEssayBackStack = Stack<EssayApi.EssayItem>()
     var unSubscribeClicked by mutableStateOf(false)
 
-    var detailEssay by mutableStateOf(exampleItems.detailEssay)
-    var randomList by mutableStateOf( exampleItems.randomList)
-    var subscribeUserList by mutableStateOf( exampleItems.subscribeUserList)
-    var userItem by mutableStateOf( exampleItems.userItem)
-    var followingList by mutableStateOf( exampleItems.followingList)
-
+    var detailEssay = exampleItems.detailEssay
+    var randomList = exampleItems.randomList
+    var subscribeUserList = exampleItems.subscribeUserList
+    var userItem = exampleItems.userItem
+    var followingList = exampleItems.followingList
+    var firstSentences = exampleItems.firstSentences
+    var lastSentences = exampleItems.lastSentences
+    var previousEssayList = exampleItems.previousEssayList
 
 
     fun findUser() {
@@ -54,12 +62,15 @@ class CommunityViewModel @Inject constructor(
         }
     }
 
-    fun readRandomEssays(){
+    fun readRandomEssays() {
         viewModelScope.launch {
             try {
                 val response = essayApi.readRandomEssays(Token.accessToken)
                 exampleItems.randomList = response.body()!!.data.essays.toMutableStateList()
-                Log.d(TAG, "readRandomEssays: 성공인데요${response.body()!!.data.essays.toMutableStateList()}")
+                Log.d(
+                    TAG,
+                    "readRandomEssays: 성공인데요${response.body()!!.data.essays.toMutableStateList()}"
+                )
 
                 Log.d(TAG, "readRandomEssays: 성공입니다 아니면 예시 ${exampleItems.randomList}")
                 randomList = exampleItems.randomList
@@ -82,12 +93,15 @@ class CommunityViewModel @Inject constructor(
 
     }
 
-    fun readFollowingEssays(){
+    fun readFollowingEssays() {
         viewModelScope.launch {
             try {
                 val response = essayApi.readFollowingEssays(Token.accessToken)
                 exampleItems.followingList = response.body()!!.data.essays.toMutableStateList()
-                Log.d(TAG, "readRandomEssaysfollow: ${response.body()!!.data.essays.toMutableStateList()}")
+                Log.d(
+                    TAG,
+                    "readRandomEssaysfollow: ${response.body()!!.data.essays.toMutableStateList()}"
+                )
 
                 Log.d(TAG, "readRandomEssaysfollow: 성공입니다 아니면 예시 ${exampleItems.randomList}")
                 followingList = exampleItems.followingList
@@ -102,11 +116,62 @@ class CommunityViewModel @Inject constructor(
                 Log.d(TAG, "readRandomEssaysfollow3: ${e.cause}")
                 Log.d(TAG, "readRandomEssaysfollow4: ${e.localizedMessage}")
 
-            } finally {
-                isApiFinished = true
             }
 
         }
 
+    }
+
+    fun readOneSentences(type: String) {
+        viewModelScope.launch {
+            try {
+                val response = essayApi.readOneSentences(Token.accessToken, type = type)
+
+                if (type == "first") exampleItems.firstSentences =
+                    response.body()!!.data.essays.toMutableStateList()
+                else exampleItems.lastSentences = response.body()!!.data.essays.toMutableStateList()
+
+                firstSentences = exampleItems.firstSentences
+                lastSentences = exampleItems.lastSentences
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                isApiFinished = true
+            }
+        }
+
+    }
+
+    fun readDetailEssay(id: Int) {
+        viewModelScope.launch {
+            try {
+                val response = essayApi.readDetailEssay(Token.accessToken,id)
+                exampleItems.detailEssay = response.body()!!.data.essay
+                detailEssay = exampleItems.detailEssay
+                Log.d(ContentValues.TAG, "readdetailEssay: 성공인데요${response.body()!!.data}")
+                Log.d(ContentValues.TAG, "readdetailEssay: 성공인데요${response.body()!!.data.essay.title}")
+
+                if (response.body()!!.data.previous != null) {
+                    exampleItems.previousEssayList = response.body()!!.data.previous!!.toMutableStateList()
+                    previousEssayList = exampleItems.previousEssayList
+                }
+                Log.d(TAG, "readDetailEssay: previouse ${exampleItems.detailEssay}")
+
+                Log.d(TAG, "readDetailEssay: previouse ${exampleItems.previousEssayList}")
+
+                // API 호출 결과 처리 (예: response 데이터 사용)
+            } catch (e: Exception) {
+
+                // 예외 처리
+                e.printStackTrace()
+                Log.d(ContentValues.TAG, "readRandomEssays: ${e.message}")
+                Log.d(ContentValues.TAG, "readRandomEssays: ${e.cause}")
+                Log.d(ContentValues.TAG, "readRandomEssays: ${e.localizedMessage}")
+
+            } finally {
+                isApiFinished2 = true
+            }
+        }
     }
 }

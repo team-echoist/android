@@ -132,7 +132,7 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
 
                             }
                             //todo 글쓴이의 이전 글 띄우기
-                            items(items = viewModel.randomList) { it -> //랜덤리스트 말고 수정할것. 그사람의 리스트로
+                            items(items = viewModel.previousEssayList) { it -> //랜덤리스트 말고 수정할것. 그사람의 리스트로
                                 EssayListItem(
                                     item = it,
                                     viewModel = viewModel,
@@ -297,7 +297,7 @@ fun DetailEssay(item: EssayApi.EssayItem) {
                 )
             }
             Row {
-                Text(text = item.title, fontSize = 24.sp, modifier = Modifier)
+                Text(text = item.title!!, fontSize = 24.sp, modifier = Modifier)
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
                     Icon(
                         imageVector = Icons.Default.BookmarkBorder,

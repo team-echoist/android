@@ -61,11 +61,15 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
     if (!hasCalledApi.value) {
         viewModel.readRandomEssays()
         viewModel.readFollowingEssays()
+        viewModel.readOneSentences("first")
+        viewModel.readOneSentences("last")
         hasCalledApi.value = true
     }
+
     if (pagerstate.currentPage == 1){
         viewModel.isClicked = false
     }
+
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl ) {
         ModalNavigationDrawer(
             drawerState = drawerState,

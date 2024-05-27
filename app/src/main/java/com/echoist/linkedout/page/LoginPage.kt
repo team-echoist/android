@@ -62,11 +62,9 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.echoist.linkedout.BuildConfig
 import com.echoist.linkedout.R
 import com.echoist.linkedout.components.CropImagePage
@@ -149,21 +147,11 @@ class LoginPage : ComponentActivity() {
                     MyPage(navController = navController)
                     //settings page
                 }
-                composable("WritingPage") {navBackStackEntry->
+                composable("WritingPage") {
                     WritingPage(navController, writingViewModel)
                 }
-                composable(
-                    "WritingCompletePage/{accessToken}",
-                    arguments = listOf(
-                        navArgument("accessToken") {
-                            type = NavType.StringType
-                        })
-                ) {navBackStackEntry->
-                    WritingCompletePage(
-                        navController,
-                        writingViewModel,
-                        navBackStackEntry.arguments?.getString("accessToken").toString()
-                    )
+                composable("WritingCompletePage") {
+                    WritingCompletePage(navController, writingViewModel)
                 }
                 composable("CropImagePage") {
                     CropImagePage(navController,writingViewModel)

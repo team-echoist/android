@@ -55,12 +55,9 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.colintheshots.twain.MarkdownText
 import com.echoist.linkedout.R
 import com.echoist.linkedout.components.HashTagGroup
@@ -70,23 +67,13 @@ import com.echoist.linkedout.viewModels.WritingViewModel
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-@Preview
-@Composable
-fun PreviewWritingPage2() {
-    val viewModel : WritingViewModel = viewModel()
-    WritingCompletePage(
-        navController = rememberNavController(), viewModel, "token"
-    )
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WritingCompletePage(
     navController: NavController,
-    viewModel: WritingViewModel,
-    accessToken: String
+    viewModel: WritingViewModel
 ) {
-    viewModel.accessToken = accessToken
     val bottomSheetState = rememberStandardBottomSheetState(initialValue = SheetValue.Expanded)
     val scrollState = rememberScrollState()
     val scaffoldState = androidx.compose.material3.rememberBottomSheetScaffoldState(
@@ -502,7 +489,7 @@ fun WritingDeleteCard(viewModel: WritingViewModel, navController: NavController)
                                     "OnBoarding",
                                     false
                                 ) //onboarding까지 전부 삭제.
-                                navController.navigate("HOME/${viewModel.accessToken}")
+                                navController.navigate("HOME{viewModel.accessToken}")
                                 viewModel.initialize()
                             },
                         fontSize = 16.sp,

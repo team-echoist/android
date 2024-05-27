@@ -212,7 +212,7 @@ fun EssayListItem(
             .padding(top = 20.dp, start = 20.dp, end = 20.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = item.title,
+                    text = item.title!!,
                     color = color,
                     fontSize = 20.sp,
 
