@@ -9,8 +9,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.echoist.linkedout.api.EssayApi
-import com.echoist.linkedout.api.ReadDetailEssayRepo
 import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.page.Token
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,14 +25,12 @@ enum class SentenceInfo {
 @HiltViewModel
 class CommunityViewModel @Inject constructor(
     private val essayApi: EssayApi,
-    private val exampleItems: ExampleItems,
-    private val readDetailEssayRepo: ReadDetailEssayRepo
+    private val exampleItems: ExampleItems
 ) : ViewModel() {
 
-    var isApiFinished by mutableStateOf(false)
+
     var searchingText by mutableStateOf("")
 
-    var isApiFinished2 by mutableStateOf(false)
     var isClicked by mutableStateOf(false)
     var sentenceInfo by mutableStateOf(SentenceInfo.First)
     var currentClickedUserId by mutableStateOf<Int?>(null) // Add this line
@@ -85,8 +83,6 @@ class CommunityViewModel @Inject constructor(
                 Log.d(TAG, "readRandomEssays: ${e.cause}")
                 Log.d(TAG, "readRandomEssays: ${e.localizedMessage}")
 
-            } finally {
-                isApiFinished = true
             }
 
         }
@@ -134,23 +130,24 @@ class CommunityViewModel @Inject constructor(
                 firstSentences = exampleItems.firstSentences
                 lastSentences = exampleItems.lastSentences
 
+                Log.d(TAG, "readOneSentences: ${firstSentences[0].title}")
+                Log.d(TAG, "readOneSentences: ${lastSentences[0].title}")
+
+
             } catch (e: Exception) {
                 e.printStackTrace()
-            } finally {
-                isApiFinished = true
             }
         }
-
     }
 
-    fun readDetailEssay(id: Int) {
+    fun readDetailEssay(id: Int, navController: NavController) {
         viewModelScope.launch {
             try {
                 val response = essayApi.readDetailEssay(Token.accessToken,id)
                 exampleItems.detailEssay = response.body()!!.data.essay
                 detailEssay = exampleItems.detailEssay
-                Log.d(ContentValues.TAG, "readdetailEssay: 성공인데요${response.body()!!.data}")
-                Log.d(ContentValues.TAG, "readdetailEssay: 성공인데요${response.body()!!.data.essay.title}")
+                Log.d(TAG, "readdetailEssay: 성공인데요${response.body()!!.data}")
+                Log.d(TAG, "readdetailEssay: 성공인데요${response.body()!!.data.essay.title}")
 
                 if (response.body()!!.data.previous != null) {
                     exampleItems.previousEssayList = response.body()!!.data.previous!!.toMutableStateList()
@@ -159,6 +156,7 @@ class CommunityViewModel @Inject constructor(
                 Log.d(TAG, "readDetailEssay: previouse ${exampleItems.detailEssay}")
 
                 Log.d(TAG, "readDetailEssay: previouse ${exampleItems.previousEssayList}")
+                navController.navigate("CommunityDetailPage")
 
                 // API 호출 결과 처리 (예: response 데이터 사용)
             } catch (e: Exception) {
@@ -169,8 +167,6 @@ class CommunityViewModel @Inject constructor(
                 Log.d(ContentValues.TAG, "readRandomEssays: ${e.cause}")
                 Log.d(ContentValues.TAG, "readRandomEssays: ${e.localizedMessage}")
 
-            } finally {
-                isApiFinished2 = true
             }
         }
     }

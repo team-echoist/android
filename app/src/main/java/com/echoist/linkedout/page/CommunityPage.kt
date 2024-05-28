@@ -57,6 +57,7 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
     val hasCalledApi = remember { mutableStateOf(false) }
     val color = if (pagerstate.currentPage == 0) Color(0xFFD9D9D9) else Color.Black
 
+
     //화면 새로 생길때 한번씩만 호출되게끔
     if (!hasCalledApi.value) {
         viewModel.readRandomEssays()
@@ -152,7 +153,8 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
                         }
                     )
                 }
-            } }
+                }
+            }
         )
     }
 }

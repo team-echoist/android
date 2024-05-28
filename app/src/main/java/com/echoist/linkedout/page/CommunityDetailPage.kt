@@ -100,36 +100,36 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
                     ) {
                         LazyColumn {
                             item {
-                                DetailEssay(item = viewModel.detailEssay)
-                                Spacer(modifier = Modifier.height(28.dp))
-                                SubscriberSimpleItem(
-                                    item = viewModel.userItem,
-                                    viewModel = viewModel,
-                                    navController = navController
-                                )
-                                Spacer(modifier = Modifier.height(36.dp))
-                                Box(
-                                    modifier = Modifier
-                                        .height(12.dp)
-                                        .fillMaxWidth()
-                                        .background(Color(0xFF1A1A1A))
-                                )
-                                Box(
-                                    modifier = Modifier
-                                        .height(56.dp)
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 20.dp),
-                                    contentAlignment = Alignment.CenterStart
-                                )
-                                {
-                                    Text(
-                                        text = "'${viewModel.userItem.nickname!!} 아무개'의 이전 글",
-                                        fontSize = 14.sp,
-                                        color = Color(0xFF616FED)
+
+                                    DetailEssay(item = viewModel.detailEssay)
+                                    Spacer(modifier = Modifier.height(28.dp))
+                                    SubscriberSimpleItem(
+                                        item = viewModel.userItem,
+                                        viewModel = viewModel,
+                                        navController = navController
                                     )
+                                    Spacer(modifier = Modifier.height(36.dp))
+                                    Box(
+                                        modifier = Modifier
+                                            .height(12.dp)
+                                            .fillMaxWidth()
+                                            .background(Color(0xFF1A1A1A))
+                                    )
+                                    Box(
+                                        modifier = Modifier
+                                            .height(56.dp)
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 20.dp),
+                                        contentAlignment = Alignment.CenterStart
+                                    )
+                                    {
+                                        Text(
+                                            text = "'${viewModel.userItem.nickname!!} 아무개'의 이전 글",
+                                            fontSize = 14.sp,
+                                            color = Color(0xFF616FED)
+                                        )
 
-                                }
-
+                                    }
                             }
                             //todo 글쓴이의 이전 글 띄우기
                             items(items = viewModel.previousEssayList) { it -> //랜덤리스트 말고 수정할것. 그사람의 리스트로
@@ -202,7 +202,7 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
     }
 
 }
-
+//todo 마지막문장 첫문장 기능만들기~
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

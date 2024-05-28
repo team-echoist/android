@@ -53,9 +53,12 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -82,6 +85,7 @@ import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.viewModels.CommunityViewModel
 import com.echoist.linkedout.viewModels.SentenceInfo
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.saket.extendedspans.ExtendedSpans
 import me.saket.extendedspans.RoundedCornerSpanPainter
@@ -89,102 +93,121 @@ import me.saket.extendedspans.drawBehind
 
 @Composable
 fun RandomSentences(viewModel: CommunityViewModel) {
-
-    val oneSentenceList = if (viewModel.sentenceInfo == SentenceInfo.First) viewModel.firstSentences else viewModel.lastSentences
-
-    val annotatedString = buildAnnotatedString {
-        withStyle(style = ParagraphStyle(lineHeight = 40.sp)) { // 원하는 줄 간격 설정
-            pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence1")
-            withStyle(
-                style = SpanStyle(
-                    color = Color.White,
-                    background = Color.Black,
-                    fontSize = 14.sp,
-                )
-            ) {
-                append("${oneSentenceList[0].content}       ")
-
-            }
-            pop()
-
-            pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence2")
-            withStyle(
-                style = SpanStyle(
-                    color = Color.Black,
-                    background = Color.White,
-                    fontSize = 14.sp,
-                )
-            ) {
-                append("${oneSentenceList[1].content}          ")
-
-            }
-            pop()
-
-            pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence3")
-            withStyle(
-                style = SpanStyle(
-                    color = Color.White,
-                    background = Color.Black,
-                    fontSize = 14.sp,
-                )
-            ) {
-                append("${oneSentenceList[2].content}        ")
-
-            }
-            pop()
-
-            pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence4")
-            withStyle(
-                style = SpanStyle(
-                    color = Color.Black,
-                    background = Color.White,
-                    fontSize = 14.sp,
-                )
-            ) {
-                append(" ${oneSentenceList[3].content}        ")
-
-            }
-            pop()
-
-            pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence4")
-            withStyle(
-                style = SpanStyle(
-                    color = Color.White,
-                    background = Color.Black,
-                    fontSize = 14.sp,
-                )
-            ) {
-                append(" ${oneSentenceList[4].content}  ")
-
-            }
-            pop()
-        }
+    var isNotLoading by remember {
+        mutableStateOf(false)
     }
-    val extendedSpans = remember {
-        ExtendedSpans(
-            RoundedCornerSpanPainter(
-                cornerRadius = 20.sp,
-                topMargin = 0.sp,
-                bottomMargin = 0.sp,
-                padding = RoundedCornerSpanPainter.TextPaddingValues(
-                    horizontal = 14.sp,
-                    vertical = 0.sp
+
+
+    //first sentence, lastsentence값은 실시간으로 바뀌지만, 첫문장 마지막문장에서 는 있는값을 교체하는것이기때문에 ?
+    var oneSentenceList = if (viewModel.sentenceInfo == SentenceInfo.First) viewModel.firstSentences else viewModel.lastSentences
+    Log.d(TAG, "RandomSentences: ${oneSentenceList[0].content}")
+
+    LaunchedEffect(key1 = Unit) {
+        delay(50)
+        isNotLoading = true
+    }
+
+
+    if (isNotLoading){
+
+        val annotatedString = remember(viewModel.sentenceInfo, oneSentenceList) {
+            buildAnnotatedString {
+                withStyle(style = ParagraphStyle(lineHeight = 40.sp)) { // 원하는 줄 간격 설정
+                    pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence1")
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.White,
+                            background = Color.Black,
+                            fontSize = 14.sp,
+                        )
+                    ) {
+                        append("${oneSentenceList[0].content}       ")
+                        Log.d(TAG, "RandomSentences: ${oneSentenceList[0].content}")
+
+                    }
+                    pop()
+
+                    pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence2")
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.Black,
+                            background = Color.White,
+                            fontSize = 14.sp,
+                        )
+                    ) {
+                        append("${oneSentenceList[1].content}          ")
+
+                    }
+                    pop()
+
+                    pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence3")
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.White,
+                            background = Color.Black,
+                            fontSize = 14.sp,
+                        )
+                    ) {
+                        append("${oneSentenceList[2].content}        ")
+
+                    }
+                    pop()
+
+                    pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence4")
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.Black,
+                            background = Color.White,
+                            fontSize = 14.sp,
+                        )
+                    ) {
+                        append(" ${oneSentenceList[3].content}        ")
+
+                    }
+                    pop()
+
+                    pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence4")
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.White,
+                            background = Color.Black,
+                            fontSize = 14.sp,
+                        )
+                    ) {
+                        append(" ${oneSentenceList[4].content}  ")
+
+                    }
+                    pop()
+                }
+            }
+        }
+        Log.d(TAG, "RandomSentences: ${annotatedString.text}")
+
+
+
+        val extendedSpans = remember {
+            ExtendedSpans(
+                RoundedCornerSpanPainter(
+                    cornerRadius = 20.sp,
+                    topMargin = 0.sp,
+                    bottomMargin = 0.sp,
+                    padding = RoundedCornerSpanPainter.TextPaddingValues(
+                        horizontal = 14.sp,
+                        vertical = 0.sp
+                    )
                 )
             )
-        )
-    }
+        }
+        Column {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 10.dp, end = 6.dp), contentAlignment = Alignment.Center
 
-    Column {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 10.dp, end = 6.dp), contentAlignment = Alignment.Center
-
-        ) {
-            var layoutResult: TextLayoutResult? = remember { null }
-            if (viewModel.isApiFinished){
+            ) {
+                var layoutResult: TextLayoutResult? = remember { null }
                 Text(
-                    text = remember("text") {
+                    text = remember(annotatedString) {
                         extendedSpans.extend(annotatedString)
                     },
                     modifier = Modifier
@@ -240,11 +263,136 @@ fun RandomSentences(viewModel: CommunityViewModel) {
                         extendedSpans.onTextLayout(it)
                     }
                 )
-            }
 
+
+            }
         }
     }
 
+
+}
+@Composable
+fun ChoiceBox(viewModel: CommunityViewModel) {
+    val color = Color.Black
+    Card(
+        shape = RoundedCornerShape(20),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFCFCFCF)),
+        modifier = Modifier.size(
+            104.dp,
+            70.dp
+        )
+    ) {
+        Column(
+            Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = "첫 문장",
+                modifier = Modifier
+                    .padding(start = 10.dp)
+                    .clickable {
+                        viewModel.isClicked = false
+                        viewModel.sentenceInfo = SentenceInfo.First
+                    },
+                fontSize = 12.sp,
+                color = color
+            )
+            Spacer(modifier = Modifier.height(6.dp))
+            HorizontalDivider(Modifier.fillMaxWidth(), color = Color(0xFFC5C5C5))
+            Spacer(modifier = Modifier.height(6.dp))
+
+            Text(
+                text = "마지막 문장",
+                modifier = Modifier
+                    .padding(start = 10.dp)
+                    .clickable {
+                        viewModel.isClicked = false
+                        viewModel.sentenceInfo = SentenceInfo.Last
+
+                    },
+                fontSize = 12.sp,
+                color = color
+            )
+
+        }
+    }
+}
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+fun SentenceChoice(viewModel: CommunityViewModel) {
+    val color = Color.Black
+
+    Box(
+        modifier = Modifier
+            .padding(start = 20.dp, end = 20.dp, top = 10.dp)
+            .fillMaxWidth()
+            .height(82.dp),
+        contentAlignment = Alignment.Center
+    ) {
+
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart) {
+            Column {
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Text(text = "한 문장을 모아", fontWeight = FontWeight.SemiBold, color = color)
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(text = "글의 시작을 알리는 문장들을 만나보세요.", color = Color(0xFF696969), fontSize = 12.sp)
+
+            }
+        }
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.CenterEnd
+        ) {
+            Row(
+                modifier = Modifier
+                    .background(
+                        color = Color(0xFFCFCFCF), // 배경색 설정
+                        shape = RoundedCornerShape(10.dp) // 원하는 radius 값 설정
+                    )
+                    .clickable {
+                        viewModel.isClicked = !viewModel.isClicked
+                    }
+                    .padding(start = 10.dp, end = 10.dp, top = 5.dp, bottom = 5.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                val arrow = if (viewModel.isClicked) R.drawable.arrowup else R.drawable.arrowdown
+
+
+                AnimatedContent(
+                    targetState = viewModel.sentenceInfo,
+                    transitionSpec = {
+                        fadeIn(animationSpec = tween(300)) togetherWith fadeOut(animationSpec = tween(300))
+                    }, label = ""
+                ) { targetState ->
+                    Text(
+                        fontSize = 12.sp,
+                        text = if (targetState == SentenceInfo.First) "첫 문장" else "마지막 문장",
+                        color = Color.Black
+                    )
+                }
+                Spacer(modifier = Modifier.width(23.dp))
+
+
+                Crossfade(
+                    targetState = arrow,
+                    animationSpec = tween(durationMillis = 200), label = ""
+                ) { currentArrow ->
+                    Icon(
+                        painter = painterResource(id = currentArrow),
+                        contentDescription = "",
+                        modifier = Modifier
+                            .size(20.dp),
+                        tint = Color.Black
+                    )
+                }
+
+            }
+
+        }
+
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -371,132 +519,6 @@ fun CommunityChips(pagerState: PagerState) {
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
-@Composable
-fun SentenceChoice(viewModel: CommunityViewModel) {
-    val color = Color.Black
-
-    Box(
-        modifier = Modifier
-            .padding(start = 20.dp, end = 20.dp, top = 10.dp)
-            .fillMaxWidth()
-            .height(82.dp),
-        contentAlignment = Alignment.Center
-    ) {
-
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart) {
-            Column {
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Text(text = "한 문장을 모아", fontWeight = FontWeight.SemiBold, color = color)
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(text = "글의 시작을 알리는 문장들을 만나보세요.", color = Color(0xFF696969), fontSize = 12.sp)
-
-            }
-        }
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.CenterEnd
-        ) {
-            Row(
-                modifier = Modifier
-                    .background(
-                        color = Color(0xFFCFCFCF), // 배경색 설정
-                        shape = RoundedCornerShape(10.dp) // 원하는 radius 값 설정
-                    )
-                    .clickable {
-                        viewModel.isClicked = !viewModel.isClicked
-                    }
-                    .padding(start = 10.dp, end = 10.dp, top = 5.dp, bottom = 5.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                val arrow = if (viewModel.isClicked) R.drawable.arrowup else R.drawable.arrowdown
-
-
-                AnimatedContent(
-                    targetState = viewModel.sentenceInfo,
-                    transitionSpec = {
-                        fadeIn(animationSpec = tween(300)) togetherWith fadeOut(animationSpec = tween(300))
-                    }, label = ""
-                ) { targetState ->
-                    Text(
-                        fontSize = 12.sp,
-                        text = if (targetState == SentenceInfo.First) "첫 문장" else "마지막 문장",
-                        color = Color.Black
-                    )
-                }
-                Spacer(modifier = Modifier.width(23.dp))
-
-
-                Crossfade(
-                    targetState = arrow,
-                    animationSpec = tween(durationMillis = 200), label = ""
-                ) { currentArrow ->
-                    Icon(
-                        painter = painterResource(id = currentArrow),
-                        contentDescription = "",
-                        modifier = Modifier
-                            .size(20.dp),
-                        tint = Color.Black
-                    )
-                }
-
-            }
-
-        }
-
-    }
-}
-
-
-@Composable
-fun ChoiceBox(viewModel: CommunityViewModel) {
-    val color = Color.Black
-    Card(
-        shape = RoundedCornerShape(20),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFCFCFCF)),
-        modifier = Modifier.size(
-            104.dp,
-            70.dp
-        )
-    ) {
-        Column(
-            Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = "첫 문장",
-                modifier = Modifier
-                    .padding(start = 10.dp)
-                    .clickable {
-                        viewModel.isClicked = false
-                        viewModel.sentenceInfo = SentenceInfo.First
-                    },
-                fontSize = 12.sp,
-                color = color
-            )
-            Spacer(modifier = Modifier.height(6.dp))
-            HorizontalDivider(Modifier.fillMaxWidth(), color = Color(0xFFC5C5C5))
-            Spacer(modifier = Modifier.height(6.dp))
-
-            Text(
-                text = "마지막 문장",
-                modifier = Modifier
-                    .padding(start = 10.dp)
-                    .clickable {
-                        viewModel.isClicked = false
-                        viewModel.sentenceInfo = SentenceInfo.Last
-
-                    },
-                fontSize = 12.sp,
-                color = color
-            )
-
-        }
-    }
-}
-
 @Preview
 @Composable
 fun TodaysLogTitle() {
@@ -543,16 +565,8 @@ fun EssayListItem(
         .fillMaxWidth()
         .background(Color.Black)
         .clickable {
-            viewModel.readDetailEssay(item.id!!)
-            if (viewModel.isApiFinished2) {
-                navController.navigate("CommunityDetailPage")
-                Log.d(TAG, "EssayListItem: ${viewModel.detailEssay}")
-
-                viewModel.detailEssayBackStack.push(viewModel.detailEssay)
-                Log.d(TAG, "pushpush: ${viewModel.detailEssayBackStack}")
-            }
-
-
+            viewModel.readDetailEssay(item.id!!, navController)
+            //navigate
         }
         .height(140.dp)) {
         //타이틀
