@@ -92,7 +92,7 @@ import me.saket.extendedspans.RoundedCornerSpanPainter
 import me.saket.extendedspans.drawBehind
 
 @Composable
-fun RandomSentences(viewModel: CommunityViewModel) {
+fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) {
     var isNotLoading by remember {
         mutableStateOf(false)
     }
@@ -121,7 +121,7 @@ fun RandomSentences(viewModel: CommunityViewModel) {
                             fontSize = 14.sp,
                         )
                     ) {
-                        append("${oneSentenceList[0].content}       ")
+                        append("${oneSentenceList[0].content}      ")
                         Log.d(TAG, "RandomSentences: ${oneSentenceList[0].content}")
 
                     }
@@ -135,7 +135,7 @@ fun RandomSentences(viewModel: CommunityViewModel) {
                             fontSize = 14.sp,
                         )
                     ) {
-                        append("${oneSentenceList[1].content}          ")
+                        append("${oneSentenceList[1].content}       ")
 
                     }
                     pop()
@@ -148,7 +148,7 @@ fun RandomSentences(viewModel: CommunityViewModel) {
                             fontSize = 14.sp,
                         )
                     ) {
-                        append("${oneSentenceList[2].content}        ")
+                        append("${oneSentenceList[2].content}      ")
 
                     }
                     pop()
@@ -161,7 +161,7 @@ fun RandomSentences(viewModel: CommunityViewModel) {
                             fontSize = 14.sp,
                         )
                     ) {
-                        append(" ${oneSentenceList[3].content}        ")
+                        append("${oneSentenceList[3].content}       ")
 
                     }
                     pop()
@@ -174,7 +174,7 @@ fun RandomSentences(viewModel: CommunityViewModel) {
                             fontSize = 14.sp,
                         )
                     ) {
-                        append(" ${oneSentenceList[4].content}  ")
+                        append(" ${oneSentenceList[4].content} ")
 
                     }
                     pop()
@@ -225,34 +225,15 @@ fun RandomSentences(viewModel: CommunityViewModel) {
                                         .firstOrNull()
                                         ?.let { annotation ->
                                             when (annotation.item) {
-                                                "Sentence1" -> {
-                                                    Log.d(
-                                                        TAG,
-                                                        "AnnotatedClickableText: ta"
-                                                    )
-                                                    viewModel.detailEssay = oneSentenceList[0]
-                                                    //todo navigate to detail
-                                                }
+                                                "Sentence1" ->  viewModel.readDetailEssay(oneSentenceList[0].id!!, navController = navController)
 
-                                                "Sentence2" -> Log.d(
-                                                    "tag",
-                                                    "AnnotatedClickableText: Sentence 2 clicked"
-                                                )
+                                                "Sentence2" -> viewModel.readDetailEssay(oneSentenceList[1].id!!, navController = navController)
 
-                                                "Sentence3" -> Log.d(
-                                                    "tag",
-                                                    "AnnotatedClickableText: Sentence 3 clicked"
-                                                )
+                                                "Sentence3" -> viewModel.readDetailEssay(oneSentenceList[2].id!!, navController = navController)
 
-                                                "Sentence4" -> Log.d(
-                                                    "tag",
-                                                    "AnnotatedClickableText: Sentence 4 clicked"
-                                                )
+                                                "Sentence4" -> viewModel.readDetailEssay(oneSentenceList[3].id!!, navController = navController)
 
-                                                "Sentence5" -> Log.d(
-                                                    "tag",
-                                                    "AnnotatedClickableText: Sentence 4 clicked"
-                                                )
+                                                "Sentence5" -> viewModel.readDetailEssay(oneSentenceList[4].id!!, navController = navController)
                                             }
                                         }
                                 }
@@ -643,7 +624,7 @@ fun RandomCommunityPage(viewModel: CommunityViewModel, navController: NavControl
         item {
             Column {
                 SentenceChoice(viewModel)
-                RandomSentences(viewModel)
+                RandomSentences(viewModel,navController)
                 Spacer(modifier = Modifier.height(20.dp))
 
                 TodaysLogTitle()

@@ -28,43 +28,6 @@ interface EssayApi {
      * "message": "review has been requested.."
      */
     //보내는 용 string tag list
-    @JsonClass(generateAdapter = true)
-    data class WritingEssayItem(
-        val title: String,
-        val content: String,
-        val status: String? = null,
-        val categoryId: Int? = null,
-        val thumbnail: String? = null,
-        val linkedOutGauge: Int? = null,
-        val latitude: Double? = null,
-        val longitude: Double? = null,
-        val location: String? = null,
-        val tags: List<String>? = null,//보내는 용 string tag list
-        val createdDate: String? = null,
-        val updatedDate: String? = null,
-        val id: Int? = null,
-        val nickName: String? = null,
-        val author: UserInfo? = null,
-    )
-
-    //받는용 Tag List id와 name으로 구별하여받음.
-    @JsonClass(generateAdapter = true)
-    data class EssayItem(
-        val title: String? = null,
-        val content: String,
-        val status: String? = null,
-        val categoryId: Int? = null,
-        val thumbnail: String? = null,
-        val linkedOutGauge: Int? = null,
-        val latitude: Double? = null,
-        val longitude: Double? = null,
-        val location: String? = null,
-        val tags: List<Tag>? = null, //받는용 Tag List id와 name으로 구별하여받음.
-        val createdDate: String? = null,
-        val updatedDate: String? = null,
-        val id: Int? = null,
-        val author: UserInfo? = null,
-    )
 
     data class Tag(val id : Int, val name : String)
 
@@ -120,6 +83,44 @@ interface EssayApi {
         @Header("Authorization") accessToken: String,
         @Path("essayId") essayId: Int = 0
     ): Response<DetailEssayResponse>
+
+    @JsonClass(generateAdapter = true)
+    data class WritingEssayItem(
+        val title: String,
+        val content: String,
+        val status: String? = null,
+        val categoryId: Int? = null,
+        val thumbnail: String? = null,
+        val linkedOutGauge: Int? = null,
+        val latitude: Double? = null,
+        val longitude: Double? = null,
+        val location: String? = null,
+        val tags: List<String>? = null,//보내는 용 string tag list
+        val createdDate: String? = null,
+        val updatedDate: String? = null,
+        val id: Int? = null,
+        val nickName: String? = null,
+        val author: UserInfo? = null,
+    )
+
+    //받는용 Tag List id와 name으로 구별하여받음.
+    @JsonClass(generateAdapter = true)
+    data class EssayItem(
+        val title: String? = null,
+        val content: String,
+        val status: String? = null,
+        val categoryId: Int? = null,
+        val thumbnail: String? = null,
+        val linkedOutGauge: Int? = null,
+        val latitude: Double? = null,
+        val longitude: Double? = null,
+        val location: String? = null,
+        val tags: List<Tag>? = null, //받는용 Tag List id와 name으로 구별하여받음.
+        val createdDate: String? = null,
+        val updatedDate: String? = null,
+        val id: Int? = null,
+        val author: UserInfo? = null,
+    )
 
 
 

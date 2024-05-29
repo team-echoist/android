@@ -1,5 +1,6 @@
 package com.echoist.linkedout.page
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -37,13 +39,14 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -51,63 +54,97 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
 import com.echoist.linkedout.api.EssayApi
+import com.echoist.linkedout.data.BadgeBoxItem
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
+import com.echoist.linkedout.viewModels.SettingsViewModel
 
-@Preview
-@Composable
-fun MyPagePreview() {
-    MyPage(navController = NavController(LocalContext.current))
-}
+//@Preview
+//@Composable
+//fun MyPagePreview() {
+//    MyPage(navController = NavController(LocalContext.current))
+//}
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun MyPage(
+    viewModel: SettingsViewModel,
     navController: NavController
 ) {
 
-    var detailEssay by mutableStateOf(
-        EssayApi.EssayItem(
-            author = UserInfo(1,"groove"),
-            content = "이 에세이는 예시입니다. 예시입니다. 예시입니다니다. 예시입니다. 예시입니다. 예시입니다.",
-            createdDate = "2024년 04월 28일 16:47",
-            id = 1,
-            linkedOutGauge = 5,
-            status = "published",
-            thumbnail = "http 값 있어요~",
-            title = "예시 에세이",
-            updatedDate = "2024-05-15",
-            tags = listOf(EssayApi.Tag(1,"tag"),EssayApi.Tag(1,"tag"))
+
+    var detailEssay by remember {
+        mutableStateOf(
+            EssayApi.EssayItem(
+                author = UserInfo(1, "groove"),
+                content = "이 에세이는 예시입니다. 예시입니다. 예시입니다니다. 예시입니다. 예시입니다. 예시입니다.",
+                createdDate = "2024년 04월 28일 16:47",
+                id = 1,
+                linkedOutGauge = 5,
+                status = "published",
+                thumbnail = "http 값 있어요~",
+                title = "예시 에세이",
+                updatedDate = "2024-05-15",
+                tags = listOf(EssayApi.Tag(1, "tag"), EssayApi.Tag(1, "tag"))
+            )
         )
-    )
-    var essayList : SnapshotStateList<EssayApi.EssayItem> = mutableStateListOf(detailEssay,detailEssay,detailEssay,detailEssay)
+    }
+    var essayList: SnapshotStateList<EssayApi.EssayItem> = remember {
+        mutableStateListOf(detailEssay, detailEssay, detailEssay, detailEssay)
+    }
 
 
-    val userItem by mutableStateOf(
-        UserInfo(
-            id = 1,
-            nickname = "구루브",
-            profileImage = "http",
-            password = "1234",
-            gender = "male",
-            birthDate = "0725"
+    val userItem by remember {
+        mutableStateOf(
+            UserInfo(
+                id = 1,
+                nickname = "구루브",
+                profileImage = "http",
+                password = "1234",
+                gender = "male",
+                birthDate = "0725"
+            )
         )
-    )
-    val scrollState= rememberScrollState()
+    }
+    val scrollState = rememberScrollState()
 
     LinkedOutTheme {
         Scaffold(
-            topBar = { Text(fontSize = 24.sp, fontWeight = FontWeight.Bold, text = "MY", color = Color.White, modifier = Modifier.padding(start = 20.dp)) },
+            topBar = {
+                Text(
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    text = "MY",
+                    color = Color.White,
+                    modifier = Modifier.padding(start = 20.dp)
+                )
+            },
             bottomBar = { MyBottomNavigation(navController) },
             content = {
-                Column(modifier = Modifier.padding(it).verticalScroll(scrollState) ) {
+                Column(
+                    modifier = Modifier
+                        .padding(it)
+                        .verticalScroll(scrollState)
+
+                ) {
                     MySettings(item = userItem)
-                    SettingBar("링크드아웃 배지"){}
-                    LinkedOutBadgeGrid()
-                    SettingBar("최근 본 글"){}
+                    SettingBar("링크드아웃 배지") {}
+                    LinkedOutBadgeGrid(viewModel)
+                    SettingBar("최근 본 글") {}
                     RecentEssayList(itemList = essayList)
-                    SettingBar("멤버십 관리"){}
-                    SettingBar("계정 관리"){}
+                    SettingBar("멤버십 관리") {}
+                    SettingBar("계정 관리") {}
+
+
                 }
+
+                if (viewModel.isBadgeClicked) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        BadgeDescriptionBox(viewModel.badgeBoxItem!!, viewModel)
+                    }
+                }
+
+
             }
         )
     }
@@ -204,35 +241,49 @@ fun MySettings(item: UserInfo) {
 }
 
 @Composable
-fun SettingBar(text : String, onClick : ()-> Unit){
+fun SettingBar(text: String, onClick: () -> Unit) {
     Box(modifier = Modifier
         .fillMaxWidth()
         .clickable { }
         .padding(20.dp)
-        .height(50.dp)){
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart){
-            Text(text = text, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF616FED))
+        .height(50.dp)) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart) {
+            Text(
+                text = text,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color(0xFF616FED)
+            )
         }
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
-        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos, contentDescription = "navigate", tint = Color(0xFF686868))
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                contentDescription = "navigate",
+                tint = Color(0xFF686868)
+            )
 
         }
     }
 }
 
 @Composable
-fun RecentEssayItem(item: EssayApi.EssayItem){
-    Box(modifier = Modifier.size(150.dp,120.dp)){
+fun RecentEssayItem(item: EssayApi.EssayItem) {
+    Box(modifier = Modifier.size(150.dp, 120.dp)) {
         Column {
             Text(text = item.title!!)
             Spacer(modifier = Modifier.height(10.dp))
-            Text(text = item.content, maxLines = 3, overflow = TextOverflow.Ellipsis, fontSize = 10.sp)
+            Text(
+                text = item.content,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis,
+                fontSize = 10.sp
+            )
         }
     }
 }
 
 @Composable
-fun RecentEssayList(itemList : List<EssayApi.EssayItem>){
+fun RecentEssayList(itemList: List<EssayApi.EssayItem>) {
     LazyRow(Modifier.padding(start = 20.dp)) {
         itemsIndexed(itemList) { index, item ->
             RecentEssayItem(item)
@@ -245,29 +296,105 @@ fun RecentEssayList(itemList : List<EssayApi.EssayItem>){
             }
         }
     }
-
-
 }
 
 @Composable
-fun LinkedOutBadgeItem(item: String){
-    Box(contentAlignment = Alignment.Center, modifier = Modifier
-        .size(100.dp, 100.dp)
-        .clickable {  }
-        .background(Color(0xFF0D0D0D), shape = RoundedCornerShape(10))){
-        Column {
-            Text(text = item, color = Color.White)
+fun BadgeDescriptionBox(badgeBoxItem: BadgeBoxItem, viewModel: SettingsViewModel) {
+    Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(0.5f)))
+    Box(modifier = Modifier.size(300.dp, 350.dp)) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
+            Image(
+                painter = painterResource(id = R.drawable.badge_container),
+                contentDescription = ""
+            )
         }
+        Column(
+            Modifier
+                .fillMaxSize()
+                .padding(horizontal = 20.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(id = badgeBoxItem.badgeResourceId),
+                contentDescription = "",
+                Modifier
+                    .size(150.dp)
+                    .padding(end = 20.dp, bottom = 10.dp)
+            )
+            Spacer(modifier = Modifier.height(23.dp))
+            Text(text = badgeBoxItem.badgeName, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            Spacer(modifier = Modifier.height(15.dp))
+            Text(
+                text = "${badgeBoxItem.badgeEmotion} 감정 표현 해시태그",
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 14.sp
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Row {
+                Text(
+                    text = "  10개  ", fontWeight = FontWeight.SemiBold, fontSize = 14.sp, modifier =
+                    Modifier
+                        .background(Color.Blue, shape = RoundedCornerShape(40))
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(text = " 사용", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+            }
+            Spacer(modifier = Modifier.height(23.dp))
+            Button(
+                onClick = { viewModel.isBadgeClicked = false },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(20)
+            ) {
+                Text(text = "확인")
+            }
+        }
+    }
+
+}
+
+//터치했을때 아이콘 확대축소 가능하게?
+@Composable
+fun LinkedOutBadgeItem(
+    badgeBoxItem: BadgeBoxItem,
+    onClick: () -> Unit
+) {
+    //val size = if(isClicked) 300.dp else 100.dp
+
+    val colorMatrix = ColorMatrix().apply {
+        setToSaturation(0f)  // Set saturation to 0 to convert to grayscale
+    }
+    Box(contentAlignment = Alignment.Center, modifier = Modifier
+        .size(110.dp)
+        .clickable {
+            onClick()
+        }
+        .background(Color(0xFF0D0D0D), shape = RoundedCornerShape(10))) {
+
+        Image(
+            modifier = Modifier.size(80.dp),
+            painter = painterResource(id = badgeBoxItem.badgeResourceId),
+            contentDescription = "badge_sad",
+            colorFilter = ColorFilter.colorMatrix(colorMatrix)
+        )
     }
 }
 
 @Composable
-fun LinkedOutBadgeGrid(){
-    val itemList = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5","Item 1", "Item 2", "Item 3", "Item 4")
+fun LinkedOutBadgeGrid(viewModel: SettingsViewModel) {
+
+    val badgeList = listOf(
+        BadgeBoxItem.Anger1,
+        BadgeBoxItem.Sad1,
+        BadgeBoxItem.Surprised1,
+        BadgeBoxItem.Complicated1,
+        BadgeBoxItem.Love1
+    )
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(325.dp)
+            .height(240.dp)
             .padding(horizontal = 16.dp), // 수평 방향으로 패딩 추가
         contentAlignment = Alignment.Center
 
@@ -279,11 +406,14 @@ fun LinkedOutBadgeGrid(){
             verticalArrangement = Arrangement.spacedBy(10.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            items(itemList) { item ->
-                LinkedOutBadgeItem(item)
-                // 각 아이템에 대한 UI를 구성
-                // 여기에는 각 아이템을 표시하는 Composable 함수 호출
+            items(badgeList) {
+                LinkedOutBadgeItem(it) {
+                    viewModel.badgeBoxItem = it
+                    viewModel.isBadgeClicked = true
+                }
             }
+            // 각 아이템에 대한 UI를 구성
+            // 여기에는 각 아이템을 표시하는 Composable 함수 호출
         }
     }
 }

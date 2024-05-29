@@ -73,6 +73,7 @@ import com.echoist.linkedout.viewModels.CommunityViewModel
 import com.echoist.linkedout.viewModels.HomeViewModel
 import com.echoist.linkedout.viewModels.LoginSuccessDialog
 import com.echoist.linkedout.viewModels.MyLogViewModel
+import com.echoist.linkedout.viewModels.SettingsViewModel
 import com.echoist.linkedout.viewModels.SignUpViewModel
 import com.echoist.linkedout.viewModels.SocialLoginViewModel
 import com.echoist.linkedout.viewModels.WritingViewModel
@@ -104,6 +105,7 @@ class LoginPage : ComponentActivity() {
         val signUpViewModel : SignUpViewModel by viewModels()
         val myLogViewModel : MyLogViewModel by viewModels()
         val communityViewModel : CommunityViewModel by viewModels()
+        val settingsViewModel : SettingsViewModel by viewModels()
 
 
         setContent {
@@ -144,7 +146,7 @@ class LoginPage : ComponentActivity() {
                     FullSubscriberPage(communityViewModel,navController)
                 }
                 composable("SETTINGS") {
-                    MyPage(navController = navController)
+                    MyPage(settingsViewModel , navController)
                     //settings page
                 }
                 composable("WritingPage") {
