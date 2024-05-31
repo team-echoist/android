@@ -3,6 +3,7 @@ package com.echoist.linkedout
 import android.app.Application
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.api.SignUpApi
+import com.echoist.linkedout.api.UserApi
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -46,6 +47,12 @@ object AppModule {
     @Singleton
     fun provideSignUpApiClient(retrofit: Retrofit) : SignUpApi {
         return retrofit.create(SignUpApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserApiClient(retrofit: Retrofit) : UserApi {
+        return retrofit.create(UserApi::class.java)
     }
 }
 

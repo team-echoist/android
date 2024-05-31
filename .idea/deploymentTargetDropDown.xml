@@ -2,7 +2,10 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="LineChartExample2">
+      <entry key="BadgePreview">
+        <State />
+      </entry>
+      <entry key="MyLogTopAppBar">
         <State />
       </entry>
       <entry key="MyPagePreview">
@@ -20,9 +23,6 @@
           </targetSelectedWithDropDown>
           <timeTargetWasSelectedWithDropDown value="2024-05-29T13:42:03.080706Z" />
         </State>
-      </entry>
-      <entry key="Prev">
-        <State />
       </entry>
       <entry key="Prev2">
         <State />

@@ -7,6 +7,8 @@ sealed class BadgeBoxItem(
     val badgeName: String,
     val badgeEmotion: String
 ) {
+
+
     data object Anger1 :
         BadgeBoxItem(
             R.drawable.badge_anger,
@@ -18,7 +20,7 @@ sealed class BadgeBoxItem(
         BadgeBoxItem(
             R.drawable.badge_sad,
             "Lv1 슬퍼할 용기",
-            "싫은" //
+            "슬픈" //
         )
 
     data object Surprised1 :

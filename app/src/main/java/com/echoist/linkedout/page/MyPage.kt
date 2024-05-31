@@ -34,10 +34,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
@@ -73,26 +73,12 @@ fun MyPage(
 ) {
 
 
-    var detailEssay by remember {
-        mutableStateOf(
-            EssayApi.EssayItem(
-                author = UserInfo(1, "groove"),
-                content = "이 에세이는 예시입니다. 예시입니다. 예시입니다니다. 예시입니다. 예시입니다. 예시입니다.",
-                createdDate = "2024년 04월 28일 16:47",
-                id = 1,
-                linkedOutGauge = 5,
-                status = "published",
-                thumbnail = "http 값 있어요~",
-                title = "예시 에세이",
-                updatedDate = "2024-05-15",
-                tags = listOf(EssayApi.Tag(1, "tag"), EssayApi.Tag(1, "tag"))
-            )
-        )
-    }
+    var detailEssay  = viewModel.detailEssay
     var essayList: SnapshotStateList<EssayApi.EssayItem> = remember {
         mutableStateListOf(detailEssay, detailEssay, detailEssay, detailEssay)
     }
 
+    viewModel.readSimpleBadgeList(navController)
 
     val userItem by remember {
         mutableStateOf(
@@ -372,7 +358,7 @@ fun LinkedOutBadgeItem(
         .background(Color(0xFF0D0D0D), shape = RoundedCornerShape(10))) {
 
         Image(
-            modifier = Modifier.size(80.dp),
+            modifier = Modifier.size(80.dp).blur(20.dp), //blur효과는 level 1 일때 주기
             painter = painterResource(id = badgeBoxItem.badgeResourceId),
             contentDescription = "badge_sad",
             colorFilter = ColorFilter.colorMatrix(colorMatrix)

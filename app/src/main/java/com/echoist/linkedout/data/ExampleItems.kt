@@ -13,7 +13,23 @@ import javax.inject.Singleton
 class ExampleItems @Inject constructor(){
 
 
-        var detailEssay by mutableStateOf(
+
+    var exampleBadge by mutableStateOf(
+        Badge(0,0,0,"example")
+    )
+    var simpleBadgeList : SnapshotStateList<Badge> = mutableStateListOf(
+        exampleBadge
+    )
+
+    var exampleDetailBadge by mutableStateOf(
+        BadgeWithTag(0,0,0,"example", tags = listOf(EssayApi.Tag(1,"tag"), EssayApi.Tag(2,"tag2")))
+    )
+    var detailBadgeList : SnapshotStateList<BadgeWithTag> = mutableStateListOf(exampleDetailBadge)
+
+
+
+
+    var detailEssay by mutableStateOf(
         EssayApi.EssayItem(
             author = UserInfo(1,"groove"),
             content = "이 에세이는 예시입니다.123123",
@@ -53,4 +69,14 @@ class ExampleItems @Inject constructor(){
     var firstSentences : SnapshotStateList<EssayApi.EssayItem> = mutableStateListOf(detailEssay,detailEssay,detailEssay,detailEssay,detailEssay)
     var lastSentences : SnapshotStateList<EssayApi.EssayItem> = mutableStateListOf(detailEssay,detailEssay,detailEssay,detailEssay,detailEssay)
     var previousEssayList: SnapshotStateList<EssayApi.EssayItem> =  mutableStateListOf(detailEssay,detailEssay,detailEssay,detailEssay,detailEssay)
+
+    val badgeList = listOf(
+        BadgeBoxItem.Anger1,
+        BadgeBoxItem.Sad1,
+        BadgeBoxItem.Surprised1,
+        BadgeBoxItem.Complicated1,
+        BadgeBoxItem.Love1
+    )
+
+
 }
