@@ -53,7 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.echoist.linkedout.R
-import com.echoist.linkedout.data.Badge
+import com.echoist.linkedout.data.BadgeBoxItem
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.SettingsViewModel
 
@@ -61,7 +61,7 @@ import com.echoist.linkedout.viewModels.SettingsViewModel
 fun BadgePage(navController: NavController, viewModel: SettingsViewModel) {
     val hasCalledApi = remember { mutableStateOf(false) }
 
-    val badgeBoxItems = viewModel.simpleBadgeList
+    val badgeBoxItems = viewModel.badgeBoxList
 
     if (!hasCalledApi.value) {
 
@@ -114,7 +114,7 @@ fun BadgeTopAppBar() {
 }
 
 @Composable
-fun BadgeItem(badgeBoxItem: Badge) {
+fun BadgeItem(badgeBoxItem: BadgeBoxItem) {
     val badgeTagList = listOf(
         "#dd",
         "#ff",
@@ -148,7 +148,7 @@ fun BadgeItem(badgeBoxItem: Badge) {
     }
 
     Column {
-        Text(text = badgeBoxItem.badgeName!!)
+        Text(text = badgeBoxItem.badgeName)
         Spacer(modifier = Modifier.height(10.dp))
         Column(
             modifier = Modifier
