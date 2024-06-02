@@ -149,6 +149,10 @@ class LoginPage : ComponentActivity() {
                     MyPage(settingsViewModel , navController)
                     //settings page
                 }
+                composable("BadgePage") {
+                    BadgePage( navController,settingsViewModel)
+                    //settings page
+                }
                 composable("WritingPage") {
                     WritingPage(navController, writingViewModel)
                 }

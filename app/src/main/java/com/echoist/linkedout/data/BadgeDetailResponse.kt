@@ -1,6 +1,5 @@
 package com.echoist.linkedout.data
 
-import com.echoist.linkedout.api.EssayApi
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
@@ -19,8 +18,8 @@ data class DataWithTag(
 @JsonClass(generateAdapter = true)
 data class BadgeWithTag(
     val exp: Int,
-    val id: Int,
+    val id: Int? =null,
     val level: Int,
     val name: String,
-    val tags : List<EssayApi.Tag>
+    val tags : List<String>
 )

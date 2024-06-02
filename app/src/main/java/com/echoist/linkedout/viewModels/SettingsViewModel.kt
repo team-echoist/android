@@ -1,16 +1,18 @@
 package com.echoist.linkedout.viewModels
 
+import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.echoist.linkedout.api.UserApi
 import com.echoist.linkedout.data.BadgeBoxItem
+import com.echoist.linkedout.data.BadgeBoxItemWithTag
 import com.echoist.linkedout.data.ExampleItems
+import com.echoist.linkedout.data.toBadgeBoxItem
 import com.echoist.linkedout.page.Token
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -24,18 +26,22 @@ class SettingsViewModel @Inject constructor(
     val detailEssay = exampleItems.detailEssay
     var isBadgeClicked by mutableStateOf(false)
     var badgeBoxItem : BadgeBoxItem? by mutableStateOf(null)
+    var badgeList by mutableStateOf<List<BadgeBoxItem>>(emptyList())
 
-    var badgeBoxList = exampleItems.badgeList
-
-    var simpleBadgeList = exampleItems.simpleBadgeList
-    var detailBadgeList = exampleItems.detailBadgeList
+    var simpleBadgeList by mutableStateOf<List<BadgeBoxItem>>(emptyList())
+    var detailBadgeList by mutableStateOf<List<BadgeBoxItemWithTag>>(emptyList())
 
     fun readSimpleBadgeList(navController: NavController) {
+        //이게 작동되는지가 중요
         viewModelScope.launch {
             try {
 
                 val response = userApi.readBadgeList( Token.accessToken)
-                simpleBadgeList = response.body()!!.data.badges!!.toMutableStateList()
+                Log.d(TAG, "readSimpleBadgeList: ${response.body()!!.data.badges}")
+                response.body()?.data?.badges!!.let{badges ->
+                    simpleBadgeList = badges.map { it.toBadgeBoxItem() }
+                }
+                Log.d(TAG, "readSimpleBadgeList: $simpleBadgeList")
 
                 Token.accessToken = (response.headers()["authorization"].toString())
 
@@ -44,6 +50,8 @@ class SettingsViewModel @Inject constructor(
                 e.printStackTrace()
                 // api 요청 실패
                 Log.e("writeEssayApiFailed", "Failed to write essay: ${e.message}")
+                Log.e("writeEssayApiFailed", "Failed to write essay: ${e.localizedMessage}")
+
             }
         }
     }
@@ -53,7 +61,9 @@ class SettingsViewModel @Inject constructor(
             try {
 
                 val response = userApi.readBadgeWithTagsList( Token.accessToken)
-                detailBadgeList = response.body()!!.data.badges.toMutableStateList()
+                response.body()?.data?.badges!!.let{badges ->
+                    detailBadgeList = badges.map { it.toBadgeBoxItem() }
+                }
 
                 Token.accessToken = (response.headers()["authorization"].toString())
 

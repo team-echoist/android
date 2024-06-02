@@ -30,6 +30,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -58,6 +59,7 @@ import com.echoist.linkedout.data.BadgeBoxItem
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.SettingsViewModel
+import kotlinx.coroutines.delay
 
 //@Preview
 //@Composable
@@ -114,7 +116,7 @@ fun MyPage(
 
                 ) {
                     MySettings(item = userItem)
-                    SettingBar("링크드아웃 배지") {}
+                    SettingBar("링크드아웃 배지") {viewModel.readDetailBadgeList(navController)}
                     LinkedOutBadgeGrid(viewModel)
                     SettingBar("최근 본 글") {}
                     RecentEssayList(itemList = essayList)
@@ -230,7 +232,7 @@ fun MySettings(item: UserInfo) {
 fun SettingBar(text: String, onClick: () -> Unit) {
     Box(modifier = Modifier
         .fillMaxWidth()
-        .clickable { }
+        .clickable { onClick() }
         .padding(20.dp)
         .height(50.dp)) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart) {
@@ -343,22 +345,36 @@ fun BadgeDescriptionBox(badgeBoxItem: BadgeBoxItem, viewModel: SettingsViewModel
 @Composable
 fun LinkedOutBadgeItem(
     badgeBoxItem: BadgeBoxItem,
-    onClick: () -> Unit
+    viewModel: SettingsViewModel
 ) {
-    //val size = if(isClicked) 300.dp else 100.dp
+    // 기본 Modifier 정의
+    val baseModifier = Modifier
+        .size(110.dp)
+        .clickable {
+            if (badgeBoxItem.exp >= 10) {
+                viewModel.badgeBoxItem = badgeBoxItem
+                viewModel.isBadgeClicked = true
+            }
+        }
+        .background(
+            Color(0xFF0D0D0D),
+            shape = RoundedCornerShape(10)
+        )
+
+    // badgeBoxItem의 level에 따라서 blur 효과를 다르게 적용
+    val finalModifier = if (badgeBoxItem.level == 0) {
+        baseModifier.blur(20.dp)
+    } else {
+        baseModifier
+    }
 
     val colorMatrix = ColorMatrix().apply {
         setToSaturation(0f)  // Set saturation to 0 to convert to grayscale
     }
-    Box(contentAlignment = Alignment.Center, modifier = Modifier
-        .size(110.dp)
-        .clickable {
-            onClick()
-        }
-        .background(Color(0xFF0D0D0D), shape = RoundedCornerShape(10))) {
 
+    Box(contentAlignment = Alignment.Center, modifier = finalModifier) {
         Image(
-            modifier = Modifier.size(80.dp).blur(20.dp), //blur효과는 level 1 일때 주기
+            modifier = Modifier.size(80.dp),
             painter = painterResource(id = badgeBoxItem.badgeResourceId),
             contentDescription = "badge_sad",
             colorFilter = ColorFilter.colorMatrix(colorMatrix)
@@ -366,16 +382,14 @@ fun LinkedOutBadgeItem(
     }
 }
 
+
 @Composable
 fun LinkedOutBadgeGrid(viewModel: SettingsViewModel) {
+val badgeList = viewModel.simpleBadgeList
 
-    val badgeList = listOf(
-        BadgeBoxItem.Anger1,
-        BadgeBoxItem.Sad1,
-        BadgeBoxItem.Surprised1,
-        BadgeBoxItem.Complicated1,
-        BadgeBoxItem.Love1
-    )
+    LaunchedEffect(Unit) {
+        delay(50)
+    }
 
     Box(
         modifier = Modifier
@@ -393,10 +407,7 @@ fun LinkedOutBadgeGrid(viewModel: SettingsViewModel) {
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             items(badgeList) {
-                LinkedOutBadgeItem(it) {
-                    viewModel.badgeBoxItem = it
-                    viewModel.isBadgeClicked = true
-                }
+                LinkedOutBadgeItem(it,viewModel)
             }
             // 각 아이템에 대한 UI를 구성
             // 여기에는 각 아이템을 표시하는 Composable 함수 호출

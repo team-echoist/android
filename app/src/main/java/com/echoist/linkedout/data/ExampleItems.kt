@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import com.echoist.linkedout.R
 import com.echoist.linkedout.api.EssayApi
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -14,15 +15,15 @@ class ExampleItems @Inject constructor(){
 
 
 
-    var exampleBadge by mutableStateOf(
-        Badge(0,0,0,"example")
+    private var exampleBadge by mutableStateOf(
+        BadgeBoxItem(R.drawable.badge_love,"love","emotion",1,5)
     )
-    var simpleBadgeList : SnapshotStateList<Badge> = mutableStateListOf(
-        exampleBadge
+    var simpleBadgeList : SnapshotStateList<BadgeBoxItem> = mutableStateListOf(
+        exampleBadge,exampleBadge,exampleBadge,exampleBadge,exampleBadge
     )
 
     var exampleDetailBadge by mutableStateOf(
-        BadgeWithTag(0,0,0,"example", tags = listOf(EssayApi.Tag(1,"tag"), EssayApi.Tag(2,"tag2")))
+        BadgeWithTag(0,0,0,"example", tags = listOf("1","2"))
     )
     var detailBadgeList : SnapshotStateList<BadgeWithTag> = mutableStateListOf(exampleDetailBadge)
 
@@ -70,13 +71,6 @@ class ExampleItems @Inject constructor(){
     var lastSentences : SnapshotStateList<EssayApi.EssayItem> = mutableStateListOf(detailEssay,detailEssay,detailEssay,detailEssay,detailEssay)
     var previousEssayList: SnapshotStateList<EssayApi.EssayItem> =  mutableStateListOf(detailEssay,detailEssay,detailEssay,detailEssay,detailEssay)
 
-    val badgeList = listOf(
-        BadgeBoxItem.Anger1,
-        BadgeBoxItem.Sad1,
-        BadgeBoxItem.Surprised1,
-        BadgeBoxItem.Complicated1,
-        BadgeBoxItem.Love1
-    )
 
 
 }

@@ -53,7 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.echoist.linkedout.R
-import com.echoist.linkedout.data.BadgeBoxItem
+import com.echoist.linkedout.data.BadgeBoxItemWithTag
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.SettingsViewModel
 
@@ -61,7 +61,7 @@ import com.echoist.linkedout.viewModels.SettingsViewModel
 fun BadgePage(navController: NavController, viewModel: SettingsViewModel) {
     val hasCalledApi = remember { mutableStateOf(false) }
 
-    val badgeBoxItems = viewModel.badgeBoxList
+    val badgeBoxItems = viewModel.detailBadgeList
 
     if (!hasCalledApi.value) {
 
@@ -114,18 +114,8 @@ fun BadgeTopAppBar() {
 }
 
 @Composable
-fun BadgeItem(badgeBoxItem: BadgeBoxItem) {
-    val badgeTagList = listOf(
-        "#dd",
-        "#ff",
-        "33",
-        "#dd",
-        "#ff",
-        "#ff",
-        "33",
-        "#dd",
-        "#ff"
-    )
+fun BadgeItem(badgeBoxItem: BadgeBoxItemWithTag) {
+    val badgeTagList = badgeBoxItem.tags
     var isClicked by remember { mutableStateOf(false) }
     val arrowImage = if (isClicked) R.drawable.arrowdown else R.drawable.arrowup
     val colorMatrix = ColorMatrix().apply {
@@ -177,7 +167,7 @@ fun BadgeItem(badgeBoxItem: BadgeBoxItem) {
                     Text(text = "${badgeBoxItem.badgeEmotion} 감정 표현", fontSize = 14.sp)
                     Text(text = text, fontSize = 14.sp)
                     Spacer(modifier = Modifier.height(5.dp))
-                    CustomProgressBar(progress = 7f, max = 10)
+                    CustomProgressBar(progress = badgeBoxItem.tags.size.toFloat(), max = 10)
                 }
                 Box(
                     modifier = Modifier
@@ -211,7 +201,8 @@ fun BadgeItem(badgeBoxItem: BadgeBoxItem) {
                             Text(
                                 text = it,
                                 color = Color(0xFF536DFE), // Text color similar to the one in the image
-                                fontSize = 16.sp,
+                                fontSize = 12.sp,
+                                textAlign = TextAlign.Center,
                                 fontWeight = FontWeight.Bold,
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(50))
@@ -220,7 +211,7 @@ fun BadgeItem(badgeBoxItem: BadgeBoxItem) {
                                         Color(0xFF536DFE),
                                         RoundedCornerShape(50)
                                     )
-                                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                                    .padding(horizontal = 5.dp, vertical = 5.dp)
                             )
                         }
                     }

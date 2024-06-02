@@ -7,12 +7,12 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 
 interface UserApi {
-    @GET("api/users/badge")
+    @GET("api/users/badges")
     suspend fun readBadgeList(
         @Header("Authorization") accessToken: String
     ): Response<BadgeSimpleResponse>
 
-    @GET("api/users/badge/detail")
+    @GET("api/users/badges/detail")
     suspend fun readBadgeWithTagsList(
         @Header("Authorization") accessToken: String
     ): Response<BadgeDetailResponse>

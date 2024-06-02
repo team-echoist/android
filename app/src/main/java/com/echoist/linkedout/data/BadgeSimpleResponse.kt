@@ -19,7 +19,7 @@ data class Data(
 @JsonClass(generateAdapter = true)
 data class Badge(
     val exp: Int,
-    val id: Int,
+    val id: Int? = null,
     val level: Int,
     val name: String
 )
