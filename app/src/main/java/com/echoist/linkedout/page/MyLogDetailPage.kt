@@ -109,7 +109,7 @@ fun MyLogDetailPage(navController: NavController, viewModel: MyLogViewModel) {
 
 @Composable
 fun ModifyOption(viewModel: MyLogViewModel, navController: NavController) {
-    Surface(modifier = Modifier.size(180.dp, 250.dp), shape = RoundedCornerShape(2)) {
+    Surface(modifier = Modifier.size(180.dp, 305.dp), shape = RoundedCornerShape(2)) {
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
@@ -138,6 +138,8 @@ fun ModifyOption(viewModel: MyLogViewModel, navController: NavController) {
             OptionItem(text = "발행", Color.White,{},R.drawable.option_link)
             HorizontalDivider()
             OptionItem(text = "Linked-out", Color.White,{},R.drawable.option_linkedout)
+            HorizontalDivider()
+            OptionItem(text = "스토리 선택", Color(0xFF616FED),{},R.drawable.option_check)
             HorizontalDivider()
             OptionItem(text = "삭제", Color.Red,{
                 viewModel.deleteEssay(navController = navController)

@@ -251,8 +251,14 @@ fun WritingTopAppBar(
                     modifier = Modifier
                         .padding(start = 20.dp, top = 15.dp)
                         .clickable {
-                            viewModel.isCanCelClicked.value = true
-                            keyboardController?.hide()
+                            if (viewModel.title.value.text.isEmpty() && viewModel.content.value.text.isEmpty()){
+                                navController.popBackStack()
+                            }
+                            else{
+                                viewModel.isCanCelClicked.value = true
+                                keyboardController?.hide()
+                            }
+
                         },
                     fontSize = 16.sp
                 )
