@@ -1,6 +1,5 @@
 package com.echoist.linkedout.page
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -13,11 +12,12 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.echoist.linkedout.components.EssayChips
 import com.echoist.linkedout.components.EssayPager
+import com.echoist.linkedout.components.ModifyStoryBox
 import com.echoist.linkedout.components.MyLogTopAppBar
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.MyLogViewModel
 
-@OptIn(ExperimentalFoundationApi::class)
+
 @Composable
 fun MyLogPage(navController : NavController,viewModel: MyLogViewModel){
     val pagerstate = rememberPagerState { 3 }
@@ -33,7 +33,9 @@ fun MyLogPage(navController : NavController,viewModel: MyLogViewModel){
 //todo 첫 구글로그인할때 토큰안들어가는듯
 
     LinkedOutTheme {
+
         Scaffold(
+
             topBar = {
                 Column {
 
@@ -49,6 +51,11 @@ fun MyLogPage(navController : NavController,viewModel: MyLogViewModel){
                 }
             }
         )
+        if (viewModel.isModifyStoryClicked){
+            ModifyStoryBox(onEditClick = { /*TODO*/ }, onDeleteClick = { /*TODO*/ }, onCancelClick = {/*TODO*/})
+
+        }
+
     }
 
 }

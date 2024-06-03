@@ -5,10 +5,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.echoist.linkedout.api.EssayApi
+import com.echoist.linkedout.api.StoryApi
 import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.page.Token
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,30 +18,27 @@ import kotlinx.coroutines.launch
 import java.util.Stack
 import javax.inject.Inject
 
-interface MyLogView1Model {
-    val myEssayList: List<EssayApi.EssayItem>
-    val publishedEssayList: List<EssayApi.EssayItem>
-    var accessToken: String
-    var isActionClicked: Boolean
-    var detailEssayBackStack : Stack<EssayApi.EssayItem>
 
-    fun deleteEssay(navController: NavController)
-}
 
 @HiltViewModel
 class MyLogViewModel @Inject constructor(
+    private val storyApi: StoryApi,
     private val essayApi: EssayApi,
     private val exampleItems: ExampleItems
-) : ViewModel(), MyLogView1Model {
+) : ViewModel() {
 
-    override var myEssayList by mutableStateOf(mutableStateListOf<EssayApi.EssayItem>())
-    override var publishedEssayList by mutableStateOf(mutableStateListOf<EssayApi.EssayItem>())
-    override var detailEssayBackStack = Stack<EssayApi.EssayItem>()
+    var isModifyStoryClicked by mutableStateOf(false)
 
-    override var accessToken: String = "token"
-    override var isActionClicked by mutableStateOf(false)
+     var myEssayList by mutableStateOf(mutableStateListOf<EssayApi.EssayItem>())
+     var publishedEssayList by mutableStateOf(mutableStateListOf<EssayApi.EssayItem>())
+     var detailEssayBackStack = Stack<EssayApi.EssayItem>()
+
+     var accessToken: String = "token"
+     var isActionClicked by mutableStateOf(false)
 
     var detailEssay by mutableStateOf(exampleItems.detailEssay)
+
+    var storyList = exampleItems.storyList
 
     fun readPublishEssay() {
         myEssayList.clear()
@@ -105,7 +104,7 @@ class MyLogViewModel @Inject constructor(
     }
 
 
-    override fun deleteEssay(navController: NavController) {
+    fun deleteEssay(navController: NavController) {
         viewModelScope.launch {
             try {
                 val response = essayApi.deleteEssay(accessToken,exampleItems.detailEssay.id!!)
@@ -129,6 +128,33 @@ class MyLogViewModel @Inject constructor(
                             inclusive = false
                         }
                     }
+                }
+                else{
+                    Log.e("writeEssayApiFailed", "${response.errorBody()}")
+                    Log.e("writeEssayApiFailed", "${response.code()}")
+                }
+
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                // api 요청 실패
+                Log.e("writeEssayApiFailed", "Failed to write essay: ${e.message}")
+            }
+        }
+    }
+
+    fun readMyStory(){
+        viewModelScope.launch {
+            try {
+                val response = storyApi.readMyStories(accessToken = Token.accessToken)
+
+                if (response.isSuccessful) {
+                    accessToken = (response.headers()["authorization"].toString())
+                    Token.accessToken = accessToken
+                    storyList = response.body()!!.data.stories.toMutableStateList()
+
+                    Log.e("writeEssayApiSuccess", "${response.headers()}")
+                    Log.e("writeEssayApiSuccess", "${response.code()}")
                 }
                 else{
                     Log.e("writeEssayApiFailed", "${response.errorBody()}")

@@ -51,11 +51,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
@@ -63,7 +61,6 @@ import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.components.LastEssayPager
 import com.echoist.linkedout.data.DetailEssayResponse
 import com.echoist.linkedout.data.EssayListResponse
-import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.MyLogViewModel
@@ -128,17 +125,10 @@ class FakeEssayApi : EssayApi {
     }
 }
 
-@Preview
-@Composable
-fun MyLogDetailPagePreview() {
-    val navController = rememberNavController()
-    val viewModel = MyLogViewModel(FakeEssayApi(), ExampleItems())
-    MyLogDetailPage(navController = navController, viewModel = viewModel)
-}
-
 @Composable
 fun MyLogDetailPage(navController: NavController, viewModel: MyLogViewModel) {
     val scrollState = rememberScrollState()
+
 
     LinkedOutTheme {
         Scaffold(
@@ -151,6 +141,7 @@ fun MyLogDetailPage(navController: NavController, viewModel: MyLogViewModel) {
                         .padding(it)
                         .fillMaxSize(), contentAlignment = Alignment.TopCenter
                 ) {
+
                     Column(Modifier.verticalScroll(scrollState)) {
                         DetailEssay(viewModel = viewModel)
                         LastEssayPager(viewModel = viewModel, navController = navController)
@@ -180,6 +171,7 @@ fun MyLogDetailPage(navController: NavController, viewModel: MyLogViewModel) {
             }
         )
     }
+
 
 }
 

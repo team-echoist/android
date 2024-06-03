@@ -48,14 +48,14 @@ interface EssayApi {
     @DELETE("api/essays/{essayId}")
     suspend fun deleteEssay(
         @Header("Authorization") accessToken: String,
-        @Path("essayId") essayId: Int = 0
+        @Path("storyId") storyId: Int = 0
     ): Response<Unit>
 
     @GET("api/essays")
     suspend fun readMyEssay(
         @Header("Authorization") accessToken: String,
         @Query("published") published: Boolean? = false,
-        @Query("categoryId") categoryId: String = "",
+        @Query("storyId") storyId: String = "",
         @Query("limit") limit: Int = 100, //이 값은 기본 10 수정가능
     ): Response<EssayListResponse>
 

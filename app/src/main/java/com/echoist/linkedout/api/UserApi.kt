@@ -1,8 +1,8 @@
 package com.echoist.linkedout.api
 
 import com.echoist.linkedout.data.BadgeDetailResponse
-import com.echoist.linkedout.data.BadgeLevelUpResponse
 import com.echoist.linkedout.data.BadgeSimpleResponse
+import com.echoist.linkedout.data.BasicResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -31,6 +31,6 @@ interface UserApi {
     suspend fun requestBadgeLevelUp(
         @Header("Authorization") accessToken: String,
         @Query("badgeId") badgeId: Int,
-    ): Response<BadgeLevelUpResponse>
+    ): Response<BasicResponse>
 
 }

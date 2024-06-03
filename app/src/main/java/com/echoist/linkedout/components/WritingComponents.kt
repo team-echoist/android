@@ -63,7 +63,6 @@ import com.canhub.cropper.CropImageContract
 import com.canhub.cropper.CropImageContractOptions
 import com.canhub.cropper.CropImageOptions
 import com.echoist.linkedout.R
-import com.echoist.linkedout.page.Token.accessToken
 import com.echoist.linkedout.viewModels.WritingViewModel
 
 class FuncItemData(val text : String, var icon: Int, var clickable: () -> Unit )
@@ -462,7 +461,7 @@ fun CropImagePage(navController: NavController,viewModel: WritingViewModel) {
 
 //임시저장 개수 아이콘
 @Composable
-fun StorageIcon(count : Int){
+fun StoryCountIcon(count : Int){
     val color = if (isSystemInDarkTheme()) Color.White else Color.Black
     val circleColor = if (isSystemInDarkTheme()) Color.Black else Color.White
 
