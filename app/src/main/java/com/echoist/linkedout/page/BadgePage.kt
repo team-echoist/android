@@ -34,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -58,6 +59,7 @@ import com.echoist.linkedout.R
 import com.echoist.linkedout.data.BadgeBoxItemWithTag
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.SettingsViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun BadgePage(navController: NavController, viewModel: SettingsViewModel) {
@@ -136,6 +138,10 @@ fun BadgeItem(badgeBoxItem: BadgeBoxItemWithTag, viewModel: SettingsViewModel) {
         }.toAnnotatedString()
     }
 
+
+    //레벨업 성공 시 레벨업 성공 표시
+    BadgeLevelUpSuccess(viewModel,badgeBoxItem)
+
     Column {
         Text(text = badgeBoxItem.badgeName)
         Spacer(modifier = Modifier.height(10.dp))
@@ -145,7 +151,9 @@ fun BadgeItem(badgeBoxItem: BadgeBoxItemWithTag, viewModel: SettingsViewModel) {
                 .fillMaxWidth()
                 .background(Color(0xFf0D0D0D), shape = RoundedCornerShape(10))
         ) {
-            Box(modifier = Modifier.fillMaxWidth().height(110.dp)){
+            Box(modifier = Modifier
+                .fillMaxWidth()
+                .height(110.dp)){
                 Row(
                     modifier = Modifier
                         .fillMaxSize()
@@ -256,6 +264,33 @@ fun BadgeImg(badgeBoxItem: BadgeBoxItemWithTag){
     )
 }
 
+//레벨업 보상획득 시 페이지
+@Composable
+fun BadgeLevelUpSuccess(viewModel: SettingsViewModel,badgeBoxItem: BadgeBoxItemWithTag) {
+
+    //보상받기 버튼 누르고 레벨업 성공 시 1초동안 레벨업 성공 표시
+    LaunchedEffect(key1 = Unit) {
+        if (viewModel.isLevelUpSuccess){
+            delay(timeMillis = 1000)
+            viewModel.isLevelUpSuccess = false
+        }
+    }
+
+    //레벨업 버튼 눌렀을때 성공 시 벳지획득 표시
+    if (viewModel.isLevelUpSuccess){
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center){
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Image(painter = painterResource(id = badgeBoxItem.badgeResourceId), contentDescription = "imageId")
+                Text(text = badgeBoxItem.badgeName)
+                Text(text = "뱃지 획득!")
+            }
+        }
+    }
+}
+
+//경험치 수치 바
 @Composable
 fun ExpProgressBar(progress: Float, max: Int) {
     val progressBarWidth = 170.dp // 프로그레스 바의 너비
