@@ -32,10 +32,8 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -74,11 +72,6 @@ fun MyPage(
     navController: NavController
 ) {
 
-
-    var detailEssay  = viewModel.detailEssay
-    var essayList: SnapshotStateList<EssayApi.EssayItem> = remember {
-        mutableStateListOf(detailEssay, detailEssay, detailEssay, detailEssay)
-    }
 
     viewModel.readSimpleBadgeList(navController)
 
@@ -119,7 +112,7 @@ fun MyPage(
                     SettingBar("링크드아웃 배지") {viewModel.readDetailBadgeList(navController)}
                     LinkedOutBadgeGrid(viewModel)
                     SettingBar("최근 본 글") {}
-                    RecentEssayList(itemList = essayList)
+                    RecentEssayList(itemList = viewModel.detailEssay)
                     SettingBar("멤버십 관리") {}
                     SettingBar("계정 관리") {}
 
@@ -351,7 +344,7 @@ fun LinkedOutBadgeItem(
     val baseModifier = Modifier
         .size(110.dp)
         .clickable {
-            if (badgeBoxItem.exp >= 10) {
+            if (badgeBoxItem.level >= 1) {
                 viewModel.badgeBoxItem = badgeBoxItem
                 viewModel.isBadgeClicked = true
             }
@@ -369,7 +362,8 @@ fun LinkedOutBadgeItem(
     }
 
     val colorMatrix = ColorMatrix().apply {
-        setToSaturation(0f)  // Set saturation to 0 to convert to grayscale
+        if (badgeBoxItem.level == 0) setToSaturation(0f)
+        else setToSaturation(1f)
     }
 
     Box(contentAlignment = Alignment.Center, modifier = finalModifier) {

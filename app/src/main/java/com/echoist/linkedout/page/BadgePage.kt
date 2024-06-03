@@ -25,6 +25,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -39,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
@@ -70,9 +72,9 @@ fun BadgePage(navController: NavController, viewModel: SettingsViewModel) {
     LinkedOutTheme {
         Scaffold(
             topBar = {
-                Column {
+                Column(Modifier.padding(horizontal = 20.dp)) {
 
-                    BadgeTopAppBar()
+                    BadgeTopAppBar(navController)
                 }
             },
             bottomBar = { MyBottomNavigation(navController) },
@@ -84,7 +86,7 @@ fun BadgePage(navController: NavController, viewModel: SettingsViewModel) {
                         .padding(horizontal = 20.dp)
                 ) {
                     badgeBoxItems.forEach { it ->
-                        BadgeItem(it)
+                        BadgeItem(it,viewModel)
                         Spacer(modifier = Modifier.height(10.dp))
                     }
                 }
@@ -95,9 +97,8 @@ fun BadgePage(navController: NavController, viewModel: SettingsViewModel) {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-//@Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun BadgeTopAppBar() {
+fun BadgeTopAppBar(navController: NavController) {
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
         title = {
@@ -105,6 +106,7 @@ fun BadgeTopAppBar() {
         },
         navigationIcon = {
             Icon(
+                modifier = Modifier.clickable { navController.popBackStack() },
                 imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
                 contentDescription = "back"
             )
@@ -114,13 +116,10 @@ fun BadgeTopAppBar() {
 }
 
 @Composable
-fun BadgeItem(badgeBoxItem: BadgeBoxItemWithTag) {
+fun BadgeItem(badgeBoxItem: BadgeBoxItemWithTag, viewModel: SettingsViewModel) {
     val badgeTagList = badgeBoxItem.tags
     var isClicked by remember { mutableStateOf(false) }
-    val arrowImage = if (isClicked) R.drawable.arrowdown else R.drawable.arrowup
-    val colorMatrix = ColorMatrix().apply {
-        setToSaturation(0f)  // 흑백설정.  10개 채우면 흑백 설정 없게.
-    }
+    val arrowImage = if (isClicked) R.drawable.arrowup else R.drawable.arrowdown
 
     val text = remember {
         AnnotatedString.Builder().apply {
@@ -146,38 +145,46 @@ fun BadgeItem(badgeBoxItem: BadgeBoxItemWithTag) {
                 .fillMaxWidth()
                 .background(Color(0xFf0D0D0D), shape = RoundedCornerShape(10))
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(110.dp)
-                    .padding(10.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painter = painterResource(id = badgeBoxItem.badgeResourceId!!),
-                    contentDescription = "badgeImage",
-                    modifier = Modifier.size(60.dp),
-                    colorFilter = ColorFilter.colorMatrix(colorMatrix)
-                )
-                Spacer(modifier = Modifier.width(27.dp))
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    modifier = Modifier.height(110.dp)
-                ) {
-                    Text(text = "${badgeBoxItem.badgeEmotion} 감정 표현", fontSize = 14.sp)
-                    Text(text = text, fontSize = 14.sp)
-                    Spacer(modifier = Modifier.height(5.dp))
-                    CustomProgressBar(progress = badgeBoxItem.tags.size.toFloat(), max = 10)
-                }
-                Box(
+            Box(modifier = Modifier.fillMaxWidth().height(110.dp)){
+                Row(
                     modifier = Modifier
-                        .fillMaxSize(), contentAlignment = Alignment.CenterEnd
+                        .fillMaxSize()
+                        .padding(10.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        painter = painterResource(id = arrowImage),
-                        tint = Color.White,
-                        contentDescription = "",
-                        modifier = Modifier.clickable { isClicked = !isClicked })
+                    //경험치가 10 이상이면 보상받기 open / 클릭 시 레벨업 요청
+
+                    BadgeImg(badgeBoxItem)
+                    Spacer(modifier = Modifier.width(27.dp))
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        modifier = Modifier.height(110.dp)
+                    ) {
+                        Text(text = "${badgeBoxItem.badgeEmotion} 감정 표현", fontSize = 14.sp)
+                        Text(text = text, fontSize = 14.sp)
+                        Spacer(modifier = Modifier.height(5.dp))
+                        ExpProgressBar(progress = badgeBoxItem.exp.toFloat(), max = 10)
+                    }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize(), contentAlignment = Alignment.CenterEnd
+                    ) {
+                        Icon(
+                            painter = painterResource(id = arrowImage),
+                            tint = Color.White,
+                            contentDescription = "",
+                            modifier = Modifier.clickable { isClicked = !isClicked })
+                    }
+                }
+                //경험치가 10 이상이면 보상받기 box 만들기.
+                if (badgeBoxItem.exp >= 10){
+                    Box(modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center){
+                        Button(onClick = { viewModel.requestBadgeLevelUp(badgeBoxItem.badgeId!!) }) { //todo name이 아니고 id로
+                            Text(text = "보상 받기")
+                        } 
+                    }
                 }
             }
 
@@ -222,7 +229,35 @@ fun BadgeItem(badgeBoxItem: BadgeBoxItemWithTag) {
 }
 
 @Composable
-fun CustomProgressBar(progress: Float, max: Int) {
+fun BadgeImg(badgeBoxItem: BadgeBoxItemWithTag){
+
+    val baseModifier = Modifier
+        .size(60.dp)
+        .background(
+            Color(0xFF0D0D0D),
+            shape = RoundedCornerShape(10)
+        )
+    // 0레벨이면 블러처리, 아니면 블러처리 x
+    val finalModifier = if (badgeBoxItem.level == 0) {
+        baseModifier.blur(20.dp)
+    } else {
+        baseModifier
+    }
+    // 레벨이 0이면 흑백, 1부터는 컬러로
+    val colorMatrix = ColorMatrix().apply {
+        if (badgeBoxItem.level == 0) setToSaturation(0f)  
+        else setToSaturation(1f)
+    }
+    Image(
+        painter = painterResource(id = badgeBoxItem.badgeResourceId),
+        contentDescription = "badgeImage",
+        modifier = finalModifier,
+        colorFilter = ColorFilter.colorMatrix(colorMatrix)
+    )
+}
+
+@Composable
+fun ExpProgressBar(progress: Float, max: Int) {
     val progressBarWidth = 170.dp // 프로그레스 바의 너비
     val progressBarHeight = 20.dp // 프로그레스 바의 높이
 

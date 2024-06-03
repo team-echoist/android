@@ -15,6 +15,7 @@ data class BadgeBoxItemWithTag(
     val badgeResourceId: Int,
     val badgeName: String,
     val badgeEmotion: String,
+    val badgeId : Int? = null,
     val level: Int,
     val exp: Int,
     val tags : List<String>
@@ -41,6 +42,6 @@ fun BadgeWithTag.toBadgeBoxItem(): BadgeBoxItemWithTag {
         "loving" -> Triple(R.drawable.badge_love, "Lv${level} 사랑할 용기", "좋은")
         else -> Triple(R.drawable.badge_sad, "Unknown", "Unknown")
     }
-    return BadgeBoxItemWithTag(badgeResourceId, badgeName, badgeEmotion, level, exp, tags)
+    return BadgeBoxItemWithTag(badgeResourceId, badgeName, badgeEmotion,id, level, exp, tags)
 }
 
