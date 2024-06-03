@@ -15,6 +15,7 @@ import com.echoist.linkedout.data.BadgeBoxItemWithTag
 import com.echoist.linkedout.data.toBadgeBoxItem
 import com.echoist.linkedout.page.Token
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -88,6 +89,8 @@ class SettingsViewModel @Inject constructor(
                 Token.accessToken = (response.headers()["authorization"].toString())
                 if (response.body()!!.success){
                     isLevelUpSuccess = true
+                    delay(1000)
+                    isLevelUpSuccess = false
                 }
 
             } catch (e: Exception) {

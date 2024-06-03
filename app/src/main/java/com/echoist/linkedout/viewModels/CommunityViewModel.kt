@@ -94,12 +94,10 @@ class CommunityViewModel @Inject constructor(
             try {
                 val response = essayApi.readFollowingEssays(Token.accessToken)
                 exampleItems.followingList = response.body()!!.data.essays.toMutableStateList()
-                Log.d(
-                    TAG,
-                    "readRandomEssaysfollow: ${response.body()!!.data.essays.toMutableStateList()}"
-                )
 
+                Log.d(TAG, "readRandomEssaysfollow: ${response.body()!!.data.essays.toMutableStateList()}")
                 Log.d(TAG, "readRandomEssaysfollow: 성공입니다 아니면 예시 ${exampleItems.randomList}")
+
                 followingList = exampleItems.followingList
 
 
@@ -132,7 +130,6 @@ class CommunityViewModel @Inject constructor(
 
                 Log.d(TAG, "readOneSentences: ${firstSentences[0].title}")
                 Log.d(TAG, "readOneSentences: ${lastSentences[0].title}")
-
 
             } catch (e: Exception) {
                 e.printStackTrace()

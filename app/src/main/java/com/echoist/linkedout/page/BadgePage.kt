@@ -1,6 +1,12 @@
 package com.echoist.linkedout.page
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -34,7 +40,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,7 +64,6 @@ import com.echoist.linkedout.R
 import com.echoist.linkedout.data.BadgeBoxItemWithTag
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.SettingsViewModel
-import kotlinx.coroutines.delay
 
 @Composable
 fun BadgePage(navController: NavController, viewModel: SettingsViewModel) {
@@ -268,16 +272,11 @@ fun BadgeImg(badgeBoxItem: BadgeBoxItemWithTag){
 @Composable
 fun BadgeLevelUpSuccess(viewModel: SettingsViewModel,badgeBoxItem: BadgeBoxItemWithTag) {
 
-    //보상받기 버튼 누르고 레벨업 성공 시 1초동안 레벨업 성공 표시
-    LaunchedEffect(key1 = Unit) {
-        if (viewModel.isLevelUpSuccess){
-            delay(timeMillis = 1000)
-            viewModel.isLevelUpSuccess = false
-        }
-    }
-
-    //레벨업 버튼 눌렀을때 성공 시 벳지획득 표시
-    if (viewModel.isLevelUpSuccess){
+    AnimatedVisibility(
+        viewModel.isLevelUpSuccess,
+        enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)),
+        exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
+    ) {
         Box(modifier = Modifier
             .fillMaxSize()
             .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center){
