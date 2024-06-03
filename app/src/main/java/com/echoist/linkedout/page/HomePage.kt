@@ -82,39 +82,14 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomePage(navController: NavController,viewModel: HomeViewModel) {
 
-    var isLogoutClicked by remember { mutableStateOf(false) }
-
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            ModalDrawerSheet(
-                drawerShape = RectangleShape,
-                drawerContainerColor = Color(0xE6141414)
-            ) {
-                MyProfile(item = viewModel.userItem)
-                HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
-                LineChartExample()
-                HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
-                ShopDrawerItem()
-                HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
-                MyDrawableItem("화면 설정") {}
-                MyDrawableItem("알림 설정") {}
-                MyDrawableItem("공지 사항") {}
-                MyDrawableItem("고객지원") {}
-                LogoutBtn{isLogoutClicked = true} //todo logout 기능 만들기
-                // ...other drawer items
-            }
-            AnimatedVisibility(
-                visible = isLogoutClicked,
-                enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)),
-                exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
-            ){
-                LogoutBox({isLogoutClicked = false},{isLogoutClicked = false})
-            }
 
+            ModalBottomSheetContent(viewModel = viewModel)
         }
 
     ) {
@@ -142,6 +117,39 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel) {
     }
 }
 
+
+@Composable
+fun ModalBottomSheetContent(viewModel: HomeViewModel){
+    var isLogoutClicked by remember { mutableStateOf(false) }
+
+    ModalDrawerSheet(
+        drawerShape = RectangleShape,
+        drawerContainerColor = Color(0xE6141414)
+    ) {
+        MyProfile(item = viewModel.userItem)
+        HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
+        LineChartExample()
+        HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
+        ShopDrawerItem()
+        HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
+        MyDrawableItem("화면 설정") {}
+        MyDrawableItem("알림 설정") {}
+        MyDrawableItem("공지 사항") {}
+        MyDrawableItem("고객지원") {}
+        LogoutBtn{isLogoutClicked = true} //todo logout 기능 만들기
+        // ...other drawer items
+    }
+    AnimatedVisibility(
+        visible = isLogoutClicked,
+        enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)),
+        exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
+    ){
+        LogoutBox(
+            isCancelClicked = { isLogoutClicked = false },
+            isLogoutClicked = { isLogoutClicked = false }
+        ) //todo 수정필요
+    }
+}
 
 @Composable
 fun WriteFTB(navController: NavController) {
@@ -403,7 +411,9 @@ fun LogoutBtn( isLogoutClicked :()-> Unit){
 
 @Composable
 fun LogoutBox( isCancelClicked: () ->Unit, isLogoutClicked: () -> Unit){
-    Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(0.4f)))
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .background(Color.Black.copy(0.4f)))
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter){
         Box(modifier = Modifier
             .fillMaxWidth()
