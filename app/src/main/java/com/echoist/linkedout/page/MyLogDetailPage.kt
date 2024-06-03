@@ -23,6 +23,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -62,6 +64,7 @@ import com.echoist.linkedout.components.LastEssayPager
 import com.echoist.linkedout.data.DetailEssayResponse
 import com.echoist.linkedout.data.EssayListResponse
 import com.echoist.linkedout.data.ExampleItems
+import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.MyLogViewModel
 import retrofit2.Response
@@ -384,6 +387,9 @@ fun StoryModifyBox(
     isDeleteClicked: () -> Unit,
     isModifyClicked: () -> Unit
 ) {
+
+    val items = listOf("Item 1", "Item 2","Item 3", "Item 4")
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -406,8 +412,9 @@ fun StoryModifyBox(
                     color = Color.White,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(bottom = 48.dp)
+                    modifier = Modifier.padding(bottom = 20.dp)
                 )
+                SingleSelectableList(items)
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -437,6 +444,39 @@ fun StoryModifyBox(
                         Text(text = "추가/변경", color = Color.Black, fontWeight = FontWeight.SemiBold)
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun SingleSelectableList(items: List<String>) { //todo string이 아닌 스토리아이템으로 가야할듯.
+    // 선택된 항목을 추적하기 위한 상태 변수
+    var selectedItem by remember { mutableStateOf<String?>(null) }
+
+    LazyColumn(Modifier.height(250.dp)) {
+        items(items) { item ->
+            val isSelected = item == selectedItem
+            val backgroundColor = if (isSelected) Color.Gray else Color.Transparent
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp)
+                    .clickable {
+                        // 같은 항목을 클릭하면 선택을 해제, 그렇지 않으면 항목을 선택
+                        selectedItem = if (selectedItem == item) null else item
+
+                    }
+                    .background(backgroundColor)
+                    .padding(16.dp)
+            ) {
+
+                    Text(text = item)
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
+                    if (isSelected) Icon(painter = painterResource(id = R.drawable.option_check), tint = LinkedInColor, contentDescription = "")
+                }
+
             }
         }
     }

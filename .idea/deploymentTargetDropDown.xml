@@ -5,6 +5,9 @@
       <entry key="BadgePreview">
         <State />
       </entry>
+      <entry key="MyLogDetailPagePreview">
+        <State />
+      </entry>
       <entry key="MyLogTopAppBar">
         <State />
       </entry>
@@ -23,9 +26,6 @@
           </targetSelectedWithDropDown>
           <timeTargetWasSelectedWithDropDown value="2024-05-29T13:42:03.080706Z" />
         </State>
-      </entry>
-      <entry key="Prev2">
-        <State />
       </entry>
       <entry key="PrevHomePage">
         <State />
