@@ -308,7 +308,7 @@ fun DetailEssay(item: EssayApi.EssayItem) {
             }
             Spacer(modifier = Modifier.height(40.dp))
             Text(
-                text = item.content,
+                text = item.content!!,
                 fontSize = 16.sp,
                 modifier = Modifier,
                 color = Color(0xFFB4B4B4)

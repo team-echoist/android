@@ -103,7 +103,7 @@ fun LastEssayItem(
 
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(
-                    text = item.content,
+                    text = item.content!!,
                     maxLines = 2,
                     color = color,
                     overflow = TextOverflow.Ellipsis

@@ -337,7 +337,7 @@ fun DetailEssay(viewModel: MyLogViewModel) {
             Text(text = essay.title!!, fontSize = 24.sp, modifier = Modifier)
             Spacer(modifier = Modifier.height(40.dp))
             Text(
-                text = essay.content,
+                text = essay.content!!,
                 fontSize = 16.sp,
                 modifier = Modifier,
                 color = Color(0xFFB4B4B4)

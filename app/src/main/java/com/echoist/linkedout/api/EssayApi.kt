@@ -107,7 +107,7 @@ interface EssayApi {
     @JsonClass(generateAdapter = true)
     data class EssayItem(
         val title: String? = null,
-        val content: String,
+        val content: String? = null,
         val status: String? = null,
         val categoryId: Int? = null,
         val thumbnail: String? = null,

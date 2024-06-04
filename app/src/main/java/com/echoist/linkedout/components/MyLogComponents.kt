@@ -206,7 +206,7 @@ fun EssayListItem(
 
             Spacer(modifier = Modifier.height(10.dp))
             Text(
-                text = item.content,
+                text = item.content!!,
                 maxLines = 3,
                 color = color,
                 overflow = TextOverflow.Ellipsis

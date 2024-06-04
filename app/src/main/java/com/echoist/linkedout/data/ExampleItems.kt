@@ -34,6 +34,13 @@ class ExampleItems @Inject constructor(){
     var storyList : SnapshotStateList<Story> = mutableStateListOf(exampleStroy,exampleStroy,exampleStroy,exampleStroy,exampleStroy)
 
 
+    /**
+     * MyLogPage items
+     * 나만의 에세이, 발행된 에세이
+     */
+    var myEssayList by mutableStateOf(mutableStateListOf<EssayApi.EssayItem>())
+    var publishedEssayList by mutableStateOf(mutableStateListOf<EssayApi.EssayItem>())
+
 
     var detailEssay by mutableStateOf(
         EssayApi.EssayItem(

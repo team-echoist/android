@@ -2,7 +2,6 @@ package com.echoist.linkedout.viewModels
 
 import android.util.Log
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
@@ -19,7 +18,6 @@ import java.util.Stack
 import javax.inject.Inject
 
 
-
 @HiltViewModel
 class MyLogViewModel @Inject constructor(
     private val storyApi: StoryApi,
@@ -29,8 +27,9 @@ class MyLogViewModel @Inject constructor(
 
     var isModifyStoryClicked by mutableStateOf(false)
 
-     var myEssayList by mutableStateOf(mutableStateListOf<EssayApi.EssayItem>())
-     var publishedEssayList by mutableStateOf(mutableStateListOf<EssayApi.EssayItem>())
+     var myEssayList = exampleItems.myEssayList
+     var publishedEssayList = exampleItems.publishedEssayList
+
      var detailEssayBackStack = Stack<EssayApi.EssayItem>()
 
      var accessToken: String = "token"

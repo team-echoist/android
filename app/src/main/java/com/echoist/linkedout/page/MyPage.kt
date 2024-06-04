@@ -254,7 +254,7 @@ fun RecentEssayItem(item: EssayApi.EssayItem) {
             Text(text = item.title!!)
             Spacer(modifier = Modifier.height(10.dp))
             Text(
-                text = item.content,
+                text = item.content!!,
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis,
                 fontSize = 10.sp
