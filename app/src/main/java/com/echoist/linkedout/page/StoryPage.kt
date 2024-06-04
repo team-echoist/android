@@ -62,7 +62,8 @@ fun StoryPage(viewModel: StoryViewModel) {
 
 
     LinkedOutTheme {
-        Scaffold(topBar = { StoryTopAppBar() })
+        Scaffold(topBar = { StoryTopAppBar() }
+        , bottomBar = {})
         {
             Column(Modifier.padding(it)) {
                 StoryTitleTextField(viewModel)
@@ -226,7 +227,7 @@ fun EssayListScreen() {
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        LazyColumn {
+        LazyColumn(modifier = Modifier.weight(0.9f)) {
             items(essayItems) { item ->
                 val isSelected = item in selectedItems
                 EssayItem(
@@ -246,9 +247,10 @@ fun EssayListScreen() {
         Button(
             onClick = { /* handle collect action */ },
             modifier = Modifier
+
                 .height(90.dp)
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(20.dp),
             shape = RoundedCornerShape(20)
         ) {
             Text("총 ${selectedItems.size}개의 글 모으기")
@@ -259,6 +261,8 @@ fun EssayListScreen() {
 
 
 }
+
+
 
 
 
