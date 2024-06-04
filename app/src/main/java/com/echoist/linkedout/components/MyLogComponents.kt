@@ -5,7 +5,6 @@ import android.content.res.Configuration
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,6 +28,7 @@ import androidx.compose.material.icons.filled.Commit
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -37,7 +37,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -86,12 +85,6 @@ fun EssayChips(pagerState: PagerState,viewModel: MyLogViewModel){
     Box(modifier = Modifier
         .fillMaxWidth()
         .height(26.dp)){
-//        HorizontalDivider(modifier = Modifier
-//            .fillMaxWidth()
-//            .padding(top = 25.dp)
-//            , thickness = 1.dp
-//            , color = Color(0xFF686868))
-
         Row(modifier = Modifier
             .fillMaxWidth()
             .padding(start = 17.dp)) {
@@ -117,7 +110,7 @@ fun EssayChips(pagerState: PagerState,viewModel: MyLogViewModel){
                 color = if (pagerState.currentPage == 1) Color.White else Color.Gray
             )
             Essaychip(
-                text = "에세이 모음 3",
+                text = "에세이 모음 ${viewModel.storyList.size}",
                 78.dp,
                 {
                     coroutineScope.launch {
@@ -253,14 +246,24 @@ fun EssayListPage2(viewModel: MyLogViewModel, pagerState: PagerState, navControl
 }
 
 @Composable
-fun StoryListPage(viewModel: MyLogViewModel){
+fun StoryListPage(viewModel: MyLogViewModel,navController: NavController){
     Column (Modifier.padding(horizontal = 20.dp)){
-        Button(onClick = { viewModel.isModifyStoryClicked = true }, modifier = Modifier.fillMaxWidth()) {
+        Button(
+            onClick = { navController.navigate("StoryPage") },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(20),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF252525))
+        ) {
             Icon(painter = painterResource(id = R.drawable.text_plus), contentDescription = "add story")
         }
+        Spacer(modifier = Modifier.height(20.dp))
         LazyColumn {
             items(viewModel.storyList) {
                 StoryItem(it,viewModel)
+                Spacer(modifier = Modifier.height(20.dp))
+                HorizontalDivider()
+                Spacer(modifier = Modifier.height(10.dp))
+
             }
         }
     }
@@ -271,30 +274,38 @@ fun StoryListPage(viewModel: MyLogViewModel){
 fun StoryItem(story: Story,viewModel: MyLogViewModel){// story일듯?
     Box(modifier = Modifier
         .fillMaxWidth()
-        .height(60.dp)
-        .padding(horizontal = 20.dp)){
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        .clickable { }
+        .height(60.dp)){
+        Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
             StoryCountIcon(story.essaysCount)
             Spacer(modifier = Modifier.width(30.dp))
-            Text(text = story.name)
+            Text(text = story.name, fontSize = 20.sp)
         }
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
-            Icon(painter = painterResource(id = R.drawable.more), contentDescription = "more", modifier = Modifier.clickable { viewModel.isModifyStoryClicked = true})
+            Icon(
+                painter = painterResource(id = R.drawable.more),
+                contentDescription = "more",
+                modifier = Modifier
+                    .clickable { viewModel.isModifyStoryClicked = true
+                    viewModel.selectedStory = story}
+                    .size(30.dp)
+            )
         }
     }
 }
 
 @Composable
 fun ModifyStoryBox(
-    onEditClick: () -> Unit,
-    onDeleteClick: () -> Unit,
-    onCancelClick: () -> Unit
+    viewModel: MyLogViewModel,
+    navController: NavController
 ) {
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black.copy(alpha = 0.5f))
-            .clickable(onClick = onCancelClick, indication = null, interactionSource = remember { MutableInteractionSource() }),
+            .clickable{
+                      viewModel.isModifyStoryClicked = false
+            },
         contentAlignment = Alignment.BottomCenter
     ) {
         Column(
@@ -304,35 +315,40 @@ fun ModifyStoryBox(
                 .padding(horizontal = 20.dp)
                 , verticalArrangement = Arrangement.Center
         ) {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(65.dp)
-                        .background(Color(0xFF191919), shape = RoundedCornerShape(20.dp))
-                        .clickable(onClick = onEditClick, indication = null, interactionSource = remember { MutableInteractionSource() }),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = "에세이 편집", color = Color.White, fontSize = 16.sp)
-                }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(140.dp)
+                    .background(Color(0xFF1E1E1E), shape = RoundedCornerShape(20.dp)),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
 
-                HorizontalDivider(
-                    color = Color(0xFF202020),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(1.dp)
+                Text(
+                    text = "에세이 편집",
+                    color = Color.White,
+                    fontSize = 16.sp,
+                    modifier = Modifier.clickable {
+                        viewModel.isModifyStoryClicked = false
+                        navController.navigate("StoryPage")
+
+                    }
                 )
+                Spacer(modifier = Modifier.height(20.dp))
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(65.dp)
-                        .background(Color(0xFF1E1E1E), shape = RoundedCornerShape(20.dp))
-                        .clickable(onClick = onDeleteClick, indication = null, interactionSource = remember { MutableInteractionSource() }),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = "에세이 삭제", color = Color.Red, fontSize = 16.sp)
-                }
+                HorizontalDivider(color = Color(0xFF202020))
+                Spacer(modifier = Modifier.height(20.dp))
+
+                    Text(
+                        text = "에세이 삭제",
+                        color = Color.Red,
+                        fontSize = 16.sp,
+                        modifier = Modifier.clickable {
+                            viewModel.isModifyStoryClicked = false
+                            viewModel.deleteMyStory(viewModel.selectedStory.id!!,navController)
+                        }
+                    )
+
             }
             Spacer(modifier = Modifier.height(10.dp))
             Box(
@@ -340,7 +356,9 @@ fun ModifyStoryBox(
                     .fillMaxWidth()
                     .height(65.dp)
                     .background(Color(0xFF1E1E1E), shape = RoundedCornerShape(20.dp))
-                    .clickable(onClick = onCancelClick, indication = null, interactionSource = remember { MutableInteractionSource() }),
+                    .clickable{
+                        viewModel.isModifyStoryClicked =false
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 Text(text = "취소", color = Color.White, fontSize = 16.sp)
@@ -357,7 +375,7 @@ fun EssayPager(pagerState: PagerState, viewModel: MyLogViewModel, navController:
         when (page) {
             0 -> EssayListPage1(viewModel,pagerState,navController)
             1 -> EssayListPage2(viewModel,pagerState,navController)
-            2 -> StoryListPage(viewModel)
+            2 -> StoryListPage(viewModel,navController)
         }
     }
 }

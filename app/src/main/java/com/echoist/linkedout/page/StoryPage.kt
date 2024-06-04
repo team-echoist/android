@@ -1,5 +1,7 @@
 package com.echoist.linkedout.page
 
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -42,22 +45,14 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.StoryViewModel
 
-
-@Preview
-@Composable
-fun PreviewStoryPage() {
-    StoryPage(viewModel = StoryViewModel(), rememberNavController())
-}
 
 @Composable
 fun StoryPage(viewModel: StoryViewModel,navController: NavController) {
@@ -69,7 +64,7 @@ fun StoryPage(viewModel: StoryViewModel,navController: NavController) {
         {
             Column(Modifier.padding(it)) {
                 StoryTitleTextField(viewModel)
-                EssayListScreen()
+                EssayListScreen(viewModel,navController)
             }
         }
     }
@@ -95,7 +90,7 @@ fun StoryTopAppBar(navController: NavController) {
                     .clickable { navController.popBackStack() },
                 tint = Color.White
             )
-        }, actions = { Text(text = "완료") }
+        }
     )
 }
 
@@ -125,7 +120,7 @@ fun StoryTitleTextField(viewModel: StoryViewModel) {
                 focusedTextColor = Color.White,
                 unfocusedTextColor = Color.White
             ),
-            placeholder = { Text(text = "에세이 제목", fontSize = 20.sp) }
+            placeholder = { Text(text = "에세이 제목", fontSize = 20.sp, color = Color(0xFF5F5F5F)) }
         )
     }
 }
@@ -160,18 +155,12 @@ fun EssayItem(
 }
 
 @Composable
-fun EssayListScreen() {
-    val essayItems = listOf(
-        EssayApi.EssayItem(title = "답하기 싫은 질문", createdDate = "2024.02.22"),
-        EssayApi.EssayItem(title = "해맑수록 내 땅", createdDate = "2024.02.22"),
-        EssayApi.EssayItem(title = "한강이 싫어졌다", createdDate = "2024.02.22"),
-        EssayApi.EssayItem(title = "독일에 가고 싶을 때", createdDate = "2024.02.22"),
-        EssayApi.EssayItem(title = "모기가 생기는 계절", createdDate = "2024.02.22"),
-        EssayApi.EssayItem(title = "돈을 쓰면 쓸수록", createdDate = "2024.02.22"),
-        EssayApi.EssayItem(title = "늦게 일어날 때 드는 기분", createdDate = "2024.02.22")
-    )
+fun EssayListScreen(viewModel: StoryViewModel,navController: NavController) {
+    val essayItems = viewModel.essayItems
 
     var selectedItems by remember { mutableStateOf(setOf<EssayApi.EssayItem>()) }
+
+
 
     val annotatedString = remember {
         AnnotatedString.Builder().apply {
@@ -229,6 +218,7 @@ fun EssayListScreen() {
 
         Spacer(modifier = Modifier.height(10.dp))
 
+        // 스토리에 들어갈 에세이 목록
         LazyColumn(modifier = Modifier.weight(0.9f)) {
             items(essayItems) { item ->
                 val isSelected = item in selectedItems
@@ -245,23 +235,28 @@ fun EssayListScreen() {
                 )
             }
         }
-
+        selectedItems.forEach {
+            viewModel.essayIdList.add(it.id!!)
+            Log.d(TAG, "EssayListScreen: ${it.id}")
+        }
+        val containerColor = if (viewModel.storyTextFieldTitle.isNotEmpty()) LinkedInColor else Color(0xFF868686)
+        //에세이 스토리 추가버튼
         Button(
-            onClick = { /* handle collect action */ },
+            onClick = {
+                if (viewModel.storyTextFieldTitle.isNotEmpty()) {
+                    viewModel.createStory(navController) }
+                      },
             modifier = Modifier
 
                 .height(90.dp)
                 .fillMaxWidth()
                 .padding(20.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = containerColor),
             shape = RoundedCornerShape(20)
         ) {
             Text("총 ${selectedItems.size}개의 글 모으기")
         }
-
     }
-
-
-
 }
 
 

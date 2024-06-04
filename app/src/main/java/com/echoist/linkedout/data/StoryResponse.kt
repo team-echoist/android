@@ -22,3 +22,4 @@ data class Story(
     val createdDate: String,
     val essaysCount: Int
 )
+//다른 스토리에 포함된 에세이 // 선택된 스토리에 이미있는 에세이

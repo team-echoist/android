@@ -25,14 +25,14 @@ interface StoryApi {
     ): Response<StoryResponse>
 
     data class StoryData(val name : String, val essayIds : List<Int>? = null)
-    @POST("api/stories")
-    suspend fun writeStory(
+    @POST("api/essays/stories")
+    suspend fun createStory(
         @Header("Authorization") accessToken: String,
         @Body storyData: StoryData
     ): Response<BasicResponse>
 
 
-    @PUT("api/stories/{storyId}")
+    @PUT("api/essays/stories/{storyId}")
     suspend fun modifyStory(
         @Header("Authorization") accessToken: String,
         @Path("storyId") storyId: Int,
@@ -40,7 +40,7 @@ interface StoryApi {
     ): Response<BasicResponse>
 
 
-    @DELETE("api/stories/{storyId}")
+    @DELETE("api/essays/stories/{storyId}")
     suspend fun deleteStory(
         @Header("Authorization") accessToken: String,
         @Path("storyId") storyId: Int

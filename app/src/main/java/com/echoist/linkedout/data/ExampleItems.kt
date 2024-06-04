@@ -77,6 +77,16 @@ class ExampleItems @Inject constructor(){
         userItem.copy(id = 7, nickname = "사자랑이")
     )
 
+    var exampleEssayList = mutableStateListOf( //구독유저 리스트 api통신해서 받을것.
+        detailEssay.copy(id = 1),
+        detailEssay.copy(id = 2),
+        detailEssay.copy(id = 3),
+        detailEssay.copy(id = 4),
+        detailEssay.copy(id = 5),
+        detailEssay.copy(id = 6),
+        detailEssay.copy(id = 7)
+    )
+
     var randomList : SnapshotStateList<EssayApi.EssayItem> = mutableStateListOf(detailEssay,detailEssay,detailEssay,detailEssay)
     var followingList : SnapshotStateList<EssayApi.EssayItem> = mutableStateListOf(detailEssay)
     var firstSentences : SnapshotStateList<EssayApi.EssayItem> = mutableStateListOf(detailEssay,detailEssay,detailEssay,detailEssay,detailEssay)

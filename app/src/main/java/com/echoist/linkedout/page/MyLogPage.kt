@@ -1,5 +1,11 @@
 package com.echoist.linkedout.page
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -26,6 +32,7 @@ fun MyLogPage(navController : NavController,viewModel: MyLogViewModel){
     if (!hasCalledApi.value) {
         viewModel.readMyEssay()
         viewModel.readPublishEssay()
+        viewModel.readMyStory()
 
         hasCalledApi.value = true
     }
@@ -51,14 +58,14 @@ fun MyLogPage(navController : NavController,viewModel: MyLogViewModel){
                 }
             }
         )
-        if (viewModel.isModifyStoryClicked){
-            ModifyStoryBox(onEditClick = {
-                navController.navigate("StoryPage")
-                viewModel.isModifyStoryClicked = false}, onDeleteClick = { /*TODO*/
-                viewModel.isModifyStoryClicked = false}, onCancelClick = {viewModel.isModifyStoryClicked = false})
+
+        AnimatedVisibility(
+            visible = viewModel.isModifyStoryClicked,
+            enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)),
+            exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
+        ) {
+            ModifyStoryBox(viewModel,navController)
 
         }
-
     }
-
 }

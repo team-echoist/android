@@ -465,7 +465,7 @@ fun StoryCountIcon(count : Int){
     val color = if (isSystemInDarkTheme()) Color.White else Color.Black
     val circleColor = if (isSystemInDarkTheme()) Color.Black else Color.White
 
-    Box(modifier = Modifier.size(38.dp)){
+    Box(modifier = Modifier.size(36.dp)){
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomStart){
             Icon(imageVector = Icons.Default.DensitySmall, contentDescription = "", modifier = Modifier.size(34.dp),color)
         }
