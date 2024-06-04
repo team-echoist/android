@@ -52,7 +52,10 @@ fun MyLogPage(navController : NavController,viewModel: MyLogViewModel){
             }
         )
         if (viewModel.isModifyStoryClicked){
-            ModifyStoryBox(onEditClick = { navController.navigate("StoryPage") }, onDeleteClick = { /*TODO*/ }, onCancelClick = {viewModel.isModifyStoryClicked = false})
+            ModifyStoryBox(onEditClick = {
+                navController.navigate("StoryPage")
+                viewModel.isModifyStoryClicked = false}, onDeleteClick = { /*TODO*/
+                viewModel.isModifyStoryClicked = false}, onCancelClick = {viewModel.isModifyStoryClicked = false})
 
         }
 

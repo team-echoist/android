@@ -45,6 +45,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
@@ -54,15 +56,15 @@ import com.echoist.linkedout.viewModels.StoryViewModel
 @Preview
 @Composable
 fun PreviewStoryPage() {
-    StoryPage(viewModel = StoryViewModel())
+    StoryPage(viewModel = StoryViewModel(), rememberNavController())
 }
 
 @Composable
-fun StoryPage(viewModel: StoryViewModel) {
+fun StoryPage(viewModel: StoryViewModel,navController: NavController) {
 
 
     LinkedOutTheme {
-        Scaffold(topBar = { StoryTopAppBar() }
+        Scaffold(topBar = { StoryTopAppBar(navController) }
         , bottomBar = {})
         {
             Column(Modifier.padding(it)) {
@@ -76,7 +78,7 @@ fun StoryPage(viewModel: StoryViewModel) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StoryTopAppBar() {
+fun StoryTopAppBar(navController: NavController) {
     TopAppBar(modifier = Modifier.padding(horizontal = 10.dp),
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
         title = {
@@ -90,7 +92,7 @@ fun StoryTopAppBar() {
                 contentDescription = "",
                 Modifier
                     .size(30.dp)
-                    .clickable { /** nav back **/ },
+                    .clickable { navController.popBackStack() },
                 tint = Color.White
             )
         }, actions = { Text(text = "완료") }

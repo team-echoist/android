@@ -132,7 +132,7 @@ class LoginPage : ComponentActivity() {
                     MyLogPage(navController = navController,myLogViewModel)
                 }
                 composable("StoryPage") {
-                    StoryPage(storyViewModel)
+                    StoryPage(storyViewModel,navController)
                 }
                 composable("MyLogDetailPage") {
                     MyLogDetailPage(navController = navController,myLogViewModel)

@@ -260,7 +260,7 @@ fun StoryListPage(viewModel: MyLogViewModel){
         }
         LazyColumn {
             items(viewModel.storyList) {
-                StoryItem(it)
+                StoryItem(it,viewModel)
             }
         }
     }
@@ -268,7 +268,7 @@ fun StoryListPage(viewModel: MyLogViewModel){
 }
 
 @Composable
-fun StoryItem(story: Story){// story일듯?
+fun StoryItem(story: Story,viewModel: MyLogViewModel){// story일듯?
     Box(modifier = Modifier
         .fillMaxWidth()
         .height(60.dp)
@@ -279,7 +279,7 @@ fun StoryItem(story: Story){// story일듯?
             Text(text = story.name)
         }
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
-            Icon(painter = painterResource(id = R.drawable.more), contentDescription = "more")
+            Icon(painter = painterResource(id = R.drawable.more), contentDescription = "more", modifier = Modifier.clickable { viewModel.isModifyStoryClicked = true})
         }
     }
 }
