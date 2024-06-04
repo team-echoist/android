@@ -11,6 +11,7 @@ import androidx.navigation.NavController
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.api.StoryApi
 import com.echoist.linkedout.data.ExampleItems
+import com.echoist.linkedout.data.Story
 import com.echoist.linkedout.page.Token
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -38,7 +39,8 @@ class MyLogViewModel @Inject constructor(
     var detailEssay by mutableStateOf(exampleItems.detailEssay)
 
     var selectedStory by mutableStateOf(exampleItems.exampleStroy)
-    var storyList = exampleItems.storyList
+    var storyList by mutableStateOf<List<Story>>(emptyList())
+
 
     fun readPublishEssay() {
         myEssayList.clear()
