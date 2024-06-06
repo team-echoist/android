@@ -165,9 +165,8 @@ fun EssayListItem(
     Box(modifier = Modifier
         .fillMaxWidth()
         .clickable {
-            viewModel.detailEssay = item
+            viewModel.readDetailEssay(item.id!!,navController)
             viewModel.detailEssayBackStack.push(item)
-            navController.navigate("MyLogDetailPage")
             Log.d(TAG, "pushpush: ${viewModel.detailEssayBackStack}")
         }
         .height(180.dp)){
@@ -278,7 +277,7 @@ fun StoryItem(story: Story,viewModel: MyLogViewModel){// story일듯?
         .clickable { }
         .height(60.dp)){
         Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
-            StoryCountIcon(story.essaysCount)
+            StoryCountIcon(story.essaysCount!!)
             Spacer(modifier = Modifier.width(30.dp))
             Text(text = story.name, fontSize = 20.sp)
         }

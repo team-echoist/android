@@ -3,6 +3,7 @@ package com.echoist.linkedout.api
 import SingleEssayResponse
 import com.echoist.linkedout.data.DetailEssayResponse
 import com.echoist.linkedout.data.EssayListResponse
+import com.echoist.linkedout.data.Story
 import com.echoist.linkedout.data.UserInfo
 import com.squareup.moshi.JsonClass
 import retrofit2.Response
@@ -101,6 +102,7 @@ interface EssayApi {
         val id: Int? = null,
         val nickName: String? = null,
         val author: UserInfo? = null,
+        val story: Story? = null
     )
 
     //받는용 Tag List id와 name으로 구별하여받음.
@@ -120,6 +122,8 @@ interface EssayApi {
         val updatedDate: String? = null,
         val id: Int? = null,
         val author: UserInfo? = null,
+        val story: Story? = null
+
     )
 
 

@@ -61,6 +61,7 @@ import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.components.LastEssayPager
 import com.echoist.linkedout.data.DetailEssayResponse
 import com.echoist.linkedout.data.EssayListResponse
+import com.echoist.linkedout.data.Story
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.MyLogViewModel
@@ -183,10 +184,12 @@ fun ModifyOption(viewModel: MyLogViewModel, navController: NavController) {
     if (isStoryClicked){
         StoryModifyBox({
             isStoryClicked = false
+            viewModel.deleteEssayInStory(navController)
             //todo 박스가 닫히는것 외에도 기능구현필요
         },{
             isStoryClicked = false
-        })
+            viewModel.modifyEssayInStory(navController)
+        },viewModel)
     }
 
     Box(
@@ -377,10 +380,11 @@ fun DetailEssay(viewModel: MyLogViewModel) {
 @Composable
 fun StoryModifyBox(
     isDeleteClicked: () -> Unit,
-    isModifyClicked: () -> Unit
+    isModifyClicked: () -> Unit,
+    viewModel: MyLogViewModel
 ) {
 
-    val items = listOf("Item 1", "Item 2","Item 3", "Item 4")
+    val items = viewModel.storyList
 
     Box(
         modifier = Modifier
@@ -406,7 +410,7 @@ fun StoryModifyBox(
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(bottom = 20.dp)
                 )
-                SingleSelectableList(items)
+                SingleSelectableList(items,viewModel)
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -442,14 +446,14 @@ fun StoryModifyBox(
 }
 
 @Composable
-fun SingleSelectableList(items: List<String>) { //todo string이 아닌 스토리아이템으로 가야할듯.
+fun SingleSelectableList(items: List<Story>,viewModel: MyLogViewModel) {
     // 선택된 항목을 추적하기 위한 상태 변수
-    var selectedItem by remember { mutableStateOf<String?>(null) }
+    var selectedItem by remember { mutableStateOf(viewModel.findEssayInStory()) }
 
     LazyColumn(Modifier.height(250.dp)) {
         items(items) { item ->
             val isSelected = item == selectedItem
-            val backgroundColor = if (isSelected) Color.Gray else Color.Transparent
+            val backgroundColor = Color.Transparent
 
             Box(
                 modifier = Modifier
@@ -457,14 +461,19 @@ fun SingleSelectableList(items: List<String>) { //todo string이 아닌 스토�
                     .height(60.dp)
                     .clickable {
                         // 같은 항목을 클릭하면 선택을 해제, 그렇지 않으면 항목을 선택
-                        selectedItem = if (selectedItem == item) null else item
+                        selectedItem = if (selectedItem == item){
+                            null
+                        } else item
+                        if (selectedItem != null) {
+                            viewModel.selectedStory = selectedItem!!
+                        }
 
                     }
                     .background(backgroundColor)
                     .padding(16.dp)
             ) {
 
-                    Text(text = item)
+                    Text(text = item.name)
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
                     if (isSelected) Icon(painter = painterResource(id = R.drawable.option_check), tint = LinkedInColor, contentDescription = "")
                 }

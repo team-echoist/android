@@ -56,4 +56,17 @@ interface StoryApi {
 
     ): Response<StoryResponse>
 
+    @PUT("api/essays/{essayId}/stories/{storyId}")
+    suspend fun modifyEssayInStory(
+        @Header("Authorization") accessToken: String,
+        @Path("essayId") essayId: Int,
+        @Path("storyId") storyId: Int
+    ): Response<BasicResponse>
+
+    @DELETE("api/essays/{essayId}/stories")
+    suspend fun deleteEssayInStory(
+        @Header("Authorization") accessToken: String,
+        @Path("essayId") essayId: Int
+    ): Response<BasicResponse>
+
 }
