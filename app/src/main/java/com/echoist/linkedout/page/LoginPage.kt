@@ -76,7 +76,6 @@ import com.echoist.linkedout.viewModels.MyLogViewModel
 import com.echoist.linkedout.viewModels.SettingsViewModel
 import com.echoist.linkedout.viewModels.SignUpViewModel
 import com.echoist.linkedout.viewModels.SocialLoginViewModel
-import com.echoist.linkedout.viewModels.StoryViewModel
 import com.echoist.linkedout.viewModels.WritingViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -107,7 +106,6 @@ class LoginPage : ComponentActivity() {
         val myLogViewModel : MyLogViewModel by viewModels()
         val communityViewModel : CommunityViewModel by viewModels()
         val settingsViewModel : SettingsViewModel by viewModels()
-        val storyViewModel : StoryViewModel by viewModels()
 
 
 
@@ -132,7 +130,7 @@ class LoginPage : ComponentActivity() {
                     MyLogPage(navController = navController,myLogViewModel)
                 }
                 composable("StoryPage") {
-                    StoryPage(storyViewModel,navController)
+                    StoryPage(myLogViewModel,navController)
                 }
                 composable("MyLogDetailPage") {
                     MyLogDetailPage(navController = navController,myLogViewModel)

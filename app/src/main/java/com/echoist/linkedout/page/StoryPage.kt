@@ -51,20 +51,19 @@ import androidx.navigation.NavController
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
-import com.echoist.linkedout.viewModels.StoryViewModel
+import com.echoist.linkedout.viewModels.MyLogViewModel
 
 
 @Composable
-fun StoryPage(viewModel: StoryViewModel,navController: NavController) {
+fun StoryPage(viewModel: MyLogViewModel, navController: NavController) {
 
 
     LinkedOutTheme {
-        Scaffold(topBar = { StoryTopAppBar(navController) }
-        , bottomBar = {})
+        Scaffold(topBar = { StoryTopAppBar(navController, viewModel) }, bottomBar = {})
         {
             Column(Modifier.padding(it)) {
                 StoryTitleTextField(viewModel)
-                EssayListScreen(viewModel,navController)
+                StoryEssayListScreen(viewModel, navController)
             }
         }
     }
@@ -73,7 +72,7 @@ fun StoryPage(viewModel: StoryViewModel,navController: NavController) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StoryTopAppBar(navController: NavController) {
+fun StoryTopAppBar(navController: NavController, viewModel: MyLogViewModel) {
     TopAppBar(modifier = Modifier.padding(horizontal = 10.dp),
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
         title = {
@@ -87,7 +86,11 @@ fun StoryTopAppBar(navController: NavController) {
                 contentDescription = "",
                 Modifier
                     .size(30.dp)
-                    .clickable { navController.popBackStack() },
+                    .clickable {
+                        navController.popBackStack()
+                        viewModel.selectedStory.name = ""
+                        viewModel.storyTextFieldTitle = ""
+                    },
                 tint = Color.White
             )
         }
@@ -95,7 +98,9 @@ fun StoryTopAppBar(navController: NavController) {
 }
 
 @Composable
-fun StoryTitleTextField(viewModel: StoryViewModel) {
+fun StoryTitleTextField(viewModel: MyLogViewModel) {
+    var text by remember { mutableStateOf(viewModel.selectedStory.name) }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -106,11 +111,12 @@ fun StoryTitleTextField(viewModel: StoryViewModel) {
         TextField(
             textStyle = LocalTextStyle.current.copy(fontSize = 20.sp),
             modifier = Modifier.fillMaxWidth(),
-            value = viewModel.storyTextFieldTitle,
+            value = text,
             singleLine = true,
             onValueChange =
             {
-                viewModel.storyTextFieldTitle = it
+                text = it
+                viewModel.storyTextFieldTitle = text
             },
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = Color.Transparent,
@@ -155,11 +161,10 @@ fun EssayItem(
 }
 
 @Composable
-fun EssayListScreen(viewModel: StoryViewModel,navController: NavController) {
-    val essayItems = viewModel.essayItems
+fun StoryEssayListScreen(viewModel: MyLogViewModel, navController: NavController) {
+    val essayItems = viewModel.createStoryEssayItems
 
     var selectedItems by remember { mutableStateOf(setOf<EssayApi.EssayItem>()) }
-
 
 
     val annotatedString = remember {
@@ -239,13 +244,20 @@ fun EssayListScreen(viewModel: StoryViewModel,navController: NavController) {
             viewModel.essayIdList.add(it.id!!)
             Log.d(TAG, "EssayListScreen: ${it.id}")
         }
-        val containerColor = if (viewModel.storyTextFieldTitle.isNotEmpty()) LinkedInColor else Color(0xFF868686)
+        val containerColor =
+            if (viewModel.storyTextFieldTitle.isNotEmpty()) LinkedInColor else Color(0xFF868686)
         //에세이 스토리 추가버튼
         Button(
             onClick = {
                 if (viewModel.storyTextFieldTitle.isNotEmpty()) {
-                    viewModel.createStory(navController) }
-                      },
+                    if (viewModel.isCreateStory){ //스토리 생성
+                        viewModel.createStory(navController)
+                    }
+                    else{ // 스토리 수정
+                        viewModel.modifyStory(navController)
+                    }
+                }
+            },
             modifier = Modifier
 
                 .height(90.dp)

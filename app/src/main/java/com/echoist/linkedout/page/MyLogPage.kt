@@ -40,7 +40,6 @@ fun MyLogPage(navController : NavController,viewModel: MyLogViewModel){
 //todo 첫 구글로그인할때 토큰안들어가는듯
 
     LinkedOutTheme {
-
         Scaffold(
 
             topBar = {

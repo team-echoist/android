@@ -28,7 +28,7 @@ class ExampleItems @Inject constructor(){
     var detailBadgeList : SnapshotStateList<BadgeWithTag> = mutableStateListOf(exampleDetailBadge)
 
     var exampleStroy by mutableStateOf(
-        Story(2,"example story","20240605",2)
+        Story(2,"","20240605",2)
     )
 
     var storyList : SnapshotStateList<Story> = mutableStateListOf(exampleStroy,exampleStroy,exampleStroy,exampleStroy,exampleStroy)

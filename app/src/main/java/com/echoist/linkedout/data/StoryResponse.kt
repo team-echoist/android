@@ -18,7 +18,7 @@ data class Stories(
 @JsonClass(generateAdapter = true)
 data class Story(
     val id: Int? =null,
-    val name: String,
+    var name: String,
     val createdDate: String,
     val essaysCount: Int
 )

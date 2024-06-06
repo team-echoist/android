@@ -2,6 +2,7 @@ package com.echoist.linkedout.viewModels
 
 import android.util.Log
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
@@ -26,6 +27,8 @@ class MyLogViewModel @Inject constructor(
     private val exampleItems: ExampleItems
 ) : ViewModel() {
 
+    var isCreateStory by mutableStateOf(false)
+
     var isModifyStoryClicked by mutableStateOf(false)
 
     var myEssayList = exampleItems.myEssayList
@@ -33,13 +36,21 @@ class MyLogViewModel @Inject constructor(
 
     var detailEssayBackStack = Stack<EssayApi.EssayItem>()
 
-    var accessToken: String = "token"
     var isActionClicked by mutableStateOf(false)
 
     var detailEssay by mutableStateOf(exampleItems.detailEssay)
 
     var selectedStory by mutableStateOf(exampleItems.exampleStroy)
+    var storyTextFieldTitle by mutableStateOf("")
+
     var storyList by mutableStateOf<List<Story>>(emptyList())
+
+
+    //todo 수정필요
+    val createStoryEssayItems = exampleItems.exampleEssayList.toList()
+    val modifyStoryEssayItems = exampleItems.exampleEssayList.toList()
+
+    val essayIdList by mutableStateOf(mutableStateListOf<Int>())
 
 
     fun readPublishEssay() {
@@ -53,9 +64,8 @@ class MyLogViewModel @Inject constructor(
                 Log.d("essaylist data", response.body()!!.path + response.body()!!.data)
 
                 if (response.isSuccessful) {
-                    accessToken = (response.headers()["authorization"].toString())
+                    Token.accessToken = (response.headers()["authorization"].toString())
 
-                    Token.accessToken = accessToken
 
                     response.body()!!.data.essays.forEach {
                         publishedEssayList.add(it)
@@ -85,8 +95,7 @@ class MyLogViewModel @Inject constructor(
 
                 if (response.isSuccessful) {
                     Log.d("TAG", "readMyEssay: ${response.body()!!.data.essays}")
-                    accessToken = (response.headers()["authorization"].toString())
-                    Token.accessToken = accessToken
+                    Token.accessToken = (response.headers()["authorization"].toString())
 
                     response.body()!!.data.essays.forEach {
                         myEssayList.add(it)
@@ -111,7 +120,7 @@ class MyLogViewModel @Inject constructor(
     fun deleteEssay(navController: NavController) {
         viewModelScope.launch {
             try {
-                val response = essayApi.deleteEssay(accessToken, exampleItems.detailEssay.id!!)
+                val response = essayApi.deleteEssay(Token.accessToken, exampleItems.detailEssay.id!!)
 
                 Log.d("writeEssayApiSuccess2", "writeEssayApiSuccess: ${response.isSuccessful}")
                 Log.d("writeEssayApiFailed", "deleteEssaytoken: ${Token.accessToken}")
@@ -122,8 +131,7 @@ class MyLogViewModel @Inject constructor(
 
 
                 if (response.isSuccessful) {
-                    accessToken = (response.headers()["authorization"].toString())
-                    Token.accessToken = accessToken
+                    Token.accessToken = (response.headers()["authorization"].toString())
                     Log.e("writeEssayApiSuccess", "${response.headers()}")
                     Log.e("writeEssayApiSuccess", "${response.code()}")
                     isActionClicked = false
@@ -152,8 +160,7 @@ class MyLogViewModel @Inject constructor(
                 val response = storyApi.readMyStories(accessToken = Token.accessToken)
 
                 if (response.isSuccessful) {
-                    accessToken = (response.headers()["authorization"].toString())
-                    Token.accessToken = accessToken
+                    Token.accessToken = (response.headers()["authorization"].toString())
                     storyList = response.body()!!.data.stories.toMutableStateList()
 
                     Log.e("writeEssayApiSuccess", "${response.headers()}")
@@ -175,7 +182,7 @@ class MyLogViewModel @Inject constructor(
     fun deleteMyStory(storyId: Int, navController: NavController) {
         viewModelScope.launch {
             try {
-                val response = storyApi.deleteStory(accessToken, storyId)
+                val response = storyApi.deleteStory(Token.accessToken, storyId)
                 if (response.isSuccessful) {
                     Token.accessToken = (response.headers()["authorization"].toString())
                     navController.navigate("MYLOG")
@@ -194,5 +201,67 @@ class MyLogViewModel @Inject constructor(
                 Log.e("writeEssayApiFailed", "Failed to write essay: ${e.message}")
             }
         }
+    }
+
+    fun createStory(navController: NavController){
+        viewModelScope.launch {
+            try {
+                val storyData = StoryApi.StoryData(storyTextFieldTitle,essayIdList)
+
+                val response = storyApi.createStory(Token.accessToken,storyData)
+
+                if (response.isSuccessful) {
+                    Token.accessToken = (response.headers()["authorization"].toString())
+                    selectedStory.name = ""
+                    navController.navigate("MYLOG")
+
+                    Log.e("writeEssayApiSuccess", "${response.headers()}")
+                    Log.e("writeEssayApiSuccess", "${response.code()}")
+                }
+                else{
+                    Log.e("writeEssayApiFailed", "${response.errorBody()}")
+                    Log.e("writeEssayApiFailed", "${response.code()}")
+                }
+
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                // api 요청 실패
+                Log.e("writeEssayApiFailed", "Failed to write essay: ${e.message}")
+            }
+        }
+    }
+
+    fun modifyStory(navController: NavController){
+        viewModelScope.launch {
+            try {
+                val storyData = StoryApi.StoryData(storyTextFieldTitle,essayIdList)
+
+                val response = storyApi.modifyStory(Token.accessToken,selectedStory.id!!,storyData)
+
+                if (response.isSuccessful) {
+                    Token.accessToken = (response.headers()["authorization"].toString())
+                    selectedStory.name = ""
+                    navController.navigate("MYLOG")
+
+                    Log.e("writeEssayApiSuccess", "${response.headers()}")
+                    Log.e("writeEssayApiSuccess", "${response.code()}")
+                }
+                else{
+                    Log.e("writeEssayApiFailed", "${response.errorBody()}")
+                    Log.e("writeEssayApiFailed", "${response.code()}")
+                }
+
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                // api 요청 실패
+                Log.e("writeEssayApiFailed", "Failed to write essay: ${e.message}")
+            }
+        }
+    }
+
+    fun readStoryEssayList(){
+
     }
 }

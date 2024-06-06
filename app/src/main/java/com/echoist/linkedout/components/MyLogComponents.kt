@@ -249,7 +249,8 @@ fun EssayListPage2(viewModel: MyLogViewModel, pagerState: PagerState, navControl
 fun StoryListPage(viewModel: MyLogViewModel,navController: NavController){
     Column (Modifier.padding(horizontal = 20.dp)){
         Button(
-            onClick = { navController.navigate("StoryPage") },
+            onClick = { navController.navigate("StoryPage")
+                      viewModel.isCreateStory = true},
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(20),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF252525))
@@ -286,8 +287,13 @@ fun StoryItem(story: Story,viewModel: MyLogViewModel){// story일듯?
                 painter = painterResource(id = R.drawable.more),
                 contentDescription = "more",
                 modifier = Modifier
-                    .clickable { viewModel.isModifyStoryClicked = true
-                    viewModel.selectedStory = story}
+                    .clickable {
+                        viewModel.isModifyStoryClicked = true
+                        viewModel.selectedStory = story
+                        Log.d(TAG, "StoryItem: ${viewModel.selectedStory.name}")
+                        Log.d(TAG, "StoryItem: ${viewModel.selectedStory.name}")
+
+                    }
                     .size(30.dp)
             )
         }
@@ -303,8 +309,8 @@ fun ModifyStoryBox(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black.copy(alpha = 0.5f))
-            .clickable{
-                      viewModel.isModifyStoryClicked = false
+            .clickable {
+                viewModel.isModifyStoryClicked = false
             },
         contentAlignment = Alignment.BottomCenter
     ) {
@@ -330,6 +336,7 @@ fun ModifyStoryBox(
                     fontSize = 16.sp,
                     modifier = Modifier.clickable {
                         viewModel.isModifyStoryClicked = false
+                        viewModel.isCreateStory = false //createstory false면 modify로 취급
                         navController.navigate("StoryPage")
 
                     }
@@ -356,8 +363,8 @@ fun ModifyStoryBox(
                     .fillMaxWidth()
                     .height(65.dp)
                     .background(Color(0xFF1E1E1E), shape = RoundedCornerShape(20.dp))
-                    .clickable{
-                        viewModel.isModifyStoryClicked =false
+                    .clickable {
+                        viewModel.isModifyStoryClicked = false
                     },
                 contentAlignment = Alignment.Center
             ) {

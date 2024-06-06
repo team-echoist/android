@@ -10,6 +10,7 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface StoryApi {
 
@@ -45,5 +46,14 @@ interface StoryApi {
         @Header("Authorization") accessToken: String,
         @Path("storyId") storyId: Int
     ): Response<BasicResponse>
+
+    @GET("api/essays/stories/{storyId}/mine")
+    suspend fun readStoryEssayList(
+        @Header("Authorization") accessToken: String,
+        @Path("storyId") storyId: Int,
+        @Query("page") page : String,
+        @Query("limit") limit : String,
+
+    ): Response<StoryResponse>
 
 }
