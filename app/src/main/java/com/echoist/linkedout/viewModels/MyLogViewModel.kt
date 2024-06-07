@@ -1,6 +1,6 @@
 package com.echoist.linkedout.viewModels
 
-import android.content.ContentValues
+import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -12,11 +12,15 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.api.StoryApi
+import com.echoist.linkedout.data.BadgeBoxItem
 import com.echoist.linkedout.data.ExampleItems
+import com.echoist.linkedout.data.RelatedEssay
+import com.echoist.linkedout.data.RelatedEssayResponse
 import com.echoist.linkedout.data.Story
 import com.echoist.linkedout.page.Token
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import retrofit2.Response
 import java.util.Stack
 import javax.inject.Inject
 
@@ -42,14 +46,17 @@ class MyLogViewModel @Inject constructor(
     var detailEssay by mutableStateOf(exampleItems.detailEssay)
 
     var selectedStory by mutableStateOf(exampleItems.exampleStroy)
+
+
     var storyTextFieldTitle by mutableStateOf("")
 
     var storyList by mutableStateOf<List<Story>>(emptyList())
 
+    var simpleBadgeList by mutableStateOf<List<BadgeBoxItem>>(emptyList())
 
     //todo 수정필요
-    val createStoryEssayItems = exampleItems.exampleEssayList.toList()
-    val modifyStoryEssayItems = exampleItems.exampleEssayList.toList()
+    var createStoryEssayItems by mutableStateOf<List<RelatedEssay>>(emptyList())
+    var modifyStoryEssayItems by mutableStateOf<List<RelatedEssay>>(emptyList())
 
     val essayIdList by mutableStateOf(mutableStateListOf<Int>())
 
@@ -62,9 +69,21 @@ class MyLogViewModel @Inject constructor(
 
             }
         }
-
         return null
     }
+
+
+    fun findEssayInStory2(): MutableList<RelatedEssay> {
+        val relatedEssayList = mutableStateListOf<RelatedEssay>()
+        modifyStoryEssayItems.forEach {
+            if (it.story == selectedStory.id) {
+                Log.d(TAG, "StoryEssayListScreen: ${it.title}")
+                relatedEssayList.add(it)
+            }
+        }
+        return relatedEssayList
+    }
+
     fun readPublishEssay() {
         myEssayList.clear()
         publishedEssayList.clear()
@@ -92,7 +111,7 @@ class MyLogViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                Log.d("exception", e.localizedMessage.toString() + Token.accessToken)
+                Log.d("exception", e.localizedMessage?.toString() + Token.accessToken)
                 Log.d("exception", e.message.toString() + Token.accessToken)
             }
         }
@@ -137,16 +156,16 @@ class MyLogViewModel @Inject constructor(
                 val response = essayApi.readDetailEssay(Token.accessToken,id)
                 exampleItems.detailEssay = response.body()!!.data.essay
                 detailEssay = exampleItems.detailEssay
-                Log.d(ContentValues.TAG, "readdetailEssay: 성공인데요${response.body()!!.data}")
-                Log.d(ContentValues.TAG, "readdetailEssay: 성공인데요${response.body()!!.data.essay.title}")
+                Log.d(TAG, "readdetailEssay: 성공인데요${response.body()!!.data}")
+                Log.d(TAG, "readdetailEssay: 성공인데요${response.body()!!.data.essay.title}")
 
 //                if (response.body()!!.data.previous != null) {
 //                    exampleItems.previousEssayList = response.body()!!.data.previous!!.toMutableStateList()
 //                    previousEssayList = exampleItems.previousEssayList
 //                }
-                Log.d(ContentValues.TAG, "readDetailEssay: previouse ${exampleItems.detailEssay}")
+                Log.d(TAG, "readDetailEssay: previouse ${exampleItems.detailEssay}")
 
-                Log.d(ContentValues.TAG, "readDetailEssay: previouse ${exampleItems.previousEssayList}")
+                Log.d(TAG, "readDetailEssay: previouse ${exampleItems.previousEssayList}")
                 navController.navigate("MyLogDetailPage")
 
                 // API 호출 결과 처리 (예: response 데이터 사용)
@@ -154,9 +173,9 @@ class MyLogViewModel @Inject constructor(
 
                 // 예외 처리
                 e.printStackTrace()
-                Log.d(ContentValues.TAG, "readRandomEssays: ${e.message}")
-                Log.d(ContentValues.TAG, "readRandomEssays: ${e.cause}")
-                Log.d(ContentValues.TAG, "readRandomEssays: ${e.localizedMessage}")
+                Log.d(TAG, "readRandomEssays: ${e.message}")
+                Log.d(TAG, "readRandomEssays: ${e.cause}")
+                Log.d(TAG, "readRandomEssays: ${e.localizedMessage}")
 
             }
         }
@@ -366,6 +385,37 @@ class MyLogViewModel @Inject constructor(
     }
 
     fun readStoryEssayList(){
+        viewModelScope.launch {
+            try {
+                var response : Response<RelatedEssayResponse>? = null
+                Log.d(TAG, "readStoryEssayList: ${selectedStory.name},${selectedStory.id}")
+                response = if (!isCreateStory) { //스토리 편집하기를 누른경우 selectedStory가 존재할것.
+                    storyApi.readStoryEssayList(Token.accessToken, selectedStory.id)
+                } else{
+                    storyApi.readStoryEssayList(Token.accessToken)
+                }
 
+                if (response.isSuccessful) {
+
+                    Token.accessToken = response.headers()["authorization"].toString()
+
+                    Log.e("writeEssayApiSuccess", "${response.headers()}")
+                    Log.e("writeEssayApiSuccess", "${response.code()}")
+                } else {
+                    Log.e("writeEssayApiFailed", "${response.errorBody()}")
+                    Log.e("writeEssayApiFailed", "${response.code()}")
+                }
+
+                //스토리 생성을 누른경우
+                if (isCreateStory){
+                    createStoryEssayItems = response.body()!!.data.essays
+                }
+                else //스토리 수정을 누른경우
+                    modifyStoryEssayItems = response.body()!!.data.essays
+            } catch (e: Exception) {
+                Log.e("writeEssayApiError", "An error occurred: ${e.message}")
+            }
+
+        }
     }
 }

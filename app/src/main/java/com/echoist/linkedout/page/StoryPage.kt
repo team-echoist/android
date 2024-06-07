@@ -33,6 +33,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,7 +49,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.echoist.linkedout.api.EssayApi
+import com.echoist.linkedout.data.RelatedEssay
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.MyLogViewModel
@@ -56,17 +57,27 @@ import com.echoist.linkedout.viewModels.MyLogViewModel
 
 @Composable
 fun StoryPage(viewModel: MyLogViewModel, navController: NavController) {
+    var isApiFinished by remember { mutableStateOf(false) }
 
+    LaunchedEffect(key1 = Unit ) {
+        viewModel.readStoryEssayList()
+        isApiFinished = true
+    }
 
-    LinkedOutTheme {
-        Scaffold(topBar = { StoryTopAppBar(navController, viewModel) }, bottomBar = {})
-        {
-            Column(Modifier.padding(it)) {
-                StoryTitleTextField(viewModel)
-                StoryEssayListScreen(viewModel, navController)
+    if (isApiFinished) {
+
+        LinkedOutTheme {
+            Scaffold(topBar = { StoryTopAppBar(navController, viewModel) }, bottomBar = {})
+            {
+                Column(Modifier.padding(it)) {
+                    StoryTitleTextField(viewModel)
+                    StoryEssayListScreen(viewModel, navController)
+                }
             }
         }
     }
+
+
 }
 
 
@@ -96,7 +107,7 @@ fun StoryTopAppBar(navController: NavController, viewModel: MyLogViewModel) {
         }
     )
 }
-
+//todo story list 들어갔을때 리스트 ui 필요
 @Composable
 fun StoryTitleTextField(viewModel: MyLogViewModel) {
     var text by remember { mutableStateOf(viewModel.selectedStory.name) }
@@ -134,7 +145,7 @@ fun StoryTitleTextField(viewModel: MyLogViewModel) {
 
 @Composable
 fun EssayItem(
-    essayItem: EssayApi.EssayItem,
+    essayItem: RelatedEssay,
     isSelected: Boolean,
     onItemSelected: (Boolean) -> Unit
 ) {
@@ -147,8 +158,8 @@ fun EssayItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column {
-            Text(text = essayItem.title!!)
-            Text(text = essayItem.createdDate!!, fontSize = 10.sp, color = Color(0xFF727070))
+            Text(text = essayItem.title)
+            Text(text = essayItem.createdDate, fontSize = 10.sp, color = Color(0xFF727070))
         }
         IconButton(onClick = { onItemSelected(!isSelected) }) {
             Icon(
@@ -159,12 +170,15 @@ fun EssayItem(
         }
     }
 }
-
+//todo 스토리 편집 클릭했을때 한번에 선택된아이템안뜨고 다음 클릭 때 나옴. 수정필요
 @Composable
 fun StoryEssayListScreen(viewModel: MyLogViewModel, navController: NavController) {
-    val essayItems = viewModel.createStoryEssayItems
+    val essayItems = if (viewModel.isCreateStory) viewModel.createStoryEssayItems else viewModel.modifyStoryEssayItems
 
-    var selectedItems by remember { mutableStateOf(setOf<EssayApi.EssayItem>()) }
+    var selectedItems by remember { mutableStateOf(viewModel.findEssayInStory2().toSet()) }
+    Log.d(TAG, "StoryEssayListScreen: $selectedItems")
+    Log.d(TAG, "StoryEssayListScreen: $selectedItems")
+
 
 
     val annotatedString = remember {
@@ -241,7 +255,7 @@ fun StoryEssayListScreen(viewModel: MyLogViewModel, navController: NavController
             }
         }
         selectedItems.forEach {
-            viewModel.essayIdList.add(it.id!!)
+            viewModel.essayIdList.add(it.id)
             Log.d(TAG, "EssayListScreen: ${it.id}")
         }
         val containerColor =

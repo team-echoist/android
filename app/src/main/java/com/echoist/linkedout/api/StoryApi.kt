@@ -1,6 +1,7 @@
 package com.echoist.linkedout.api
 
 import com.echoist.linkedout.data.BasicResponse
+import com.echoist.linkedout.data.RelatedEssayResponse
 import com.echoist.linkedout.data.StoryResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -47,14 +48,14 @@ interface StoryApi {
         @Path("storyId") storyId: Int
     ): Response<BasicResponse>
 
-    @GET("api/essays/stories/{storyId}/mine")
+    @GET("api/essays/stories/related")
     suspend fun readStoryEssayList(
         @Header("Authorization") accessToken: String,
-        @Path("storyId") storyId: Int,
-        @Query("page") page : String,
-        @Query("limit") limit : String,
+        @Query("storyId") storyId: Int? = null,
+        @Query("page") page : Int = 1,
+        @Query("limit") limit : Int = 20,
 
-    ): Response<StoryResponse>
+    ): Response<RelatedEssayResponse>
 
     @PUT("api/essays/{essayId}/stories/{storyId}")
     suspend fun modifyEssayInStory(

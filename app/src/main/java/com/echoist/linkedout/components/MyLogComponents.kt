@@ -288,9 +288,10 @@ fun StoryItem(story: Story,viewModel: MyLogViewModel){// story일듯?
                 modifier = Modifier
                     .clickable {
                         viewModel.isModifyStoryClicked = true
+                        viewModel.isCreateStory = false
                         viewModel.selectedStory = story
-                        Log.d(TAG, "StoryItem: ${viewModel.selectedStory.name}")
-                        Log.d(TAG, "StoryItem: ${viewModel.selectedStory.name}")
+                        Log.d(TAG, "StoryItem: ${viewModel.selectedStory!!.name}")
+                        Log.d(TAG, "StoryItem: ${viewModel.selectedStory!!.name}")
 
                     }
                     .size(30.dp)
@@ -351,7 +352,7 @@ fun ModifyStoryBox(
                         fontSize = 16.sp,
                         modifier = Modifier.clickable {
                             viewModel.isModifyStoryClicked = false
-                            viewModel.deleteMyStory(viewModel.selectedStory.id!!,navController)
+                            viewModel.deleteMyStory(viewModel.selectedStory!!.id!!,navController)
                         }
                     )
 
