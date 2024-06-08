@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalDrawerSheet
@@ -29,14 +31,16 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.components.ChoiceBox
 import com.echoist.linkedout.components.CommunityChips
 import com.echoist.linkedout.components.CommunityPager
 import com.echoist.linkedout.components.CommunityTopAppBar
-import com.echoist.linkedout.components.SearchingBar
+import com.echoist.linkedout.components.EssayListItem
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
+import com.echoist.linkedout.viewModels.SearchingViewModel
 import kotlinx.coroutines.launch
 
 
@@ -71,6 +75,8 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
         viewModel.isClicked = false
     }
 
+    val searchingViewModel : SearchingViewModel = hiltViewModel()
+
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl ) {
         ModalNavigationDrawer(
             drawerState = drawerState,
@@ -82,13 +88,29 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
                         drawerShape = RectangleShape,
                         drawerContainerColor = Color.Black
                     ) {
-                        SearchingBar(viewModel = viewModel,{
-                            scope.launch {
-                                drawerState.apply {
-                                    if (isClosed) open() else close()
-                                }
+
+                        LazyColumn {
+                            item {
+                                SearchingBar(viewModel = searchingViewModel,{
+                                    scope.launch {
+                                        drawerState.apply {
+                                            if (isClosed) open() else close()
+                                        }
+                                    }
+                                },drawerState)
+
                             }
-                        },drawerState)
+                            //todo 검색할 리스트 뷰모델에서 재정의필요.
+                            items(items = searchingViewModel.previousEssayList) { it -> //랜덤리스트 말고 수정할것. 그사람의 리스트로
+                                EssayListItem(
+                                    item = it,
+                                    viewModel = searchingViewModel,
+                                    navController = navController
+                                )
+                            }
+
+
+                        }
 
 
                         // ...other drawer items
@@ -110,6 +132,7 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
                                         }
                                     }
                                 }
+
                                 CommunityChips(pagerstate)
                             }
                         },

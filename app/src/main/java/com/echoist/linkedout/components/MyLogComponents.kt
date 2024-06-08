@@ -1,7 +1,6 @@
 package com.echoist.linkedout.components
 
 import android.content.ContentValues.TAG
-import android.content.res.Configuration
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -40,7 +39,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -54,22 +52,23 @@ import com.echoist.linkedout.viewModels.MyLogViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun MyLogTopAppBar(){
+fun MyLogTopAppBar(onClickSearch : ()->Unit){
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
         title = {
             Text(text = "구루브 님")
         },
         actions = {
-            Icon(imageVector = Icons.Default.Search, contentDescription = "", Modifier.size(30.dp))
-            Spacer(modifier = Modifier.width(16.dp))
+            Icon(imageVector = Icons.Default.Search, contentDescription = "", Modifier.size(30.dp).clickable { onClickSearch() })
+            Spacer(modifier = Modifier.width(13.dp))
             Icon(
                 imageVector = Icons.Default.Notifications,
                 contentDescription = "",
                 Modifier.size(30.dp)
             )
+            Spacer(modifier = Modifier.width(15.dp))
+
 
         }
     )

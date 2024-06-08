@@ -16,12 +16,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.components.CommuTopAppBar
-import com.echoist.linkedout.components.SearchingBar
 import com.echoist.linkedout.components.SubscriberPage
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
+import com.echoist.linkedout.viewModels.SearchingViewModel
 import kotlinx.coroutines.launch
 
 @Composable
@@ -44,7 +45,9 @@ fun SubscriberProfilePage(
                         drawerShape = RectangleShape,
                         drawerContainerColor = Color.Black
                     ) {
-                        SearchingBar(viewModel = viewModel, {
+                        val searchingViewModel : SearchingViewModel = hiltViewModel()
+
+                        SearchingBar(viewModel = searchingViewModel, {
                             scope.launch {
                                 drawerState.apply {
                                     if (isClosed) open() else close()

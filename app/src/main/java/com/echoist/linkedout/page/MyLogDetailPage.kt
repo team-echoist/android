@@ -67,64 +67,6 @@ import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.MyLogViewModel
 import retrofit2.Response
 
-class FakeEssayApi : EssayApi {
-    // EssayApi 인터페이스의 메서드들을 오버라이드하여 가짜 데이터나 테스트 데이터를 반환합니다.
-    override suspend fun writeEssay(
-        accessToken: String,
-        essayData: EssayApi.WritingEssayItem
-    ): Response<SingleEssayResponse> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun modifyEssay(
-        accessToken: String,
-        essayData: EssayApi.WritingEssayItem
-    ): Response<SingleEssayResponse> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun deleteEssay(accessToken: String, essayId: Int): Response<Unit> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun readMyEssay(
-        accessToken: String,
-        published: Boolean?,
-        categoryId: String,
-        limit: Int
-    ): Response<EssayListResponse> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun readRandomEssays(
-        accessToken: String,
-        limit: Int
-    ): Response<EssayListResponse> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun readFollowingEssays(
-        accessToken: String,
-        limit: Int
-    ): Response<EssayListResponse> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun readOneSentences(
-        accessToken: String,
-        type: String,
-        limit: Int
-    ): Response<EssayListResponse> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun readDetailEssay(
-        accessToken: String,
-        essayId: Int
-    ): Response<DetailEssayResponse> {
-        TODO("Not yet implemented")
-    }
-}
 
 @Composable
 fun MyLogDetailPage(navController: NavController, viewModel: MyLogViewModel) {

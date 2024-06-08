@@ -44,6 +44,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -51,10 +52,10 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
 import com.echoist.linkedout.components.CommuTopAppBar
-import com.echoist.linkedout.components.SearchingBar
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
+import com.echoist.linkedout.viewModels.SearchingViewModel
 import kotlinx.coroutines.launch
 
 
@@ -80,12 +81,14 @@ fun FullSubscriberPage(
             drawerContent = {
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
 
+                    val searchingViewModel : SearchingViewModel = hiltViewModel()
+
                     ModalDrawerSheet(
                         modifier = Modifier.fillMaxSize(),
                         drawerShape = RectangleShape,
                         drawerContainerColor = Color.Black
                     ) {
-                        SearchingBar(viewModel = viewModel, {
+                        SearchingBar(viewModel = searchingViewModel, {
                             scope.launch {
                                 drawerState.apply {
                                     if (isClosed) open() else close()

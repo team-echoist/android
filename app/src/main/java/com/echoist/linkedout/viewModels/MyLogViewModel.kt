@@ -32,6 +32,8 @@ class MyLogViewModel @Inject constructor(
     private val exampleItems: ExampleItems
 ) : ViewModel() {
 
+
+
     //스토리 생성할때 true값
     var isCreateStory by mutableStateOf(false)
 

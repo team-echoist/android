@@ -23,13 +23,13 @@ enum class SentenceInfo {
 }
 
 @HiltViewModel
-class CommunityViewModel @Inject constructor(
+open class CommunityViewModel @Inject constructor(
     private val essayApi: EssayApi,
     private val exampleItems: ExampleItems
 ) : ViewModel() {
 
 
-    var searchingText by mutableStateOf("")
+    open var searchingText by mutableStateOf("")
 
     var isClicked by mutableStateOf(false)
     var sentenceInfo by mutableStateOf(SentenceInfo.First)
