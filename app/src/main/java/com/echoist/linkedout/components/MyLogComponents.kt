@@ -21,10 +21,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Commit
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
@@ -32,7 +30,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -42,7 +39,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -165,7 +161,7 @@ fun EssayListItem(
     Box(modifier = Modifier
         .fillMaxWidth()
         .clickable {
-            viewModel.readDetailEssay(item.id!!,navController)
+            viewModel.readDetailEssay(item.id!!, navController)
             viewModel.detailEssayBackStack.push(item)
             Log.d(TAG, "pushpush: ${viewModel.detailEssayBackStack}")
         }
@@ -188,10 +184,15 @@ fun EssayListItem(
                     )
                 if (pagerState.currentPage == 1){
                     Spacer(modifier = Modifier.width(10.dp))
-                    Surface(color = Color(0xFFFFBB36), modifier = Modifier.size(45.dp,18.dp), shape = CircleShape) {
-
-                        Text(text = "Out", textAlign = TextAlign.Center, modifier = Modifier.padding(bottom = 1.dp))
+                    Box(modifier = Modifier
+                        .size(45.dp, 20.dp)
+                        .background(Color(0xFFFFBB36), shape = RoundedCornerShape(40.dp))
+                        , contentAlignment = Alignment.Center){
+                        Text(
+                            text = "Out", fontSize = 12.sp,color=Color.Black, modifier = Modifier.padding(bottom = 1.dp)
+                        )
                     }
+
                 }
 
             }
@@ -208,7 +209,7 @@ fun EssayListItem(
         Box(contentAlignment = Alignment.TopEnd, modifier = Modifier
             .fillMaxSize()
             .padding(end = 20.dp, top = 20.dp)) {
-            Icon(imageVector = Icons.Default.Commit, contentDescription = "", tint = color,)
+            Icon(painter = painterResource(id = R.drawable.more), tint = color, contentDescription = "more", modifier = Modifier.size(30.dp))
         }
 
         Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier
@@ -290,8 +291,8 @@ fun StoryItem(story: Story,viewModel: MyLogViewModel){// story일듯?
                         viewModel.isModifyStoryClicked = true
                         viewModel.isCreateStory = false
                         viewModel.selectedStory = story
-                        Log.d(TAG, "StoryItem: ${viewModel.selectedStory!!.name}")
-                        Log.d(TAG, "StoryItem: ${viewModel.selectedStory!!.name}")
+                        Log.d(TAG, "StoryItem: ${viewModel.selectedStory.name}")
+                        Log.d(TAG, "StoryItem: ${viewModel.selectedStory.name}")
 
                     }
                     .size(30.dp)
@@ -335,8 +336,6 @@ fun ModifyStoryBox(
                     color = Color.White,
                     fontSize = 16.sp,
                     modifier = Modifier.clickable {
-                        //todo 스토리삭제되면 에세이도 삭제됨. 포함되어있다면.
-                        //todo textfield 가 들어가서 아무것도안하면 공백인것처럼 처리됨;
                         viewModel.isModifyStoryClicked = false
                         viewModel.isCreateStory = false //createstory false면 modify로 취급
                         navController.navigate("StoryPage")
