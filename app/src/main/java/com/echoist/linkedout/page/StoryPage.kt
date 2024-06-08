@@ -109,6 +109,7 @@ fun StoryTopAppBar(navController: NavController, viewModel: MyLogViewModel) {
     )
 }
 //todo story list 들어갔을때 리스트 ui 필요
+//todo 스토리 수정하기들어갔을때 리스트값이 없는데 전체 1개 표시됨.
 @Composable
 fun StoryTitleTextField(viewModel: MyLogViewModel) {
     var text by remember { mutableStateOf(viewModel.selectedStory.name) }
@@ -172,7 +173,6 @@ fun EssayItem(
         }
     }
 }
-//todo 스토리 편집 클릭했을때 한번에 선택된아이템안뜨고 다음 클릭 때 나옴. 수정필요
 @Composable
 fun StoryEssayListScreen(viewModel: MyLogViewModel, navController: NavController) {
     val essayItems = if (viewModel.isCreateStory) viewModel.createStoryEssayItems else viewModel.modifyStoryEssayItems
@@ -189,24 +189,24 @@ fun StoryEssayListScreen(viewModel: MyLogViewModel, navController: NavController
     }
 
 
-    val annotatedString = remember {
-        AnnotatedString.Builder().apply {
-            append("전체 ")
-
-            withStyle(
-                style = SpanStyle(
-                    color = Color(0xFF616FED),
-                    fontWeight = FontWeight.Bold
-                )
-            ) {
-                append("${essayItems.size} ")
-            }
-            append("개")
-        }.toAnnotatedString()
-    }
-
     if (isFunFinished){
         var selectedItems by remember { mutableStateOf(viewModel.findEssayInStory2().toSet()) }
+
+        val annotatedString = remember {
+            AnnotatedString.Builder().apply {
+                append("전체 ")
+
+                withStyle(
+                    style = SpanStyle(
+                        color = Color(0xFF616FED),
+                        fontWeight = FontWeight.Bold
+                    )
+                ) {
+                    append("${essayItems.size} ")
+                }
+                append("개")
+            }.toAnnotatedString()
+        }
 
         Log.d(TAG, "StoryEssayListScreen: $selectedItems")
         Log.d(TAG, "StoryEssayListScreen: $selectedItems")

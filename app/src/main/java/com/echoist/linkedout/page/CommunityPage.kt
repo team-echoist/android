@@ -53,7 +53,7 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    val pagerstate = rememberPagerState { 2 }
+    val pagerstate = rememberPagerState { 1 } //todo 다음버전에 구독페이지 추가하기. pagerstate 2로 수정
     val hasCalledApi = remember { mutableStateOf(false) }
     val color = if (pagerstate.currentPage == 0) Color(0xFFD9D9D9) else Color.Black
 

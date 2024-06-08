@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -28,8 +27,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -47,6 +46,8 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -54,7 +55,12 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -62,8 +68,10 @@ import com.colintheshots.twain.MarkdownText
 import com.echoist.linkedout.R
 import com.echoist.linkedout.components.HashTagGroup
 import com.echoist.linkedout.components.LocationGroup
+import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.WritingViewModel
+import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -85,7 +93,7 @@ fun WritingCompletePage(
 
     LinkedOutTheme {
         BottomSheetScaffold(
-            sheetContainerColor = Color.White,
+            sheetContainerColor = Color(0xFF191919),
             scaffoldState = scaffoldState,
             sheetContent = {
                 WritingCompletePager(viewModel = viewModel, navController = navController)},
@@ -133,7 +141,7 @@ fun WritingCompletePage(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        if (viewModel.locationList.isNotEmpty() || viewModel.longitude.toString().isNotEmpty()){
+                        if (viewModel.locationList.isNotEmpty() || viewModel.longitude != null){
                             Spacer(modifier = Modifier.height(50.dp))
                             LocationGroup(viewModel = viewModel)
                         }
@@ -258,7 +266,7 @@ fun CompleteDate(viewModel: WritingViewModel) {
 fun GroupRingImg(viewModel: WritingViewModel) {
 
     val ringImage =
-        when (viewModel.ringTouchedTime.value) {
+        when (viewModel.ringTouchedTime.intValue) {
             1 -> R.drawable.ring
             2 -> R.drawable.ring2
             3 -> R.drawable.ring3
@@ -268,17 +276,16 @@ fun GroupRingImg(viewModel: WritingViewModel) {
         }
 
     CompositionLocalProvider(LocalRippleConfiguration provides  null) {
-        Image(
-            painter = painterResource(id = ringImage),
-            contentDescription = null,
+
+        Icon(painter = painterResource(id = ringImage), tint = LinkedInColor, contentDescription = "ring",
             modifier = Modifier
                 .height(45.dp)
                 .clickable() {
-                    if (viewModel.ringTouchedTime.value != 1) {
-                        viewModel.ringTouchedTime.value -= 1
+                    if (viewModel.ringTouchedTime.intValue != 1) {
+                        viewModel.ringTouchedTime.intValue -= 1
                     }
                 }
-        )
+            )
     }
 
 
@@ -288,7 +295,7 @@ fun GroupRingImg(viewModel: WritingViewModel) {
 @Composable
 fun SingleRing(viewModel: WritingViewModel) {
     Row(modifier = Modifier.animateContentSize()){
-        when (viewModel.ringTouchedTime.value) {
+        when (viewModel.ringTouchedTime.intValue) {
 
             4 -> RingImg(viewModel)
 
@@ -311,8 +318,9 @@ fun SingleRing(viewModel: WritingViewModel) {
 
 @Composable
 fun RingImg(viewModel: WritingViewModel) {
-    Image(
+    Icon(
         painter = painterResource(id = R.drawable.ring),
+        tint = LinkedInColor,
         contentDescription = null,
         modifier = Modifier
             .height(45.dp)
@@ -324,9 +332,24 @@ fun RingImg(viewModel: WritingViewModel) {
 @Composable
 fun WritingCompletePager(viewModel: WritingViewModel, navController: NavController) {
     val scrollState = rememberScrollState()
-    val pagerstate = rememberPagerState {
-        2
+    val pagerstate = rememberPagerState { 2 }
+    val coroutineScope = rememberCoroutineScope()
+
+    val annotatedString = remember {
+        AnnotatedString.Builder().apply {
+            append("이 ")
+            withStyle(
+                style = SpanStyle(
+                    fontWeight = FontWeight.Bold,
+                    textDecoration = TextDecoration.Underline
+                )
+            ) {
+                append("글을 쓰면서 풀어낸 마음 ")
+            }
+            append("만큼\n고리를 풀어주세요.")
+        }.toAnnotatedString()
     }
+
     HorizontalPager(state = pagerstate) {
         when (it) {
             0 -> {
@@ -338,11 +361,8 @@ fun WritingCompletePager(viewModel: WritingViewModel, navController: NavControll
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Image(
-                        modifier = Modifier.size(211.dp, 48.dp),
-                        painter = painterResource(id = R.drawable.text_bottomsheet),
-                        contentDescription = "고리를 풀어"
-                    )
+
+                    Text(text = annotatedString, textAlign = TextAlign.Center, color = Color.White, fontSize = 16.sp)
                     Spacer(modifier = Modifier.height(28.dp))
 
                     Box {
@@ -362,8 +382,12 @@ fun WritingCompletePager(viewModel: WritingViewModel, navController: NavControll
                             contentAlignment = Alignment.CenterEnd
                         ) {
                             Icon(
-                                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                                imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                                tint = LinkedInColor,
                                 contentDescription = "nextpage",
+                                modifier = Modifier.clickable { coroutineScope.launch {
+                                    pagerstate.animateScrollToPage(1)
+                                } }
                             )
                         }
 
@@ -378,7 +402,7 @@ fun WritingCompletePager(viewModel: WritingViewModel, navController: NavControll
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         viewModel.hashTagList.forEach {it->
-                            Text(text = "#$it", color = Color(0xFF686868))
+                            Text(text = "#$it", color = Color.White)
                             Spacer(modifier = Modifier.width(22.dp))
                         }
                     }
@@ -400,36 +424,45 @@ fun WritingCompletePager(viewModel: WritingViewModel, navController: NavControll
                         Text(
                             text = "이 글을 어떻게 할까요?",
                             modifier = Modifier.padding(bottom = 25.dp),
-                            color = Color.Black
+                            color = Color.White
                         )
                         Button(
                             onClick = {
                                 viewModel.writeEssay(navController = navController, status = "private")
                             },
-                            modifier = Modifier.padding(bottom = 16.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1D1D1D))
+                            modifier = Modifier
+                                .padding(bottom = 16.dp, start = 50.dp, end = 50.dp)
+                                .fillMaxWidth()
+                                .height(44.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = LinkedInColor)
                         ) {
-                            Text(text = "저장할래요", color = Color.White)
+                            Text(text = "저장", color = Color.White)
                         }
                         Button(
                             onClick = {
                                 viewModel.writeEssay(navController, status = "published")
                             },
-                            modifier = Modifier.padding(bottom = 16.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1D1D1D))
+                            modifier = Modifier
+                                .padding(bottom = 16.dp, start = 50.dp, end = 50.dp)
+                                .fillMaxWidth()
+                                .height(44.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = LinkedInColor)
 
                         ) {
-                            Text(text = "나눠볼래요", color = Color.White)
+                            Text(text = "발행", color = Color.White)
                         }
                         Button(
                             onClick = {
                                 viewModel.writeEssay(navController, status = "linkedout")
                             },
-                            modifier = Modifier.padding(bottom = 30.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1D1D1D))
+                            modifier = Modifier
+                                .padding(bottom = 30.dp, start = 50.dp, end = 50.dp)
+                                .fillMaxWidth()
+                                .height(44.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = LinkedInColor)
 
                         ) {
-                            Text(text = "놓아줄래요", color = Color.White)
+                            Text(text = "linked-out", color = Color.White)
                         }
 
                     }
@@ -440,8 +473,12 @@ fun WritingCompletePager(viewModel: WritingViewModel, navController: NavControll
                         contentAlignment = Alignment.CenterStart
                     ) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                            contentDescription = "arrow back"
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
+                            tint = LinkedInColor,
+                            contentDescription = "previousPage",
+                            modifier = Modifier.clickable { coroutineScope.launch {
+                                pagerstate.animateScrollToPage(0)
+                            } }
                         )
                     }
                 }
@@ -451,7 +488,6 @@ fun WritingCompletePager(viewModel: WritingViewModel, navController: NavControll
         }
     }
 }
-//todo page 이동시 뷰모델 초기화하는 함수 따로 작성하기.
 
 @Composable
 fun WritingDeleteCard(viewModel: WritingViewModel, navController: NavController) {
@@ -489,7 +525,7 @@ fun WritingDeleteCard(viewModel: WritingViewModel, navController: NavController)
                                     "OnBoarding",
                                     false
                                 ) //onboarding까지 전부 삭제.
-                                navController.navigate("HOME{viewModel.accessToken}")
+                                navController.navigate("HOME")
                                 viewModel.initialize()
                             },
                         fontSize = 16.sp,

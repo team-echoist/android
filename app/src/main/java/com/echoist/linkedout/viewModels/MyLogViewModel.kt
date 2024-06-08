@@ -384,6 +384,7 @@ class MyLogViewModel @Inject constructor(
         }
     }
 
+    //스토리 생성 // 스토리 수정 시 selectedEssay 받아오기
     fun readStoryEssayList(){
         viewModelScope.launch {
             try {
