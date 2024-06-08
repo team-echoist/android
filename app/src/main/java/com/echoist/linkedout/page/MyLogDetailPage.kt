@@ -448,7 +448,7 @@ fun StoryModifyBox(
 @Composable
 fun SingleSelectableList(items: List<Story>,viewModel: MyLogViewModel) {
     // 선택된 항목을 추적하기 위한 상태 변수
-    var selectedItem by remember { mutableStateOf(viewModel.findEssayInStory()) }
+    var selectedItem by remember { mutableStateOf(viewModel.findStoryInEssay()) }
 
     LazyColumn(Modifier.height(250.dp)) {
         items(items) { item ->

@@ -32,6 +32,7 @@ class MyLogViewModel @Inject constructor(
     private val exampleItems: ExampleItems
 ) : ViewModel() {
 
+    //스토리 생성할때 true값
     var isCreateStory by mutableStateOf(false)
 
     var isModifyStoryClicked by mutableStateOf(false)
@@ -54,13 +55,13 @@ class MyLogViewModel @Inject constructor(
 
     var simpleBadgeList by mutableStateOf<List<BadgeBoxItem>>(emptyList())
 
-    //todo 수정필요
     var createStoryEssayItems by mutableStateOf<List<RelatedEssay>>(emptyList())
     var modifyStoryEssayItems by mutableStateOf<List<RelatedEssay>>(emptyList())
 
     val essayIdList by mutableStateOf(mutableStateListOf<Int>())
 
-    fun findEssayInStory() : Story?{
+    //에세이 option에서 스토리 확인하기
+    fun findStoryInEssay() : Story?{
         storyList.forEach { it->
             if (detailEssay.story != null){
                 if (it.id == detailEssay.story!!.id){
@@ -73,14 +74,25 @@ class MyLogViewModel @Inject constructor(
     }
 
 
-    fun findEssayInStory2(): MutableList<RelatedEssay> {
+    //스토리에서 들어갈수있는 에세이 목록 확인.
+    fun findEssayInStory(): MutableList<RelatedEssay> {
         val relatedEssayList = mutableStateListOf<RelatedEssay>()
-        modifyStoryEssayItems.forEach {
-            if (it.story == selectedStory.id) {
-                Log.d(TAG, "StoryEssayListScreen: ${it.title}")
-                relatedEssayList.add(it)
+
+        if (isCreateStory){
+            createStoryEssayItems.forEach {
+                if (it.story == selectedStory.id) {
+                    relatedEssayList.add(it)
+                }
             }
         }
+        else{
+            modifyStoryEssayItems.forEach {
+                if (it.story == selectedStory.id) {
+                    relatedEssayList.add(it)
+                }
+            }
+        }
+
         return relatedEssayList
     }
 

@@ -188,9 +188,8 @@ fun StoryEssayListScreen(viewModel: MyLogViewModel, navController: NavController
 
     }
 
-
     if (isFunFinished){
-        var selectedItems by remember { mutableStateOf(viewModel.findEssayInStory2().toSet()) }
+        var selectedItems by remember { mutableStateOf(viewModel.findEssayInStory().toSet()) }
 
         val annotatedString = remember {
             AnnotatedString.Builder().apply {
