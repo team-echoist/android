@@ -112,6 +112,7 @@ fun StoryTopAppBar(navController: NavController, viewModel: MyLogViewModel) {
 @Composable
 fun StoryTitleTextField(viewModel: MyLogViewModel) {
     var text by remember { mutableStateOf(viewModel.selectedStory.name) }
+    viewModel.storyTextFieldTitle = text
 
     Box(
         modifier = Modifier
@@ -123,7 +124,7 @@ fun StoryTitleTextField(viewModel: MyLogViewModel) {
         TextField(
             textStyle = LocalTextStyle.current.copy(fontSize = 20.sp),
             modifier = Modifier.fillMaxWidth(),
-            value = text,
+            value = viewModel.storyTextFieldTitle,
             singleLine = true,
             onValueChange =
             {
