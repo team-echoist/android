@@ -335,6 +335,8 @@ fun ModifyStoryBox(
                     color = Color.White,
                     fontSize = 16.sp,
                     modifier = Modifier.clickable {
+                        //todo 스토리삭제되면 에세이도 삭제됨. 포함되어있다면.
+                        //todo textfield 가 들어가서 아무것도안하면 공백인것처럼 처리됨;
                         viewModel.isModifyStoryClicked = false
                         viewModel.isCreateStory = false //createstory false면 modify로 취급
                         navController.navigate("StoryPage")

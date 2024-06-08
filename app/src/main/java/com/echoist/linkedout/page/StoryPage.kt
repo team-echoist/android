@@ -53,6 +53,7 @@ import com.echoist.linkedout.data.RelatedEssay
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.MyLogViewModel
+import kotlinx.coroutines.delay
 
 
 @Composable
@@ -174,11 +175,17 @@ fun EssayItem(
 @Composable
 fun StoryEssayListScreen(viewModel: MyLogViewModel, navController: NavController) {
     val essayItems = if (viewModel.isCreateStory) viewModel.createStoryEssayItems else viewModel.modifyStoryEssayItems
+    // var selectedItems by remember { mutableStateOf(viewModel.findEssayInStory2().toSet()) }
+    //이렇게 코드짜면 안되는 이유가 modifyStoryEssayItems 가 받아들여와지지 않은상태 (api 호출이 종료되지않은상태)에서 실행되버리기때문에
+    //0.1초 딜레이를 주고 api 호출이 이루어지고 난 뒤에 실행되도록
+    //그냥 간단하게 viewmodel.findEssayInStory2가 api 호출이 끝나고 난 뒤에 실행되도록 해야함.
 
-    var selectedItems by remember { mutableStateOf(viewModel.findEssayInStory2().toSet()) }
-    Log.d(TAG, "StoryEssayListScreen: $selectedItems")
-    Log.d(TAG, "StoryEssayListScreen: $selectedItems")
+    var isFunFinished by remember{ mutableStateOf(false) }
+    LaunchedEffect(key1 = Unit ) {
+        delay(100)
+        isFunFinished = true
 
+    }
 
 
     val annotatedString = remember {
@@ -197,92 +204,101 @@ fun StoryEssayListScreen(viewModel: MyLogViewModel, navController: NavController
         }.toAnnotatedString()
     }
 
-    Column(Modifier.padding(horizontal = 20.dp)) {
-        Spacer(modifier = Modifier.height(20.dp))
-        Box(modifier = Modifier.fillMaxWidth()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp), contentAlignment = Alignment.CenterStart
-            ) {
-                Text(
-                    text = annotatedString
-                )
+    if (isFunFinished){
+        var selectedItems by remember { mutableStateOf(viewModel.findEssayInStory2().toSet()) }
+
+        Log.d(TAG, "StoryEssayListScreen: $selectedItems")
+        Log.d(TAG, "StoryEssayListScreen: $selectedItems")
+
+        Column(Modifier.padding(horizontal = 20.dp)) {
+            Spacer(modifier = Modifier.height(20.dp))
+            Box(modifier = Modifier.fillMaxWidth()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp), contentAlignment = Alignment.CenterStart
+                ) {
+                    Text(
+                        text = annotatedString
+                    )
+                }
+
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(text = "전체 선택")
+                        Spacer(modifier = Modifier.width(5.dp))
+                        IconButton(
+                            onClick = {
+                                selectedItems = if (selectedItems.size == essayItems.size) {
+                                    emptySet()
+                                } else {
+                                    essayItems.toSet()
+                                }
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.CheckCircle,
+                                tint = if (selectedItems.size == essayItems.size) LinkedInColor else Color(
+                                    0xFF252525
+                                ),
+                                contentDescription = null
+                            )
+                        }
+                    }
+                }
             }
 
-            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "전체 선택")
-                    Spacer(modifier = Modifier.width(5.dp))
-                    IconButton(
-                        onClick = {
-                            selectedItems = if (selectedItems.size == essayItems.size) {
-                                emptySet()
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // 스토리에 들어갈 에세이 목록
+            LazyColumn(modifier = Modifier.weight(0.9f)) {
+                items(essayItems) { item ->
+                    val isSelected = item in selectedItems
+                    EssayItem(
+                        essayItem = item,
+                        isSelected = isSelected,
+                        onItemSelected = { selected ->
+                            selectedItems = if (selected) {
+                                selectedItems + item
                             } else {
-                                essayItems.toSet()
+                                selectedItems - item
                             }
                         }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.CheckCircle,
-                            tint = if (selectedItems.size == essayItems.size) LinkedInColor else Color(
-                                0xFF252525
-                            ),
-                            contentDescription = null
-                        )
-                    }
+                    )
                 }
             }
-        }
+            selectedItems.forEach {
+                viewModel.essayIdList.add(it.id)
+                Log.d(TAG, "EssayListScreen: ${it.id}")
+            }
 
-        Spacer(modifier = Modifier.height(10.dp))
-
-        // 스토리에 들어갈 에세이 목록
-        LazyColumn(modifier = Modifier.weight(0.9f)) {
-            items(essayItems) { item ->
-                val isSelected = item in selectedItems
-                EssayItem(
-                    essayItem = item,
-                    isSelected = isSelected,
-                    onItemSelected = { selected ->
-                        selectedItems = if (selected) {
-                            selectedItems + item
-                        } else {
-                            selectedItems - item
+            val containerColor =
+                if (viewModel.storyTextFieldTitle.isNotEmpty()) LinkedInColor else Color(0xFF868686)
+            //에세이 스토리 추가버튼
+            Button(
+                onClick = {
+                    if (viewModel.storyTextFieldTitle.isNotEmpty()) {
+                        if (viewModel.isCreateStory){ //스토리 생성
+                            viewModel.createStory(navController)
+                        }
+                        else{ // 스토리 수정
+                            viewModel.modifyStory(navController)
                         }
                     }
-                )
+                },
+                modifier = Modifier
+
+                    .height(90.dp)
+                    .fillMaxWidth()
+                    .padding(20.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = containerColor),
+                shape = RoundedCornerShape(20)
+            ) {
+                Text("총 ${selectedItems.size}개의 글 모으기")
             }
         }
-        selectedItems.forEach {
-            viewModel.essayIdList.add(it.id)
-            Log.d(TAG, "EssayListScreen: ${it.id}")
-        }
-        val containerColor =
-            if (viewModel.storyTextFieldTitle.isNotEmpty()) LinkedInColor else Color(0xFF868686)
-        //에세이 스토리 추가버튼
-        Button(
-            onClick = {
-                if (viewModel.storyTextFieldTitle.isNotEmpty()) {
-                    if (viewModel.isCreateStory){ //스토리 생성
-                        viewModel.createStory(navController)
-                    }
-                    else{ // 스토리 수정
-                        viewModel.modifyStory(navController)
-                    }
-                }
-            },
-            modifier = Modifier
-
-                .height(90.dp)
-                .fillMaxWidth()
-                .padding(20.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = containerColor),
-            shape = RoundedCornerShape(20)
-        ) {
-            Text("총 ${selectedItems.size}개의 글 모으기")
-        }
     }
+
 }
 
 
