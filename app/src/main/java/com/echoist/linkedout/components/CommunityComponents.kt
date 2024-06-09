@@ -94,7 +94,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
 
     //first sentence, lastsentence값은 실시간으로 바뀌지만, 첫문장 마지막문장에서 는 있는값을 교체하는것이기때문에 ?
     var oneSentenceList = if (viewModel.sentenceInfo == SentenceInfo.First) viewModel.firstSentences else viewModel.lastSentences
-    Log.d(TAG, "RandomSentences: ${oneSentenceList[0].content}")
+    //Log.d(TAG, "RandomSentences: ${oneSentenceList[0].content}")
 
     LaunchedEffect(key1 = Unit) {
         delay(50)
@@ -102,7 +102,8 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
     }
 
 
-    if (isNotLoading){
+    //한줄추천 받아온 리스트값이 비어있으면 안보여줌
+    if (isNotLoading && oneSentenceList.isNotEmpty()){
 
         val annotatedString = remember(viewModel.sentenceInfo, oneSentenceList) {
             buildAnnotatedString {

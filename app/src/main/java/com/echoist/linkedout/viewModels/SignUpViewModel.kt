@@ -17,7 +17,6 @@ import javax.inject.Inject
 class SignUpViewModel @Inject constructor(
     private val signUpApi : SignUpApi
 ) : ViewModel() {
-    private var accessToken = mutableStateOf("") // 토큰값을 계속 갱신하며, 이 값을 헤더로 요청보낸다.
 
     var userEmail by mutableStateOf("")
     var userEmailError by mutableStateOf(false)

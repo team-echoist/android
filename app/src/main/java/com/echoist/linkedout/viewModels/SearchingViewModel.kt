@@ -9,6 +9,4 @@ import javax.inject.Inject
 class SearchingViewModel @Inject constructor(
     essayApi: EssayApi,
     exampleItems: ExampleItems
-) : CommunityViewModel(essayApi, exampleItems) {
-
-}
+) : CommunityViewModel(essayApi, exampleItems)

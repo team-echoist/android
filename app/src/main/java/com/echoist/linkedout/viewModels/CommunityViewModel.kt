@@ -1,6 +1,5 @@
 package com.echoist.linkedout.viewModels
 
-import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -160,9 +159,9 @@ open class CommunityViewModel @Inject constructor(
 
                 // 예외 처리
                 e.printStackTrace()
-                Log.d(ContentValues.TAG, "readRandomEssays: ${e.message}")
-                Log.d(ContentValues.TAG, "readRandomEssays: ${e.cause}")
-                Log.d(ContentValues.TAG, "readRandomEssays: ${e.localizedMessage}")
+                Log.d(TAG, "readRandomEssays: ${e.message}")
+                Log.d(TAG, "readRandomEssays: ${e.cause}")
+                Log.d(TAG, "readRandomEssays: ${e.localizedMessage}")
 
             }
         }

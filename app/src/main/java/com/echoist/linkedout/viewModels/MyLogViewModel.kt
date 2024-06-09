@@ -7,7 +7,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.echoist.linkedout.api.EssayApi
@@ -21,7 +20,6 @@ import com.echoist.linkedout.page.Token
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import retrofit2.Response
-import java.util.Stack
 import javax.inject.Inject
 
 
@@ -30,7 +28,7 @@ class MyLogViewModel @Inject constructor(
     private val storyApi: StoryApi,
     private val essayApi: EssayApi,
     private val exampleItems: ExampleItems
-) : ViewModel() {
+) : CommunityViewModel(essayApi, exampleItems) {
 
 
 
@@ -42,11 +40,8 @@ class MyLogViewModel @Inject constructor(
     var myEssayList = exampleItems.myEssayList
     var publishedEssayList = exampleItems.publishedEssayList
 
-    var detailEssayBackStack = Stack<EssayApi.EssayItem>()
 
     var isActionClicked by mutableStateOf(false)
-
-    var detailEssay by mutableStateOf(exampleItems.detailEssay)
 
     var selectedStory by mutableStateOf(exampleItems.exampleStroy)
 
@@ -160,37 +155,6 @@ class MyLogViewModel @Inject constructor(
                 e.printStackTrace()
                 Log.d("exception", (e.localizedMessage?.toString() ?: "") + Token.accessToken)
                 Log.d("exception", e.message.toString() + Token.accessToken)
-            }
-        }
-    }
-
-    fun readDetailEssay(id: Int, navController: NavController) {
-        viewModelScope.launch {
-            try {
-                val response = essayApi.readDetailEssay(Token.accessToken,id)
-                exampleItems.detailEssay = response.body()!!.data.essay
-                detailEssay = exampleItems.detailEssay
-                Log.d(TAG, "readdetailEssay: 성공인데요${response.body()!!.data}")
-                Log.d(TAG, "readdetailEssay: 성공인데요${response.body()!!.data.essay.title}")
-
-//                if (response.body()!!.data.previous != null) {
-//                    exampleItems.previousEssayList = response.body()!!.data.previous!!.toMutableStateList()
-//                    previousEssayList = exampleItems.previousEssayList
-//                }
-                Log.d(TAG, "readDetailEssay: previouse ${exampleItems.detailEssay}")
-
-                Log.d(TAG, "readDetailEssay: previouse ${exampleItems.previousEssayList}")
-                navController.navigate("MyLogDetailPage")
-
-                // API 호출 결과 처리 (예: response 데이터 사용)
-            } catch (e: Exception) {
-
-                // 예외 처리
-                e.printStackTrace()
-                Log.d(TAG, "readRandomEssays: ${e.message}")
-                Log.d(TAG, "readRandomEssays: ${e.cause}")
-                Log.d(TAG, "readRandomEssays: ${e.localizedMessage}")
-
             }
         }
     }
