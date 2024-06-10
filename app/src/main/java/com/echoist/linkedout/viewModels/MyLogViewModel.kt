@@ -47,8 +47,8 @@ class MyLogViewModel @Inject constructor(
 
 
     var storyTextFieldTitle by mutableStateOf("")
+    override var storyList by mutableStateOf<List<Story>>(emptyList())
 
-    var storyList by mutableStateOf<List<Story>>(emptyList())
 
     var simpleBadgeList by mutableStateOf<List<BadgeBoxItem>>(emptyList())
 
@@ -59,7 +59,7 @@ class MyLogViewModel @Inject constructor(
 
     //에세이 option에서 스토리 확인하기
     fun findStoryInEssay() : Story?{
-        storyList.forEach { it->
+        storyList.forEach {
             if (detailEssay.story != null){
                 if (it.id == detailEssay.story!!.id){
                     return it
@@ -358,6 +358,38 @@ class MyLogViewModel @Inject constructor(
                 e.printStackTrace()
                 // api 요청 실패
                 Log.e("writeEssayApiFailed", "Failed to write essay: ${e.message}")
+            }
+        }
+    }
+
+    override fun readDetailEssay(id: Int, navController: NavController) {
+        viewModelScope.launch {
+            try {
+                val response = essayApi.readDetailEssay(Token.accessToken,id)
+                exampleItems.detailEssay = response.body()!!.data.essay
+                detailEssay = exampleItems.detailEssay
+                Log.d(TAG, "readdetailEssay: 성공인데요${response.body()!!.data}")
+                Log.d(TAG, "readdetailEssay: 성공인데요${response.body()!!.data.essay.title}")
+
+                if (response.body()!!.data.previous != null) {
+                    exampleItems.previousEssayList = response.body()!!.data.previous!!.toMutableStateList()
+                    previousEssayList = exampleItems.previousEssayList
+                }
+                Log.d(TAG, "readDetailEssay: previouse ${exampleItems.detailEssay}")
+
+                Log.d(TAG, "readDetailEssay: previouse ${exampleItems.previousEssayList}")
+                //여기서 차이를 둔다.
+                navController.navigate("MyLogDetailPage")
+
+                // API 호출 결과 처리 (예: response 데이터 사용)
+            } catch (e: Exception) {
+
+                // 예외 처리
+                e.printStackTrace()
+                Log.d(TAG, "readRandomEssays: ${e.message}")
+                Log.d(TAG, "readRandomEssays: ${e.cause}")
+                Log.d(TAG, "readRandomEssays: ${e.localizedMessage}")
+
             }
         }
     }

@@ -20,7 +20,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.Menu
@@ -77,6 +79,8 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 
 @Composable
@@ -121,23 +125,28 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel) {
 @Composable
 fun ModalBottomSheetContent(viewModel: HomeViewModel){
     var isLogoutClicked by remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
 
     ModalDrawerSheet(
         drawerShape = RectangleShape,
         drawerContainerColor = Color(0xE6141414)
     ) {
-        MyProfile(item = viewModel.userItem)
-        HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
-        LineChartExample()
-        HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
-        ShopDrawerItem()
-        HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
-        MyDrawableItem("화면 설정") {}
-        MyDrawableItem("알림 설정") {}
-        MyDrawableItem("공지 사항") {}
-        MyDrawableItem("고객지원") {}
-        LogoutBtn{isLogoutClicked = true} //todo logout 기능 만들기
-        // ...other drawer items
+        Column(Modifier.verticalScroll(scrollState)) {
+            MyProfile(item = viewModel.userItem)
+            HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
+            MyLinkedOutBar()
+            LineChartExample()
+            HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
+            ShopDrawerItem()
+            HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
+            MyDrawableItem("화면 설정") {}
+            MyDrawableItem("알림 설정") {}
+            MyDrawableItem("공지 사항") {}
+            MyDrawableItem("고객지원") {}
+            LogoutBtn{isLogoutClicked = true} //todo logout 기능 만들기
+            // ...other drawer items
+        }
+
     }
     AnimatedVisibility(
         visible = isLogoutClicked,
@@ -247,7 +256,7 @@ fun MyProfile(item: UserInfo) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(168.dp)
+            .height(160.dp)
             .padding(20.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxSize()) {
@@ -302,18 +311,8 @@ fun LineChartExample(modifier: Modifier = Modifier) {
 
                 // 오른쪽 Y축 비활성화
                 axisRight.isEnabled = false
-
-                // 왼쪽 Y축 설정
-                axisLeft.apply {
-                    // 최소값 설정
-                    setDrawAxisLine(false)
-                    setDrawGridLines(false) // 그리드 라인 비활성화
-                    // 레이블 활성화
-                    textColor = android.graphics.Color.WHITE // 레이블 색상 설정
-                    textSize = 6f         // 레이블 텍스트 크기 설정
-
-                }
-
+                //왼쪽 y축 비활성화
+                axisLeft.isEnabled = false
 
                 // 차트 설명 비활성화
                 description.isEnabled = false
@@ -339,15 +338,17 @@ fun createLineData(): LineData {
         Entry(4f, 7f)
     )
 
-    val dataSet = LineDataSet(entries, "Label").apply {
+    val dataSet = LineDataSet(entries,"").apply {
         color = android.graphics.Color.BLUE
-        circleRadius = 10f
+        circleRadius = 8f
         valueTextColor = android.graphics.Color.BLACK
         setCircleColor(android.graphics.Color.BLUE)
         lineWidth = 4f
         circleHoleColor = android.graphics.Color.BLUE
         setDrawCircles(true)
         setDrawValues(false)
+
+        setDrawIcons(false)
 
     }
 
@@ -366,6 +367,25 @@ fun createLineData(): LineData {
 //        }
 //    }
 //}
+
+@Composable
+fun MyLinkedOutBar(){
+    val currentDate = LocalDate.now()
+    val formattedDate = currentDate.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"))
+
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 20.dp)
+        .height(60.dp)){
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart){
+            Text(text = "주간 링크드아웃 지수", fontSize = 10.sp, color = Color.White)
+        }
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
+            Text(text = "$formattedDate 현재", fontSize = 10.sp, color = Color(0xFF686868))
+        }
+    }
+    
+}
 
 @Composable
 fun MyDrawableItem(text : String , onClick: () -> Unit) {

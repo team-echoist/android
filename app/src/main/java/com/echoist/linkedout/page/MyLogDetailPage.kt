@@ -1,6 +1,5 @@
 package com.echoist.linkedout.page
 
-import SingleEssayResponse
 import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
@@ -57,15 +56,11 @@ import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
-import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.components.LastEssayPager
-import com.echoist.linkedout.data.DetailEssayResponse
-import com.echoist.linkedout.data.EssayListResponse
 import com.echoist.linkedout.data.Story
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.MyLogViewModel
-import retrofit2.Response
 
 
 @Composable
@@ -152,14 +147,17 @@ fun ModifyOption(viewModel: MyLogViewModel, navController: NavController) {
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.text_minus),
-                        contentDescription = "minus"
+                        contentDescription = "minus",
+                        modifier = Modifier.clickable { viewModel.textSizeDown()}
                     )
                     Spacer(modifier = Modifier.width(30.dp))
                     Text(text = "가")
                     Spacer(modifier = Modifier.width(30.dp))
                     Icon(
                         painter = painterResource(id = R.drawable.text_plus),
-                        contentDescription = "minus"
+                        contentDescription = "minus",
+                        modifier = Modifier.clickable { viewModel.textSizeUp() }
+
                     )
 
                 }
@@ -278,12 +276,19 @@ fun DetailEssay(viewModel: MyLogViewModel) {
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp)
         ) {
-            Spacer(modifier = Modifier.height(170.dp))
-            Text(text = essay.title!!, fontSize = 24.sp, modifier = Modifier)
+            if (essay.thumbnail !=null){
+                Box(modifier = Modifier.fillMaxWidth().height(170.dp)){
+                    GlideImage(model = essay.thumbnail, contentDescription = "essay Thumbnail")
+
+                }
+            }
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Text(text = essay.title!!, fontSize = viewModel.titleTextSize, modifier = Modifier)
             Spacer(modifier = Modifier.height(40.dp))
             Text(
                 text = essay.content!!,
-                fontSize = 16.sp,
+                fontSize = viewModel.contentTextSize,
                 modifier = Modifier,
                 color = Color(0xFFB4B4B4)
             )
@@ -403,7 +408,7 @@ fun SingleSelectableList(items: List<Story>,viewModel: MyLogViewModel) {
                     .height(60.dp)
                     .clickable {
                         // 같은 항목을 클릭하면 선택을 해제, 그렇지 않으면 항목을 선택
-                        selectedItem = if (selectedItem == item){
+                        selectedItem = if (selectedItem == item) {
                             null
                         } else item
                         if (selectedItem != null) {

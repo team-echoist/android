@@ -87,8 +87,8 @@ fun SearchingPage(drawerState: DrawerState,navController: NavController){
 fun SearchingPager(pagerState: PagerState,searchingViewModel: SearchingViewModel,navController: NavController){
     HorizontalPager(state = pagerState) { page ->
         when (page) {
-            0-> LazyColumn() {
-                items(items = searchingViewModel.previousEssayList) { it -> //랜덤리스트 말고 수정할것. 그사람의 리스트로
+            0-> LazyColumn {
+                items(items = searchingViewModel.previousEssayList) {   //랜덤리스트 말고 수정할것. 그사람의 리스트로
                     EssayListItem(
                         item = it,
                         viewModel = searchingViewModel,
@@ -96,8 +96,8 @@ fun SearchingPager(pagerState: PagerState,searchingViewModel: SearchingViewModel
                     )
                 }
             }
-            1-> LazyColumn() {
-                items(items = searchingViewModel.previousEssayList) { it -> //랜덤리스트 말고 수정할것. 그사람의 리스트로
+            1-> LazyColumn {
+                items(items = searchingViewModel.previousEssayList) {   //랜덤리스트 말고 수정할것. 그사람의 리스트로
                     EssayListItem(
                         item = it,
                         viewModel = searchingViewModel,
@@ -163,6 +163,7 @@ fun SearchingBar(viewModel: SearchingViewModel, onClick: () -> Unit, drawerState
 fun SearchingChips(pagerState: PagerState) {
     val coroutineScope = rememberCoroutineScope()
     val color = Color.White
+
 
     Box(
         modifier = Modifier
@@ -247,5 +248,6 @@ fun SearchingChips(pagerState: PagerState) {
 
     }
 }
+
 
 

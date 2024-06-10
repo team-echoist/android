@@ -16,17 +16,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.components.CommuTopAppBar
-import com.echoist.linkedout.components.SubscriberPage
+import com.echoist.linkedout.components.ProfilePage
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
-import com.echoist.linkedout.viewModels.SearchingViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun SubscriberProfilePage(
+fun ProfilePage(
     viewModel: CommunityViewModel,
     navController: NavController
 ) {
@@ -45,18 +43,9 @@ fun SubscriberProfilePage(
                         drawerShape = RectangleShape,
                         drawerContainerColor = Color.Black
                     ) {
-                        val searchingViewModel : SearchingViewModel = hiltViewModel()
 
-                        SearchingBar(viewModel = searchingViewModel, {
-                            scope.launch {
-                                drawerState.apply {
-                                    if (isClosed) open() else close()
-                                }
-                            }
-                        }, drawerState)
+                        SearchingPage(drawerState = drawerState, navController = navController)
 
-
-                        // ...other drawer items
                     }
                 }
             },
@@ -77,7 +66,7 @@ fun SubscriberProfilePage(
                             bottomBar = { MyBottomNavigation(navController) },
                             content = {
                                 Column(modifier = Modifier.padding(it)) {
-                                    SubscriberPage(viewModel, navController)
+                                    ProfilePage(viewModel, navController)
                                 }
                             }
                         )

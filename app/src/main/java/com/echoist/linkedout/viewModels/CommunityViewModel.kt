@@ -6,11 +6,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.ExampleItems
+import com.echoist.linkedout.data.Story
 import com.echoist.linkedout.page.Token
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -30,6 +32,11 @@ open class CommunityViewModel @Inject constructor(
 
     open var searchingText by mutableStateOf("")
 
+    open var storyList by mutableStateOf<List<Story>>(exampleItems.storyList)
+
+    open var titleTextSize by mutableStateOf(24.sp)
+    open var contentTextSize by mutableStateOf(16.sp)
+
     var isClicked by mutableStateOf(false)
     var sentenceInfo by mutableStateOf(SentenceInfo.First)
     var currentClickedUserId by mutableStateOf<Int?>(null) // Add this line
@@ -46,7 +53,17 @@ open class CommunityViewModel @Inject constructor(
     var lastSentences = exampleItems.lastSentences
     var previousEssayList = exampleItems.previousEssayList
 
+    fun textSizeUp(){
+        titleTextSize = titleTextSize.value.plus(8).sp
+        contentTextSize = contentTextSize.value.plus(8).sp
 
+    }
+
+    fun textSizeDown(){
+        titleTextSize = titleTextSize.value.minus(8).sp
+        contentTextSize = contentTextSize.value.minus(8).sp
+
+    }
     fun findUser() {
         currentClickedUserId?.let { userId ->
             val user = exampleItems.subscribeUserList.find { it.id == userId }
@@ -136,7 +153,7 @@ open class CommunityViewModel @Inject constructor(
         }
     }
 
-    fun readDetailEssay(id: Int, navController: NavController) {
+    open fun readDetailEssay(id: Int, navController: NavController) {
         viewModelScope.launch {
             try {
                 val response = essayApi.readDetailEssay(Token.accessToken,id)

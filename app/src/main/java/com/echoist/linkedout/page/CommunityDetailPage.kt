@@ -101,7 +101,7 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
                         LazyColumn {
                             item {
 
-                                    DetailEssay(item = viewModel.detailEssay)
+                                    DetailEssay(item = viewModel.detailEssay,viewModel)
                                     Spacer(modifier = Modifier.height(28.dp))
                                     SubscriberSimpleItem(
                                         item = viewModel.userItem,
@@ -165,7 +165,7 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
                                     .padding(end = 23.dp),
                                 contentAlignment = Alignment.TopEnd
                             ) {
-                                ReportOption(viewModel = viewModel)
+                                ReportOption({},viewModel)
                             }
                         }
 
@@ -249,8 +249,8 @@ fun CommunityTopAppBar(navController: NavController, viewModel: CommunityViewMod
 }
 
 @Composable
-fun ReportOption(viewModel: CommunityViewModel) {
-    Surface(modifier = Modifier.size(180.dp, 250.dp), shape = RoundedCornerShape(2)) {
+fun ReportOption( onClickReport: () -> Unit,viewModel: CommunityViewModel) {
+    Surface(modifier = Modifier.size(180.dp, 110.dp), shape = RoundedCornerShape(2)) {
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
@@ -262,27 +262,30 @@ fun ReportOption(viewModel: CommunityViewModel) {
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.text_minus),
-                    contentDescription = "minus"
+                    contentDescription = "minus",
+                    modifier = Modifier.clickable { viewModel.textSizeDown() }
                 )
                 Spacer(modifier = Modifier.width(30.dp))
                 Text(text = "가")
                 Spacer(modifier = Modifier.width(30.dp))
                 Icon(
                     painter = painterResource(id = R.drawable.text_plus),
-                    contentDescription = "plus"
+                    contentDescription = "plus",
+                    modifier = Modifier.clickable { viewModel.textSizeUp() }
+
                 )
             }
             HorizontalDivider()
-            OptionItem(text = "신고하기", Color.Red, {}, R.drawable.option_report)
+            OptionItem(text = "신고하기", Color.Red, onClick =  {onClickReport()}, R.drawable.option_report)
 
         }
     }
-}
+}//todo bug 스토리를 만들면 가장 최근스토리에 싹 들어간다.
 
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun DetailEssay(item: EssayApi.EssayItem) {
+fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel) {
     Box {
         Column(
             modifier = Modifier
@@ -297,7 +300,7 @@ fun DetailEssay(item: EssayApi.EssayItem) {
                 )
             }
             Row {
-                Text(text = item.title!!, fontSize = 24.sp, modifier = Modifier)
+                Text(text = item.title!!, fontSize = viewModel.titleTextSize, modifier = Modifier)
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
                     Icon(
                         imageVector = Icons.Default.BookmarkBorder,
@@ -309,7 +312,7 @@ fun DetailEssay(item: EssayApi.EssayItem) {
             Spacer(modifier = Modifier.height(40.dp))
             Text(
                 text = item.content!!,
-                fontSize = 16.sp,
+                fontSize = viewModel.contentTextSize,
                 modifier = Modifier,
                 color = Color(0xFFB4B4B4)
             )
