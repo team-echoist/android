@@ -98,13 +98,18 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
                         modifier = Modifier.background(color),
                         topBar = {
                             Column(Modifier.background(color)) {
-                                CommunityTopAppBar("커뮤니티", pagerstate){
-                                    scope.launch {
-                                        drawerState.apply {
-                                            if (isClosed) open() else close()
+                                CommunityTopAppBar(
+                                    "커뮤니티",
+                                    pagerstate,
+                                    {
+                                        scope.launch {
+                                            drawerState.apply {
+                                                if (isClosed) open() else close()
+                                            }
                                         }
-                                    }
-                                }
+                                    },
+                                    { navController.navigate("CommunitySavedEssayPage") }
+                                )
 
                                 CommunityChips(pagerstate)
                             }

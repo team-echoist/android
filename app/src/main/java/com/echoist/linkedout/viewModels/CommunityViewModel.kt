@@ -3,6 +3,7 @@ package com.echoist.linkedout.viewModels
 import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
@@ -30,6 +31,7 @@ open class CommunityViewModel @Inject constructor(
 ) : ViewModel() {
 
 
+
     open var searchingText by mutableStateOf("")
 
     open var storyList by mutableStateOf<List<Story>>(exampleItems.storyList)
@@ -37,7 +39,11 @@ open class CommunityViewModel @Inject constructor(
     open var titleTextSize by mutableStateOf(24.sp)
     open var contentTextSize by mutableStateOf(16.sp)
 
+    open var essayIdList by mutableStateOf(mutableStateListOf<Int>())
+
+
     var isClicked by mutableStateOf(false)
+    var isSavedEssaysModifyClicked by mutableStateOf(false)
     var sentenceInfo by mutableStateOf(SentenceInfo.First)
     var currentClickedUserId by mutableStateOf<Int?>(null) // Add this line
     var isOptionClicked by mutableStateOf(false)
@@ -51,7 +57,7 @@ open class CommunityViewModel @Inject constructor(
     var followingList = exampleItems.followingList
     var firstSentences = exampleItems.firstSentences
     var lastSentences = exampleItems.lastSentences
-    var previousEssayList = exampleItems.previousEssayList
+    var previousEssayList by mutableStateOf(exampleItems.exampleEmptyEssayList)
 
     fun textSizeUp(){
         titleTextSize = titleTextSize.value.plus(8).sp
@@ -183,4 +189,7 @@ open class CommunityViewModel @Inject constructor(
             }
         }
     }
+
+
+
 }

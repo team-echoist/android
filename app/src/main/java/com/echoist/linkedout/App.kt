@@ -1,6 +1,7 @@
 package com.echoist.linkedout
 
 import android.app.Application
+import com.echoist.linkedout.api.BookMarkApi
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.api.SignUpApi
 import com.echoist.linkedout.api.StoryApi
@@ -60,6 +61,12 @@ object AppModule {
     @Singleton
     fun provideStoryApiClient(retrofit: Retrofit) : StoryApi {
         return retrofit.create(StoryApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideBookMarkApiClient(retrofit: Retrofit) : BookMarkApi {
+        return retrofit.create(BookMarkApi::class.java)
     }
 }
 

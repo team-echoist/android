@@ -9,7 +9,8 @@ data class EssayListResponse(
     val data: Essays,
     val path: String,
     val success: Boolean,
-    val timestamp: String
+    val timestamp: String,
+    val statusCode: Int?
 )
 @JsonClass(generateAdapter = true)
 data class Essays(

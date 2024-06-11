@@ -55,8 +55,6 @@ class MyLogViewModel @Inject constructor(
     var createStoryEssayItems by mutableStateOf<List<RelatedEssay>>(emptyList())
     var modifyStoryEssayItems by mutableStateOf<List<RelatedEssay>>(emptyList())
 
-    val essayIdList by mutableStateOf(mutableStateListOf<Int>())
-
     //에세이 option에서 스토리 확인하기
     fun findStoryInEssay() : Story?{
         storyList.forEach {

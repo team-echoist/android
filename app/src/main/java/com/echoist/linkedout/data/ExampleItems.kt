@@ -45,7 +45,7 @@ class ExampleItems @Inject constructor(){
     var detailEssay by mutableStateOf(
         EssayApi.EssayItem(
             author = UserInfo(1,"groove"),
-            content = "이 에세이는 예시입니다.123123",
+            content = "이 에세이는 예시입니다.123123이 에세이는 예시입니다.123123이 에세이는 예시입니다.123123이 에세이는 예시입니다.123123",
             createdDate = "2024년 04월 28일 16:47",
             id = 1,
             linkedOutGauge = 5,
@@ -77,7 +77,7 @@ class ExampleItems @Inject constructor(){
         userItem.copy(id = 7, nickname = "사자랑이")
     )
 
-    var exampleEssayList = mutableStateListOf( //구독유저 리스트 api통신해서 받을것.
+    var exampleEmptyEssayList = mutableStateListOf( //구독유저 리스트 api통신해서 받을것.
         detailEssay.copy(id = 1),
         detailEssay.copy(id = 2),
         detailEssay.copy(id = 3),

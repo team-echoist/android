@@ -220,15 +220,30 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                                         .firstOrNull()
                                         ?.let { annotation ->
                                             when (annotation.item) {
-                                                "Sentence1" ->  viewModel.readDetailEssay(oneSentenceList[0].id!!, navController = navController)
+                                                "Sentence1" -> viewModel.readDetailEssay(
+                                                    oneSentenceList[0].id!!,
+                                                    navController = navController
+                                                )
 
-                                                "Sentence2" -> viewModel.readDetailEssay(oneSentenceList[1].id!!, navController = navController)
+                                                "Sentence2" -> viewModel.readDetailEssay(
+                                                    oneSentenceList[1].id!!,
+                                                    navController = navController
+                                                )
 
-                                                "Sentence3" -> viewModel.readDetailEssay(oneSentenceList[2].id!!, navController = navController)
+                                                "Sentence3" -> viewModel.readDetailEssay(
+                                                    oneSentenceList[2].id!!,
+                                                    navController = navController
+                                                )
 
-                                                "Sentence4" -> viewModel.readDetailEssay(oneSentenceList[3].id!!, navController = navController)
+                                                "Sentence4" -> viewModel.readDetailEssay(
+                                                    oneSentenceList[3].id!!,
+                                                    navController = navController
+                                                )
 
-                                                "Sentence5" -> viewModel.readDetailEssay(oneSentenceList[4].id!!, navController = navController)
+                                                "Sentence5" -> viewModel.readDetailEssay(
+                                                    oneSentenceList[4].id!!,
+                                                    navController = navController
+                                                )
                                             }
                                         }
                                 }
@@ -373,7 +388,12 @@ fun SentenceChoice(viewModel: CommunityViewModel) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CommunityTopAppBar(text: String, pagerState: PagerState,onClick : ()->Unit) {
+fun CommunityTopAppBar(
+    text: String,
+    pagerState: PagerState,
+    onSearchClick: () -> Unit,
+    onClickSaved: () -> Unit
+) {
     val color = if (pagerState.currentPage == 0) Color.Black else Color.White
 
 
@@ -388,14 +408,16 @@ fun CommunityTopAppBar(text: String, pagerState: PagerState,onClick : ()->Unit) 
                 contentDescription = "",
                 Modifier
                     .size(30.dp)
-                    .clickable { onClick() },
+                    .clickable { onSearchClick() },
                 tint = color
             )
             Spacer(modifier = Modifier.width(13.dp))
             Icon(
                 imageVector = Icons.Default.Bookmark,
                 contentDescription = "",
-                Modifier.size(30.dp),
+                Modifier
+                    .size(30.dp)
+                    .clickable { onClickSaved() },
                 tint = color
             )
             Spacer(modifier = Modifier.width(15.dp))
@@ -606,6 +628,10 @@ fun EssayListItem(
         ) {
             HorizontalDivider(color = Color(0xFF686868))
         }
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
+
+        }
+
 
     }
 }
