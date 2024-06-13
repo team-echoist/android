@@ -62,6 +62,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun CommunitySavedEssayPage(navController: NavController, viewModel: BookMarkViewModel) {
     viewModel.readMyBookMarks()
+    val text = if (viewModel.isSavedEssaysModifyClicked) "완료" else "편집"
     LinkedOutTheme {
         Scaffold(topBar = {
             SavedEssayTopAppBar(
@@ -69,7 +70,8 @@ fun CommunitySavedEssayPage(navController: NavController, viewModel: BookMarkVie
                 onClickModify = {
                     viewModel.isSavedEssaysModifyClicked = !viewModel.isSavedEssaysModifyClicked
                 },
-                navController = navController
+                navController = navController,text
+
             )
         },
             bottomBar = {})
@@ -87,7 +89,8 @@ fun CommunitySavedEssayPage(navController: NavController, viewModel: BookMarkVie
 fun SavedEssayTopAppBar(
     onClickNavBack: () -> Unit,
     onClickModify: () -> Unit,
-    navController: NavController
+    navController: NavController,
+    modifyText : String
 ) {
 
     TopAppBar(
@@ -111,7 +114,7 @@ fun SavedEssayTopAppBar(
         },
         actions = {
             Spacer(modifier = Modifier.width(13.dp))
-            Text(text = "편집", fontSize = 16.sp, modifier = Modifier.clickable { onClickModify() })
+            Text(text = modifyText, fontSize = 16.sp, modifier = Modifier.clickable { onClickModify() })
             Spacer(modifier = Modifier.width(15.dp))
 
 

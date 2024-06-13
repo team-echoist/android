@@ -9,7 +9,7 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-interface BookMarkApi {
+interface BookMarkApi{
 
     @GET("api/essays/bookmark")
     suspend fun readMyBookMark(
@@ -27,7 +27,7 @@ interface BookMarkApi {
     @DELETE("api/essays/bookmarks")
     suspend fun deleteBookMarks(
         @Header("Authorization") accessToken: String,
-        @Path("essayIds") essayIds : List<Int>
+        @Query("essayIds") essayIds : List<Int>
     ): Response<Unit>
 
     @DELETE("api/essays/bookmarks")

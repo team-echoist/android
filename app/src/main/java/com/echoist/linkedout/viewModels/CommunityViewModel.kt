@@ -11,6 +11,10 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.echoist.linkedout.MAX_CONTENT_SIZE
+import com.echoist.linkedout.MAX_TITLE_SIZE
+import com.echoist.linkedout.MIN_CONTENT_SIZE
+import com.echoist.linkedout.MIN_TITLE_SIZE
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.data.Story
@@ -23,13 +27,14 @@ import javax.inject.Inject
 enum class SentenceInfo {
     First, Last
 }
+const val MAX_SIZE = 100
+
 
 @HiltViewModel
 open class CommunityViewModel @Inject constructor(
     private val essayApi: EssayApi,
     private val exampleItems: ExampleItems
 ) : ViewModel() {
-
 
 
     open var searchingText by mutableStateOf("")
@@ -50,7 +55,7 @@ open class CommunityViewModel @Inject constructor(
     var detailEssayBackStack = Stack<EssayApi.EssayItem>()
     var unSubscribeClicked by mutableStateOf(false)
 
-    var detailEssay = exampleItems.detailEssay
+    var detailEssay by mutableStateOf(exampleItems.detailEssay)
     var randomList = exampleItems.randomList
     var subscribeUserList = exampleItems.subscribeUserList
     var userItem = exampleItems.userItem
@@ -60,14 +65,14 @@ open class CommunityViewModel @Inject constructor(
     var previousEssayList by mutableStateOf(exampleItems.exampleEmptyEssayList)
 
     fun textSizeUp(){
-        titleTextSize = titleTextSize.value.plus(8).sp
-        contentTextSize = contentTextSize.value.plus(8).sp
+        titleTextSize = if (titleTextSize.value <= MAX_TITLE_SIZE) titleTextSize.value.plus(1).sp else titleTextSize
+        contentTextSize = if (contentTextSize.value <= MAX_CONTENT_SIZE) contentTextSize.value.plus(1).sp else contentTextSize
 
     }
 
     fun textSizeDown(){
-        titleTextSize = titleTextSize.value.minus(8).sp
-        contentTextSize = contentTextSize.value.minus(8).sp
+        titleTextSize = if (titleTextSize.value >= MIN_TITLE_SIZE) titleTextSize.value.minus(1).sp else titleTextSize
+        contentTextSize = if (contentTextSize.value >= MIN_CONTENT_SIZE) contentTextSize.value.minus(1).sp else contentTextSize
 
     }
     fun findUser() {

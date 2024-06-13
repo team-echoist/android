@@ -34,7 +34,7 @@ object AppModule {
             .build()
 
         return Retrofit.Builder()
-            .baseUrl("https://www.linkedoutapp.com/")
+            .baseUrl(BASE_URL)
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
     }

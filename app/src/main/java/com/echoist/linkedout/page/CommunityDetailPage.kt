@@ -30,6 +30,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowLeft
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
+import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -57,6 +58,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -66,8 +69,10 @@ import com.echoist.linkedout.R
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.components.EssayListItem
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
+import com.echoist.linkedout.viewModels.BookMarkViewModel
 import com.echoist.linkedout.viewModels.CommunityViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Preview
 @Composable
@@ -202,7 +207,6 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
     }
 
 }
-//todo 마지막문장 첫문장 기능만들기~
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -286,6 +290,8 @@ fun ReportOption( onClickReport: () -> Unit,viewModel: CommunityViewModel) {
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel) {
+    var isEssayBookMarked by remember { mutableStateOf(false) }
+
     Box {
         Column(
             modifier = Modifier
@@ -302,10 +308,24 @@ fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel) {
             Row {
                 Text(text = item.title!!, fontSize = viewModel.titleTextSize, modifier = Modifier)
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+
+                    val bookMarkViewModel : BookMarkViewModel = hiltViewModel()
+                    val iconImg = if (isEssayBookMarked) Icons.Default.Bookmark else Icons.Default.BookmarkBorder
+
                     Icon(
-                        imageVector = Icons.Default.BookmarkBorder,
+                        imageVector = iconImg,
                         contentDescription = "",
-                        Modifier.size(30.dp),
+                        Modifier
+                            .size(30.dp)
+                            .clickable {
+                                isEssayBookMarked = !isEssayBookMarked
+
+                                bookMarkViewModel.viewModelScope.launch {
+                                    if (isEssayBookMarked) bookMarkViewModel.addBookMark()
+                                    else bookMarkViewModel.deleteBookMark()
+                                }
+
+                            },
                     )
                 }
             }

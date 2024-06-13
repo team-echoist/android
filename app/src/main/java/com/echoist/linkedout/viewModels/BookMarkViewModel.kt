@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.viewModelScope
 import com.echoist.linkedout.api.BookMarkApi
 import com.echoist.linkedout.api.EssayApi
@@ -28,7 +29,7 @@ open class BookMarkViewModel @Inject constructor(
             try {
                 val response = bookMarkApi.readMyBookMark(Token.accessToken)
                 if(response.success){
-                    //bookMarkEssayList = response.data.essays.toMutableStateList()
+                    bookMarkEssayList = response.data.essays.toMutableStateList()
                 }
 
                 Log.d(ContentValues.TAG, "bookMarkEssayList: 성공입니다 아니면 예시 ${exampleItems.randomList}")
@@ -44,5 +45,49 @@ open class BookMarkViewModel @Inject constructor(
 
             }
         }
+    }
+
+    fun addBookMark(){
+        viewModelScope.launch {
+            try {
+                bookMarkApi.addBookMark(Token.accessToken,detailEssay.id!!)
+
+                Log.d(ContentValues.TAG, "bookMarkEssayList: 성공입니다  ${detailEssay.title}")
+
+                // API 호출 결과 처리 (예: response 데이터 사용)
+            } catch (e: Exception) {
+
+                // 예외 처리
+                e.printStackTrace()
+                Log.d(ContentValues.TAG, "bookMarkEssayList: ${e.message}")
+                Log.d(ContentValues.TAG, "bookMarkEssayList: ${e.cause}")
+                Log.d(ContentValues.TAG, "bookMarkEssayList: ${e.localizedMessage}")
+
+            }
+        }
+
+    }
+
+    fun deleteBookMark(){
+        viewModelScope.launch {
+            try {
+                val deleteEssayId = listOf(detailEssay.id!!)
+                bookMarkApi.deleteBookMarks(Token.accessToken,deleteEssayId)
+
+                Log.d(ContentValues.TAG, "bookMarkEssayList: 성공입니다 아니면 예시 ${exampleItems.randomList}")
+
+
+                // API 호출 결과 처리 (예: response 데이터 사용)
+            } catch (e: Exception) {
+
+                // 예외 처리
+                e.printStackTrace()
+                Log.d(ContentValues.TAG, "bookMarkEssayList: ${e.message}")
+                Log.d(ContentValues.TAG, "bookMarkEssayList: ${e.cause}")
+                Log.d(ContentValues.TAG, "bookMarkEssayList: ${e.localizedMessage}")
+
+            }
+        }
+
     }
 }
