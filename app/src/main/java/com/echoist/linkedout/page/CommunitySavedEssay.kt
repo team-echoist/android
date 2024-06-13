@@ -140,6 +140,9 @@ fun SavedEssayListItem(
             }
             .height(140.dp)
     ) {
+
+
+
         Row {
             Column(
                 modifier = Modifier
@@ -183,6 +186,13 @@ fun SavedEssayListItem(
             }
         }
 
+        if (viewModel.isSavedEssaysModifyClicked && !isSelected){
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(0.7f)))
+        }
+
+
         Box(
             contentAlignment = Alignment.BottomStart,
             modifier = Modifier
@@ -205,7 +215,8 @@ fun SavedEssayListItem(
 
         if (viewModel.isSavedEssaysModifyClicked) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
-                IconButton(onClick = { onItemSelected(!isSelected) }) {
+                IconButton(onClick = { onItemSelected(!isSelected)
+                }) {
                     Icon(
                         imageVector = Icons.Default.CheckCircle,
                         tint = checkColor,
@@ -270,7 +281,10 @@ fun SavedEssayListScreen(viewModel: BookMarkViewModel, navController: NavControl
                         contentAlignment = Alignment.CenterEnd
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(text = "전체 선택", fontSize = 12.sp)
+
+                            val textColor = if (selectedItems.size != essayItems.size) Color(0xFF727070) else Color.White
+
+                            Text(text = "전체 선택", fontSize = 12.sp, color = textColor)
                             Spacer(modifier = Modifier.width(5.dp))
                             IconButton(
                                 modifier = Modifier.size(20.dp),

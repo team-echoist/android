@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.viewModelScope
 import com.echoist.linkedout.api.BookMarkApi
 import com.echoist.linkedout.api.EssayApi
@@ -29,7 +28,7 @@ open class BookMarkViewModel @Inject constructor(
             try {
                 val response = bookMarkApi.readMyBookMark(Token.accessToken)
                 if(response.success){
-                    bookMarkEssayList = response.data.essays.toMutableStateList()
+                    //bookMarkEssayList = response.data.essays.toMutableStateList()
                 }
 
                 Log.d(ContentValues.TAG, "bookMarkEssayList: 성공입니다 아니면 예시 ${exampleItems.randomList}")
