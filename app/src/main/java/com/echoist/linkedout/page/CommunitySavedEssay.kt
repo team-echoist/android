@@ -186,11 +186,7 @@ fun SavedEssayListItem(
             }
         }
 
-        if (viewModel.isSavedEssaysModifyClicked && !isSelected){
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(0.7f)))
-        }
+
 
 
         Box(
@@ -210,6 +206,12 @@ fun SavedEssayListItem(
             modifier = Modifier.fillMaxSize()
         ) {
             HorizontalDivider(color = Color(0xFF686868))
+        }
+
+        if (viewModel.isSavedEssaysModifyClicked && !isSelected){
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(0.7f)))
         }
         val checkColor = if (isSelected) LinkedInColor else Color(0xFF252525)
 
