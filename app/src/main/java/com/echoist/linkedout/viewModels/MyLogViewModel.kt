@@ -9,6 +9,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.echoist.linkedout.api.BookMarkApi
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.api.StoryApi
 import com.echoist.linkedout.data.BadgeBoxItem
@@ -27,8 +28,8 @@ import javax.inject.Inject
 class MyLogViewModel @Inject constructor(
     private val storyApi: StoryApi,
     private val essayApi: EssayApi,
-    private val exampleItems: ExampleItems
-) : CommunityViewModel(essayApi, exampleItems) {
+    private val exampleItems: ExampleItems, bookMarkApi: BookMarkApi
+) : CommunityViewModel(essayApi, exampleItems,bookMarkApi) {
 
 
 

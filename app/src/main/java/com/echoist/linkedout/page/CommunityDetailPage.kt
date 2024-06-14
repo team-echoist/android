@@ -58,7 +58,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -69,7 +68,6 @@ import com.echoist.linkedout.R
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.components.EssayListItem
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
-import com.echoist.linkedout.viewModels.BookMarkViewModel
 import com.echoist.linkedout.viewModels.CommunityViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -86,27 +84,29 @@ fun CommunityDetailPagePreview() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewModel) {
+
     var isClicked by remember { mutableStateOf(false) }
 
-    LinkedOutTheme {
-        Scaffold(
-            topBar = {
+
+        LinkedOutTheme {
+            Scaffold(
+                topBar = {
 
                     CommunityTopAppBar(navController = navController, viewModel)
 
-            },
-            content = { it ->
-                CompositionLocalProvider(LocalRippleConfiguration provides null) {
-                    Box(
-                        Modifier
-                            .clickable { isClicked = !isClicked }
-                            .padding(it)
-                            .fillMaxSize(), contentAlignment = Alignment.TopCenter
-                    ) {
-                        LazyColumn {
-                            item {
+                },
+                content = { it ->
+                    CompositionLocalProvider(LocalRippleConfiguration provides null) {
+                        Box(
+                            Modifier
+                                .clickable { isClicked = !isClicked }
+                                .padding(it)
+                                .fillMaxSize(), contentAlignment = Alignment.TopCenter
+                        ) {
+                            LazyColumn {
+                                item {
 
-                                    DetailEssay(item = viewModel.detailEssay,viewModel)
+                                    DetailEssay(item = viewModel.detailEssay,viewModel,navController)
                                     Spacer(modifier = Modifier.height(28.dp))
                                     SubscriberSimpleItem(
                                         item = viewModel.userItem,
@@ -135,25 +135,58 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
                                         )
 
                                     }
-                            }
-                            //todo 글쓴이의 이전 글 띄우기
-                            items(items = viewModel.previousEssayList) { it -> //랜덤리스트 말고 수정할것. 그사람의 리스트로
-                                EssayListItem(
-                                    item = it,
-                                    viewModel = viewModel,
-                                    navController = navController
-                                )
+                                }
+                                //todo 글쓴이의 이전 글 띄우기
+                                items(items = viewModel.previousEssayList) { it -> //랜덤리스트 말고 수정할것. 그사람의 리스트로
+                                    EssayListItem(
+                                        item = it,
+                                        viewModel = viewModel,
+                                        navController = navController
+                                    )
+                                }
+
+
                             }
 
+                            //수정 옵션
+                            AnimatedVisibility(
+                                visible = viewModel.isOptionClicked,
+                                enter = fadeIn(
+                                    animationSpec = tween(
+                                        durationMillis = 1000,
+                                        easing = FastOutSlowInEasing
+                                    )
+                                ),
+                                exit = fadeOut(
+                                    animationSpec = tween(
+                                        durationMillis = 500,
+                                        easing = LinearEasing
+                                    )
+                                )
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(end = 23.dp),
+                                    contentAlignment = Alignment.TopEnd
+                                ) {
+                                    ReportOption({},viewModel)
+                                }
+                            }
 
                         }
+                    }
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter){
+                        LaunchedEffect(isClicked) {
+                            delay(3000)
+                            isClicked = false
+                        }
 
-                        //수정 옵션
                         AnimatedVisibility(
-                            visible = viewModel.isOptionClicked,
+                            visible = isClicked,
                             enter = fadeIn(
                                 animationSpec = tween(
-                                    durationMillis = 1000,
+                                    durationMillis = 500,
                                     easing = FastOutSlowInEasing
                                 )
                             ),
@@ -164,49 +197,18 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
                                 )
                             )
                         ) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(end = 23.dp),
-                                contentAlignment = Alignment.TopEnd
-                            ) {
-                                ReportOption({},viewModel)
-                            }
+                            SequenceBottomBar()
                         }
-
-                    }
-                }
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter){
-                    LaunchedEffect(isClicked) {
-                        delay(3000)
-                        isClicked = false
                     }
 
-                    AnimatedVisibility(
-                        visible = isClicked,
-                        enter = fadeIn(
-                            animationSpec = tween(
-                                durationMillis = 500,
-                                easing = FastOutSlowInEasing
-                            )
-                        ),
-                        exit = fadeOut(
-                            animationSpec = tween(
-                                durationMillis = 500,
-                                easing = LinearEasing
-                            )
-                        )
-                    ) {
-                        SequenceBottomBar()
-                    }
                 }
 
-            }
-
-        )
+            )
+        }
     }
 
-}
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -289,114 +291,123 @@ fun ReportOption( onClickReport: () -> Unit,viewModel: CommunityViewModel) {
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel) {
+fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navController: NavController) {
+    var isApiFinished by remember {
+        mutableStateOf(false)
+    }
+    LaunchedEffect(key1 = Unit) {
+        delay(200)
+        isApiFinished = true
+    }
     var isEssayBookMarked by remember { mutableStateOf(false) }
 
-    Box {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp)
-        ) {
-            if (item.thumbnail != null) {
-                GlideImage(
-                    model = item.thumbnail, contentDescription = "", modifier = Modifier
-                        .fillMaxWidth()
-                        .height(220.dp)
-                )
-            }
-            Row {
-                Text(text = item.title!!, fontSize = viewModel.titleTextSize, modifier = Modifier)
-                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
-
-                    val bookMarkViewModel : BookMarkViewModel = hiltViewModel()
-                    val iconImg = if (isEssayBookMarked) Icons.Default.Bookmark else Icons.Default.BookmarkBorder
-
-                    Icon(
-                        imageVector = iconImg,
-                        contentDescription = "",
-                        Modifier
-                            .size(30.dp)
-                            .clickable {
-                                isEssayBookMarked = !isEssayBookMarked
-
-                                bookMarkViewModel.viewModelScope.launch {
-                                    if (isEssayBookMarked) bookMarkViewModel.addBookMark()
-                                    else bookMarkViewModel.deleteBookMark()
-                                }
-
-                            },
+    if (isApiFinished){
+        Box {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+            ) {
+                if (item.thumbnail != null) {
+                    GlideImage(
+                        model = item.thumbnail, contentDescription = "", modifier = Modifier
+                            .fillMaxWidth()
+                            .height(220.dp)
                     )
                 }
-            }
-            Spacer(modifier = Modifier.height(40.dp))
-            Text(
-                text = item.content!!,
-                fontSize = viewModel.contentTextSize,
-                modifier = Modifier,
-                color = Color(0xFFB4B4B4)
-            )
+                Row {
+                    Text(text = item.title!!, fontSize = viewModel.titleTextSize, modifier = Modifier)
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
 
-            Spacer(modifier = Modifier.height(46.dp))
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
-                Column {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
-                        (if (item.author !=null) item.author.nickname else "")?.let {
+                        val iconImg = if (isEssayBookMarked) Icons.Default.Bookmark else Icons.Default.BookmarkBorder
+
+                        Icon(
+                            imageVector = iconImg,
+                            contentDescription = "",
+                            Modifier
+                                .size(30.dp)
+                                .clickable {
+                                    isEssayBookMarked = !isEssayBookMarked
+
+                                    viewModel.viewModelScope.launch {
+                                        if (isEssayBookMarked) viewModel.addBookMark(item.id!!)
+                                        else viewModel.deleteBookMark(item.id!!, navController = navController)
+                                    }
+
+                                },
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(40.dp))
+                Text(
+                    text = item.content!!,
+                    fontSize = viewModel.contentTextSize,
+                    modifier = Modifier,
+                    color = Color(0xFFB4B4B4)
+                )
+
+                Spacer(modifier = Modifier.height(46.dp))
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
+                    Column {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
+                            (if (item.author !=null) item.author.nickname else "")?.let {
+                                Text(
+                                    text = it,
+                                    fontSize = 12.sp,
+                                    textAlign = TextAlign.End,
+                                    color = Color(0xFF686868)
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
                             Text(
-                                text = it,
+                                text = item.createdDate ?: "",
                                 fontSize = 12.sp,
                                 textAlign = TextAlign.End,
                                 color = Color(0xFF686868)
                             )
                         }
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
-                        Text(
-                            text = item.createdDate ?: "",
-                            fontSize = 12.sp,
-                            textAlign = TextAlign.End,
-                            color = Color(0xFF686868)
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    if (item.linkedOutGauge != null){
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
-                            Row {
-                                repeat(item.linkedOutGauge) {
-                                    Image(
-                                        painter = painterResource(id = R.drawable.ring),
-                                        contentDescription = "ring",
-                                        modifier = Modifier.size(14.dp),
-                                        colorFilter = ColorFilter.tint(Color(0xFF686868))
-                                    )
-                                    if (it != item.linkedOutGauge - 1) Spacer(
-                                        modifier = Modifier.width(
-                                            4.dp
+                        Spacer(modifier = Modifier.height(8.dp))
+                        if (item.linkedOutGauge != null){
+                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
+                                Row {
+                                    repeat(item.linkedOutGauge) {
+                                        Image(
+                                            painter = painterResource(id = R.drawable.ring),
+                                            contentDescription = "ring",
+                                            modifier = Modifier.size(14.dp),
+                                            colorFilter = ColorFilter.tint(Color(0xFF686868))
                                         )
-                                    )
+                                        if (it != item.linkedOutGauge - 1) Spacer(
+                                            modifier = Modifier.width(
+                                                4.dp
+                                            )
+                                        )
+                                    }
                                 }
                             }
                         }
-                    }
 
+                    }
                 }
-            }
-            Spacer(modifier = Modifier.height(28.dp))
-            if (item.tags != null){
-                Row {
-                    repeat(item.tags.size){
-                        SuggestionChip(
-                            onClick = { },
-                            label = { Text(item.tags[it].name) },
-                            shape = RoundedCornerShape(50)
-                        )
-                        if (it != item.tags.size-1) Spacer(modifier = Modifier.width(10.dp))
+                Spacer(modifier = Modifier.height(28.dp))
+                if (item.tags != null){
+                    Row {
+                        repeat(item.tags.size){
+                            SuggestionChip(
+                                onClick = { },
+                                label = { Text(item.tags[it].name) },
+                                shape = RoundedCornerShape(50)
+                            )
+                            if (it != item.tags.size-1) Spacer(modifier = Modifier.width(10.dp))
+                        }
                     }
                 }
             }
         }
     }
+
 }
 
 @Composable

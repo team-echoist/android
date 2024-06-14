@@ -1,5 +1,6 @@
 package com.echoist.linkedout.viewModels
 
+import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -15,6 +16,7 @@ import com.echoist.linkedout.MAX_CONTENT_SIZE
 import com.echoist.linkedout.MAX_TITLE_SIZE
 import com.echoist.linkedout.MIN_CONTENT_SIZE
 import com.echoist.linkedout.MIN_TITLE_SIZE
+import com.echoist.linkedout.api.BookMarkApi
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.data.Story
@@ -27,15 +29,15 @@ import javax.inject.Inject
 enum class SentenceInfo {
     First, Last
 }
-const val MAX_SIZE = 100
-
 
 @HiltViewModel
 open class CommunityViewModel @Inject constructor(
     private val essayApi: EssayApi,
-    private val exampleItems: ExampleItems
+    private val exampleItems: ExampleItems,
+    private val bookMarkApi: BookMarkApi
 ) : ViewModel() {
 
+    open var bookMarkEssayList by mutableStateOf(exampleItems.exampleEmptyEssayList)
 
     open var searchingText by mutableStateOf("")
 
@@ -193,6 +195,108 @@ open class CommunityViewModel @Inject constructor(
 
             }
         }
+    }
+    fun readMyBookMarks(navController: NavController) {
+        viewModelScope.launch {
+            try {
+                val response = bookMarkApi.readMyBookMark(Token.accessToken)
+                if(response.success){
+                    bookMarkEssayList = response.data.essays.toMutableStateList()
+                    navController.navigate("CommunitySavedEssayPage")
+                }
+
+                Log.d(TAG, "bookMarkEssayList: 성공입니다 아니면 예시 ${exampleItems.randomList}")
+
+                // API 호출 결과 처리 (예: response 데이터 사용)
+            } catch (e: Exception) {
+
+                // 예외 처리
+                e.printStackTrace()
+                Log.d(TAG, "bookMarkEssayList: ${e.message}")
+                Log.d(TAG, "bookMarkEssayList: ${e.cause}")
+                Log.d(TAG, "bookMarkEssayList: ${e.localizedMessage}")
+
+            }
+        }
+    }
+
+    fun addBookMark(essayId: Int){
+        viewModelScope.launch {
+            try {
+                bookMarkApi.addBookMark(Token.accessToken,essayId)
+
+                Log.d(ContentValues.TAG, "bookMarkEssayList: 성공입니다  ${detailEssay.title}")
+
+                // API 호출 결과 처리 (예: response 데이터 사용)
+            } catch (e: Exception) {
+
+                // 예외 처리
+                e.printStackTrace()
+                Log.d(ContentValues.TAG, "bookMarkEssayList: ${e.message}")
+                Log.d(ContentValues.TAG, "bookMarkEssayList: ${e.cause}")
+                Log.d(ContentValues.TAG, "bookMarkEssayList: ${e.localizedMessage}")
+
+            }
+        }
+
+    }
+
+    fun deleteBookMark(essayId : Int,navController: NavController){
+        viewModelScope.launch {
+            try {
+                val deleteEssayId = listOf(essayId)
+                val response = bookMarkApi.deleteBookMarks(Token.accessToken,deleteEssayId)
+                if (response.isSuccessful){
+                    readMyBookMarks(navController = navController)
+                }
+
+                Log.d(TAG, "bookMarkEssayList: 성공입니다 아니면 예시 ${detailEssay.title}")
+
+
+                // API 호출 결과 처리 (예: response 데이터 사용)
+            } catch (e: Exception) {
+
+                // 예외 처리
+                e.printStackTrace()
+                Log.d(TAG, "bookMarkEssayList: ${e.message}")
+                Log.d(TAG, "bookMarkEssayList: ${e.cause}")
+                Log.d(TAG, "bookMarkEssayList: ${e.localizedMessage}")
+
+            }
+        }
+
+    }
+
+    fun deleteBookMarks(deleteItems : List<EssayApi.EssayItem>, navController: NavController){
+        viewModelScope.launch {
+            try {
+                val deleteEssayId : MutableList<Int> = mutableListOf()
+
+                deleteItems.forEach {
+                    deleteEssayId.add(it.id!!)
+                }
+
+                val response = bookMarkApi.deleteBookMarks(Token.accessToken,deleteEssayId)
+                if (response.isSuccessful){
+                    //삭제하고 다시 북마크 로딩
+                    readMyBookMarks(navController = navController)
+                }
+
+                Log.d(TAG, "bookMarkEssayList: 성공입니다 아니면 예시 ${detailEssay.title}")
+
+
+                // API 호출 결과 처리 (예: response 데이터 사용)
+            } catch (e: Exception) {
+
+                // 예외 처리
+                e.printStackTrace()
+                Log.d(TAG, "bookMarkEssayList: ${e.message}")
+                Log.d(TAG, "bookMarkEssayList: ${e.cause}")
+                Log.d(TAG, "bookMarkEssayList: ${e.localizedMessage}")
+
+            }
+        }
+
     }
 
 

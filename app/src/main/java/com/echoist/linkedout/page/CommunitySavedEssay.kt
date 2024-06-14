@@ -35,7 +35,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,15 +53,16 @@ import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.api.EssayApi
+import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
-import com.echoist.linkedout.viewModels.BookMarkViewModel
-import kotlinx.coroutines.delay
+import com.echoist.linkedout.viewModels.CommunityViewModel
 
 @Composable
-fun CommunitySavedEssayPage(navController: NavController, viewModel: BookMarkViewModel) {
-    viewModel.readMyBookMarks()
+fun CommunitySavedEssayPage(navController: NavController, viewModel: CommunityViewModel) {
+
     val text = if (viewModel.isSavedEssaysModifyClicked) "완료" else "편집"
+
     LinkedOutTheme {
         Scaffold(topBar = {
             SavedEssayTopAppBar(
@@ -129,7 +129,7 @@ fun SavedEssayListItem(
     isSelected: Boolean,
     onItemSelected: (Boolean) -> Unit,
     onClickItem: () -> Unit,
-    viewModel: BookMarkViewModel
+    viewModel: CommunityViewModel
 ) {
     val color = if (isSystemInDarkTheme()) Color.White else Color.Black
 
@@ -235,16 +235,9 @@ fun SavedEssayListItem(
 
 @SuppressLint("MutableCollectionMutableState")
 @Composable
-fun SavedEssayListScreen(viewModel: BookMarkViewModel, navController: NavController) {
+fun SavedEssayListScreen(viewModel: CommunityViewModel, navController: NavController) {
     val essayItems = viewModel.bookMarkEssayList
 
-    var isFunFinished by remember { mutableStateOf(false) }
-    LaunchedEffect(essayItems) {
-        delay(100)
-        isFunFinished = true
-    }
-
-    if (isFunFinished) {
         var selectedItems by remember { mutableStateOf<Set<EssayApi.EssayItem>>(emptySet()) }
 
         val annotatedString = remember {
@@ -333,6 +326,12 @@ fun SavedEssayListScreen(viewModel: BookMarkViewModel, navController: NavControl
                             onClickItem = {
                                 if (!viewModel.isSavedEssaysModifyClicked) {
                                     viewModel.readDetailEssay(item.id!!, navController)
+
+                                    val exampleItems = ExampleItems()
+                                    Log.d(ContentValues.TAG, "CommunityDetailPage: ${exampleItems.detailEssay.title}")
+                                    Log.d(ContentValues.TAG, "CommunityDetailPage: ${viewModel.detailEssay.title}")
+
+
                                 }
                             },
                             viewModel = viewModel
@@ -354,6 +353,7 @@ fun SavedEssayListScreen(viewModel: BookMarkViewModel, navController: NavControl
                         onClick = {
                             if (selectedItems.isNotEmpty()) {
                                 // 에세이 선택 삭제
+                                viewModel.deleteBookMarks(selectedItems.toList(),navController)
                             }
                         },
                         modifier = Modifier
@@ -369,6 +369,6 @@ fun SavedEssayListScreen(viewModel: BookMarkViewModel, navController: NavControl
 
         }
     }
-}
+
 
 

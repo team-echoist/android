@@ -2,6 +2,7 @@ package com.echoist.linkedout.api
 
 import com.echoist.linkedout.data.EssayListResponse
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -27,7 +28,7 @@ interface BookMarkApi{
     @DELETE("api/essays/bookmarks")
     suspend fun deleteBookMarks(
         @Header("Authorization") accessToken: String,
-        @Query("essayIds") essayIds : List<Int>
+        @Body essayIds : List<Int>
     ): Response<Unit>
 
     @DELETE("api/essays/bookmarks")

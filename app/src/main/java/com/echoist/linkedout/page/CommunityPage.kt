@@ -108,7 +108,8 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
                                             }
                                         }
                                     },
-                                    { navController.navigate("CommunitySavedEssayPage") }
+                                    { viewModel.readMyBookMarks(navController)
+                                         }
                                 )
 
                                 CommunityChips(pagerstate)
