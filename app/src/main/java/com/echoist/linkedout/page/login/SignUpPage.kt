@@ -1,4 +1,4 @@
-package com.echoist.linkedout.page
+package com.echoist.linkedout.page.login
 
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable

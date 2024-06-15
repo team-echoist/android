@@ -1,4 +1,4 @@
-package com.echoist.linkedout.page
+package com.echoist.linkedout.page.community
 
 import android.annotation.SuppressLint
 import android.content.ContentValues

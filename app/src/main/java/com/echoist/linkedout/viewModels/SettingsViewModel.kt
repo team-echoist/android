@@ -12,8 +12,9 @@ import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.api.UserApi
 import com.echoist.linkedout.data.BadgeBoxItem
 import com.echoist.linkedout.data.BadgeBoxItemWithTag
+import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.data.toBadgeBoxItem
-import com.echoist.linkedout.page.Token
+import com.echoist.linkedout.page.myLog.Token
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -21,7 +22,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val userApi: UserApi
+    private val userApi: UserApi,
+    private val exampleItems: ExampleItems
 ) : ViewModel() {
     var isLevelUpSuccess by mutableStateOf(false)
 
@@ -31,6 +33,10 @@ class SettingsViewModel @Inject constructor(
 
     var simpleBadgeList by mutableStateOf<List<BadgeBoxItem>>(emptyList())
     var detailBadgeList by mutableStateOf<List<BadgeBoxItemWithTag>>(emptyList())
+
+    fun getUserInfo(){
+        Log.d(TAG, "getUserInfo: ${exampleItems.myProfile}")
+    }
 
     fun readSimpleBadgeList(navController: NavController) {
         //이게 작동되는지가 중요

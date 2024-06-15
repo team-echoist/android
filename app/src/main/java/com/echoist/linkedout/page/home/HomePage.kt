@@ -1,4 +1,4 @@
-package com.echoist.linkedout.page
+package com.echoist.linkedout.page.home
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -97,6 +97,8 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel) {
         }
 
     ) {
+        viewModel.updateProfile(UserInfo(1,"nick12341234"))
+
         LinkedOutTheme {
             Scaffold(
                 topBar = {

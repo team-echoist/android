@@ -1,4 +1,4 @@
-package com.echoist.linkedout.page
+package com.echoist.linkedout.page.myLog
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -32,6 +32,9 @@ import com.echoist.linkedout.components.EssayChips
 import com.echoist.linkedout.components.EssayPager
 import com.echoist.linkedout.components.ModifyStoryBox
 import com.echoist.linkedout.components.MyLogTopAppBar
+import com.echoist.linkedout.page.community.SearchingPage
+import com.echoist.linkedout.page.home.MyBottomNavigation
+import com.echoist.linkedout.page.home.WriteFTB
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.MyLogViewModel
 import com.echoist.linkedout.viewModels.SearchingViewModel

@@ -1,4 +1,4 @@
-package com.echoist.linkedout.page
+package com.echoist.linkedout.page.myLog
 
 import android.graphics.Bitmap
 import android.util.Log
@@ -96,7 +96,8 @@ fun WritingCompletePage(
             sheetContainerColor = Color(0xFF191919),
             scaffoldState = scaffoldState,
             sheetContent = {
-                WritingCompletePager(viewModel = viewModel, navController = navController)},
+                WritingCompletePager(viewModel = viewModel, navController = navController)
+            },
 
             sheetPeekHeight = 56.dp
         ) {

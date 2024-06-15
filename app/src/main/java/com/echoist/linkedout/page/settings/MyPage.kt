@@ -1,4 +1,4 @@
-package com.echoist.linkedout.page
+package com.echoist.linkedout.page.settings
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -55,6 +55,7 @@ import com.echoist.linkedout.R
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.BadgeBoxItem
 import com.echoist.linkedout.data.UserInfo
+import com.echoist.linkedout.page.home.MyBottomNavigation
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.SettingsViewModel
 import kotlinx.coroutines.delay
@@ -74,6 +75,7 @@ fun MyPage(
 
 
     viewModel.readSimpleBadgeList(navController)
+    viewModel.getUserInfo()
 
     val userItem by remember {
         mutableStateOf(

@@ -1,4 +1,4 @@
-package com.echoist.linkedout.page
+package com.echoist.linkedout.page.myLog
 
 import android.content.ContentValues.TAG
 import android.util.Log

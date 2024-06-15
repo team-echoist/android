@@ -23,7 +23,7 @@ import com.echoist.linkedout.BuildConfig
 import com.echoist.linkedout.api.GoogleSignUpApi
 import com.echoist.linkedout.api.NaverApiService
 import com.echoist.linkedout.api.SignUpApi
-import com.echoist.linkedout.page.Token
+import com.echoist.linkedout.page.myLog.Token
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -141,7 +141,7 @@ class SocialLoginViewModel @Inject constructor() : ViewModel() {
                     Log.d("tokentoken", response.headers()["authorization"].toString())
                     accessToken = (response.headers()["authorization"].toString())
                     Token.accessToken = accessToken
-                    Log.d(TAG, "tokentoken"+Token.accessToken)
+                    Log.d(TAG, "tokentoken"+ Token.accessToken)
                     Log.e("authApiSuccess2", response.message())
 
                     navController.navigate("HOME")

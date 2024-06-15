@@ -1,4 +1,4 @@
-package com.echoist.linkedout.page
+package com.echoist.linkedout.page.settings
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,6 +19,8 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.navigation.NavController
 import com.echoist.linkedout.components.CommuTopAppBar
 import com.echoist.linkedout.components.ProfilePage
+import com.echoist.linkedout.page.community.SearchingPage
+import com.echoist.linkedout.page.home.MyBottomNavigation
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
 import kotlinx.coroutines.launch

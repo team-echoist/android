@@ -22,7 +22,7 @@
         android:theme="@style/LinkedOut"
         tools:targetApi="31">
         <activity
-            android:name=".page.SplashPage"
+            android:name=".page.login.SplashPage"
             android:exported="true"
             android:theme="@style/SplashTheme">
             <intent-filter>
@@ -50,7 +50,7 @@
         </activity>
 
         <activity
-            android:name=".page.LoginPage"
+            android:name=".page.login.LoginPage"
             android:exported="true"
             android:theme="@style/LinkedOut">
 <!--            <intent-filter>-->

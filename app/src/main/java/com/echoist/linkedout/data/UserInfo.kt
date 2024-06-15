@@ -3,7 +3,7 @@ package com.echoist.linkedout.data
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
-    @JsonClass(generateAdapter = true)
+@JsonClass(generateAdapter = true)
     data class UserInfo(
 
         @Json(name = "id")val id: Int,
@@ -17,3 +17,4 @@ import com.squareup.moshi.JsonClass
         @Json(name = "linkedOutEssay")val linkedOutEssay: Int = 0,
 
     )
+

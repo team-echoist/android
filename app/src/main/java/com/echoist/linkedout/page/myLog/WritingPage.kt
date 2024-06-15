@@ -1,4 +1,4 @@
-package com.echoist.linkedout.page
+package com.echoist.linkedout.page.myLog
 
 import android.graphics.Bitmap
 import android.util.Log
@@ -75,6 +75,8 @@ import com.echoist.linkedout.components.LocationGroup
 import com.echoist.linkedout.components.LocationTextField
 import com.echoist.linkedout.components.TextItem
 import com.echoist.linkedout.gps.RequestPermissionsUtil
+import com.echoist.linkedout.page.login.Keyboard
+import com.echoist.linkedout.page.login.keyboardAsState
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.WritingViewModel
 

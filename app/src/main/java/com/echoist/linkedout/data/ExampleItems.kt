@@ -67,6 +67,18 @@ class ExampleItems @Inject constructor(){
         )
     )
 
+    var myProfile by mutableStateOf(
+        UserInfo(
+            id = 1,
+            nickname = "구루브",
+            profileImage = "http",
+            password = "1234",
+            gender = "male",
+            birthDate = "0725"
+        )
+    )
+
+
     var subscribeUserList = mutableStateListOf( //구독유저 리스트 api통신해서 받을것.
         userItem.copy(id = 1, nickname = "꾸르륵"),
         userItem.copy(id = 2, nickname = "카프카"),

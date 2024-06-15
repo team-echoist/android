@@ -17,7 +17,7 @@ import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.data.RelatedEssay
 import com.echoist.linkedout.data.RelatedEssayResponse
 import com.echoist.linkedout.data.Story
-import com.echoist.linkedout.page.Token
+import com.echoist.linkedout.page.myLog.Token
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import retrofit2.Response

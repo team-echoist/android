@@ -1,4 +1,4 @@
-package com.echoist.linkedout.page
+package com.echoist.linkedout.page.login
 
 import android.graphics.Rect
 import android.os.Bundle
@@ -68,6 +68,19 @@ import androidx.navigation.compose.rememberNavController
 import com.echoist.linkedout.BuildConfig
 import com.echoist.linkedout.R
 import com.echoist.linkedout.components.CropImagePage
+import com.echoist.linkedout.page.community.CommunityDetailPage
+import com.echoist.linkedout.page.community.CommunityPage
+import com.echoist.linkedout.page.community.CommunitySavedEssayPage
+import com.echoist.linkedout.page.community.FullSubscriberPage
+import com.echoist.linkedout.page.home.HomePage
+import com.echoist.linkedout.page.myLog.MyLogDetailPage
+import com.echoist.linkedout.page.myLog.MyLogPage
+import com.echoist.linkedout.page.myLog.StoryPage
+import com.echoist.linkedout.page.myLog.WritingCompletePage
+import com.echoist.linkedout.page.myLog.WritingPage
+import com.echoist.linkedout.page.settings.BadgePage
+import com.echoist.linkedout.page.settings.MyPage
+import com.echoist.linkedout.page.settings.ProfilePage
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
 import com.echoist.linkedout.viewModels.HomeViewModel
