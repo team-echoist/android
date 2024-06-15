@@ -25,6 +25,8 @@ class SettingsViewModel @Inject constructor(
     private val userApi: UserApi,
     private val exampleItems: ExampleItems
 ) : ViewModel() {
+    var myProfile by mutableStateOf(exampleItems.myProfile)
+
     var isLevelUpSuccess by mutableStateOf(false)
 
     val detailEssay by mutableStateOf<List<EssayApi.EssayItem>>(emptyList())

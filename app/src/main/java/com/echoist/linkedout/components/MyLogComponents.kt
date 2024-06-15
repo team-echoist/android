@@ -53,11 +53,11 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyLogTopAppBar(onClickSearch : ()->Unit){
+fun MyLogTopAppBar(onClickSearch : ()->Unit,nickName : String){
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
         title = {
-            Text(text = "구루브 님")
+            Text(text = "$nickName 님")
         },
         actions = {
             Icon(imageVector = Icons.Default.Search, contentDescription = "", Modifier.size(30.dp).clickable { onClickSearch() })

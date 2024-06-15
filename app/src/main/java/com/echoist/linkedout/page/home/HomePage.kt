@@ -70,6 +70,7 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
 import com.echoist.linkedout.data.BottomNavItem
 import com.echoist.linkedout.data.UserInfo
+import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.HomeViewModel
 import com.github.mikephil.charting.charts.LineChart
@@ -97,7 +98,6 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel) {
         }
 
     ) {
-        viewModel.updateProfile(UserInfo(1,"nick12341234"))
 
         LinkedOutTheme {
             Scaffold(
@@ -134,7 +134,7 @@ fun ModalBottomSheetContent(viewModel: HomeViewModel){
         drawerContainerColor = Color(0xE6141414)
     ) {
         Column(Modifier.verticalScroll(scrollState)) {
-            MyProfile(item = viewModel.userItem)
+            MyProfile(item = viewModel.myProfile)
             HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
             MyLinkedOutBar()
             LineChartExample()
@@ -401,6 +401,7 @@ fun MyDrawableItem(text : String , onClick: () -> Unit) {
     )
 }
 
+@Preview
 @Composable
 fun ShopDrawerItem() {
     NavigationDrawerItem(
@@ -410,7 +411,13 @@ fun ShopDrawerItem() {
         },
         selected = false,
         onClick = { },
-        badge = { Icon(imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos, contentDescription = "navigate")}
+        badge = {
+            Box(modifier = Modifier.size(60.dp,24.dp).background(Color(0xFF191919), shape = RoundedCornerShape(40)), contentAlignment = Alignment.Center){
+                Text(text = "  준비중  ", fontWeight = FontWeight.SemiBold, color = LinkedInColor, fontSize = 12.sp )
+
+            }
+        }
+
     )
 }
 

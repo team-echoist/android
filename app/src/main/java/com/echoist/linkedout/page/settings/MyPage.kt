@@ -31,8 +31,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -77,18 +75,6 @@ fun MyPage(
     viewModel.readSimpleBadgeList(navController)
     viewModel.getUserInfo()
 
-    val userItem by remember {
-        mutableStateOf(
-            UserInfo(
-                id = 1,
-                nickname = "구루브",
-                profileImage = "http",
-                password = "1234",
-                gender = "male",
-                birthDate = "0725"
-            )
-        )
-    }
     val scrollState = rememberScrollState()
 
     LinkedOutTheme {
@@ -110,7 +96,7 @@ fun MyPage(
                         .verticalScroll(scrollState)
 
                 ) {
-                    MySettings(item = userItem)
+                    MySettings(item = viewModel.myProfile)
                     SettingBar("링크드아웃 배지") {viewModel.readDetailBadgeList(navController)}
                     LinkedOutBadgeGrid(viewModel)
                     SettingBar("최근 본 글") {}
@@ -185,7 +171,7 @@ fun MySettings(item: UserInfo) {
                 ) {
                     Text(text = "쓴글", fontSize = 10.sp, color = Color(0xFF616161))
                     Spacer(modifier = Modifier.height(1.dp))
-                    Text(text = "21", fontSize = 18.sp, color = Color(0xFF616161))
+                    Text(text = item.essayStats!!.totalEssays.toString(), fontSize = 18.sp, color = Color(0xFF616161))
                 }
                 VerticalDivider(Modifier.height(41.dp), color = Color(0xFF191919))
                 Column(
@@ -195,7 +181,7 @@ fun MySettings(item: UserInfo) {
                 ) {
                     Text(text = "발행", fontSize = 10.sp, color = Color(0xFF616161))
                     Spacer(modifier = Modifier.height(1.dp))
-                    Text(text = "5", fontSize = 18.sp, color = Color(0xFF616161))
+                    Text(text = item.essayStats!!.publishedEssays.toString(), fontSize = 18.sp, color = Color(0xFF616161))
                 }
                 VerticalDivider(Modifier.height(41.dp), color = Color(0xFF191919))
 
@@ -206,7 +192,7 @@ fun MySettings(item: UserInfo) {
                 ) {
                     Text(text = "링크드아웃", fontSize = 10.sp, color = Color(0xFF616161))
                     Spacer(modifier = Modifier.height(1.dp))
-                    Text(text = "12", fontSize = 18.sp, color = Color(0xFF616161))
+                    Text(text = item.essayStats!!.linkedOutEssays.toString(), fontSize = 18.sp, color = Color(0xFF616161))
                 }
             }
         }

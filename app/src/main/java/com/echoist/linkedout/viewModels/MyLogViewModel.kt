@@ -31,7 +31,7 @@ class MyLogViewModel @Inject constructor(
     private val exampleItems: ExampleItems, bookMarkApi: BookMarkApi
 ) : CommunityViewModel(essayApi, exampleItems,bookMarkApi) {
 
-
+    var myProfile by mutableStateOf(exampleItems.myProfile)
 
     //스토리 생성할때 true값
     var isCreateStory by mutableStateOf(false)

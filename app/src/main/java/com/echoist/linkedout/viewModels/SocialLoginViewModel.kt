@@ -23,6 +23,8 @@ import com.echoist.linkedout.BuildConfig
 import com.echoist.linkedout.api.GoogleSignUpApi
 import com.echoist.linkedout.api.NaverApiService
 import com.echoist.linkedout.api.SignUpApi
+import com.echoist.linkedout.api.UserApi
+import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.page.myLog.Token
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -48,7 +50,10 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class SocialLoginViewModel @Inject constructor() : ViewModel() {
+class SocialLoginViewModel @Inject constructor(
+    private val userApi: UserApi,
+    private val exampleItems: ExampleItems
+) : ViewModel() {
     private val auth: FirebaseAuth = Firebase.auth
 
     var accessToken by mutableStateOf("")
@@ -64,6 +69,33 @@ class SocialLoginViewModel @Inject constructor() : ViewModel() {
 
     var userId by mutableStateOf("")
     var userPw by mutableStateOf("")
+
+    private suspend fun readMyInfo(){
+        try {
+            val response = userApi.readMyInfo(Token.accessToken)
+            Log.d(TAG, "readMyInfo: suc1")
+
+            exampleItems.myProfile = response.data
+            Log.d(TAG, "readMyInfo: suc2")
+
+            val responseDetail = userApi.readMyInfoDetail(Token.accessToken,response.data.id)
+            Log.d(TAG, "readMyInfo: suc3")
+
+            exampleItems.myProfile = responseDetail.data.user
+            exampleItems.myProfile.essayStats = responseDetail.data.essayStats
+            Log.d(TAG, "readMyInfo: suc4")
+
+
+        }catch (e: Exception){
+            Log.d(TAG, "readMyInfo: error err")
+            e.printStackTrace()
+            Log.d(TAG, e.message.toString())
+            Log.d(TAG, e.cause.toString())
+
+
+        }
+    }
+
 
     fun signInWithGoogle(
         launcher: ManagedActivityResultLauncher<Intent, ActivityResult>,
@@ -144,6 +176,8 @@ class SocialLoginViewModel @Inject constructor() : ViewModel() {
                     Log.d(TAG, "tokentoken"+ Token.accessToken)
                     Log.e("authApiSuccess2", response.message())
 
+                    readMyInfo()
+
                     navController.navigate("HOME")
                 } else {
                     Log.e("authApiFailed2", "Failed : ${response.headers().get("authorization")}")
@@ -172,7 +206,8 @@ class SocialLoginViewModel @Inject constructor() : ViewModel() {
                 Log.e(TAG, "카카오계정으로 로그인 실패", error)
             } else if (token != null) {
                 kakaoLoginstate.value = true
-                navController.navigate("HOMEaccessToken")
+
+                navController.navigate("HOME")
                 Log.i(TAG, "카카오계정으로 로그인 성공 ${token.accessToken} ")
             }
         }
@@ -193,7 +228,8 @@ class SocialLoginViewModel @Inject constructor() : ViewModel() {
                     UserApiClient.instance.loginWithKakaoAccount(context, callback = callback)
                 } else if (token != null) {
                     kakaoLoginstate.value = true
-                    navController.navigate("HOMEaccessToken")
+
+                    navController.navigate("HOME")
                     Log.i(TAG, "카카오톡으로 로그인 성공 ${token.accessToken}")
                 }
             }
@@ -253,7 +289,7 @@ class SocialLoginViewModel @Inject constructor() : ViewModel() {
                 Log.d("Naver_getState", NaverIdLoginSDK.getState().toString())
 
                 naverLoginstate.value = true
-                navController.navigate("HOMEaccessToken")
+                navController.navigate("HOME")
                 // 로그인 성공 시 유저 정보 획득
                 getNaverUserInfo()
             }

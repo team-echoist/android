@@ -128,7 +128,7 @@ fun WritingCompletePage(
                         Spacer(modifier = Modifier.height(20.dp))
                         CompleteTitle(viewModel = viewModel)
                         CompleteContents(viewModel = viewModel)
-                        CompleteNickName()
+                        CompleteNickName(viewModel.myProfile.nickname!!)
                         CompleteDate(viewModel = viewModel)
                     }
                 }
@@ -229,10 +229,10 @@ fun CompleteContents(viewModel: WritingViewModel) {
 }
 
 @Composable
-fun CompleteNickName() {
+fun CompleteNickName(nickName : String) {
     Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.BottomEnd) {
         Text(
-            text = "구루브",  /*todo 닉네임 구현 필요합니다. */
+            text = nickName,  /*todo 닉네임 구현 필요합니다. */
             fontSize = 12.sp,
             color = Color(0xFF686868),
             modifier = Modifier.padding(end = 25.dp, bottom = 8.dp)

@@ -14,13 +14,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.echoist.linkedout.api.EssayApi
+import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.page.myLog.Token
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class WritingViewModel @Inject constructor(private val essayApi: EssayApi) : ViewModel() {
+class WritingViewModel @Inject constructor(private val essayApi: EssayApi,private val exampleItems: ExampleItems) : ViewModel() {
+
+    var myProfile by mutableStateOf(exampleItems.myProfile)
 
     var accessToken by mutableStateOf("")
 

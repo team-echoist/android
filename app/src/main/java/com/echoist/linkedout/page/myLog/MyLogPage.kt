@@ -88,13 +88,13 @@ fun MyLogPage(navController : NavController,viewModel: MyLogViewModel) {
                             topBar = {
                                 Column {
 
-                                    MyLogTopAppBar() {
+                                    MyLogTopAppBar({
                                         scope.launch {
                                             drawerState.apply {
                                                 if (isClosed) open() else close()
                                             }
                                         }
-                                    }
+                                    },viewModel.myProfile.nickname!!)
 
                                     EssayChips(pagerstate, viewModel)
                                 }

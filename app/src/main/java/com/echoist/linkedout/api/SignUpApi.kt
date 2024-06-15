@@ -2,17 +2,17 @@ package com.echoist.linkedout.api
 
 import retrofit2.Response
 import retrofit2.http.Body
-import retrofit2.http.GET
 import retrofit2.http.POST
-import retrofit2.http.Query
 
 interface SignUpApi {
 
-    @GET("auth/check")
+    @POST("auth/check/email")
     suspend fun emailDuplicateConfirm(
-        @Query("email") userEmail: String
+        @Body email: EmailRequest
+
     ): Response<Unit>
 
+    data class EmailRequest(val email : String,val id : Int? = null)
     @POST("auth/verify")
     suspend fun emailVerify(
         @Body userAccount : UserAccount

@@ -1,5 +1,6 @@
 package com.echoist.linkedout.viewModels
 
+import android.content.ContentValues
 import android.util.Log
 import android.util.Patterns
 import androidx.compose.runtime.getValue
@@ -9,13 +10,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.echoist.linkedout.api.SignUpApi
+import com.echoist.linkedout.api.UserApi
+import com.echoist.linkedout.data.ExampleItems
+import com.echoist.linkedout.page.myLog.Token
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
-    private val signUpApi : SignUpApi
+    private val signUpApi : SignUpApi,
+    private val userApi: UserApi,
+    private val exampleItems: ExampleItems
 ) : ViewModel() {
 
     var userEmail by mutableStateOf("")
@@ -31,11 +37,23 @@ class SignUpViewModel @Inject constructor(
         return Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
+    private suspend fun readMyInfo(){
+        try {
+            val response = userApi.readMyInfo(Token.accessToken)
+            exampleItems.myProfile = response.data
+
+        }catch (_: Exception){
+            Log.d(ContentValues.TAG, "readMyInfo: error err")
+        }
+    }
+
     //이메일 중복검사 1차
     fun getUserEmailCheck(navController: NavController) {
         viewModelScope.launch {
             try {
-                val response = signUpApi.emailDuplicateConfirm(userEmail)
+                val email = SignUpApi.EmailRequest(userEmail)
+                val response = signUpApi.emailDuplicateConfirm(email)
+
 
                 if (response.code() == 200) {
                     Log.e("authApiSuccess1", "${response.code()}")
@@ -43,7 +61,7 @@ class SignUpViewModel @Inject constructor(
                     emailVerify(navController)
                 } else {
                     Log.e("authApiFailed1", "Failed : ${response.errorBody()}")
-
+                        //todo check 404 뜨는 에러 해결해야할것.
                     Log.e("authApiSuccess", "${response.code()}")
                 }
 
@@ -62,12 +80,18 @@ class SignUpViewModel @Inject constructor(
             val userAccount = SignUpApi.UserAccount(userEmail, userPw)
             val response = signUpApi.emailVerify(userAccount)
 
-            if (response.code() == 201) {
+            if (response.isSuccessful) {
                 Log.e("authApiSuccess2", "${response.raw()}")
                 Log.e("authApiSuccess2", "${response.headers()}")
                 Log.e("authApiSuccess2", "${response.code()}")
 
-                navController.navigate("LoginPage")
+                Log.d("tokentoken", response.headers()["authorization"].toString())
+                Token.accessToken = (response.headers()["authorization"].toString())
+                //todo 회원가입 다시 해결하기
+                readMyInfo()
+
+
+                navController.navigate("SignUpComplete")
             } else {
                 Log.e("authApiFailed2", "Failed : ${response.headers()}")
                 Log.e("authApiSuccess2", "${response.code()}")
@@ -77,8 +101,5 @@ class SignUpViewModel @Inject constructor(
             // api 요청 실패
             Log.e("writeEssayApiFailed2", "Failed: ${e.message}")
         }
-
     }
-
-
 }

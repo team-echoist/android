@@ -26,17 +26,24 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
+import com.echoist.linkedout.viewModels.HomeViewModel
 import kotlinx.coroutines.delay
 
 @Preview
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun SignUpCompletePage() {
+fun SignUpCompletePage(homeViewModel: HomeViewModel,navController: NavController) {
+
+    LaunchedEffect(key1 = Unit) {
+        delay(2000)
+        navController.navigate("HOME")
+    }
 
     LinkedOutTheme {
         Scaffold {
@@ -45,17 +52,21 @@ fun SignUpCompletePage() {
                     .padding(it)
                     .fillMaxSize(), contentAlignment = Alignment.Center) {
                 Column(Modifier.padding(horizontal = 20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                    LoadingText(nickName = "칠이구 아무개") //todo 닉넴 수정필요
+                    LoadingText(nickName = homeViewModel.myProfile.nickname!!)
                     Spacer(modifier = Modifier.height(56.dp))
                     GlideImage(model = R.drawable.login_table, modifier = Modifier.size(246.dp,266.dp), contentDescription = "login table")
                     Spacer(modifier = Modifier.height(87.dp))
 
                 }
-                Box(modifier = Modifier.fillMaxSize().padding(end = 20.dp), contentAlignment = Alignment.BottomEnd){
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .padding(end = 20.dp), contentAlignment = Alignment.BottomEnd){
                     GlideImage(
                         model = R.drawable.rightsidetext,
                         contentDescription = "rightsideText",
-                        Modifier.padding(bottom = 80.dp).size(240.dp,90.dp)
+                        Modifier
+                            .padding(bottom = 80.dp)
+                            .size(240.dp, 90.dp)
                     )
                 }
             }
@@ -82,14 +93,14 @@ fun LoadingText(nickName: String) {
                 ) {
                     Text(
                         text = "'$nickName'",
-                        fontSize = 18.sp,
+                        fontSize = 20.sp,
                         color = LinkedInColor
                     )
                 }
-                    Text(text = "님", fontSize = 18.sp)
+                    Text(text = "님", fontSize = 20.sp)
             }
 
-        Text(text = "당신만을 위한 글쓰기 공간을 생성중입니다", fontSize = 20.sp)
+        Text(text = "당신만을 위한 글쓰기 공간을 생성중입니다", fontSize = 18.sp)
         Spacer(modifier = Modifier.height(13.dp))
         Text(
             text = "필명은 [마이페이지 > 프로필편집]에서 수정 가능합니다.",

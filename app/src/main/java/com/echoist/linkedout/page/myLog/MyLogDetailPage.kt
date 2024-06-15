@@ -296,7 +296,7 @@ fun DetailEssay(viewModel: MyLogViewModel) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
                 Column {
                     Text(
-                        text = "구루브",
+                        text = viewModel.myProfile.nickname!!,
                         fontSize = 12.sp,
                         textAlign = TextAlign.End,
                         color = Color(0xFF686868)

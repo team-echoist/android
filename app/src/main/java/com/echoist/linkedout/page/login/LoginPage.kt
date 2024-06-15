@@ -135,6 +135,9 @@ class LoginPage : ComponentActivity() {
                 composable("SIGNUP") {
                     SignUpPage(navController, signUpViewModel)
                 }
+                composable("SignUpComplete") {
+                    SignUpCompletePage(homeViewModel,navController)
+                }
                 composable("HOME") {
                     HomePage(navController,homeViewModel)
                 }
