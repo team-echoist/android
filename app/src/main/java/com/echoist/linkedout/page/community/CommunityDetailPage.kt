@@ -10,6 +10,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -32,16 +33,24 @@ import androidx.compose.material.icons.automirrored.filled.ArrowLeft
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -51,9 +60,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -68,6 +79,7 @@ import com.echoist.linkedout.R
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.components.EssayListItem
 import com.echoist.linkedout.page.myLog.OptionItem
+import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
 import kotlinx.coroutines.delay
@@ -86,17 +98,42 @@ fun CommunityDetailPagePreview() {
 @Composable
 fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewModel) {
 
+    val peekHeight = if (viewModel.isReportClicked ) 310.dp else 0.dp
+
+
+    val bottomSheetState = rememberStandardBottomSheetState(initialValue = SheetValue.Hidden, skipHiddenState = false)
+    val scaffoldState = androidx.compose.material3.rememberBottomSheetScaffoldState(
+        bottomSheetState = bottomSheetState
+    )
+
     var isClicked by remember { mutableStateOf(false) }
 
+    LaunchedEffect(viewModel.isReportClicked) {
+        if (viewModel.isReportClicked) {
+            bottomSheetState.partialExpand()
+        }
+    }
+    LinkedOutTheme {
+        BottomSheetScaffold(
+            sheetContainerColor = Color(0xFF191919),
+            scaffoldState = scaffoldState,
+            sheetContent = {
 
-        LinkedOutTheme {
+                               //신고 옵션 추가
+                    ReportMenuBottomSheet()
+
+
+            },
+
+            sheetPeekHeight = peekHeight
+        ) {
             Scaffold(
                 topBar = {
 
                     CommunityTopAppBar(navController = navController, viewModel)
 
                 },
-                content = { it ->
+                content = {
                     CompositionLocalProvider(LocalRippleConfiguration provides null) {
                         Box(
                             Modifier
@@ -107,7 +144,11 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
                             LazyColumn {
                                 item {
 
-                                    DetailEssay(item = viewModel.detailEssay,viewModel,navController)
+                                    DetailEssay(
+                                        item = viewModel.detailEssay,
+                                        viewModel,
+                                        navController
+                                    )
                                     Spacer(modifier = Modifier.height(28.dp))
                                     SubscriberSimpleItem(
                                         item = viewModel.userItem,
@@ -149,7 +190,7 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
 
                             }
 
-                            //수정 옵션
+                            //신고 옵션
                             AnimatedVisibility(
                                 visible = viewModel.isOptionClicked,
                                 enter = fadeIn(
@@ -171,13 +212,16 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
                                         .padding(end = 23.dp),
                                     contentAlignment = Alignment.TopEnd
                                 ) {
-                                    ReportOption({},viewModel)
+                                    ReportOption({viewModel.isReportClicked = !viewModel.isReportClicked}, viewModel)
                                 }
                             }
 
                         }
                     }
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter){
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.BottomCenter
+                    ) {
                         LaunchedEffect(isClicked) {
                             delay(3000)
                             isClicked = false
@@ -201,12 +245,18 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
                             SequenceBottomBar()
                         }
                     }
+                    if (viewModel.isReportClicked)
+                    Box(modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(0.7f))
+                        .clickable { viewModel.isReportClicked = false })
 
                 }
 
             )
         }
     }
+}
 
 
 
@@ -332,7 +382,10 @@ fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navContro
 
                                     viewModel.viewModelScope.launch {
                                         if (isEssayBookMarked) viewModel.addBookMark(item.id!!)
-                                        else viewModel.deleteBookMark(item.id!!, navController = navController)
+                                        else viewModel.deleteBookMark(
+                                            item.id!!,
+                                            navController = navController
+                                        )
                                     }
 
                                 },
@@ -436,4 +489,154 @@ fun SequenceBottomBar(){
 
     }
 }
+@Preview
+@Composable
+fun ReportMenuBottomSheet() {
+
+    val reportOptions = listOf(
+        "스팸/도배글",
+        "음란물",
+        "욕설/혐오 표현 또는 상징",
+        "거짓 정보",
+        "청소년에게 유해한 내용",
+        "불쾌한 표현",
+        "불법 정보",
+        "지식재산권 침해",
+        "개인 정보 노출",
+        "기타 문제"
+    )
+
+    Box(modifier = Modifier
+        .height(715.dp)
+        .fillMaxSize()
+        .padding(top = 20.dp)) {
+        Column {
+            Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(text = "신고", fontSize = 16.sp, color = Color.White)
+                Spacer(modifier = Modifier.height(13.dp))
+                Text(text = "이 글을 신고하는 이유를 선택해주세요.", color = Color.White)
+                Spacer(modifier = Modifier.height(10.dp))
+            }
+            SingleSelectReportList(items = reportOptions)
+            Spacer(modifier = Modifier.height(20.dp))
+            Button(onClick = { /*TODO*/ }, modifier = Modifier
+                .fillMaxWidth()
+                .height(61.dp), shape = RoundedCornerShape(20)) {
+                Text(text = "신고하기", color = Color.Black)
+            }
+        }
+    }
+}
+
+@Composable
+fun ReportItem(
+    reportItem: String,
+    isSelected: Boolean,
+    onItemSelected: (Boolean) -> Unit
+) {
+    val color = if (isSelected) LinkedInColor else Color(0xFF252525)
+
+    Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = { onItemSelected(!isSelected) }) {
+                Icon(
+                    imageVector = Icons.Default.CheckCircle,
+                    tint = color,
+                    contentDescription = null
+                )
+            }
+            Text(text = reportItem, color = Color.White)
+        }
+        if (reportItem == "기타 문제" && isSelected){
+            ReportTextField()
+            Spacer(modifier = Modifier.height(20.dp))
+        }
+    }
+
+}
+
+@Composable
+fun SingleSelectReportList(items: List<String>) {
+    var selectedItem by remember { mutableStateOf("") }
+
+
+    LazyColumn(Modifier.height(460.dp)) {
+        items(items) { item ->
+            val isSelected = item == selectedItem
+            val borderColor = if (isSelected) LinkedInColor else Color.Transparent
+
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(1.dp, borderColor, shape = RoundedCornerShape(10))
+                    .clickable {
+                        selectedItem = if (selectedItem == item) "" else item
+                    }
+            ) {
+                Column {
+                    ReportItem(
+                        reportItem = item,
+                        isSelected = isSelected,
+                        onItemSelected = { selected ->
+                            selectedItem = if (selected) item else ""
+                        }
+                    )
+                    HorizontalDivider(color = Color(0xFF202020))
+
+                }
+
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun ReportTextField() {
+
+
+    var isFocused by remember { mutableStateOf(false) }
+    var borderColor = if (isFocused) LinkedInColor else Color(0xFF202020)
+
+    var text by remember { mutableStateOf(TextFieldValue("")) }
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .height(150.dp)
+        .padding(horizontal = 15.dp)
+        ){
+        TextField(
+            modifier = Modifier.fillMaxSize()
+                .onFocusChanged { isFocused = it.isFocused }
+                .border(1.dp, color = borderColor, shape = RoundedCornerShape(10)),
+            value = text,
+            onValueChange = {
+                text = it
+            },
+
+
+                    label = { Text(text = "신고 내용을 작성해주세요.") },
+            colors = TextFieldDefaults.colors(
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedTextColor = Color.White,
+                unfocusedTextColor = Color.White,
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent,
+                errorTextColor = Color.Red,
+                errorContainerColor = if (isSystemInDarkTheme()) Color(0xFF252525) else Color.Black,
+                errorIndicatorColor = Color.Transparent
+            ),
+        )
+    }
+
+
+}
+
+
 

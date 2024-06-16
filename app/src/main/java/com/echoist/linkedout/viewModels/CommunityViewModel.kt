@@ -54,6 +54,8 @@ open class CommunityViewModel @Inject constructor(
     var sentenceInfo by mutableStateOf(SentenceInfo.First)
     var currentClickedUserId by mutableStateOf<Int?>(null) // Add this line
     var isOptionClicked by mutableStateOf(false)
+    var isReportClicked by mutableStateOf(false)
+
     var detailEssayBackStack = Stack<EssayApi.EssayItem>()
     var unSubscribeClicked by mutableStateOf(false)
 

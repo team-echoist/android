@@ -6,3 +6,4 @@ const val MIN_TITLE_SIZE = 16
 const val MIN_CONTENT_SIZE = 12
 
 const val BASE_URL = "https://www.linkedoutapp.com/"
+
