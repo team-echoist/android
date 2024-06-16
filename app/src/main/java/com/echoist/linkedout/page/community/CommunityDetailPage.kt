@@ -57,6 +57,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -64,15 +65,16 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
@@ -85,18 +87,15 @@ import com.echoist.linkedout.viewModels.CommunityViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@Preview
-@Composable
-fun CommunityDetailPagePreview() {
-    val viewModel : CommunityViewModel = viewModel()
-
-    CommunityDetailPage(rememberNavController(), viewModel)
-}
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewModel) {
+
+    var isReportClicked by remember {
+        mutableStateOf(false)
+    }
+    val scope = rememberCoroutineScope()
 
     val peekHeight = if (viewModel.isReportClicked ) 310.dp else 0.dp
 
@@ -120,7 +119,20 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
             sheetContent = {
 
                                //신고 옵션 추가
-                    ReportMenuBottomSheet()
+                if (!isReportClicked){
+                    ReportMenuBottomSheet { isReportClicked = true }
+
+                }
+                else{
+                    ReportComplete { isReportClicked = false
+                        viewModel.isReportClicked = false
+                        viewModel.isOptionClicked =false
+                        scope.launch {
+                            bottomSheetState.hide()
+                        }
+
+                    }
+                }
 
 
             },
@@ -489,9 +501,8 @@ fun SequenceBottomBar(){
 
     }
 }
-@Preview
 @Composable
-fun ReportMenuBottomSheet() {
+fun ReportMenuBottomSheet(isReportClicked : () ->Unit) {
 
     val reportOptions = listOf(
         "스팸/도배글",
@@ -519,8 +530,8 @@ fun ReportMenuBottomSheet() {
             }
             SingleSelectReportList(items = reportOptions)
             Spacer(modifier = Modifier.height(20.dp))
-            Button(onClick = { /*TODO*/ }, modifier = Modifier
-                .fillMaxWidth()
+            Button(onClick = { isReportClicked() }, modifier = Modifier
+                .fillMaxWidth() //todo report api 연동 필요
                 .height(61.dp), shape = RoundedCornerShape(20)) {
                 Text(text = "신고하기", color = Color.Black)
             }
@@ -596,7 +607,6 @@ fun SingleSelectReportList(items: List<String>) {
     }
 }
 
-@Preview
 @Composable
 fun ReportTextField() {
 
@@ -611,7 +621,8 @@ fun ReportTextField() {
         .padding(horizontal = 15.dp)
         ){
         TextField(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .onFocusChanged { isFocused = it.isFocused }
                 .border(1.dp, color = borderColor, shape = RoundedCornerShape(10)),
             value = text,
@@ -636,6 +647,65 @@ fun ReportTextField() {
     }
 
 
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun ReportComplete(isCompleteClicked : ()->Unit){
+    val annotatedString = remember {
+        AnnotatedString.Builder().apply {
+            withStyle(
+                style = SpanStyle(
+                    color = LinkedInColor,
+                    fontWeight = FontWeight.Bold,
+                )
+            ) {
+                append("아무개들")
+            }
+            append("이 보다 ")
+            withStyle(
+                style = SpanStyle(
+                    color = LinkedInColor,
+                    fontWeight = FontWeight.Bold,
+                )
+            ) {
+                append("양질의 글")
+            }
+            append("을 읽을 수 있게 됐어요\n신고해주셔서 감사합니다!")
+        }.toAnnotatedString()
+    }
+
+    Box(modifier = Modifier
+        .height(715.dp)
+        .fillMaxSize()
+        .padding(top = 55.dp)) {
+        Column(Modifier.padding(horizontal = 20.dp)) {
+            Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(text = "수상한 글 검거 완료", fontSize = 20.sp, color = LinkedInColor)
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(text = annotatedString, color = Color.White, textAlign = TextAlign.Center, fontSize = 16.sp)
+                Spacer(modifier = Modifier.height(54.dp))
+
+            }
+            Text(text = "신고 접수", fontSize = 16.sp, color = Color.White)
+            Text(text = "아무개님의 신고는 링크드아웃의 서비스를 개선하고 유지하는데 큰 도움이 돼요.", color = Color(0xFF6B6B6B), fontSize = 14.sp)
+            GlideImage(model = R.drawable.more, contentDescription = "more")
+            Spacer(modifier = Modifier.height(7.dp))
+            Text(text = "검토 대기", fontSize = 16.sp, color = Color.White)
+            Text(text = "링크드아웃 팀에서는 수상한 글을 꼼꼼하게 심문해 규정을 어긴 글을 최대한 빠르게 체포하고 있어요.", color = Color(0xFF6B6B6B), fontSize = 14.sp)
+            GlideImage(model = R.drawable.more, contentDescription = "more")
+            Spacer(modifier = Modifier.height(7.dp))
+            Text(text = "검토 완료", fontSize = 16.sp, color = Color.White)
+            Text(text = "심문이 끝난 후 결과를 알려드려요. 나쁜 글이 확실하다면 글을 공식적으로 체포했다는 알림을 보내드릴게요!", color = Color(0xFF6B6B6B), fontSize = 14.sp)
+            Spacer(modifier = Modifier.height(72.dp))
+
+            Button(onClick = { isCompleteClicked() }, modifier = Modifier
+                .fillMaxWidth()
+                .height(61.dp), shape = RoundedCornerShape(20)) {
+                Text(text = "확인", color = Color.Black)
+            }
+        }
+    }
 }
 
 
