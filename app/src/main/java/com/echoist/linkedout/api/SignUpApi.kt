@@ -6,14 +6,14 @@ import retrofit2.http.POST
 
 interface SignUpApi {
 
-    @POST("auth/check/email")
+    @POST("api/auth/check/email")
     suspend fun emailDuplicateConfirm(
         @Body email: EmailRequest
 
     ): Response<Unit>
 
     data class EmailRequest(val email : String,val id : Int? = null)
-    @POST("auth/verify")
+    @POST("api/auth/verify")
     suspend fun emailVerify(
         @Body userAccount : UserAccount
     ): Response<Unit>
@@ -26,7 +26,7 @@ interface SignUpApi {
         val oauthInfo : String = ""
     )
 
-    @POST("auth/login")
+    @POST("api/auth/login")
     suspend fun login(
         @Body userAccount : UserAccount
     ): Response<LoginResponse>

@@ -55,7 +55,7 @@ class SignUpViewModel @Inject constructor(
                 val response = signUpApi.emailDuplicateConfirm(email)
 
 
-                if (response.code() == 200) {
+                if (response.isSuccessful) {
                     Log.e("authApiSuccess1", "${response.code()}")
 
                     emailVerify(navController)
@@ -87,7 +87,7 @@ class SignUpViewModel @Inject constructor(
 
                 Log.d("tokentoken", response.headers()["authorization"].toString())
                 Token.accessToken = (response.headers()["authorization"].toString())
-                //todo 회원가입 다시 해결하기
+                //todo 회원가입 비밀번호 특수문자 대소문자 필요한거 Ui 변경해야함. 그리고 확인로딩시 대기표시 띄워줘야함.
                 readMyInfo()
 
 
