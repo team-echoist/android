@@ -85,6 +85,17 @@ interface EssayApi{
         @Path("essayId") essayId: Int = 0
     ): Response<DetailEssayResponse>
 
+    data class ReportRequest(
+        val reason: String
+    )
+
+    @POST("api/essays/reports/{essayId}")
+    suspend fun reportEssay(
+        @Header("Authorization") accessToken: String,
+        @Path("essayId") essayId: Int,
+        @Body reason : ReportRequest
+    ): Response<Unit>
+
     @JsonClass(generateAdapter = true)
     data class WritingEssayItem(
         val title: String,

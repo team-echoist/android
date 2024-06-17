@@ -301,6 +301,28 @@ open class CommunityViewModel @Inject constructor(
 
     }
 
+    var isReportCleared by mutableStateOf(false)
+    fun reportEssay(essayId: Int, reportReason : String){
+        viewModelScope.launch {
+            try {
 
 
+                val response = essayApi.reportEssay(Token.accessToken, essayId, EssayApi.ReportRequest(reportReason))
+                if (response.isSuccessful){
+                    Log.d(TAG, "reportEssay: 성공입니다 아니면 예시 ${detailEssay.title}")
+                    isReportCleared = true
+                }
+
+                // API 호출 결과 처리 (예: response 데이터 사용)
+            } catch (e: Exception) {
+
+                // 예외 처리
+                e.printStackTrace()
+                Log.d(TAG, "reportEssay: ${e.message}")
+                Log.d(TAG, "reportEssay: ${e.cause}")
+                Log.d(TAG, "reportEssay: ${e.localizedMessage}")
+
+            }
+        }
+    }
 }

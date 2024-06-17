@@ -44,6 +44,7 @@ import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SuggestionChip
+import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -92,10 +93,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewModel) {
 
-    var isReportClicked by remember {
-        mutableStateOf(false)
-    }
     val scope = rememberCoroutineScope()
+
 
     val peekHeight = if (viewModel.isReportClicked ) 310.dp else 0.dp
 
@@ -118,13 +117,13 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
             scaffoldState = scaffoldState,
             sheetContent = {
 
-                               //신고 옵션 추가
-                if (!isReportClicked){
-                    ReportMenuBottomSheet { isReportClicked = true }
+                               //신고하기 요청보냄.
+                if (!viewModel.isReportCleared){
+                    ReportMenuBottomSheet(viewModel)
 
                 }
-                else{
-                    ReportComplete { isReportClicked = false
+                else{ //신고 하기 버튼 눌렀을때 제대로 요청이 들어가고 접수가되었다면. 완료버튼 클릭시
+                    ReportComplete { viewModel.isReportCleared = false
                         viewModel.isReportClicked = false
                         viewModel.isOptionClicked =false
                         scope.launch {
@@ -500,39 +499,45 @@ fun SequenceBottomBar(){
 
 
     }
-}
-@Composable
-fun ReportMenuBottomSheet(isReportClicked : () ->Unit) {
-
+}@Composable
+fun ReportMenuBottomSheet(viewModel: CommunityViewModel) {
     val reportOptions = listOf(
-        "스팸/도배글",
-        "음란물",
-        "욕설/혐오 표현 또는 상징",
-        "거짓 정보",
-        "청소년에게 유해한 내용",
-        "불쾌한 표현",
-        "불법 정보",
-        "지식재산권 침해",
-        "개인 정보 노출",
-        "기타 문제"
+        "스팸/도배글", "음란물", "욕설/혐오 표현 또는 상징", "거짓 정보",
+        "청소년에게 유해한 내용", "불쾌한 표현", "불법 정보", "지식재산권 침해",
+        "개인 정보 노출", "기타 문제"
     )
 
-    Box(modifier = Modifier
-        .height(715.dp)
-        .fillMaxSize()
-        .padding(top = 20.dp)) {
+    var selectedItem by remember { mutableStateOf("") }
+
+    Box(
+        modifier = Modifier
+            .height(715.dp)
+            .fillMaxSize()
+            .padding(top = 20.dp)
+    ) {
         Column {
             Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(text = "신고", fontSize = 16.sp, color = Color.White)
                 Spacer(modifier = Modifier.height(13.dp))
                 Text(text = "이 글을 신고하는 이유를 선택해주세요.", color = Color.White)
+                Text(text = "한 글당 한번의 신고만 가능합니다.", color = Color.Gray, fontSize = 12.sp)
+
                 Spacer(modifier = Modifier.height(10.dp))
             }
-            SingleSelectReportList(items = reportOptions)
+            SingleSelectReportList(
+                items = reportOptions,
+                selectedItem = selectedItem,
+                onItemSelected = { selectedItem = it }
+            )
             Spacer(modifier = Modifier.height(20.dp))
-            Button(onClick = { isReportClicked() }, modifier = Modifier
-                .fillMaxWidth() //todo report api 연동 필요
-                .height(61.dp), shape = RoundedCornerShape(20)) {
+            Button(
+                onClick = {
+                          viewModel.reportEssay(viewModel.detailEssay.id!!,selectedItem)},
+                modifier = Modifier
+                    .fillMaxWidth() // TODO: report API 연동 필요
+                    .height(61.dp),
+                shape = RoundedCornerShape(20)
+            ) {
                 Text(text = "신고하기", color = Color.Black)
             }
         }
@@ -563,31 +568,30 @@ fun ReportItem(
             }
             Text(text = reportItem, color = Color.White)
         }
-        if (reportItem == "기타 문제" && isSelected){
+        if (reportItem == "기타 문제" && isSelected) {
             ReportTextField()
             Spacer(modifier = Modifier.height(20.dp))
         }
     }
-
 }
 
 @Composable
-fun SingleSelectReportList(items: List<String>) {
-    var selectedItem by remember { mutableStateOf("") }
-
-
+fun SingleSelectReportList(
+    items: List<String>,
+    selectedItem: String,
+    onItemSelected: (String) -> Unit
+) {
     LazyColumn(Modifier.height(460.dp)) {
         items(items) { item ->
             val isSelected = item == selectedItem
             val borderColor = if (isSelected) LinkedInColor else Color.Transparent
-
 
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .border(1.dp, borderColor, shape = RoundedCornerShape(10))
                     .clickable {
-                        selectedItem = if (selectedItem == item) "" else item
+                        onItemSelected(if (selectedItem == item) "" else item)
                     }
             ) {
                 Column {
@@ -595,17 +599,16 @@ fun SingleSelectReportList(items: List<String>) {
                         reportItem = item,
                         isSelected = isSelected,
                         onItemSelected = { selected ->
-                            selectedItem = if (selected) item else ""
+                            onItemSelected(if (selected) item else "")
                         }
                     )
                     HorizontalDivider(color = Color(0xFF202020))
-
                 }
-
             }
         }
     }
 }
+
 
 @Composable
 fun ReportTextField() {
@@ -691,7 +694,17 @@ fun ReportComplete(isCompleteClicked : ()->Unit){
             Text(text = "아무개님의 신고는 링크드아웃의 서비스를 개선하고 유지하는데 큰 도움이 돼요.", color = Color(0xFF6B6B6B), fontSize = 14.sp)
             GlideImage(model = R.drawable.more, contentDescription = "more")
             Spacer(modifier = Modifier.height(7.dp))
-            Text(text = "검토 대기", fontSize = 16.sp, color = Color.White)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "검토 대기", fontSize = 16.sp, color = Color.White)
+                Spacer(modifier = Modifier.width(10.dp))
+                SuggestionChip(
+                    modifier = Modifier.height(15.dp),
+                    onClick = { Log.d("Suggestion chip", "hello world") },
+                    label = { Text("진행중", fontSize = 10.sp, color = Color.Black, fontWeight = FontWeight.Bold) },
+                    colors = SuggestionChipDefaults.suggestionChipColors(containerColor = Color(0xFFFFBB36)),
+                )
+
+            }
             Text(text = "링크드아웃 팀에서는 수상한 글을 꼼꼼하게 심문해 규정을 어긴 글을 최대한 빠르게 체포하고 있어요.", color = Color(0xFF6B6B6B), fontSize = 14.sp)
             GlideImage(model = R.drawable.more, contentDescription = "more")
             Spacer(modifier = Modifier.height(7.dp))
