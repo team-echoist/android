@@ -20,10 +20,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -61,9 +63,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.colintheshots.twain.MarkdownText
 import com.echoist.linkedout.R
 import com.echoist.linkedout.components.HashTagGroup
@@ -563,5 +568,47 @@ fun WritingDeleteCard(viewModel: WritingViewModel, navController: NavController)
 
         }
     }
+}
 
+@Preview
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun WriteCompleteBox(){
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .background(Color.Black.copy(0.7f))){
+
+    }
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+        Box(modifier = Modifier.size(300.dp,286.dp)){
+            GlideImage(model = R.drawable.completebox, contentDescription = "completeBox", modifier = Modifier.fillMaxSize())
+        Row(
+            Modifier
+                .padding(horizontal = 20.dp)
+                .padding(bottom = 30.dp)
+                .fillMaxSize(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+            GlideImage(model = R.drawable.badge5, contentDescription = "", modifier = Modifier.weight(2f))
+            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(4f)) {
+                Row {
+                    Text(text = "저장 ", color = LinkedInColor, fontSize = 24.sp)
+                    Text(text = "완료", fontSize = 24.sp, color = Color.White)
+                }
+                Spacer(modifier = Modifier.height(18.dp))
+                Text(text = "아무개님의 새 글이\n숨바꼭질을 시작했어요!", textAlign = TextAlign.Center, color = Color.White)
+
+            }
+        }
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter){
+                Button(onClick = { /*TODO*/ },
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(start = 20.dp, end = 20.dp, bottom = 20.dp), shape = RoundedCornerShape(20), colors = ButtonDefaults.buttonColors(containerColor = LinkedInColor)) {
+                    Text(text = "닫기")
+                }
+            }
+        }
+
+
+
+    }
 }
