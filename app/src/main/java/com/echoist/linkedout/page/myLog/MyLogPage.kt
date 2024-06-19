@@ -26,7 +26,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.components.EssayChips
 import com.echoist.linkedout.components.EssayPager
@@ -37,7 +36,6 @@ import com.echoist.linkedout.page.home.MyBottomNavigation
 import com.echoist.linkedout.page.home.WriteFTB
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.MyLogViewModel
-import com.echoist.linkedout.viewModels.SearchingViewModel
 import kotlinx.coroutines.launch
 
 
@@ -56,9 +54,6 @@ fun MyLogPage(navController : NavController,viewModel: MyLogViewModel) {
 
         hasCalledApi.value = true
     }
-    //todo searchingviewmodel 은 서칭페이지 한정, 데이터공유가 필요하지않기때문에 컴포즈 내에서만 생성하여 사용함.
-    val searchingViewModel : SearchingViewModel = hiltViewModel()
-
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         ModalNavigationDrawer(

@@ -38,8 +38,8 @@ class MyLogViewModel @Inject constructor(
 
     var isModifyStoryClicked by mutableStateOf(false)
 
-    var myEssayList = exampleItems.myEssayList
-    var publishedEssayList = exampleItems.publishedEssayList
+    var myEssayList by mutableStateOf(exampleItems.myEssayList)
+    var publishedEssayList by mutableStateOf(exampleItems.publishedEssayList)
 
 
     var isActionClicked by mutableStateOf(false)
@@ -91,8 +91,15 @@ class MyLogViewModel @Inject constructor(
 
         return relatedEssayList
     }
+    fun readDetailEssay() : EssayApi.EssayItem{
+        return exampleItems.detailEssay
+    }
 
-    fun readPublishEssay() {
+
+    fun readPublishEssay() { //todo 얘를 한스텝 일찍 호출해야할듯
+        Log.d(TAG, "detail : ${detailEssay.title}")
+        Log.d(TAG, "detail: ${exampleItems.detailEssay.title}")
+
         myEssayList.clear()
         publishedEssayList.clear()
 

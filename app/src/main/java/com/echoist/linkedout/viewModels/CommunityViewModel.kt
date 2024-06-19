@@ -23,7 +23,6 @@ import com.echoist.linkedout.data.Story
 import com.echoist.linkedout.page.myLog.Token
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import java.util.Stack
 import javax.inject.Inject
 
 enum class SentenceInfo {
@@ -56,7 +55,7 @@ open class CommunityViewModel @Inject constructor(
     var isOptionClicked by mutableStateOf(false)
     var isReportClicked by mutableStateOf(false)
 
-    var detailEssayBackStack = Stack<EssayApi.EssayItem>()
+    var detailEssayBackStack by mutableStateOf(exampleItems.detailEssayBackStack)
     var unSubscribeClicked by mutableStateOf(false)
 
     var detailEssay by mutableStateOf(exampleItems.detailEssay)

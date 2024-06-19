@@ -16,15 +16,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,6 +42,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.viewModels.MyLogViewModel
+import kotlinx.coroutines.delay
 
 @Preview
 @Composable
@@ -91,12 +94,12 @@ fun LastEssayItem(
                         overflow = TextOverflow.Ellipsis,
                         fontSize = 20.sp,
                     )
-                    if (item.id == viewModel.detailEssay.id){
-                        Spacer(modifier = Modifier.width(10.dp))
-                        Surface(shape = RoundedCornerShape(60), color = Color.Magenta) {
-                            Text(text = "현재 글",Modifier.padding(start = 5.dp, end = 5.dp))
-                        }
-                    }
+//                    if (item.id == viewModel.detailEssay.id){
+//                        Spacer(modifier = Modifier.width(10.dp))
+//                        Surface(shape = RoundedCornerShape(60), color = Color.Magenta) {
+//                            Text(text = "현재 글",Modifier.padding(start = 5.dp, end = 5.dp))
+//                        }
+//                    } todo 이전 글 파싱하는방법 찾아야할듯? 아이디를 기준으로 앞에걸 자른다던지
 
                 }
 
@@ -143,9 +146,26 @@ fun LastEssayItem(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LastEssayPager(viewModel: MyLogViewModel, navController: NavController){
+    var hasCalledApi by remember { mutableStateOf(false) }
+    LaunchedEffect(key1 = Unit) {
+        if (!hasCalledApi) {
+
+            delay(100)
+
+            hasCalledApi = true
+        }
+    }
 
     val pageCount = if (viewModel.detailEssay.status == "published") viewModel.publishedEssayList.size/4 +1 else viewModel.myEssayList.size/4 +1
     val pagerstate = rememberPagerState { pageCount }
+    val lastEssayList = when (viewModel.readDetailEssay().status){
+        "published" -> viewModel.publishedEssayList
+        "private" -> viewModel.myEssayList
+        else -> { //todo 검토중에 대해선 다시 체크해봐야한다.
+            emptyList<EssayApi.EssayItem>()
+        }
+    }
+
 
     Column {
         Spacer(modifier = Modifier.height(20.dp))
@@ -160,72 +180,82 @@ fun LastEssayPager(viewModel: MyLogViewModel, navController: NavController){
         )
         HorizontalDivider(color = Color(0xFF686868))
 
-        HorizontalPager(state = pagerstate) { page ->
-            val startIndex = page * 4
-            val endIndex = minOf(
-                startIndex + 4,
-                if (viewModel.detailEssay.status == "published") viewModel.publishedEssayList.size else viewModel.myEssayList.size
-            )
-            val essayList =
-                if (viewModel.detailEssay.status == "published") viewModel.publishedEssayList else viewModel.myEssayList
-            val pageItems = if (endIndex <= essayList.size) {
-                essayList.subList(startIndex, endIndex)
-            } else {
-                essayList.subList(startIndex, essayList.size)
-            }
-
-            Column {
-                pageItems.forEach { essay ->
-                    LastEssayItem(
-                        item = essay,
-                        viewModel = viewModel,
-                        navController = navController
-                    )
-                }
+        //저장된 글 리스트가 비어있다면
+        if (lastEssayList.isEmpty()){
+            Box(modifier = Modifier
+                .fillMaxWidth()
+                .height(140.dp), contentAlignment = Alignment.Center){
+                Text(text = "아직 글이 없습니다.", color = Color(0xFF424242), fontSize = 16.sp)
             }
         }
-        Spacer(modifier = Modifier.height(20.dp))
-        Box(
-            modifier = Modifier
-                .fillMaxSize() /* 부모 만큼 */
-                .padding(bottom = 60.dp), contentAlignment = Alignment.BottomCenter
-        ) {
+        //이전 글이 존재한다면
+        else{
+            HorizontalPager(state = pagerstate) { page ->
+                val startIndex = page * 4
+                val endIndex = minOf(
+                    startIndex + 4,
+                    lastEssayList.size
+                )
+                val pageItems = if (endIndex <= lastEssayList.size) {
+                    lastEssayList.subList(startIndex, endIndex)
+                } else {
+                    lastEssayList.subList(startIndex, lastEssayList.size)
+                }
 
-            Row(
-                Modifier
-                    .padding(bottom = 10.dp), //box 안에 있어야하는거같기도?
-                horizontalArrangement = Arrangement.Center
-            )
-            {
-                repeat(pageCount) { iteration ->
-                    val color =
-                        if (pagerstate.currentPage == iteration) Color(0xFFE4A89E) else Color.White.copy(
-                            alpha = 0.5f
-                        )
-                    if (pagerstate.currentPage == iteration) {
-                        Box(
-                            modifier = Modifier
-                                .padding(4.dp)
-                                .clip(CircleShape)
-                                .background(color)
-                                .size(10.dp, 10.dp)
-
-                        )
-
-                    } else {
-                        Box(
-                            modifier = Modifier
-                                .padding(4.dp)
-                                .clip(CircleShape)
-                                .background(color)
-                                .size(10.dp, 10.dp)
-
+                Column {
+                    pageItems.forEach { essay ->
+                        LastEssayItem(
+                            item = essay,
+                            viewModel = viewModel,
+                            navController = navController
                         )
                     }
+                }
+            }
+            Spacer(modifier = Modifier.height(20.dp))
+            Box(
+                modifier = Modifier
+                    .fillMaxSize() /* 부모 만큼 */
+                    .padding(bottom = 60.dp), contentAlignment = Alignment.BottomCenter
+            ) {
 
+                Row(
+                    Modifier
+                        .padding(bottom = 10.dp), //box 안에 있어야하는거같기도?
+                    horizontalArrangement = Arrangement.Center
+                )
+                {
+                    repeat(pageCount) { iteration ->
+                        val color =
+                            if (pagerstate.currentPage == iteration) Color(0xFFE4A89E) else Color.White.copy(
+                                alpha = 0.5f
+                            )
+                        if (pagerstate.currentPage == iteration) {
+                            Box(
+                                modifier = Modifier
+                                    .padding(4.dp)
+                                    .clip(CircleShape)
+                                    .background(color)
+                                    .size(10.dp, 10.dp)
+
+                            )
+
+                        } else {
+                            Box(
+                                modifier = Modifier
+                                    .padding(4.dp)
+                                    .clip(CircleShape)
+                                    .background(color)
+                                    .size(10.dp, 10.dp)
+
+                            )
+                        }
+
+                    }
                 }
             }
         }
+
 
 
     }

@@ -7,12 +7,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.echoist.linkedout.R
 import com.echoist.linkedout.api.EssayApi
+import java.util.Stack
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class ExampleItems @Inject constructor(){
 
+    var detailEssayBackStack = Stack<EssayApi.EssayItem>()
 
 
     private var exampleBadge by mutableStateOf(

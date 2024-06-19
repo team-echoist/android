@@ -96,7 +96,7 @@ class WritingViewModel @Inject constructor(private val essayApi: EssayApi,privat
                 val essayData = EssayApi.WritingEssayItem(
                     title.value.text,
                     content.value.text,
-                    linkedOutGauge = ringTouchedTime.value,
+                    linkedOutGauge = ringTouchedTime.intValue,
                     //categoryId = 0, 이값도 넣어야할것
                     //thumbnail = imageBitmap, bitmap -> url
                     status = status,
@@ -112,12 +112,15 @@ class WritingViewModel @Inject constructor(private val essayApi: EssayApi,privat
                 if (response.isSuccessful) {
                     accessToken = (response.headers()["authorization"].toString())
                     Token.accessToken = accessToken
+                    exampleItems.detailEssay = response.body()!!.data!!
+                    exampleItems.detailEssayBackStack.push(exampleItems.detailEssay)
+
                     Log.e("writeEssayApiSuccess 성공!", "${response.headers()}")
                     Log.e("writeEssayApiSuccess", response.body()?.data?.title!!)
 
                     Log.e("writeEssayApiSuccess", "${response.code()}")
-                    navController.popBackStack("OnBoarding", false) //onboarding까지 전부 삭제.
-                    navController.navigate("HOME")
+                    navController.popBackStack("Home", false) //onboarding까지 전부 삭제.
+                    navController.navigate("CompletedEssayPage")
                     initialize()
                 } else {
                     Log.e("writeEssayApiFailed token", "Failed to write essay: $accessToken")

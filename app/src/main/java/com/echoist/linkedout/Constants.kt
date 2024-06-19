@@ -7,3 +7,8 @@ const val MIN_CONTENT_SIZE = 12
 
 const val BASE_URL = "https://www.linkedoutapp.com/"
 
+const val PRIVATE_POPUP_URL = "https://driqat77mj5du.cloudfront.net/service/popup1_high.gif"
+const val PUBLISHED_POPUP_URL = "https://driqat77mj5du.cloudfront.net/service/popup2_high.gif"
+const val LINKEDOUT_POPUP_URL = "https://driqat77mj5du.cloudfront.net/service/popup3_high.gif"
+const val INSPECT_POPUP_URL = "https://driqat77mj5du.cloudfront.net/service/popup4_high.gif"
+

@@ -1,7 +1,9 @@
 package com.echoist.linkedout.page.login
 
+import android.content.Context
 import android.graphics.Rect
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.ViewTreeObserver
 import androidx.activity.ComponentActivity
@@ -73,6 +75,7 @@ import com.echoist.linkedout.page.community.CommunityPage
 import com.echoist.linkedout.page.community.CommunitySavedEssayPage
 import com.echoist.linkedout.page.community.FullSubscriberPage
 import com.echoist.linkedout.page.home.HomePage
+import com.echoist.linkedout.page.myLog.CompletedEssayPage
 import com.echoist.linkedout.page.myLog.MyLogDetailPage
 import com.echoist.linkedout.page.myLog.MyLogPage
 import com.echoist.linkedout.page.myLog.StoryPage
@@ -100,13 +103,18 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class LoginPage : ComponentActivity() {
-
+    private fun getSSAID(context: Context): String {
+        return Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+    }
 
     override fun onStart() {
         super.onStart()
         //카카오 sdk 초기화
         KakaoSdk.init(this, BuildConfig.kakao_native_app_key)
         Firebase.auth.signOut()
+
+        val ssaid = getSSAID(this)
+        Log.d("SSAID", "SSAID: $ssaid") //고유식별자
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -149,6 +157,9 @@ class LoginPage : ComponentActivity() {
                 }
                 composable("MyLogDetailPage") {
                     MyLogDetailPage(navController = navController,myLogViewModel)
+                }
+                composable("CompletedEssayPage") {
+                    CompletedEssayPage(navController = navController,myLogViewModel)
                 }
                 composable("COMMUNITY") {
                     CommunityPage(navController = navController,communityViewModel)

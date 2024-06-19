@@ -8,6 +8,7 @@ data class SingleEssayResponse(
     val data: EssayApi.EssayItem?,
     val path: String?,
     val success: Boolean,
-    val timestamp: String?
+    val timestamp: String?,
+    val statusCode : Int?
 )
 
