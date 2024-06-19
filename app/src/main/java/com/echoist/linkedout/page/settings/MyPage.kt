@@ -1,5 +1,10 @@
 package com.echoist.linkedout.page.settings
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,30 +25,48 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.VerticalDivider
+import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -54,9 +77,11 @@ import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.BadgeBoxItem
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.home.MyBottomNavigation
+import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.SettingsViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 //@Preview
 //@Composable
@@ -64,7 +89,7 @@ import kotlinx.coroutines.delay
 //    MyPage(navController = NavController(LocalContext.current))
 //}
 
-@OptIn(ExperimentalGlideComposeApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyPage(
     viewModel: SettingsViewModel,
@@ -76,52 +101,113 @@ fun MyPage(
     viewModel.getUserInfo()
 
     val scrollState = rememberScrollState()
+    val scope = rememberCoroutineScope()
+
+
+    val bottomSheetState =
+        rememberStandardBottomSheetState(initialValue = SheetValue.Hidden, skipHiddenState = false)
+    val scaffoldState = androidx.compose.material3.rememberBottomSheetScaffoldState(
+        bottomSheetState = bottomSheetState
+    )
 
     LinkedOutTheme {
-        Scaffold(
-            topBar = {
-                Text(
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    text = "MY",
-                    color = Color.White,
-                    modifier = Modifier.padding(start = 20.dp)
-                )
-            },
-            bottomBar = { MyBottomNavigation(navController) },
-            content = {
-                Column(
-                    modifier = Modifier
-                        .padding(it)
-                        .verticalScroll(scrollState)
+        BottomSheetScaffold(
+            sheetContainerColor = Color(0xFF111111),
+            scaffoldState = scaffoldState,
+            sheetContent = {
 
-                ) {
-                    MySettings(item = viewModel.myProfile)
-                    SettingBar("링크드아웃 배지") {viewModel.readDetailBadgeList(navController)}
-                    LinkedOutBadgeGrid(viewModel)
-                    SettingBar("최근 본 글") {}
-                    RecentEssayList(itemList = viewModel.detailEssay)
-                    SettingBar("멤버십 관리") {}
-                    SettingBar("계정 관리") {}
-
-
-                }
-
-                if (viewModel.isBadgeClicked) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        BadgeDescriptionBox(viewModel.badgeBoxItem!!, viewModel)
+                //이미지 수정시
+                AnimatedVisibility(
+                    visible = viewModel.isClickedModifyImage,
+                    enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = LinearEasing)),
+                    exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
+                ){
+                    SelectProfileIconBottomSheet{
+                        //todo viewmodel. api 를 통해 아이콘변경 저장 필요
+                        viewModel.isClickedModifyImage = false
                     }
                 }
+                //기본
+
+                AnimatedVisibility(
+                    visible = !viewModel.isClickedModifyImage,
+                    enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = LinearEasing)),
+                    exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
+                ){
+                    ModifyMyProfileBottomSheet(
+                        onClickComplete = {
+                            scope.launch {
+                                bottomSheetState.hide()
+                            }
+                        },
+                        onClickCancel = {
+                            //todo 완료 api
+                            scope.launch {
+                                bottomSheetState.hide()
+
+                            }
+                        },
+                        onClickModifyImage = {
+                            viewModel.isClickedModifyImage = true
+                        })
+                }
 
 
-            }
-        )
+            },
+            sheetPeekHeight = 0.dp
+        ) {
+            Scaffold(
+                topBar = {
+                    Text(
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        text = "MY",
+                        color = Color.White,
+                        modifier = Modifier.padding(start = 20.dp)
+                    )
+                },
+                bottomBar = { MyBottomNavigation(navController) },
+                content = {
+                    Column(
+                        modifier = Modifier
+                            .padding(it)
+                            .verticalScroll(scrollState)
+
+                    ) {
+                        MySettings(item = viewModel.myProfile) {
+                            scope.launch {
+                                bottomSheetState.expand()
+                            }
+                        }
+                        SettingBar("링크드아웃 배지") { viewModel.readDetailBadgeList(navController) }
+                        LinkedOutBadgeGrid(viewModel)
+                        SettingBar("최근 본 글") {}
+                        RecentEssayList(itemList = viewModel.detailEssay)
+                        SettingBar("멤버십 관리") {}
+                        SettingBar("계정 관리") {}
+
+
+                    }
+
+                    if (viewModel.isBadgeClicked) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            BadgeDescriptionBox(viewModel.badgeBoxItem!!, viewModel)
+                        }
+                    }
+
+
+                }
+            )
+        }
     }
 }
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun MySettings(item: UserInfo) {
+fun MySettings(item: UserInfo, onClick: () -> Unit) {
 
     val annotatedString = remember {
         AnnotatedString.Builder().apply {
@@ -171,7 +257,11 @@ fun MySettings(item: UserInfo) {
                 ) {
                     Text(text = "쓴글", fontSize = 10.sp, color = Color(0xFF616161))
                     Spacer(modifier = Modifier.height(1.dp))
-                    Text(text = item.essayStats!!.totalEssays.toString(), fontSize = 18.sp, color = Color(0xFF616161))
+                    Text(
+                        text = item.essayStats!!.totalEssays.toString(),
+                        fontSize = 18.sp,
+                        color = Color(0xFF616161)
+                    )
                 }
                 VerticalDivider(Modifier.height(41.dp), color = Color(0xFF191919))
                 Column(
@@ -181,7 +271,11 @@ fun MySettings(item: UserInfo) {
                 ) {
                     Text(text = "발행", fontSize = 10.sp, color = Color(0xFF616161))
                     Spacer(modifier = Modifier.height(1.dp))
-                    Text(text = item.essayStats!!.publishedEssays.toString(), fontSize = 18.sp, color = Color(0xFF616161))
+                    Text(
+                        text = item.essayStats!!.publishedEssays.toString(),
+                        fontSize = 18.sp,
+                        color = Color(0xFF616161)
+                    )
                 }
                 VerticalDivider(Modifier.height(41.dp), color = Color(0xFF191919))
 
@@ -192,18 +286,23 @@ fun MySettings(item: UserInfo) {
                 ) {
                     Text(text = "링크드아웃", fontSize = 10.sp, color = Color(0xFF616161))
                     Spacer(modifier = Modifier.height(1.dp))
-                    Text(text = item.essayStats!!.linkedOutEssays.toString(), fontSize = 18.sp, color = Color(0xFF616161))
+                    Text(
+                        text = item.essayStats!!.linkedOutEssays.toString(),
+                        fontSize = 18.sp,
+                        color = Color(0xFF616161)
+                    )
                 }
             }
         }
         Spacer(modifier = Modifier.height(10.dp))
         Box(
             modifier = Modifier
+                .clickable { onClick() }
                 .fillMaxWidth()
                 .background(Color(0xFF616FED), shape = RoundedCornerShape(20))
                 .height(50.dp), contentAlignment = Alignment.Center
         ) {
-            Text(text = "프로필 편집", fontSize = 14.sp, color = Color(0xFF616161))
+            Text(text = "프로필 편집", fontSize = 14.sp, color = Color.Black)
         }
 
     }
@@ -269,7 +368,11 @@ fun RecentEssayList(itemList: List<EssayApi.EssayItem>) {
 
 @Composable
 fun BadgeDescriptionBox(badgeBoxItem: BadgeBoxItem, viewModel: SettingsViewModel) {
-    Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(0.5f)))
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(0.5f))
+    )
     Box(modifier = Modifier.size(300.dp, 350.dp)) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
             Image(
@@ -367,7 +470,7 @@ fun LinkedOutBadgeItem(
 
 @Composable
 fun LinkedOutBadgeGrid(viewModel: SettingsViewModel) {
-val badgeList = viewModel.simpleBadgeList
+    val badgeList = viewModel.simpleBadgeList
 
     LaunchedEffect(Unit) {
         delay(50)
@@ -389,11 +492,184 @@ val badgeList = viewModel.simpleBadgeList
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             items(badgeList) {
-                LinkedOutBadgeItem(it,viewModel)
+                LinkedOutBadgeItem(it, viewModel)
             }
             // 각 아이템에 대한 UI를 구성
             // 여기에는 각 아이템을 표시하는 Composable 함수 호출
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ModifyMyProfileBottomSheet(
+    onClickComplete: () -> Unit,
+    onClickCancel: () -> Unit,
+    onClickModifyImage: () -> Unit
+) {
+    val focusManager = LocalFocusManager.current
+
+    Box(modifier = Modifier
+        .clickable { focusManager.clearFocus() }
+        .fillMaxWidth()
+        .padding(horizontal = 20.dp)
+        .height(770.dp)) {
+        Column(
+            Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
+                title = {
+                    Text(
+                        text = "프로필 편집",
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth(),
+                        color = Color.White
+                    )
+                },
+                actions = {
+                    Text(text = "완료",
+                        color = Color.White,
+                        modifier = Modifier.clickable {
+                            onClickComplete()
+                            focusManager.clearFocus()
+                        }
+                    )
+                },
+                navigationIcon = {
+                    Text(
+                        text = "취소",
+                        color = Color(0xFF686868),
+                        modifier = Modifier.clickable {
+                            onClickCancel()
+                            focusManager.clearFocus()
+                        }
+
+                    )
+
+                }
+            )
+            Spacer(modifier = Modifier.height(40.dp))
+            SelectProfileImageIcon { onClickModifyImage() } //이미지변경
+            Spacer(modifier = Modifier.height(26.dp))
+            ModifyNickNameTextField()
+        }
+
+
+    }
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun SelectProfileImageIcon(onClickModifyImage: () -> Unit) {
+    Box(modifier = Modifier.size(120.dp)) {
+        GlideImage(
+            modifier = Modifier.fillMaxSize(),
+            model = R.drawable.ring,
+            contentDescription = "img"
+        )
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
+            Box(
+                modifier = Modifier
+                    .size(32.dp)
+                    .background(Color.White, shape = CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(imageVector = Icons.Default.Edit, contentDescription = "",
+                    Modifier
+                        .size(15.dp)
+                        .clickable { onClickModifyImage() })
+
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun ModifyNickNameTextField() {
+    var text by remember {
+        mutableStateOf("구루브")
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(88.dp)
+    ) {
+        Text(text = "링크드아웃 필명", fontSize = 12.sp, color = Color(0xFF464646))
+        Spacer(modifier = Modifier.height(6.5.dp))
+        OutlinedTextField(
+            value = text,
+            onValueChange = {
+                text = it
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(62.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = LinkedInColor,
+                unfocusedBorderColor = Color(0xFF252525),
+                focusedBorderColor = LinkedInColor,
+                unfocusedTextColor = LinkedInColor,
+                unfocusedContainerColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent
+
+            ),
+            suffix = { Text(text = "아무개         ", color = Color.White) },
+            trailingIcon = {
+                Button(
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF191919)),
+                    onClick = { /*TODO*/ },
+                    modifier = Modifier.padding(end = 20.dp),
+                    shape = RoundedCornerShape(20)
+                ) {
+                    Text(text = "기본 번호로 설정", color = Color(0xFF606060), fontSize = 12.sp)
+                }
+            })
+
+    }
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun SelectProfileIconBottomSheet(onSelectIcon : () -> Unit){
+
+    val icons = listOf(R.drawable.ring,R.drawable.ring,R.drawable.ring,R.drawable.ring,R.drawable.ring,R.drawable.ring)
+
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 20.dp)
+        .height(770.dp)) {
+        Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(text = "아이콘 선택", color = Color.White)
+            Spacer(modifier = Modifier.height(20.dp))
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(40.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                items(icons) {
+                    GlideImage(
+                        model = it,
+                        contentDescription = "image",
+                        Modifier
+                            .size(120.dp)
+                            .clickable {
+                                onSelectIcon()
+                            }
+                    )
+
+                }
+            }
+        }
+
+
+
     }
 }
 

@@ -25,6 +25,8 @@ class SettingsViewModel @Inject constructor(
     private val userApi: UserApi,
     private val exampleItems: ExampleItems
 ) : ViewModel() {
+    var isClickedModifyImage by mutableStateOf(false)
+
     var myProfile by mutableStateOf(exampleItems.myProfile)
 
     var isLevelUpSuccess by mutableStateOf(false)
