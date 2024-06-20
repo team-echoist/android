@@ -194,7 +194,7 @@ fun BadgeItem(badgeBoxItem: BadgeBoxItemWithTag, viewModel: SettingsViewModel) {
                     Box(modifier = Modifier
                         .fillMaxSize()
                         .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center){
-                        Button(onClick = { viewModel.requestBadgeLevelUp(badgeBoxItem.badgeId!!) }) { //todo name이 아니고 id로
+                        Button(onClick = { viewModel.requestBadgeLevelUp(badgeBoxItem.badgeId!!) }) {
                             Text(text = "보상 받기")
                         } 
                     }

@@ -13,6 +13,7 @@ import com.echoist.linkedout.api.UserApi
 import com.echoist.linkedout.data.BadgeBoxItem
 import com.echoist.linkedout.data.BadgeBoxItemWithTag
 import com.echoist.linkedout.data.ExampleItems
+import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.data.toBadgeBoxItem
 import com.echoist.linkedout.page.myLog.Token
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,7 +28,7 @@ class SettingsViewModel @Inject constructor(
 ) : ViewModel() {
     var isClickedModifyImage by mutableStateOf(false)
 
-    var myProfile by mutableStateOf(exampleItems.myProfile)
+    var newProfile by mutableStateOf(UserInfo())
 
     var isLevelUpSuccess by mutableStateOf(false)
 
@@ -38,8 +39,10 @@ class SettingsViewModel @Inject constructor(
     var simpleBadgeList by mutableStateOf<List<BadgeBoxItem>>(emptyList())
     var detailBadgeList by mutableStateOf<List<BadgeBoxItemWithTag>>(emptyList())
 
-    fun getUserInfo(){
+
+    fun getMyInfo() : UserInfo{
         Log.d(TAG, "getUserInfo: ${exampleItems.myProfile}")
+        return exampleItems.myProfile
     }
 
     fun readSimpleBadgeList(navController: NavController) {
@@ -103,6 +106,36 @@ class SettingsViewModel @Inject constructor(
                     isLevelUpSuccess = false
                 }
 
+            } catch (e: Exception) {
+                e.printStackTrace()
+                // api 요청 실패
+                Log.e("writeEssayApiFailed", "Failed to write essay: ${e.message}")
+            }
+        }
+    }
+
+    fun updateMyInfo(userInfo: UserInfo,navController: NavController) {
+        viewModelScope.launch {
+            try {
+
+                val response = userApi.userUpdate(Token.accessToken, userInfo)
+                Log.d(TAG, "updateMyInfo: ${userInfo.profileImage}")
+                Log.d(TAG, "updateMyInfo: ${newProfile.profileImage}")
+
+                Log.d(TAG, "requestBadgeLevelUp: ${Token.accessToken}")
+                if (response.isSuccessful){
+                    Token.accessToken = (response.headers()["authorization"].toString())
+
+                    //todo api가 성공한다는 시점에서 바로 바뀌게 만듦.
+                    exampleItems.myProfile.profileImage = newProfile.profileImage
+                    exampleItems.myProfile.nickname = newProfile.nickname
+
+                    readSimpleBadgeList(navController)
+                    getMyInfo()
+                    navController.navigate("SETTINGS")
+                    newProfile = UserInfo()
+
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
                 // api 요청 실패

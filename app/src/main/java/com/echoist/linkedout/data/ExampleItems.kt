@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import com.echoist.linkedout.PRIVATE_POPUP_URL
 import com.echoist.linkedout.R
 import com.echoist.linkedout.api.EssayApi
 import java.util.Stack
@@ -73,12 +74,13 @@ class ExampleItems @Inject constructor(){
         UserInfo(
             id = 1,
             nickname = "구루브",
-            profileImage = "http",
+            profileImage = PRIVATE_POPUP_URL,
             password = "1234",
             gender = "male",
             birthDate = "0725"
         )
     )
+
 
 
     var subscribeUserList = mutableStateListOf( //구독유저 리스트 api통신해서 받을것.

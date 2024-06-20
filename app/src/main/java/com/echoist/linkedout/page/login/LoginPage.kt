@@ -180,7 +180,7 @@ class LoginPage : ComponentActivity() {
                     FullSubscriberPage(communityViewModel,navController)
                 }
                 composable("SETTINGS") {
-                    MyPage(settingsViewModel , navController)
+                    MyPage(navController)
                     //settings page
                 }
                 composable("BadgePage") {

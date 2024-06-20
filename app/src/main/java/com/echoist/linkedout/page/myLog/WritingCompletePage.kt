@@ -20,12 +20,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
@@ -49,11 +47,8 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -70,8 +65,6 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
 import com.colintheshots.twain.MarkdownText
 import com.echoist.linkedout.R
 import com.echoist.linkedout.components.HashTagGroup
@@ -241,7 +234,7 @@ fun CompleteContents(viewModel: WritingViewModel) {
 fun CompleteNickName(nickName : String) {
     Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.BottomEnd) {
         Text(
-            text = nickName,  /*todo 닉네임 구현 필요합니다. */
+            text = nickName,
             fontSize = 12.sp,
             color = Color(0xFF686868),
             modifier = Modifier.padding(end = 25.dp, bottom = 8.dp)

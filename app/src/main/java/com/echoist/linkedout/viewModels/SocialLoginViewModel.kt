@@ -62,9 +62,9 @@ class SocialLoginViewModel @Inject constructor(
     var kakaoLoginstate = mutableStateOf(false)
     var naverLoginstate = mutableStateOf(false)
 
-    var googleUserToken by mutableStateOf("")
-    var googleUserId by mutableStateOf("")
-    var googleUserEmail by mutableStateOf("")
+    private var googleUserToken by mutableStateOf("")
+    private var googleUserId by mutableStateOf("")
+    private var googleUserEmail by mutableStateOf("")
 
 
     var userId by mutableStateOf("")
@@ -78,12 +78,13 @@ class SocialLoginViewModel @Inject constructor(
             exampleItems.myProfile = response.data
             Log.d(TAG, "readMyInfo: suc2")
 
-            val responseDetail = userApi.readMyInfoDetail(Token.accessToken,response.data.id)
+            val responseDetail = userApi.readMyInfoDetail(Token.accessToken,response.data.id!!)
             Log.d(TAG, "readMyInfo: suc3")
 
             exampleItems.myProfile = responseDetail.data.user
             exampleItems.myProfile.essayStats = responseDetail.data.essayStats
             Log.d(TAG, "readMyInfo: suc4")
+            Log.d(TAG, "readMyInfo: ${exampleItems.myProfile}")
 
 
         }catch (e: Exception){

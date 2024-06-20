@@ -1,5 +1,7 @@
 package com.echoist.linkedout.page.settings
 
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
@@ -29,6 +31,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.BottomSheetScaffold
@@ -66,12 +69,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.echoist.linkedout.INSPECT_POPUP_URL
+import com.echoist.linkedout.LINKEDOUT_POPUP_URL
+import com.echoist.linkedout.PRIVATE_POPUP_URL
+import com.echoist.linkedout.PUBLISHED_POPUP_URL
 import com.echoist.linkedout.R
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.BadgeBoxItem
@@ -83,22 +90,18 @@ import com.echoist.linkedout.viewModels.SettingsViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-//@Preview
-//@Composable
-//fun MyPagePreview() {
-//    MyPage(navController = NavController(LocalContext.current))
-//}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyPage(
-    viewModel: SettingsViewModel,
     navController: NavController
 ) {
 
+    val viewModel : SettingsViewModel = hiltViewModel()
+
 
     viewModel.readSimpleBadgeList(navController)
-    viewModel.getUserInfo()
+    viewModel.getMyInfo()
 
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
@@ -122,10 +125,8 @@ fun MyPage(
                     enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = LinearEasing)),
                     exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
                 ){
-                    SelectProfileIconBottomSheet{
-                        //todo viewmodel. api 를 통해 아이콘변경 저장 필요
-                        viewModel.isClickedModifyImage = false
-                    }
+                    Log.d(TAG, "MyPage: ${viewModel.newProfile}")
+                    SelectProfileIconBottomSheet(viewModel)
                 }
                 //기본
 
@@ -136,6 +137,7 @@ fun MyPage(
                 ){
                     ModifyMyProfileBottomSheet(
                         onClickComplete = {
+                            viewModel.updateMyInfo(viewModel.newProfile, navController)
                             scope.launch {
                                 bottomSheetState.hide()
                             }
@@ -146,10 +148,7 @@ fun MyPage(
                                 bottomSheetState.hide()
 
                             }
-                        },
-                        onClickModifyImage = {
-                            viewModel.isClickedModifyImage = true
-                        })
+                        },viewModel)
                 }
 
 
@@ -174,7 +173,7 @@ fun MyPage(
                             .verticalScroll(scrollState)
 
                     ) {
-                        MySettings(item = viewModel.myProfile) {
+                        MySettings(item = viewModel.getMyInfo()) {
                             scope.launch {
                                 bottomSheetState.expand()
                             }
@@ -231,11 +230,14 @@ fun MySettings(item: UserInfo, onClick: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(40.dp))
-        GlideImage(
-            model = R.drawable.bottom_nav_3,
-            contentDescription = "profileImage",
-            Modifier.size(108.dp)
-        ) //todo 프로필이미지로 변경 viewmodel.userItem.profileImage
+        if (item.profileImage != null){
+            GlideImage(
+                model = item.profileImage,
+                contentDescription = "profileImage",
+                Modifier.size(108.dp)
+            )
+        }
+
         Spacer(modifier = Modifier.height(10.dp))
         Text(text = annotatedString, fontWeight = FontWeight.Bold, fontSize = 24.sp)
         Spacer(modifier = Modifier.height(16.dp))
@@ -499,15 +501,72 @@ fun LinkedOutBadgeGrid(viewModel: SettingsViewModel) {
         }
     }
 }
+@Composable
+fun ModifyNickNameTextField( viewModel: SettingsViewModel) {
+
+    var text by remember {
+        mutableStateOf(viewModel.getMyInfo().nickname!!)
+    }
+    //수정 안했을때 기본 닉네임 설정. 원래 닉네임으로.
+    viewModel.newProfile.nickname = text
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(88.dp)
+    ) {
+        Text(text = "링크드아웃 필명", fontSize = 12.sp, color = Color(0xFF464646))
+        Spacer(modifier = Modifier.height(6.5.dp))
+        OutlinedTextField(
+            value = text,
+            onValueChange = {
+                text = it
+                viewModel.newProfile.nickname = text //수정할때마다 새 프로필 닉네임 변경
+                Log.d(TAG, "ModifyNickNameTextField: ${viewModel.newProfile}")
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(62.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = LinkedInColor,
+                unfocusedBorderColor = Color(0xFF252525),
+                focusedBorderColor = LinkedInColor,
+                unfocusedTextColor = LinkedInColor,
+                unfocusedContainerColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent
+
+            ),
+            suffix = { Text(text = "아무개         ", color = Color.White) },
+            trailingIcon = {
+                Button(
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF191919)),
+                    onClick = { /*TODO */ },
+                    modifier = Modifier.padding(end = 20.dp),
+                    shape = RoundedCornerShape(20)
+                ) {
+                    Text(text = "기본 번호로 설정", color = Color(0xFF606060), fontSize = 12.sp)
+                }
+            })
+
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ModifyMyProfileBottomSheet(
     onClickComplete: () -> Unit,
     onClickCancel: () -> Unit,
-    onClickModifyImage: () -> Unit
+    viewModel: SettingsViewModel
 ) {
     val focusManager = LocalFocusManager.current
+
+    val url = viewModel.newProfile.profileImage //널이 아닐경우 그대로사용
+        ?: viewModel.getMyInfo().profileImage //널일경우 이 값을사용
+        ?: PRIVATE_POPUP_URL // 둘다 널일경우 기본.
+
+    viewModel.newProfile.profileImage = url
+
+
 
     Box(modifier = Modifier
         .clickable { focusManager.clearFocus() }
@@ -535,6 +594,8 @@ fun ModifyMyProfileBottomSheet(
                         modifier = Modifier.clickable {
                             onClickComplete()
                             focusManager.clearFocus()
+                            Log.d(TAG, "MyPage: ${viewModel.newProfile}")
+
                         }
                     )
                 },
@@ -543,31 +604,40 @@ fun ModifyMyProfileBottomSheet(
                         text = "취소",
                         color = Color(0xFF686868),
                         modifier = Modifier.clickable {
+                            //새로운 프로필을 공백으로 다시 초기화
                             onClickCancel()
                             focusManager.clearFocus()
                         }
 
                     )
-
                 }
             )
-            Spacer(modifier = Modifier.height(40.dp))
-            SelectProfileImageIcon { onClickModifyImage() } //이미지변경
-            Spacer(modifier = Modifier.height(26.dp))
-            ModifyNickNameTextField()
-        }
 
+            Spacer(modifier = Modifier.height(40.dp))
+
+            SelectProfileImageIcon(
+                { viewModel.isClickedModifyImage = true },
+                imageUrl = url!!
+            )
+            Spacer(modifier = Modifier.height(26.dp))
+            ModifyNickNameTextField( viewModel)
+
+        }//이미지변경
 
     }
 }
 
+
+
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun SelectProfileImageIcon(onClickModifyImage: () -> Unit) {
+fun SelectProfileImageIcon(onClickModifyImage: () -> Unit, imageUrl : String ) {
+
+
     Box(modifier = Modifier.size(120.dp)) {
         GlideImage(
             modifier = Modifier.fillMaxSize(),
-            model = R.drawable.ring,
+            model = imageUrl,
             contentDescription = "img"
         )
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
@@ -587,64 +657,45 @@ fun SelectProfileImageIcon(onClickModifyImage: () -> Unit) {
     }
 }
 
-@Preview
+
+
+@OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun ModifyNickNameTextField() {
-    var text by remember {
-        mutableStateOf("구루브")
-    }
+fun SelectProfileIconBottomSheet(viewModel: SettingsViewModel){
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(88.dp)
-    ) {
-        Text(text = "링크드아웃 필명", fontSize = 12.sp, color = Color(0xFF464646))
-        Spacer(modifier = Modifier.height(6.5.dp))
-        OutlinedTextField(
-            value = text,
-            onValueChange = {
-                text = it
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(62.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedTextColor = LinkedInColor,
-                unfocusedBorderColor = Color(0xFF252525),
-                focusedBorderColor = LinkedInColor,
-                unfocusedTextColor = LinkedInColor,
-                unfocusedContainerColor = Color.Transparent,
-                focusedContainerColor = Color.Transparent
-
-            ),
-            suffix = { Text(text = "아무개         ", color = Color.White) },
-            trailingIcon = {
-                Button(
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF191919)),
-                    onClick = { /*TODO*/ },
-                    modifier = Modifier.padding(end = 20.dp),
-                    shape = RoundedCornerShape(20)
-                ) {
-                    Text(text = "기본 번호로 설정", color = Color(0xFF606060), fontSize = 12.sp)
-                }
-            })
-
-    }
-}
-
-@OptIn(ExperimentalGlideComposeApi::class)
-@Composable
-fun SelectProfileIconBottomSheet(onSelectIcon : () -> Unit){
-
-    val icons = listOf(R.drawable.ring,R.drawable.ring,R.drawable.ring,R.drawable.ring,R.drawable.ring,R.drawable.ring)
+    val icons = listOf(PRIVATE_POPUP_URL,
+        PUBLISHED_POPUP_URL,
+        LINKEDOUT_POPUP_URL,PRIVATE_POPUP_URL,PRIVATE_POPUP_URL, INSPECT_POPUP_URL)
 
     Box(modifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = 20.dp)
         .height(770.dp)) {
         Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "아이콘 선택", color = Color.White)
+
+            TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
+                title = {
+                    Text(
+                        text = "아이콘 선택",
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth(),
+                        color = Color.White
+                    )
+                },
+                navigationIcon = {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "arrow back",
+                        modifier = Modifier
+                            .clickable { viewModel.isClickedModifyImage = false }
+                            .size(24.dp, 21.dp)
+                            .padding(start = 10.dp),
+                        tint = Color.White
+                    )
+
+                }
+            )
             Spacer(modifier = Modifier.height(20.dp))
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
@@ -660,16 +711,15 @@ fun SelectProfileIconBottomSheet(onSelectIcon : () -> Unit){
                         Modifier
                             .size(120.dp)
                             .clickable {
-                                onSelectIcon()
+                                viewModel.isClickedModifyImage = false
+                                viewModel.newProfile.profileImage = it
+                                Log.d(TAG, "MyPage: ${viewModel.newProfile}")
+
                             }
                     )
-
                 }
             }
         }
-
-
-
     }
 }
 

@@ -620,7 +620,7 @@ fun EssayListItem(
                 .fillMaxSize()
                 .padding(start = 20.dp, bottom = 10.dp)
         ) {
-            Text(text = if (item.author?.nickname != null) item.author.nickname else "", fontSize = 10.sp, color = Color(0xFF686868))
+            Text(text = if (item.author?.nickname != null) item.author.nickname!! else "", fontSize = 10.sp, color = Color(0xFF686868))
         }
         Box(
             contentAlignment = Alignment.BottomEnd, modifier = Modifier

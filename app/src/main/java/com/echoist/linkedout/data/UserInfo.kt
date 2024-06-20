@@ -4,13 +4,13 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
     data class UserInfo(
-    val id: Int,
-    val nickname: String ? = null,
+    val id: Int? = null,
+    var nickname: String ? = null,
     val password: String? = null,
     val createdDate : String? = null,
     val updatedDate : String? = null,
     val gender: String? = null,
-    val profileImage: String? = null,
+    var profileImage: String? = null,
     val birthDate: String? = null,
     var essayStats: EssayStats? = null, //이 스탯은 원래 바로 받아지지않는 값임.
     val oauthInfo: OauthInfo? = null, //유저의 소셜로그인정보
