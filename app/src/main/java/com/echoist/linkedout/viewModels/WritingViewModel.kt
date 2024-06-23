@@ -115,6 +115,22 @@ class WritingViewModel @Inject constructor(private val essayApi: EssayApi,privat
                     exampleItems.detailEssay = response.body()!!.data!!
                     exampleItems.detailEssayBackStack.push(exampleItems.detailEssay)
 
+                    when(exampleItems.detailEssay.status){
+
+                        "private" -> {
+                            exampleItems.myProfile.essayStats!!.totalEssays += 1
+                        }
+                        "published" -> {
+                            exampleItems.myProfile.essayStats!!.publishedEssays += 1
+                            exampleItems.myProfile.essayStats!!.totalEssays += 1
+                        }
+                        "linkedout" -> {
+                            exampleItems.myProfile.essayStats!!.linkedOutEssays += 1
+                            exampleItems.myProfile.essayStats!!.totalEssays += 1
+                        }
+
+                    }
+
                     Log.e("writeEssayApiSuccess 성공!", "${response.headers()}")
                     Log.e("writeEssayApiSuccess", response.body()?.data?.title!!)
 

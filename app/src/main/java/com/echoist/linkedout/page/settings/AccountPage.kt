@@ -25,55 +25,37 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.echoist.linkedout.ui.theme.LinkedOutTheme
 
-@Preview
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AccountPage(){
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
-                title = {
-                    Text(
-                        text = "계정 관리",
-                        modifier = Modifier.fillMaxWidth(),
-                        color = Color.White
-                    )
-                },
-                navigationIcon = {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "arrow back",
-                        modifier = Modifier
-                            .size(24.dp, 21.dp)
-                            .padding(start = 10.dp),
-                        tint = Color.White
-                    )
+fun AccountPage(navController: NavController) {
+    LinkedOutTheme {
+        Scaffold(
+            topBar = {
+                SettingTopAppBar("계정 관리")
+            },
+            content = {
+                Column(
+                    Modifier
+                        .padding(it)
+                        .padding(horizontal = 20.dp)
+                ) {
+                    Spacer(modifier = Modifier.height(42.dp))
+                    Text(text = "로그인 정보", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+                    EmailBox { navController.navigate("ChangeEmailPage") }
+                    ModifyBox("비밀번호 변경") {}
+                    ModifyBox("로그아웃") {}
+                    Spacer(modifier = Modifier.height(20.dp))
+                    ModifyBox("탈퇴하기") {}
 
                 }
-            )
-        },
-        content = {
-            Column(
-                Modifier
-                    .padding(it)
-                    .padding(horizontal = 20.dp)) {
-                Spacer(modifier = Modifier.height(42.dp))
-                Text(text = "로그인 정보", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
-                EmailBox{}
-                ModifyBox("비밀번호 변경"){}
-                ModifyBox("로그아웃"){}
-                Spacer(modifier = Modifier.height(20.dp))
-                ModifyBox("탈퇴하기"){}
 
             }
-
-        }
-    )
+        )
+    }
 }
 
 @Composable
@@ -110,4 +92,30 @@ fun ModifyBox(text : String,onClick : ()-> Unit){
 
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SettingTopAppBar(text: String){
+    TopAppBar(
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
+        title = {
+            Text(
+                text = text,
+                modifier = Modifier.fillMaxWidth(),
+                color = Color.White
+            )
+        },
+        navigationIcon = {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "arrow back",
+                modifier = Modifier
+                    .size(24.dp, 21.dp)
+                    .padding(start = 10.dp),
+                tint = Color.White
+            )
+
+        }
+    )
 }

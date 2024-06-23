@@ -97,6 +97,7 @@ fun MyPage(
     navController: NavController
 ) {
 
+
     val viewModel : SettingsViewModel = hiltViewModel()
 
 
@@ -105,6 +106,7 @@ fun MyPage(
 
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
+
 
 
     val bottomSheetState =
@@ -183,7 +185,7 @@ fun MyPage(
                         SettingBar("최근 본 글") {}
                         RecentEssayList(itemList = viewModel.detailEssay)
                         SettingBar("멤버십 관리") {}
-                        SettingBar("계정 관리") {}
+                        SettingBar("계정 관리") {navController.navigate("AccountPage")}
 
 
                     }

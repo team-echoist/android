@@ -134,7 +134,7 @@ fun ModalBottomSheetContent(viewModel: HomeViewModel){
         drawerContainerColor = Color(0xE6141414)
     ) {
         Column(Modifier.verticalScroll(scrollState)) {
-            MyProfile(item = viewModel.myProfile)
+            MyProfile(item = viewModel.getMyInfo())
             HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
             MyLinkedOutBar()
             LineChartExample()
@@ -263,7 +263,7 @@ fun MyProfile(item: UserInfo) {
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxSize()) {
             GlideImage(
-                model = R.drawable.bottom_nav_4,
+                model = item.profileImage,
                 contentDescription = "profileImage",
                 Modifier.size(80.dp)
             )

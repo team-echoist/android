@@ -19,9 +19,9 @@ import com.squareup.moshi.JsonClass
     )
 
 data class EssayStats(
-    val totalEssays: Int = 0,
-    val publishedEssays: Int = 0,
-    val linkedOutEssays: Int = 0
+    var totalEssays: Int = 0,
+    var publishedEssays: Int = 0,
+    var linkedOutEssays: Int = 0
 )
 
 data class OauthInfo(

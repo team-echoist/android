@@ -48,7 +48,7 @@ class SignUpViewModel @Inject constructor(
     }
 
     //이메일 중복검사 1차
-    fun getUserEmailCheck(navController: NavController) {
+    fun getUserEmailCheck(userEmail: String,navController: NavController) {
         viewModelScope.launch {
             try {
                 val email = SignUpApi.EmailRequest(userEmail)

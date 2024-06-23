@@ -179,7 +179,7 @@ fun SignUpPage(
                             .height(100.dp)
                             .padding(start = 20.dp, end = 20.dp, top = 43.dp),
                         onClick = {
-                            viewModel.getUserEmailCheck(navController)
+                            viewModel.getUserEmailCheck(viewModel.userEmail,navController)
                         }
                     ) {
                         Text(text = "회원가입")

@@ -17,4 +17,8 @@ class HomeViewModel @Inject constructor(private val exampleItems: ExampleItems) 
     fun updateProfile(userInfo: UserInfo){
         exampleItems.myProfile = userInfo
     }
+
+    fun getMyInfo(): UserInfo { // 함수 이름 변경
+        return exampleItems.myProfile
+    }
 }
