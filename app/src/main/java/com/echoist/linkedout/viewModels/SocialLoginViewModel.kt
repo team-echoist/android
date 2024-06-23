@@ -135,12 +135,13 @@ class SocialLoginViewModel @Inject constructor(
                         googleUserEmail = account.email.toString()
                         googleLogin(navController)
                         Log.d(
+
                             TAG,
                             "firebaseAuthWithGoogle current user:" + auth.currentUser!!.email.toString()
                         )
                         Log.d(
                             TAG,
-                            "firebaseAuthWithGoogle current user:" + auth.currentUser!!.displayName.toString()
+                            "firebaseAuthWithGoogle current user:$googleUserToken"
                         ) //회원 이름
                         Log.d(
                             TAG,
