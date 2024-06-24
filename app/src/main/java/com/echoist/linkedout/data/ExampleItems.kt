@@ -78,7 +78,8 @@ class ExampleItems @Inject constructor(){
             profileImage = PRIVATE_POPUP_URL,
             password = "1234",
             gender = "male",
-            birthDate = "0725"
+            birthDate = "0725",
+            essayStats = EssayStats(0,0,0)
         )
     )
 

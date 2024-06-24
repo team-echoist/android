@@ -209,6 +209,7 @@ class SocialLoginViewModel @Inject constructor(
             } else if (token != null) {
                 kakaoLoginstate.value = true
 
+
                 navController.navigate("HOME")
                 Log.i(TAG, "카카오계정으로 로그인 성공 ${token.accessToken} ")
             }

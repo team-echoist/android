@@ -18,9 +18,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -35,12 +37,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.echoist.linkedout.R
+import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.home.LogoutBox
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
+import com.echoist.linkedout.viewModels.SettingsViewModel
 
 @Composable
 fun AccountPage(navController: NavController) {
@@ -71,6 +78,19 @@ fun AccountPage(navController: NavController) {
                     ModifyBox("로그아웃") {isLogoutClicked = true}
                     Spacer(modifier = Modifier.height(20.dp))
                     ModifyBox("탈퇴하기") {navController.navigate("AccountWithdrawalPage")}
+                    Spacer(modifier = Modifier.height(37.dp))
+                    Text(text = "소셜", fontSize = 18.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(horizontal = 20.dp))
+                    Spacer(modifier = Modifier.height(31.dp))
+
+                    val viewModel : SettingsViewModel = hiltViewModel()
+
+
+                    SocialLoginBox(R.drawable.social_googlebtn,"구글",viewModel.getMyInfo())
+                    SocialLoginBox(R.drawable.social_kakaobtn,"카카오톡",viewModel.getMyInfo())
+                    SocialLoginBox(R.drawable.social_naverbtn,"네이버",viewModel.getMyInfo())
+                    SocialLoginBox(R.drawable.social_applebtn,"애플",viewModel.getMyInfo())
+
+
 
                 }
 
@@ -132,7 +152,7 @@ fun ModifyBox(text : String, onClick : ()-> Unit){
         .background(Color(0xFF0E0E0E))
         .padding(horizontal = 20.dp)
         .fillMaxWidth()
-        .clickable { onClick()}
+        .clickable { onClick() }
         .height(70.dp)){
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart){
             Text(text = text)
@@ -169,4 +189,37 @@ fun SettingTopAppBar(text: String,navController: NavController){
 
         }
     )
+}
+
+@Composable
+fun SocialLoginBox(imageResourceId : Int, socialType : String, userItem :UserInfo){
+
+//    when(userItem.oauthInfo){
+//       google머시기 -> todo 유저의 로그인정보에 따른 계정연결과 연결해제 버튼,및 텍스트 색 변경필요
+//    }
+
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .height(50.dp)){
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxSize()) {
+            Icon(
+                painter = painterResource(id = imageResourceId),
+                contentDescription = "naver Login btn",
+                modifier = Modifier
+                    .size(40.dp)
+                    .clickable { },
+                tint = Color.Unspecified
+            )
+            Spacer(modifier = Modifier.width(25.dp))
+            Text(text = socialType, fontSize = 16.sp)
+        }
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
+            Button(onClick = { /*TODO*/ }, modifier = Modifier.height(36.dp), shape = RoundedCornerShape(30)) {
+                Text(text = "계정 연결")
+            }
+        }
+    }
+
+
+
 }
