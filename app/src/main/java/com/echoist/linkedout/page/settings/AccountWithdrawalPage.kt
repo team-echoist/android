@@ -97,8 +97,9 @@ fun AccountWithdrawalPage(navController : NavController) {
                     var isError by remember { mutableStateOf(false) }
 
                     Text(text = "현재 비밀번호", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+                    Spacer(modifier = Modifier.height(12.dp))
 
-                    CustomOutlinedTextField(
+                    CustomOutlinedTextField( //todo 비밀번호 에러 만들것?
                         pw,
                         { newText ->
                             pw = newText
@@ -110,6 +111,7 @@ fun AccountWithdrawalPage(navController : NavController) {
                         Text(text = "* 비밀번호를 정확하게 입력해주세요.", color = Color.Red, fontSize = 12.sp)
                     }
 
+                    Spacer(modifier = Modifier.height(10.dp))
                     Row (verticalAlignment = Alignment.CenterVertically){
                         Text(text = "비밀번호를 잊으셨나요? ", fontSize = 12.sp, color = Color(0xFF5D5D5D))
                         Text(

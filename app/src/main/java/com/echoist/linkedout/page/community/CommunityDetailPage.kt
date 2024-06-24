@@ -638,7 +638,6 @@ fun ReportTextField(hint : String,selectedColor: Color) {
             },
 
 
-                    label = { Text(text = "신고 내용을 작성해주세요.") },
             colors = TextFieldDefaults.colors(
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
