@@ -94,7 +94,7 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel) {
         drawerState = drawerState,
         drawerContent = {
 
-            ModalBottomSheetContent(viewModel = viewModel)
+            ModalBottomSheetContent(viewModel = viewModel,navController)
         }
 
     ) {
@@ -125,7 +125,7 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel) {
 
 
 @Composable
-fun ModalBottomSheetContent(viewModel: HomeViewModel){
+fun ModalBottomSheetContent(viewModel: HomeViewModel,navController: NavController){
     var isLogoutClicked by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
 
@@ -141,8 +141,8 @@ fun ModalBottomSheetContent(viewModel: HomeViewModel){
             HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
             ShopDrawerItem()
             HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
-            MyDrawableItem("화면 설정") {}
-            MyDrawableItem("알림 설정") {}
+            MyDrawableItem("화면 설정") {navController.navigate("DarkModeSettingPage")}
+            MyDrawableItem("알림 설정") {navController.navigate("NotificationPage")}
             MyDrawableItem("공지 사항") {}
             MyDrawableItem("고객지원") {}
             LogoutBtn{isLogoutClicked = true} //todo logout 기능 만들기

@@ -74,7 +74,9 @@ import com.echoist.linkedout.page.community.CommunityDetailPage
 import com.echoist.linkedout.page.community.CommunityPage
 import com.echoist.linkedout.page.community.CommunitySavedEssayPage
 import com.echoist.linkedout.page.community.FullSubscriberPage
+import com.echoist.linkedout.page.home.DarkModeSettingPage
 import com.echoist.linkedout.page.home.HomePage
+import com.echoist.linkedout.page.home.NotificationPage
 import com.echoist.linkedout.page.myLog.CompletedEssayPage
 import com.echoist.linkedout.page.myLog.MyLogDetailPage
 import com.echoist.linkedout.page.myLog.MyLogPage
@@ -153,6 +155,12 @@ class LoginPage : ComponentActivity() {
                 }
                 composable("HOME") {
                     HomePage(navController,homeViewModel)
+                }
+                composable("DarkModeSettingPage") {
+                    DarkModeSettingPage(navController)
+                }
+                composable("NotificationPage") {
+                    NotificationPage(navController)
                 }
                 composable("MYLOG") {
                     MyLogPage(navController = navController,myLogViewModel)
