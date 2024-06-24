@@ -57,10 +57,12 @@ fun AccountPage(navController: NavController) {
                 Column(
                     Modifier
                         .padding(it)
-                        .padding(horizontal = 20.dp)
                 ) {
                     Spacer(modifier = Modifier.height(42.dp))
-                    Text(text = "로그인 정보", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+
+                    Text(text = "로그인 정보", fontSize = 18.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(horizontal = 20.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
+
                     EmailBox { navController.navigate("ChangeEmailPage") }
                     ModifyBox("비밀번호 변경") {navController.navigate("ChangePwPage")}
 
@@ -68,7 +70,7 @@ fun AccountPage(navController: NavController) {
 
                     ModifyBox("로그아웃") {isLogoutClicked = true}
                     Spacer(modifier = Modifier.height(20.dp))
-                    ModifyBox("탈퇴하기") {}
+                    ModifyBox("탈퇴하기") {navController.navigate("AccountWithdrawalPage")}
 
                 }
 
@@ -102,6 +104,8 @@ fun AccountPage(navController: NavController) {
 fun EmailBox(onClick: () -> Unit){
     Box(modifier = Modifier
         .fillMaxWidth()
+        .background(Color(0xFF0E0E0E))
+        .padding(horizontal = 20.dp)
         .clickable { onClick() }
         .height(70.dp)){
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart){
@@ -119,8 +123,10 @@ fun EmailBox(onClick: () -> Unit){
     }
 }
 @Composable
-fun ModifyBox(text : String,onClick : ()-> Unit){
+fun ModifyBox(text : String, onClick : ()-> Unit){
     Box(modifier = Modifier
+        .background(Color(0xFF0E0E0E))
+        .padding(horizontal = 20.dp)
         .fillMaxWidth()
         .clickable { onClick()}
         .height(70.dp)){

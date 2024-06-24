@@ -499,7 +499,8 @@ fun SequenceBottomBar(){
 
 
     }
-}@Composable
+}
+@Composable
 fun ReportMenuBottomSheet(viewModel: CommunityViewModel) {
     val reportOptions = listOf(
         "스팸/도배글", "음란물", "욕설/혐오 표현 또는 상징", "거짓 정보",
@@ -548,9 +549,10 @@ fun ReportMenuBottomSheet(viewModel: CommunityViewModel) {
 fun ReportItem(
     reportItem: String,
     isSelected: Boolean,
+    selectedColor : Color,
     onItemSelected: (Boolean) -> Unit
 ) {
-    val color = if (isSelected) LinkedInColor else Color(0xFF252525)
+    val color = if (isSelected) selectedColor else Color(0xFF252525)
 
     Column {
         Row(
@@ -569,7 +571,7 @@ fun ReportItem(
             Text(text = reportItem, color = Color.White)
         }
         if (reportItem == "기타 문제" && isSelected) {
-            ReportTextField()
+            ReportTextField("신고 내용을 작성해주세요",selectedColor)
             Spacer(modifier = Modifier.height(20.dp))
         }
     }
@@ -598,6 +600,7 @@ fun SingleSelectReportList(
                     ReportItem(
                         reportItem = item,
                         isSelected = isSelected,
+                        selectedColor = LinkedInColor,
                         onItemSelected = { selected ->
                             onItemSelected(if (selected) item else "")
                         }
@@ -611,11 +614,11 @@ fun SingleSelectReportList(
 
 
 @Composable
-fun ReportTextField() {
+fun ReportTextField(hint : String,selectedColor: Color) {
 
 
     var isFocused by remember { mutableStateOf(false) }
-    var borderColor = if (isFocused) LinkedInColor else Color(0xFF202020)
+    var borderColor = if (isFocused) selectedColor else Color(0xFF202020)
 
     var text by remember { mutableStateOf(TextFieldValue("")) }
     Box(modifier = Modifier
@@ -624,6 +627,7 @@ fun ReportTextField() {
         .padding(horizontal = 15.dp)
         ){
         TextField(
+            placeholder = { Text(text = hint)},
             modifier = Modifier
                 .fillMaxSize()
                 .onFocusChanged { isFocused = it.isFocused }

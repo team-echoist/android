@@ -82,6 +82,7 @@ import com.echoist.linkedout.page.myLog.StoryPage
 import com.echoist.linkedout.page.myLog.WritingCompletePage
 import com.echoist.linkedout.page.myLog.WritingPage
 import com.echoist.linkedout.page.settings.AccountPage
+import com.echoist.linkedout.page.settings.AccountWithdrawalPage
 import com.echoist.linkedout.page.settings.BadgePage
 import com.echoist.linkedout.page.settings.ChangeEmailPage
 import com.echoist.linkedout.page.settings.ChangePwPage
@@ -201,6 +202,10 @@ class LoginPage : ComponentActivity() {
                 }
                 composable("ResetPwPage") {
                     ResetPwPage(navController)
+                    //settings page
+                }
+                composable("AccountWithdrawalPage") {
+                    AccountWithdrawalPage(navController)
                     //settings page
                 }
                 composable("BadgePage") {

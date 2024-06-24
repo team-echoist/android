@@ -113,7 +113,7 @@ fun ChangeEmailPage(navController: NavController) {
 
                     Spacer(modifier = Modifier.height(27.dp))
                     GlideImage(
-                        model = R.drawable.change_email_box,
+                        model = R.drawable.box_change_email,
                         contentDescription = "",
                         modifier = Modifier
                             .fillMaxWidth()

@@ -34,9 +34,12 @@ class SettingsViewModel @Inject constructor(
 
     var isLevelUpSuccess by mutableStateOf(false)
 
-    val detailEssay by mutableStateOf<List<EssayApi.EssayItem>>(emptyList())
     var isBadgeClicked by mutableStateOf(false)
     var badgeBoxItem : BadgeBoxItem? by mutableStateOf(null)
+
+    fun getRecentViewedEssayList() : List<EssayApi.EssayItem>{
+        return exampleItems.recentViewedEssayList
+    }
 
 
     fun getMyInfo() : UserInfo{

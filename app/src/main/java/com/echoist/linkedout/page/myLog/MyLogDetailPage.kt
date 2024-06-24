@@ -693,7 +693,7 @@ fun WriteCompleteBox(type : String){
         }
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
             Box(modifier = Modifier.size(300.dp,286.dp)){
-                GlideImage(model = R.drawable.completebox, contentDescription = "completeBox", modifier = Modifier.fillMaxSize())
+                GlideImage(model = R.drawable.box_complete, contentDescription = "completeBox", modifier = Modifier.fillMaxSize())
                 Row(
                     Modifier
                         .padding(horizontal = 20.dp)

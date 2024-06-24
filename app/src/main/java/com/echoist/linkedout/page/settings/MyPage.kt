@@ -183,7 +183,7 @@ fun MyPage(
                         SettingBar("링크드아웃 배지") { viewModel.readDetailBadgeList(navController) }
                         LinkedOutBadgeGrid(viewModel)
                         SettingBar("최근 본 글") {}
-                        RecentEssayList(itemList = viewModel.detailEssay)
+                        RecentEssayList(itemList = viewModel.getRecentViewedEssayList())
                         SettingBar("멤버십 관리") {}
                         SettingBar("계정 관리") {navController.navigate("AccountPage")}
 
@@ -340,7 +340,7 @@ fun SettingBar(text: String, onClick: () -> Unit) {
 
 @Composable
 fun RecentEssayItem(item: EssayApi.EssayItem) {
-    Box(modifier = Modifier.size(150.dp, 120.dp)) {
+    Box(modifier = Modifier.size(150.dp, 120.dp).clickable { /* 에세이로 이동 */ }) {
         Column {
             Text(text = item.title!!)
             Spacer(modifier = Modifier.height(10.dp))

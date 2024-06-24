@@ -2,6 +2,9 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+      <entry key="AccountDeletePage">
+        <State />
+      </entry>
       <entry key="ChangeEmailPage">
         <State />
       </entry>
@@ -9,9 +12,6 @@
         <State />
       </entry>
       <entry key="SelectProfileIcon">
-        <State />
-      </entry>
-      <entry key="SignUpCompletePage">
         <State />
       </entry>
       <entry key="WriteCompleteBox">
