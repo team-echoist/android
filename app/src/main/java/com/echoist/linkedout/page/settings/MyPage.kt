@@ -101,7 +101,7 @@ fun MyPage(
     val viewModel : SettingsViewModel = hiltViewModel()
 
 
-    viewModel.readSimpleBadgeList(navController)
+    viewModel.readSimpleBadgeList()
     viewModel.getMyInfo()
 
     val scrollState = rememberScrollState()
@@ -474,7 +474,7 @@ fun LinkedOutBadgeItem(
 
 @Composable
 fun LinkedOutBadgeGrid(viewModel: SettingsViewModel) {
-    val badgeList = viewModel.simpleBadgeList
+    val badgeList = viewModel.getSimpleBadgeList()
 
     LaunchedEffect(Unit) {
         delay(50)

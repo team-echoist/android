@@ -87,6 +87,7 @@ import com.echoist.linkedout.page.settings.ChangeEmailPage
 import com.echoist.linkedout.page.settings.ChangePwPage
 import com.echoist.linkedout.page.settings.MyPage
 import com.echoist.linkedout.page.settings.ProfilePage
+import com.echoist.linkedout.page.settings.ResetPwPage
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
 import com.echoist.linkedout.viewModels.HomeViewModel
@@ -196,6 +197,10 @@ class LoginPage : ComponentActivity() {
                 }
                 composable("ChangePwPage") {
                     ChangePwPage(navController)
+                    //settings page
+                }
+                composable("ResetPwPage") {
+                    ResetPwPage(navController)
                     //settings page
                 }
                 composable("BadgePage") {

@@ -26,9 +26,9 @@ class ExampleItems @Inject constructor(){
     )
 
     var exampleDetailBadge by mutableStateOf(
-        BadgeWithTag(0,0,0,"example", tags = listOf("1","2"))
+        BadgeBoxItemWithTag(0,"","",1, tags = listOf("1","2"), exp = 0, level = 1)
     )
-    var detailBadgeList : SnapshotStateList<BadgeWithTag> = mutableStateListOf(exampleDetailBadge)
+    var detailBadgeList : SnapshotStateList<BadgeBoxItemWithTag> = mutableStateListOf(exampleDetailBadge)
 
     var exampleStroy by mutableStateOf(
         Story(2,"","20240605",2)
@@ -41,6 +41,7 @@ class ExampleItems @Inject constructor(){
      * MyLogPage items
      * 나만의 에세이, 발행된 에세이
      */
+
     var myEssayList by mutableStateOf(mutableStateListOf<EssayApi.EssayItem>())
     var publishedEssayList by mutableStateOf(mutableStateListOf<EssayApi.EssayItem>())
 

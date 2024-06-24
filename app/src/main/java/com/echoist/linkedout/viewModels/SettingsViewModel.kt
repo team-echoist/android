@@ -5,6 +5,8 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
@@ -36,16 +38,13 @@ class SettingsViewModel @Inject constructor(
     var isBadgeClicked by mutableStateOf(false)
     var badgeBoxItem : BadgeBoxItem? by mutableStateOf(null)
 
-    var simpleBadgeList by mutableStateOf<List<BadgeBoxItem>>(emptyList())
-    var detailBadgeList by mutableStateOf<List<BadgeBoxItemWithTag>>(emptyList())
-
 
     fun getMyInfo() : UserInfo{
         Log.d(TAG, "getUserInfo: ${exampleItems.myProfile}")
         return exampleItems.myProfile
     }
 
-    fun readSimpleBadgeList(navController: NavController) {
+    fun readSimpleBadgeList() {
         //이게 작동되는지가 중요
         viewModelScope.launch {
             try {
@@ -53,9 +52,9 @@ class SettingsViewModel @Inject constructor(
                 val response = userApi.readBadgeList( Token.accessToken)
                 Log.d(TAG, "readSimpleBadgeList: ${response.body()!!.data.badges}")
                 response.body()?.data?.badges!!.let{badges ->
-                    simpleBadgeList = badges.map { it.toBadgeBoxItem() }
+                    exampleItems.simpleBadgeList = badges.map { it.toBadgeBoxItem() }.toMutableStateList()
                 }
-                Log.d(TAG, "readSimpleBadgeList: $simpleBadgeList")
+                Log.d(TAG, "readSimpleBadgeList: ${exampleItems.simpleBadgeList}")
 
                 Token.accessToken = (response.headers()["authorization"].toString())
 
@@ -70,26 +69,33 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    fun getSimpleBadgeList() : List<BadgeBoxItem>{
+        return exampleItems.simpleBadgeList.toList()
+    }
+
     fun readDetailBadgeList(navController: NavController) {
         viewModelScope.launch {
             try {
-
-                val response = userApi.readBadgeWithTagsList( Token.accessToken)
-                response.body()?.data?.badges!!.let{badges ->
-                    detailBadgeList = badges.map { it.toBadgeBoxItem() }
+                val response = userApi.readBadgeWithTagsList(Token.accessToken)
+                response.body()?.data?.badges?.let { badges ->
+                    // badges 리스트를 SnapshotStateList로 변환
+                    exampleItems.detailBadgeList = badges.map { it.toBadgeBoxItem() }.toMutableStateList() as SnapshotStateList<BadgeBoxItemWithTag>
                 }
-                Log.d(TAG, "readdetailList: $detailBadgeList")
+                Log.d(TAG, "readdetailList: ${exampleItems.detailBadgeList}")
 
-                Token.accessToken = (response.headers()["authorization"].toString())
+                Token.accessToken = response.headers()["authorization"].toString()
 
                 navController.navigate("BadgePage")
-
             } catch (e: Exception) {
                 e.printStackTrace()
-                // api 요청 실패
+                // API 요청 실패
                 Log.e("writeEssayApiFailed", "Failed to write essay: ${e.message}")
             }
         }
+    }
+
+    fun getDetailBadgeList() : List<BadgeBoxItemWithTag>{
+        return exampleItems.detailBadgeList.toList()
     }
 
     fun requestBadgeLevelUp(badgeId : Int) {
@@ -130,7 +136,7 @@ class SettingsViewModel @Inject constructor(
                     exampleItems.myProfile.profileImage = newProfile.profileImage
                     exampleItems.myProfile.nickname = newProfile.nickname
 
-                    readSimpleBadgeList(navController)
+                    readSimpleBadgeList()
                     getMyInfo()
                     navController.navigate("SETTINGS")
                     newProfile = UserInfo()

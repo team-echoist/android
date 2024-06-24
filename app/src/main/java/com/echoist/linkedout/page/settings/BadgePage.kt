@@ -70,7 +70,7 @@ import com.echoist.linkedout.viewModels.SettingsViewModel
 fun BadgePage(navController: NavController, viewModel: SettingsViewModel) {
     val hasCalledApi = remember { mutableStateOf(false) }
 
-    val badgeBoxItems = viewModel.detailBadgeList
+    val badgeBoxItems = viewModel.getDetailBadgeList()
 
     if (!hasCalledApi.value) {
 

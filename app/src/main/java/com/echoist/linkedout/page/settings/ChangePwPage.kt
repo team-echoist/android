@@ -1,6 +1,8 @@
 package com.echoist.linkedout.page.settings
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,13 +19,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -32,21 +33,6 @@ import com.echoist.linkedout.ui.theme.LinkedOutTheme
 
 @Composable
 fun ChangePwPage(navController: NavController) {
-
-    val annotatedString = remember {
-        AnnotatedString.Builder().apply {
-            append("비밀번호를 잊으셨나요? ")
-            withStyle(
-                style = SpanStyle(
-                    fontWeight = FontWeight.Bold,
-                    textDecoration = TextDecoration.Underline,
-                    color = LinkedInColor
-                )
-            ) {
-                append("비밀번호 재설정")
-            }
-        }.toAnnotatedString()
-    }
 
     val scrollState = rememberScrollState()
 
@@ -63,25 +49,34 @@ fun ChangePwPage(navController: NavController) {
                         .padding(horizontal = 20.dp)
                 ) {
                     Spacer(modifier = Modifier.height(42.dp))
-                    Text(text = "현재 이메일 주소", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+                    Text(text = "현재 비밀번호", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
                     Spacer(modifier = Modifier.height(10.dp))
 
                     var oldPw by remember { mutableStateOf("") }
-                    var isError1 by remember { mutableStateOf(false) } //todo 에러처리 할 구문 생각해야할것.
+                    var oldPwErr by remember { mutableStateOf(false) } //todo 에러처리 할 구문 생각해야할것.
 
                     CustomOutlinedTextField(
                         oldPw,
                         { newText ->
                             oldPw = newText
                         },
-                        isError = isError1,
+                        isError = oldPwErr,
                         hint = "비밀번호"
                     )
-                    if (isError1) {
+                    if (oldPwErr) {
                         Text(text = "올바른 이메일 형식이 아닙니다.", color = Color.Red, fontSize = 12.sp)
                     }
                     Spacer(modifier = Modifier.height(12.dp))
-                    Text(text = annotatedString, fontSize = 12.sp, color = Color(0xFF5D5D5D))
+                    Row (verticalAlignment = Alignment.CenterVertically){
+                        Text(text = "비밀번호를 잊으셨나요? ", fontSize = 12.sp, color = Color(0xFF5D5D5D))
+                        Text(
+                            text = "비밀번호 재설정",
+                            fontSize = 12.sp,
+                            color = LinkedInColor,
+                            modifier = Modifier.clickable { navController.navigate("ResetPwPage") },
+                            style = TextStyle(textDecoration = TextDecoration.Underline)
+                        )
+                    }
                     Spacer(modifier = Modifier.height(32.dp))
 
 
@@ -91,17 +86,17 @@ fun ChangePwPage(navController: NavController) {
 
 
                     var newPw by remember { mutableStateOf("") } //todo 이 값들을 페이지 나갔다 들어와도 유지되게끔 할것인지.
-                    var isError2 by remember { mutableStateOf(false) } //todo 에러처리 할 구문 생각해야할것.
+                    var newPwErr by remember { mutableStateOf(false) } //todo 에러처리 할 구문 생각해야할것.
 
                     CustomOutlinedTextField(
                         newPw,
                         { newText ->
                             newPw = newText
                         },
-                        isError = isError2,
+                        isError = newPwErr,
                         hint = "새 비밀번호"
                     )
-                    if (isError2) {
+                    if (newPwErr) {
                         Text(text = "올바른 이메일 형식이 아닙니다.", color = Color.Red, fontSize = 12.sp)
                     }
 
@@ -111,17 +106,18 @@ fun ChangePwPage(navController: NavController) {
                     Spacer(modifier = Modifier.height(10.dp))
 
                     var newPwCheck by remember { mutableStateOf("") }
-                    var isError3 by remember { mutableStateOf(false) } //todo 에러처리 할 구문 생각해야할것.
+                    var newPwCheckErr by remember { mutableStateOf(false) } //todo 에러처리 할 구문 생각해야할것.
 
                     CustomOutlinedTextField(
-                        newPwCheck,
+                        newPwCheck, //이메일 체크 에러
                         { newText ->
                             newPwCheck = newText
+                            if (newPw != newPwCheck) newPwCheckErr = true
                         },
-                        isError = isError3,
+                        isError = newPwCheckErr,
                         hint = "새 비밀번호 확인"
                     )
-                    if (isError3) {
+                    if (newPwCheckErr) {
                         Text(text = "올바른 이메일 형식이 아닙니다.", color = Color.Red, fontSize = 12.sp)
                     }
 

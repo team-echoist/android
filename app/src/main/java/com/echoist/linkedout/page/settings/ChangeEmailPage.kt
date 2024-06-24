@@ -1,5 +1,6 @@
 package com.echoist.linkedout.page.settings
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,8 +9,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
@@ -101,7 +105,7 @@ fun ChangeEmailPage(navController: NavController) {
                         hint = "이메일"
                     )
                     if (isError) {
-                        Text(text = "올바른 이메일 형식이 아닙니다.", color = Color.Red, fontSize = 12.sp)
+                        Text(text = "*이메일 주소를 정확하게 입력해주세요.", color = Color.Red, fontSize = 12.sp)
                     }
 
                     Spacer(modifier = Modifier.height(12.dp))
@@ -151,11 +155,11 @@ fun CustomOutlinedTextField(
     modifier: Modifier = Modifier,
 ) {
     OutlinedTextField(
+        shape = RoundedCornerShape(20),
         value = text,
-        label = { Text(text = hint, fontSize = 18.sp, color = Color(0xFF5D5D5D))},
+        placeholder = { Text(text = hint, fontSize = 18.sp, color = Color(0xFF5D5D5D)) },
         onValueChange = onTextChange,
         isError = isError,
-
         modifier = modifier
             .fillMaxWidth()
             .height(62.dp),
@@ -164,12 +168,22 @@ fun CustomOutlinedTextField(
             focusedTextColor = Color(0xFF5D5D5D),
             unfocusedBorderColor = Color(0xFF252525),
             focusedBorderColor = LinkedInColor,
-            unfocusedContainerColor = Color.Transparent,
-            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color(0xFF111111),
+            focusedContainerColor = Color(0xFF111111),
             errorBorderColor = Color.Red,
             errorTextColor = Color(0xFF5D5D5D)
 
         ),
-    )
+        trailingIcon = {
+            if (text.isNotEmpty())
+                Icon(
+                imageVector = Icons.Default.Cancel,
+                contentDescription = "cancel",
+                modifier = Modifier.clickable {
+                    onTextChange("")
+                }
+            )
+
+        })
 }
 
