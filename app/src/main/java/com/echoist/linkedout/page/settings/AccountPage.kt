@@ -88,7 +88,11 @@ fun AccountPage(navController: NavController) {
 
                         LogoutBox(
                             isCancelClicked = { isLogoutClicked = false },
-                            isLogoutClicked = { isLogoutClicked = false }
+                            isLogoutClicked = {
+                                isLogoutClicked = false
+                                navController.popBackStack("LoginPage", true) //home 까지 삭제 inclusive - 포함
+                                navController.navigate("LoginPage")
+                            }
                         ) //todo 수정필요
                     }
                 }

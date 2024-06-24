@@ -36,7 +36,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
@@ -140,9 +139,6 @@ fun MyPage(
                     ModifyMyProfileBottomSheet(
                         onClickComplete = {
                             viewModel.updateMyInfo(viewModel.newProfile, navController)
-                            scope.launch {
-                                bottomSheetState.hide()
-                            }
                         },
                         onClickCancel = {
                             //todo 완료 api
@@ -184,7 +180,7 @@ fun MyPage(
                         LinkedOutBadgeGrid(viewModel)
                         SettingBar("최근 본 글") {}
                         RecentEssayList(itemList = viewModel.getRecentViewedEssayList())
-                        SettingBar("멤버십 관리") {}
+                        MembershipSettingBar("멤버십 관리"){}
                         SettingBar("계정 관리") {navController.navigate("AccountPage")}
 
 
@@ -333,6 +329,31 @@ fun SettingBar(text: String, onClick: () -> Unit) {
                 contentDescription = "navigate",
                 tint = Color(0xFF686868)
             )
+
+        }
+    }
+}
+@Composable
+fun MembershipSettingBar(text: String, onClick: () -> Unit){
+
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .clickable { onClick() }
+        .padding(20.dp)
+        .height(50.dp)) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart) {
+            Text(
+                text = text,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color(0xFF616FED)
+            )
+        }
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
+            Box(modifier = Modifier.size(60.dp,24.dp).background(Color(0xFF191919), shape = RoundedCornerShape(40)), contentAlignment = Alignment.Center){
+                Text(text = "  준비중  ", fontWeight = FontWeight.SemiBold, color = LinkedInColor, fontSize = 12.sp )
+
+            }
 
         }
     }
@@ -522,9 +543,12 @@ fun ModifyNickNameTextField( viewModel: SettingsViewModel) {
         OutlinedTextField(
             value = text,
             onValueChange = {
-                text = it
-                viewModel.newProfile.nickname = text //수정할때마다 새 프로필 닉네임 변경
-                Log.d(TAG, "ModifyNickNameTextField: ${viewModel.newProfile}")
+                if (it.length < 7){
+                    text = it
+                    viewModel.newProfile.nickname = text //수정할때마다 새 프로필 닉네임 변경
+                    Log.d(TAG, "ModifyNickNameTextField: ${viewModel.newProfile}")
+                }
+
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -539,16 +563,7 @@ fun ModifyNickNameTextField( viewModel: SettingsViewModel) {
 
             ),
             suffix = { Text(text = "아무개         ", color = Color.White) },
-            trailingIcon = {
-                Button(
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF191919)),
-                    onClick = { /*TODO */ },
-                    modifier = Modifier.padding(end = 20.dp),
-                    shape = RoundedCornerShape(20)
-                ) {
-                    Text(text = "기본 번호로 설정", color = Color(0xFF606060), fontSize = 12.sp)
-                }
-            })
+            )
 
     }
 }
