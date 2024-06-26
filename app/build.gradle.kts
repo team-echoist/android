@@ -8,6 +8,7 @@ plugins {
     id("com.google.dagger.hilt.android")
     id("com.google.gms.google-services")
 
+
 }
 val keystorePropertiesFile = rootProject.file("local.properties")
 val keystoreProperties = Properties()
@@ -195,6 +196,8 @@ dependencies {
 
     //lottie
     implementation ("com.airbnb.android:lottie-compose:6.4.1")
+
+    implementation ("androidx.room:room-runtime:2.4.0")
 
 
 }
