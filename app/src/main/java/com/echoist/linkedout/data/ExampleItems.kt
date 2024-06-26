@@ -74,7 +74,7 @@ class ExampleItems @Inject constructor(){
     var myProfile by mutableStateOf(
         UserInfo(
             id = 1,
-            nickname = "구루브",
+            nickname = "테스트",
             profileImage = PRIVATE_POPUP_URL,
             password = "1234",
             gender = "male",

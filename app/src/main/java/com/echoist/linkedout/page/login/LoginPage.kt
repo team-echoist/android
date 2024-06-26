@@ -1,5 +1,6 @@
 package com.echoist.linkedout.page.login
 
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.graphics.Rect
 import android.os.Bundle
@@ -64,9 +65,12 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import com.echoist.linkedout.BuildConfig
 import com.echoist.linkedout.R
 import com.echoist.linkedout.components.CropImagePage
@@ -81,6 +85,7 @@ import com.echoist.linkedout.page.myLog.CompletedEssayPage
 import com.echoist.linkedout.page.myLog.MyLogDetailPage
 import com.echoist.linkedout.page.myLog.MyLogPage
 import com.echoist.linkedout.page.myLog.StoryPage
+import com.echoist.linkedout.page.myLog.Token
 import com.echoist.linkedout.page.myLog.WritingCompletePage
 import com.echoist.linkedout.page.myLog.WritingPage
 import com.echoist.linkedout.page.settings.AccountPage
@@ -150,7 +155,16 @@ class LoginPage : ComponentActivity() {
                 composable("SIGNUP") {
                     SignUpPage(navController, signUpViewModel)
                 }
-                composable("SignUpComplete") {
+                composable("SignUpComplete",
+                    deepLinks = listOf(navDeepLink { uriPattern = "https://www.linkedout.com/SignUpComplete?token={token}" }),
+                    arguments = listOf(navArgument("token"){
+                        type = NavType.StringType
+                        defaultValue = ""
+                    })
+                ) {
+                    //딥링크를 통해서 token을 받고 저장함.
+                    Token.accessToken = it.arguments?.getString("token").toString()
+                    Log.d(TAG, "tokentoken: ${Token.accessToken}")
                     SignUpCompletePage(homeViewModel,navController)
                 }
                 composable("HOME") {
