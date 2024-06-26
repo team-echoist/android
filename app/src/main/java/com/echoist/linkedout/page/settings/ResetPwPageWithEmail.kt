@@ -22,19 +22,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
+import com.echoist.linkedout.viewModels.SignUpViewModel
 
 @Composable
-fun ResetPwPage(navController: NavController) {
+fun ResetPwPageWithEmail(navController: NavController) {
 
     val scrollState = rememberScrollState()
+    val viewModel: SignUpViewModel = hiltViewModel()
 
     LinkedOutTheme {
         Scaffold(
             topBar = {
-                SettingTopAppBar("비밀번호 변경",navController)
+                SettingTopAppBar("비밀번호 재설정",navController)
             },
             content = {
                 Column(
@@ -44,54 +47,32 @@ fun ResetPwPage(navController: NavController) {
                         .padding(horizontal = 20.dp)
                 ) {
                     Spacer(modifier = Modifier.height(42.dp))
+                    Text(text = "가입 시 사용한 이메일 주소를 입력해주세요. \n" +
+                            "비밀번호를 다시 설정할 수 있는 링크를 보내드릴게요.", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                    Spacer(modifier = Modifier.height(12.dp))
 
-                    Text(text = "새 비밀번호", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
-                    Spacer(modifier = Modifier.height(10.dp))
-
-
-
-                    var newPw by remember { mutableStateOf("") } //todo 이 값들을 페이지 나갔다 들어와도 유지되게끔 할것인지.
-                    val newPwErr by remember { mutableStateOf(false) } //todo 에러처리 할 구문 생각해야할것.
+                    var email by remember { mutableStateOf("") }
+                    var isError by remember { mutableStateOf(false) } //todo 에러처리 할 구문 생각해야할것.
 
                     CustomOutlinedTextField(
-                        newPw,
+                        email,
                         { newText ->
-                            newPw = newText
+                            email = newText
+                            isError = !viewModel.isEmailValid(email)
                         },
-                        isError = newPwErr,
-                        hint = "새 비밀번호"
+
+                        isError = isError,
+                        hint = "이메일"
                     )
-                    if (newPwErr) {
-                        Text(text = "올바른 이메일 형식이 아닙니다.", color = Color.Red, fontSize = 12.sp)
+                    if (isError) {
+                        Text(text = "*이메일 주소를 정확하게 입력해주세요.", color = Color.Red, fontSize = 12.sp)
                     }
+                    Spacer(modifier = Modifier.height(40.dp))
 
-                    Spacer(modifier = Modifier.height(32.dp))
+                    val enabled = !(isError || email.isEmpty())
 
-                    Text(text = "새 비밀번호 확인", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    var newPwCheck by remember { mutableStateOf("") }
-                    var newPwCheckErr by remember { mutableStateOf(false) } //todo 에러처리 할 구문 생각해야할것.
-
-                    CustomOutlinedTextField(
-                        newPwCheck, //이메일 체크 에러
-                        { newText ->
-                            newPwCheck = newText
-                            if (newPw != newPwCheck) newPwCheckErr = true
-                        },
-                        isError = newPwCheckErr,
-                        hint = "새 비밀번호 확인"
-                    )
-                    if (newPwCheckErr) {
-                        Text(text = "비밀번호가 불일치합니다.", color = Color.Red, fontSize = 12.sp)
-                    }
-
-
-                    Spacer(modifier = Modifier.height(187.dp))
-
-                    val enabled = newPw == newPwCheck && newPw.isNotBlank() //문자가 있어야함
                     Button(
-                        onClick = { /* todo 비밀번호 변경 기능구현 */},
+                        onClick = { /* todo 비밀번호 재설정 기능구현 */},
                         enabled =  enabled,
                         shape = RoundedCornerShape(20),
                         modifier = Modifier
@@ -103,7 +84,7 @@ fun ResetPwPage(navController: NavController) {
 
                             )
                     ) {
-                        Text(text = "변경하기")
+                        Text(text = "이메일 보내기")
                     }
                 }
 

@@ -96,6 +96,7 @@ import com.echoist.linkedout.page.settings.ChangePwPage
 import com.echoist.linkedout.page.settings.MyPage
 import com.echoist.linkedout.page.settings.ProfilePage
 import com.echoist.linkedout.page.settings.ResetPwPage
+import com.echoist.linkedout.page.settings.ResetPwPageWithEmail
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
 import com.echoist.linkedout.viewModels.HomeViewModel
@@ -222,7 +223,18 @@ class LoginPage : ComponentActivity() {
                     ChangePwPage(navController)
                     //settings page
                 }
-                composable("ResetPwPage") {
+                composable("ResetPwWithEmail") {
+                    ResetPwPageWithEmail(navController)
+                    //settings page
+                }
+                composable("ResetPwPage",
+                    deepLinks = listOf(navDeepLink { uriPattern = "https://www.linkedout.com/ResetPwPage?token={token}" }),
+                    arguments = listOf(navArgument("token"){
+                        type = NavType.StringType
+                        defaultValue = ""
+                    })) {
+                    Token.accessToken = it.arguments?.getString("token").toString()
+                    Log.d(TAG, "tokentoken: ${Token.accessToken}")
                     ResetPwPage(navController)
                     //settings page
                 }

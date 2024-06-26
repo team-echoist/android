@@ -118,7 +118,7 @@ fun AccountWithdrawalPage(navController : NavController) {
                             text = "비밀번호 재설정",
                             fontSize = 12.sp,
                             color = Color(0xFF5D5D5D),
-                            modifier = Modifier.clickable { navController.navigate("ResetPwPage") },
+                            modifier = Modifier.clickable { navController.navigate("ResetPwPageWithEmail") },
                             style = TextStyle(textDecoration = TextDecoration.Underline)
                         )
                     }
