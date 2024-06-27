@@ -48,7 +48,7 @@ interface StoryApi {
         @Path("storyId") storyId: Int
     ): Response<BasicResponse>
 
-    @GET("api/essays/stories/related")
+    @GET("api/stories/related")
     suspend fun readStoryEssayList(
         @Header("Authorization") accessToken: String,
         @Query("storyId") storyId: Int? = null,

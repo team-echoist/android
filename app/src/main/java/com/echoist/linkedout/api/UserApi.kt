@@ -22,17 +22,17 @@ interface UserApi {
         @Header("Authorization") accessToken: String,
         @Path("essayId") essayId: Int = 0
     ): Response<BadgeSimpleResponse>
-    @GET("api/users/badges")
+    @GET("api/badges")
     suspend fun readBadgeList(
         @Header("Authorization") accessToken: String
     ): Response<BadgeSimpleResponse>
 
-    @GET("api/users/badges/detail")
+    @GET("api/badges/detail")
     suspend fun readBadgeWithTagsList(
         @Header("Authorization") accessToken: String
     ): Response<BadgeDetailResponse>
 
-    @POST("api/users/badges/level")
+    @POST("api/badges/level")
     suspend fun requestBadgeLevelUp(
         @Header("Authorization") accessToken: String,
         @Query("badgeId") badgeId: Int,

@@ -26,6 +26,11 @@ interface SignUpApi {
         val oauthInfo : String = ""
     )
 
+    @POST("api/auth/verify/email")
+    suspend fun sendEmailVerificationForChange(
+        @Body email : EmailRequest
+    ): Response<Unit>
+
     @POST("api/auth/login")
     suspend fun login(
         @Body userAccount : UserAccount

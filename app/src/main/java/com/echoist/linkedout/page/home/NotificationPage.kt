@@ -325,18 +325,18 @@ fun NotificationTimePicker(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Spacer(modifier = Modifier.width(10.dp))
             TimeBox(text = timePeriods[timePeriodIndex])
-            Spacer(modifier = Modifier.width(20.dp))
+            Spacer(modifier = Modifier.width(16.dp))
             TimeBox(text = hours[hourIndex])
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(6.dp))
             Text(
                 text = ":",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
             )
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(6.dp))
             TimeBox(text = minutes[minuteIndex])
-            Spacer(modifier = Modifier.width(10.dp))
+            Spacer(modifier = Modifier.width(12.dp))
         }
         Spacer(modifier = Modifier.height(12.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {

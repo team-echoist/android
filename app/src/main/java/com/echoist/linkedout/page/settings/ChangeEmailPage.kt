@@ -1,8 +1,17 @@
 package com.echoist.linkedout.page.settings
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -11,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -19,10 +29,12 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
@@ -40,10 +52,13 @@ import com.echoist.linkedout.R
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.SignUpViewModel
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ChangeEmailPage(navController: NavController) {
+
+
 
     val annotatedString = remember {
         AnnotatedString.Builder().apply {
@@ -64,8 +79,17 @@ fun ChangeEmailPage(navController: NavController) {
     val viewModel: SignUpViewModel = hiltViewModel()
     val scrollState = rememberScrollState()
 
+    //이메일 보냄 api 가 끝나면 2초 후 사라지게
+    LaunchedEffect(key1 = viewModel.isSendEmailVerifyApiFinished) {
+        if (viewModel.isSendEmailVerifyApiFinished){
+            delay(2000)
+            viewModel.isSendEmailVerifyApiFinished = false
+        }
+    }
+
     LinkedOutTheme {
         Scaffold(
+            
             topBar = {
                 SettingTopAppBar("이메일 주소 변경",navController)
             },
@@ -123,7 +147,7 @@ fun ChangeEmailPage(navController: NavController) {
 
                     val enabled = !(isError || email.isEmpty())
                     Button(
-                        onClick = { /* todo 이메일인증 기능구현 */},
+                        onClick = { viewModel.isSendEmailVerifyApiFinished = true},
                         enabled =  enabled,
                         shape = RoundedCornerShape(20),
                         modifier = Modifier
@@ -140,6 +164,22 @@ fun ChangeEmailPage(navController: NavController) {
 
 
                 }
+                AnimatedVisibility(
+                    visible = viewModel.isSendEmailVerifyApiFinished,
+                    enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)),
+                    exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
+                ){
+                    Box(modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(0.7f))
+                        .clickable(enabled = false) {  }){
+                        Box(modifier = Modifier.fillMaxSize().padding(bottom = 20.dp), contentAlignment = Alignment.BottomCenter){
+                            SendEmailFinishedAlert{viewModel.isSendEmailVerifyApiFinished = false}
+
+                        }
+                    }
+                }
+
 
             }
         )
@@ -185,5 +225,27 @@ fun CustomOutlinedTextField(
             )
 
         })
+}
+
+@Composable
+fun SendEmailFinishedAlert(isClicked : ()->Unit){
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .height(81.dp)
+        .padding(horizontal = 20.dp)
+        .background(Color(0xFF212121), shape = RoundedCornerShape(20))){
+        Box(modifier = Modifier.fillMaxSize().padding(start = 10.dp), contentAlignment = Alignment.CenterStart){
+            Column {
+                Text(text = "새 이메일 주소로 인증메일이 발송됐습니다.", fontSize = 14.sp)
+                Text(text = "링크를 클릭해 인증을 완료해주세요.", color = LinkedInColor, fontSize = 14.sp)
+
+            }
+        }
+        Box(modifier = Modifier.fillMaxSize().padding(end = 10.dp), contentAlignment = Alignment.CenterEnd){
+            Icon(imageVector = Icons.Default.Close, contentDescription = "close", modifier = Modifier.clickable { isClicked() })
+        }
+
+
+    }
 }
 

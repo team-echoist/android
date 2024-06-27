@@ -25,6 +25,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
+    private val essayApi: EssayApi,
     private val userApi: UserApi,
     private val exampleItems: ExampleItems
 ) : ViewModel() {
@@ -143,6 +144,25 @@ class SettingsViewModel @Inject constructor(
                     getMyInfo()
                     navController.navigate("SETTINGS")
                     newProfile = UserInfo()
+
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                // api 요청 실패
+                Log.e("writeEssayApiFailed", "Failed to write essay: ${e.message}")
+            }
+        }
+    }
+
+    fun readRecentEssays(){
+        viewModelScope.launch {
+            try {
+
+                val response = essayApi.readRecentEssays(Token.accessToken)
+
+                if (response.isSuccessful){
+                    Token.accessToken = (response.headers()["authorization"].toString())
+                    exampleItems.recentViewedEssayList = response.body()!!.data.essays.toMutableStateList()
 
                 }
             } catch (e: Exception) {

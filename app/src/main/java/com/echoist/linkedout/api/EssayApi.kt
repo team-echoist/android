@@ -85,6 +85,14 @@ interface EssayApi{
         @Path("essayId") essayId: Int = 0
     ): Response<DetailEssayResponse>
 
+    @GET("api/essays/recent")
+    suspend fun readRecentEssays(
+        @Header("Authorization") accessToken: String,
+        @Query("page") page: Int = 1,
+        @Query("limit") limit: Int = 10
+
+    ): Response<EssayListResponse>
+
     data class ReportRequest(
         val reason: String
     )

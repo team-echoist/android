@@ -110,7 +110,7 @@ class ExampleItems @Inject constructor(){
     var firstSentences : SnapshotStateList<EssayApi.EssayItem> = mutableStateListOf(detailEssay,detailEssay,detailEssay,detailEssay,detailEssay)
     var lastSentences : SnapshotStateList<EssayApi.EssayItem> = mutableStateListOf(detailEssay,detailEssay,detailEssay,detailEssay,detailEssay)
     var previousEssayList: SnapshotStateList<EssayApi.EssayItem> =  mutableStateListOf(detailEssay,detailEssay,detailEssay,detailEssay,detailEssay)
-    var recentViewedEssayList: SnapshotStateList<EssayApi.EssayItem> =  mutableStateListOf(detailEssay,detailEssay,detailEssay,detailEssay,detailEssay)
+    var recentViewedEssayList: SnapshotStateList<EssayApi.EssayItem> =  mutableStateListOf(EssayApi.EssayItem(title = "최근 본 글이 없습니다.", content = "empty"))
 
 
 

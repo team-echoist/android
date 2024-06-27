@@ -102,4 +102,33 @@ class SignUpViewModel @Inject constructor(
             Log.e("writeEssayApiFailed2", "Failed: ${e.message}")
         }
     }
+
+    var isSendEmailVerifyApiFinished by mutableStateOf(false)
+    fun sendEmailVerificationForChange(email : String) { //코루틴스코프에서 순차적으로 수행된다. 뷰모델스코프는 위에걸로
+        viewModelScope.launch {
+            try {
+                val userEmail = SignUpApi.EmailRequest(email)
+                val response = signUpApi.sendEmailVerificationForChange(userEmail)
+
+                if (response.isSuccessful) {
+                    Log.e("authApiSuccess2", "${response.headers()}")
+                    Log.e("authApiSuccess2", "${response.code()}")
+
+                    Token.accessToken = (response.headers()["authorization"].toString())
+                    //todo 회원가입 비밀번호 특수문자 대소문자 필요한거 Ui 변경해야함. 그리고 확인로딩시 대기표시 띄워줘야함.
+                    readMyInfo()
+                    isSendEmailVerifyApiFinished = true
+
+                } else {
+                    Log.e("authApiFailed2", "Failed : ${response.headers()}")
+                    Log.e("authApiFailed2", "${response.code()}")
+                }
+
+            } catch (e: Exception) {
+                // api 요청 실패
+                Log.e("writeEssayApiFailed2", "Failed: ${e.message}")
+            }
+        }
+
+    }
 }

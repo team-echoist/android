@@ -18,11 +18,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -46,11 +49,13 @@ import androidx.navigation.NavController
 import com.echoist.linkedout.R
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.home.LogoutBox
+import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.SettingsViewModel
 
 @Composable
 fun AccountPage(navController: NavController) {
+    val scrollState = rememberScrollState()
     LinkedOutTheme {
         Scaffold(
             topBar = {
@@ -63,6 +68,7 @@ fun AccountPage(navController: NavController) {
 
                 Column(
                     Modifier
+                        .verticalScroll(scrollState)
                         .padding(it)
                 ) {
                     Spacer(modifier = Modifier.height(42.dp))
@@ -86,9 +92,14 @@ fun AccountPage(navController: NavController) {
 
 
                     SocialLoginBox(R.drawable.social_googlebtn,"구글",viewModel.getMyInfo())
+                    Spacer(modifier = Modifier.height(10.dp))
                     SocialLoginBox(R.drawable.social_kakaobtn,"카카오톡",viewModel.getMyInfo())
+                    Spacer(modifier = Modifier.height(10.dp))
                     SocialLoginBox(R.drawable.social_naverbtn,"네이버",viewModel.getMyInfo())
+                    Spacer(modifier = Modifier.height(10.dp))
                     SocialLoginBox(R.drawable.social_applebtn,"애플",viewModel.getMyInfo())
+                    Spacer(modifier = Modifier.height(10.dp))
+
 
 
 
@@ -200,6 +211,7 @@ fun SocialLoginBox(imageResourceId : Int, socialType : String, userItem :UserInf
 
     Box(modifier = Modifier
         .fillMaxWidth()
+        .padding(horizontal = 20.dp)
         .height(50.dp)){
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxSize()) {
             Icon(
@@ -214,8 +226,8 @@ fun SocialLoginBox(imageResourceId : Int, socialType : String, userItem :UserInf
             Text(text = socialType, fontSize = 16.sp)
         }
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
-            Button(onClick = { /*TODO*/ }, modifier = Modifier.height(36.dp), shape = RoundedCornerShape(30)) {
-                Text(text = "계정 연결")
+            Button(onClick = { /*TODO*/ }, modifier = Modifier.height(36.dp), shape = RoundedCornerShape(30), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF191919))) {
+                Text(text = "계정 연결", fontSize = 16.sp, fontWeight = FontWeight.Normal, color = LinkedInColor)
             }
         }
     }

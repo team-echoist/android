@@ -102,6 +102,7 @@ fun MyPage(
 
     viewModel.readSimpleBadgeList()
     viewModel.getMyInfo()
+    viewModel.readRecentEssays()
 
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
@@ -350,7 +351,9 @@ fun MembershipSettingBar(text: String, onClick: () -> Unit){
             )
         }
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
-            Box(modifier = Modifier.size(60.dp,24.dp).background(Color(0xFF191919), shape = RoundedCornerShape(40)), contentAlignment = Alignment.Center){
+            Box(modifier = Modifier
+                .size(60.dp, 24.dp)
+                .background(Color(0xFF191919), shape = RoundedCornerShape(40)), contentAlignment = Alignment.Center){
                 Text(text = "  준비중  ", fontWeight = FontWeight.SemiBold, color = LinkedInColor, fontSize = 12.sp )
 
             }
@@ -361,7 +364,9 @@ fun MembershipSettingBar(text: String, onClick: () -> Unit){
 
 @Composable
 fun RecentEssayItem(item: EssayApi.EssayItem) {
-    Box(modifier = Modifier.size(150.dp, 120.dp).clickable { /* 에세이로 이동 */ }) {
+    Box(modifier = Modifier
+        .size(150.dp, 120.dp)
+        .clickable { /* 에세이로 이동 */ }) {
         Column {
             Text(text = item.title!!)
             Spacer(modifier = Modifier.height(10.dp))
@@ -377,18 +382,24 @@ fun RecentEssayItem(item: EssayApi.EssayItem) {
 
 @Composable
 fun RecentEssayList(itemList: List<EssayApi.EssayItem>) {
-    LazyRow(Modifier.padding(start = 20.dp)) {
-        itemsIndexed(itemList) { index, item ->
-            RecentEssayItem(item)
+    if (itemList.isEmpty()){
+        Text(text = "최근 본 글이 없습니다.", modifier = Modifier.padding(horizontal = 20.dp), color = Color(0xFF494747))
+    }
+    else{
+        LazyRow(Modifier.padding(start = 20.dp)) {
+            itemsIndexed(itemList) { index, item ->
+                RecentEssayItem(item)
 
-            // 마지막 항목인 경우에만 Spacer와 VerticalDivider 실행
-            if (index < itemList.size - 1) {
-                Spacer(modifier = Modifier.width(10.dp))
-                VerticalDivider(Modifier.height(100.dp))
-                Spacer(modifier = Modifier.width(10.dp))
+                // 마지막 항목인 경우에만 Spacer와 VerticalDivider 실행
+                if (index < itemList.size - 1) {
+                    Spacer(modifier = Modifier.width(10.dp))
+                    VerticalDivider(Modifier.height(100.dp))
+                    Spacer(modifier = Modifier.width(10.dp))
+                }
             }
         }
     }
+    
 }
 
 @Composable
@@ -536,7 +547,6 @@ fun ModifyNickNameTextField( viewModel: SettingsViewModel) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .height(88.dp)
     ) {
         Text(text = "링크드아웃 필명", fontSize = 12.sp, color = Color(0xFF464646))
         Spacer(modifier = Modifier.height(6.5.dp))
@@ -564,6 +574,8 @@ fun ModifyNickNameTextField( viewModel: SettingsViewModel) {
             ),
             suffix = { Text(text = "아무개         ", color = Color.White) },
             )
+        Spacer(modifier = Modifier.height(5.dp))
+        Text(text = "   *필명은 최대 6자, 한글로만 입력 가능합니다.", color = LinkedInColor, fontSize = 10.sp)
 
     }
 }
