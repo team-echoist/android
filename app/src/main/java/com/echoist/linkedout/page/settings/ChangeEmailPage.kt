@@ -147,7 +147,7 @@ fun ChangeEmailPage(navController: NavController) {
 
                     val enabled = !(isError || email.isEmpty())
                     Button(
-                        onClick = { viewModel.isSendEmailVerifyApiFinished = true},
+                        onClick = { viewModel.sendEmailVerificationForChange(email)},
                         enabled =  enabled,
                         shape = RoundedCornerShape(20),
                         modifier = Modifier
