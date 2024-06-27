@@ -142,7 +142,6 @@ fun MyPage(
                             viewModel.updateMyInfo(viewModel.newProfile, navController)
                         },
                         onClickCancel = {
-                            //todo 완료 api
                             scope.launch {
                                 bottomSheetState.hide()
 

@@ -33,6 +33,8 @@ class SignUpViewModel @Inject constructor(
     var agreement_teen by mutableStateOf(false)
     var agreement_marketing by mutableStateOf(false)
 
+    var isLoading by mutableStateOf(false)
+
     fun isEmailValid(email: String): Boolean {
         return Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
@@ -108,7 +110,7 @@ class SignUpViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val userEmail = SignUpApi.EmailRequest(email)
-                val response = signUpApi.sendEmailVerificationForChange(userEmail)
+                val response = signUpApi.sendEmailVerificationForChange(Token.accessToken,userEmail)
 
                 if (response.isSuccessful) {
                     Log.e("authApiSuccess2", "${response.headers()}")
@@ -131,4 +133,75 @@ class SignUpViewModel @Inject constructor(
         }
 
     }
-}
+
+    fun requestChangePw(email : String){
+        viewModelScope.launch {
+            isLoading = true
+            val userEmail = SignUpApi.EmailRequest(email)
+            val response = signUpApi.requestChangePw(Token.accessToken,userEmail)
+
+            if (response.code() == 201) { //성공
+                Log.e("authApiSuccess2", "${response.headers()}")
+                Log.e("authApiSuccess2", "${response.code()}")
+                //헤더에 토큰이 없다.
+                //Token.accessToken = (response.headers()["authorization"].toString())
+                isSendEmailVerifyApiFinished = true
+                isLoading = false
+
+            }
+            else{
+                // code == 400 잘못된 이메일주소
+                Log.e("authApiFailed2", "Failed : ${response.headers()}")
+                Log.e("authApiFailed2", "${response.code()}")
+                isLoading = false
+            }
+
+
+        }
+    }
+
+    fun verifyChangePw(token : String,newPw: String){
+        viewModelScope.launch {
+
+            val response = signUpApi.verifyChangePw(Token.accessToken,token)
+
+            if (response.code() == 304) { //성공
+                Log.e("authApiSuccess2", "${response.headers()}")
+                Log.e("authApiSuccess2", "${response.code()}")
+
+                //Token.accessToken = (response.headers()["authorization"].toString()) 여기도 마찬가지일것
+                resetPw(token,newPw)
+
+            }
+            else{
+                // code == 404 유효하지 않은토큰. 토큰을 못받았거나 10분이 지났거나
+                Log.e("authApiFailed2", "Failed : ${response.headers()}")
+                Log.e("authApiFailed2", "${response.code()}")
+            }
+
+        }
+    }
+
+    private suspend fun resetPw(token : String, newPw : String)
+    {
+
+            val body = SignUpApi.ResetPwRequest(newPw,token)
+            val response = signUpApi.resetPw(Token.accessToken,body)
+
+            if (response.code() == 200) { //성공
+                Log.e("authApiSuccess2", "${response.headers()}")
+                Log.e("authApiSuccess2", "${response.code()}")
+
+
+                // Token.accessToken = (response.headers()["authorization"].toString()) 여기도마찬가지
+                //변경 완료!
+
+            }
+            else{
+                // code == 404 유효하지 않은토큰. 토큰을 못받았거나 10분이 지났거나
+                Log.e("authApiFailed2", "Failed : ${response.headers()}")
+                Log.e("authApiFailed2", "${response.code()}")
+            }
+
+        }
+    }

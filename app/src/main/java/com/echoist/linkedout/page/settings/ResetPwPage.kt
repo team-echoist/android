@@ -19,17 +19,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
+import com.echoist.linkedout.viewModels.SignUpViewModel
 
 @Composable
-fun ResetPwPage(navController: NavController) {
+fun ResetPwPage(navController: NavController, token : String = "empty_token") {
 
     val scrollState = rememberScrollState()
+    val viewModel : SignUpViewModel = hiltViewModel()
+
+
 
     LinkedOutTheme {
         Scaffold(
@@ -37,6 +43,7 @@ fun ResetPwPage(navController: NavController) {
                 SettingTopAppBar("비밀번호 변경",navController)
             },
             content = {
+
                 Column(
                     Modifier
                         .verticalScroll(scrollState)
@@ -88,10 +95,15 @@ fun ResetPwPage(navController: NavController) {
 
 
                     Spacer(modifier = Modifier.height(187.dp))
+                    val focusManager = LocalFocusManager.current
+
+
+
 
                     val enabled = newPw == newPwCheck && newPw.isNotBlank() //문자가 있어야함
                     Button(
-                        onClick = { /* todo 비밀번호 변경 기능구현 */},
+                        onClick = { viewModel.verifyChangePw(token,newPw)
+                                  focusManager.clearFocus()},
                         enabled =  enabled,
                         shape = RoundedCornerShape(20),
                         modifier = Modifier
@@ -106,6 +118,7 @@ fun ResetPwPage(navController: NavController) {
                         Text(text = "변경하기")
                     }
                 }
+
 
             }
         )

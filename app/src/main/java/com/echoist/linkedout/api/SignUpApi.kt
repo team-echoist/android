@@ -2,7 +2,9 @@ package com.echoist.linkedout.api
 
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface SignUpApi {
 
@@ -26,10 +28,34 @@ interface SignUpApi {
         val oauthInfo : String = ""
     )
 
+    //이메일 재설정
     @POST("api/auth/verify/email")
     suspend fun sendEmailVerificationForChange(
+        @Header("Authorization") accessToken: String,
         @Body email : EmailRequest
     ): Response<Unit>
+
+    //비밀번호 재설정 요청
+    @POST("api/auth/password/reset-req")
+    suspend fun requestChangePw(
+        @Header("Authorization") accessToken: String,
+        @Body email : EmailRequest
+    ): Response<Unit>
+
+    @POST("api/auth/password/reset-verify")
+    suspend fun verifyChangePw(
+        @Header("Authorization") accessToken: String,
+        @Query("token") token : String
+    ): Response<Unit>
+
+    @POST("api/auth/password/reset")
+    suspend fun resetPw(
+        @Header("Authorization") accessToken: String,
+        @Body resetPwRequest : ResetPwRequest
+    ): Response<Unit>
+
+    data class ResetPwRequest(val pw : String,val token : String)
+
 
     @POST("api/auth/login")
     suspend fun login(

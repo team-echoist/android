@@ -234,14 +234,14 @@ fun SendEmailFinishedAlert(isClicked : ()->Unit){
         .height(81.dp)
         .padding(horizontal = 20.dp)
         .background(Color(0xFF212121), shape = RoundedCornerShape(20))){
-        Box(modifier = Modifier.fillMaxSize().padding(start = 10.dp), contentAlignment = Alignment.CenterStart){
+        Box(modifier = Modifier.fillMaxSize().padding(start = 15.dp), contentAlignment = Alignment.CenterStart){
             Column {
                 Text(text = "새 이메일 주소로 인증메일이 발송됐습니다.", fontSize = 14.sp)
                 Text(text = "링크를 클릭해 인증을 완료해주세요.", color = LinkedInColor, fontSize = 14.sp)
 
             }
         }
-        Box(modifier = Modifier.fillMaxSize().padding(end = 10.dp), contentAlignment = Alignment.CenterEnd){
+        Box(modifier = Modifier.fillMaxSize().padding(end = 15.dp), contentAlignment = Alignment.CenterEnd){
             Icon(imageVector = Icons.Default.Close, contentDescription = "close", modifier = Modifier.clickable { isClicked() })
         }
 

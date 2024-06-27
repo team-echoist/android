@@ -223,7 +223,7 @@ class LoginPage : ComponentActivity() {
                     ChangePwPage(navController)
                     //settings page
                 }
-                composable("ResetPwWithEmail") {
+                composable("ResetPwPageWithEmail") {
                     ResetPwPageWithEmail(navController)
                     //settings page
                 }
@@ -233,9 +233,7 @@ class LoginPage : ComponentActivity() {
                         type = NavType.StringType
                         defaultValue = ""
                     })) {
-                    Token.accessToken = it.arguments?.getString("token").toString()
-                    Log.d(TAG, "tokentoken: ${Token.accessToken}")
-                    ResetPwPage(navController)
+                    ResetPwPage(navController, it.arguments?.getString("token").toString())
                     //settings page
                 }
                 composable("AccountWithdrawalPage") {
