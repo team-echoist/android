@@ -38,6 +38,9 @@ class SettingsViewModel @Inject constructor(
     var isBadgeClicked by mutableStateOf(false)
     var badgeBoxItem : BadgeBoxItem? by mutableStateOf(null)
 
+    var isLoading by mutableStateOf(false)
+
+
     fun getRecentViewedEssayList() : List<EssayApi.EssayItem>{
         return exampleItems.recentViewedEssayList
     }
@@ -126,6 +129,7 @@ class SettingsViewModel @Inject constructor(
 
     fun updateMyInfo(userInfo: UserInfo,navController: NavController) {
         viewModelScope.launch {
+            isLoading = true
             try {
 
                 val response = userApi.userUpdate(Token.accessToken, userInfo)
@@ -151,13 +155,17 @@ class SettingsViewModel @Inject constructor(
                 // api 요청 실패
                 Log.e("writeEssayApiFailed", "Failed to write essay: ${e.message}")
             }
+            finally {
+                isLoading = false
+            }
         }
     }
 
     fun readRecentEssays(){
         viewModelScope.launch {
-            try {
+            isLoading = true
 
+            try {
                 val response = essayApi.readRecentEssays(Token.accessToken)
 
                 if (response.isSuccessful){
@@ -169,6 +177,32 @@ class SettingsViewModel @Inject constructor(
                 e.printStackTrace()
                 // api 요청 실패
                 Log.e("writeEssayApiFailed", "Failed to write essay: ${e.message}")
+            }
+            finally {
+                isLoading = false
+            }
+        }
+    }
+
+    fun requestWithdrawal(reasons : List<String>){
+        viewModelScope.launch {
+            isLoading = true
+            try {
+
+                val body = UserApi.RequestDeactivate(reasons)
+                val response = userApi.requestDeactivate(Token.accessToken,body)
+
+                if (response.isSuccessful){
+                    Token.accessToken = (response.headers()["authorization"].toString())
+
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                // api 요청 실패
+                Log.e("writeEssayApiFailed", "Failed to write essay: ${e.message}")
+            }
+            finally {
+                isLoading = false
             }
         }
     }

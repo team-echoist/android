@@ -1,14 +1,24 @@
 package com.echoist.linkedout.page.settings
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -16,6 +26,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -40,15 +51,18 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
 import com.echoist.linkedout.page.community.ReportTextField
+import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
-import com.echoist.linkedout.viewModels.SignUpViewModel
+import com.echoist.linkedout.viewModels.SettingsViewModel
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun AccountWithdrawalPage(navController : NavController) {
 
     val scrollState = rememberScrollState()
-    val viewModel: SignUpViewModel = hiltViewModel()
+    val viewModel: SettingsViewModel = hiltViewModel()
+
+    var isWithdrawalClicked by remember { mutableStateOf(false) }
 
     LinkedOutTheme {
         Scaffold(
@@ -56,6 +70,11 @@ fun AccountWithdrawalPage(navController : NavController) {
                 SettingTopAppBar("탈퇴하기",navController)
             },
             content = {
+                if (viewModel.isLoading){
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                        CircularProgressIndicator(color = LinkedInColor)
+                    }
+                }
                 Column(
                     Modifier
                         .verticalScroll(scrollState)
@@ -94,7 +113,7 @@ fun AccountWithdrawalPage(navController : NavController) {
                     Spacer(modifier = Modifier.height(32.dp))
 
                     var pw by remember { mutableStateOf("") }
-                    var isError by remember { mutableStateOf(false) }
+                    val isError by remember { mutableStateOf(false) }
 
                     Text(text = "현재 비밀번호", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
                     Spacer(modifier = Modifier.height(12.dp))
@@ -127,7 +146,9 @@ fun AccountWithdrawalPage(navController : NavController) {
                     val enabled = !(isError || pw.isEmpty() || selectedItems.isEmpty())
 
                     Button(
-                        onClick = { /* todo 탈퇴기능 구현 */},
+                        onClick = { /* todo 탈퇴기능 구현 */
+                                  isWithdrawalClicked = true
+                                  viewModel.requestWithdrawal(reasonList)},
                         enabled =  enabled,
                         shape = RoundedCornerShape(20),
                         modifier = Modifier
@@ -144,6 +165,29 @@ fun AccountWithdrawalPage(navController : NavController) {
 
 
                 }
+                AnimatedVisibility(
+                    visible = isWithdrawalClicked,
+                    enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)),
+                    exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
+                ){
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black.copy(0.7f)),
+                        contentAlignment = Alignment.BottomCenter
+                    ){
+
+                        WithdrawalWarningBox(
+                            isCancelClicked = { isWithdrawalClicked = false },
+                            isWithdrawalClicked = {
+                                isWithdrawalClicked = false
+                                navController.popBackStack("LoginPage", true) //login 까지 삭제 inclusive - 포함
+                                navController.navigate("LoginPage")}
+                        ) //todo 수정필요 api 탈퇴기능구현
+                    }
+                }
+
+
 
             }
         )
@@ -220,6 +264,59 @@ fun WithdrawalItem(
         if (reportItem == "기타 문제" && isSelected) {
             ReportTextField("탈퇴 사유를 작성해주세요.",selectedColor)
             Spacer(modifier = Modifier.height(20.dp))
+        }
+    }
+}
+
+
+@Composable
+fun WithdrawalWarningBox( isCancelClicked: () ->Unit, isWithdrawalClicked: () -> Unit){
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .background(Color.Black.copy(0.7f)))
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter){
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .background(Color(0xFF121212), shape = RoundedCornerShape(20))
+            .height(243.dp), contentAlignment = Alignment.Center){
+            Column(
+                modifier = Modifier.padding(20.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(text = "정말 회원 탈퇴를 신청하시겠습니까?", color = Color.White, fontWeight = FontWeight.SemiBold)
+                Spacer(modifier = Modifier.height(48.dp))
+                Row {
+                    Button(
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(
+                                0xFF868686
+                            )
+                        ),
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(61.dp),
+                        onClick = { isCancelClicked() },
+                        shape = RoundedCornerShape(20)
+                    ) {
+                        Text(text = "취소", color = Color.Black,fontWeight = FontWeight.SemiBold)
+
+                    }
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Button(
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE43446)),
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(61.dp),
+                        onClick = { isWithdrawalClicked() },
+                        shape = RoundedCornerShape(20)
+                    ) {
+                        Text(text = "확인", color = Color.Black, fontWeight = FontWeight.SemiBold)
+
+                    }
+                }
+
+            }
         }
     }
 }

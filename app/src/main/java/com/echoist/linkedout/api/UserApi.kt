@@ -55,6 +55,14 @@ interface UserApi {
         @Body userInfo: UserInfo
     ): Response<UserResponse>
 
+    @POST("api/users/deactivate")
+    suspend fun requestDeactivate(
+        @Header("Authorization") accessToken: String,
+        @Body deactivate: RequestDeactivate,
+    ): Response<Unit>
+
+    data class RequestDeactivate(val reason : List<String>)
+
 
 
 

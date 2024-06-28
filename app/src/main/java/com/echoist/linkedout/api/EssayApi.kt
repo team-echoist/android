@@ -97,7 +97,7 @@ interface EssayApi{
         val reason: String
     )
 
-    @POST("api/essays/reports/{essayId}")
+    @POST("api/reports/{essayId}")
     suspend fun reportEssay(
         @Header("Authorization") accessToken: String,
         @Path("essayId") essayId: Int,
