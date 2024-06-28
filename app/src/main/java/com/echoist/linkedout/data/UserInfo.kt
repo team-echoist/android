@@ -15,7 +15,7 @@ import com.squareup.moshi.JsonClass
     var essayStats: EssayStats? = null, //이 스탯은 원래 바로 받아지지않는 값임.
     val oauthInfo: OauthInfo? = null, //유저의 소셜로그인정보
     val subscriptionEnd : Boolean? = null,
-        val email : String? = null
+    val email : String? = null
 
     )
 

@@ -105,7 +105,7 @@ fun ChangeEmailPage(navController: NavController) {
                     Spacer(modifier = Modifier.height(10.dp))
 
                     Text(
-                        text = "kkhyungyung0@naver.com",
+                        text = viewModel.getMyInfo().email ?: "noEmail",
                         fontSize = 16.sp,
                         color = Color(0xFF5D5D5D)
                     )

@@ -54,7 +54,7 @@ import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.SettingsViewModel
 
 @Composable
-fun AccountPage(navController: NavController) {
+fun AccountPage(navController: NavController, viewModel: SettingsViewModel = hiltViewModel()) {
     val scrollState = rememberScrollState()
     LinkedOutTheme {
         Scaffold(
@@ -76,7 +76,7 @@ fun AccountPage(navController: NavController) {
                     Text(text = "로그인 정보", fontSize = 18.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(horizontal = 20.dp))
                     Spacer(modifier = Modifier.height(10.dp))
 
-                    EmailBox { navController.navigate("ChangeEmailPage") }
+                    EmailBox ({ navController.navigate("ChangeEmailPage") },viewModel.getMyInfo().email ?: "noEmail")
                     ModifyBox("비밀번호 변경") {navController.navigate("ChangePwPage")}
 
 
@@ -87,9 +87,6 @@ fun AccountPage(navController: NavController) {
                     Spacer(modifier = Modifier.height(37.dp))
                     Text(text = "소셜", fontSize = 18.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(horizontal = 20.dp))
                     Spacer(modifier = Modifier.height(31.dp))
-
-                    val viewModel : SettingsViewModel = hiltViewModel()
-
 
                     SocialLoginBox(R.drawable.social_googlebtn,"구글",viewModel.getMyInfo())
                     Spacer(modifier = Modifier.height(10.dp))
@@ -136,7 +133,7 @@ fun AccountPage(navController: NavController) {
 }
 
 @Composable
-fun EmailBox(onClick: () -> Unit){
+fun EmailBox(onClick: () -> Unit,email : String){
     Box(modifier = Modifier
         .fillMaxWidth()
         .background(Color(0xFF0E0E0E))
@@ -147,7 +144,7 @@ fun EmailBox(onClick: () -> Unit){
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "이메일 주소 변경")
                 Spacer(modifier = Modifier.width(15.dp))
-                Text(text = "kkhyungyung0@naver.com", fontSize = 12.sp, color = Color(0xFF5D5D5D))
+                Text(text = email, fontSize = 12.sp, color = Color(0xFF5D5D5D))
 
             }
         }

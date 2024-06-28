@@ -12,6 +12,7 @@ import androidx.navigation.NavController
 import com.echoist.linkedout.api.SignUpApi
 import com.echoist.linkedout.api.UserApi
 import com.echoist.linkedout.data.ExampleItems
+import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.myLog.Token
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -35,6 +36,9 @@ class SignUpViewModel @Inject constructor(
 
     var isLoading by mutableStateOf(false)
 
+    fun getMyInfo() : UserInfo{
+        return exampleItems.myProfile
+    }
     fun isEmailValid(email: String): Boolean {
         return Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
