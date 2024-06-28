@@ -91,9 +91,6 @@ class MyLogViewModel @Inject constructor(
 
         return relatedEssayList
     }
-    fun readDetailEssay() : EssayApi.EssayItem{
-        return exampleItems.detailEssay
-    }
 
 
     fun readPublishEssay() { //todo 얘를 한스텝 일찍 호출해야할듯

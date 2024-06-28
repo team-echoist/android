@@ -78,6 +78,23 @@ open class CommunityViewModel @Inject constructor(
         contentTextSize = if (contentTextSize.value >= MIN_CONTENT_SIZE) contentTextSize.value.minus(1).sp else contentTextSize
 
     }
+
+    fun getFilteredRecentEssayList() : List<EssayApi.EssayItem>{ // detail essay를 뺀 리스트를 보여줘야할것.
+        return exampleItems.recentViewedEssayList.filter { it.id != exampleItems.detailEssay.id }
+    }
+
+    fun getRecentEssayList() : List<EssayApi.EssayItem>{
+        return exampleItems.recentViewedEssayList
+    }
+
+    fun readDetailEssay(): EssayApi.EssayItem {
+        return exampleItems.detailEssay
+    }
+    fun setBackDetailEssay(essay: EssayApi.EssayItem) {
+        exampleItems.detailEssay = essay
+    }
+
+
     fun findUser() {
         currentClickedUserId?.let { userId ->
             val user = exampleItems.subscribeUserList.find { it.id == userId }
@@ -193,6 +210,29 @@ open class CommunityViewModel @Inject constructor(
                 Log.d(TAG, "readRandomEssays: ${e.message}")
                 Log.d(TAG, "readRandomEssays: ${e.cause}")
                 Log.d(TAG, "readRandomEssays: ${e.localizedMessage}")
+
+            }
+        }
+    }
+    fun readDetailRecentEssay(id: Int, navController: NavController) {
+        viewModelScope.launch {
+            try {
+                val response = essayApi.readDetailEssay(Token.accessToken,id)
+                exampleItems.detailEssay = response.body()!!.data.essay
+
+                Log.d(TAG, "readdetailEssay: 성공인데요${response.body()!!.data}")
+                Log.d(TAG, "readdetailEssay: 성공인데요${response.body()!!.data.essay.title}")
+                exampleItems.detailEssayBackStack.push(exampleItems.detailEssay)
+
+
+                navController.navigate("RecentEssayDetailPage")
+
+                // API 호출 결과 처리 (예: response 데이터 사용)
+            } catch (e: Exception) {
+
+                // 예외 처리
+                e.printStackTrace()
+                Log.d(TAG, "readRandomEssays: ${e.message}")
 
             }
         }

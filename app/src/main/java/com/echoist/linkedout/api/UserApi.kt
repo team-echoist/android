@@ -61,7 +61,7 @@ interface UserApi {
         @Body deactivate: RequestDeactivate,
     ): Response<Unit>
 
-    data class RequestDeactivate(val reason : List<String>)
+    data class RequestDeactivate(val reasons : List<String>)
 
 
 

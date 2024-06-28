@@ -85,6 +85,7 @@ import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.home.MyBottomNavigation
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
+import com.echoist.linkedout.viewModels.CommunityViewModel
 import com.echoist.linkedout.viewModels.SettingsViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -178,8 +179,8 @@ fun MyPage(
                         }
                         SettingBar("링크드아웃 배지") { viewModel.readDetailBadgeList(navController) }
                         LinkedOutBadgeGrid(viewModel)
-                        SettingBar("최근 본 글") {}
-                        RecentEssayList(itemList = viewModel.getRecentViewedEssayList())
+                        SettingBar("최근 본 글") {navController.navigate("RecentViewedEssayPage")}
+                        RecentEssayList(itemList = viewModel.getRecentViewedEssayList(),navController)
                         MembershipSettingBar("멤버십 관리"){}
                         SettingBar("계정 관리") {navController.navigate("AccountPage")}
 
@@ -362,10 +363,11 @@ fun MembershipSettingBar(text: String, onClick: () -> Unit){
 }
 
 @Composable
-fun RecentEssayItem(item: EssayApi.EssayItem) {
+fun RecentEssayItem(item: EssayApi.EssayItem,viewModel : CommunityViewModel = hiltViewModel(),navController: NavController) {
     Box(modifier = Modifier
         .size(150.dp, 120.dp)
-        .clickable { /* 에세이로 이동 */ }) {
+        .clickable { /* 에세이로 이동 */
+        viewModel.readDetailRecentEssay(item.id!!,navController)}) {
         Column {
             Text(text = item.title!!)
             Spacer(modifier = Modifier.height(10.dp))
@@ -380,14 +382,14 @@ fun RecentEssayItem(item: EssayApi.EssayItem) {
 }
 
 @Composable
-fun RecentEssayList(itemList: List<EssayApi.EssayItem>) {
+fun RecentEssayList(itemList: List<EssayApi.EssayItem>,navController: NavController) {
     if (itemList.isEmpty()){
         Text(text = "최근 본 글이 없습니다.", modifier = Modifier.padding(horizontal = 20.dp), color = Color(0xFF494747))
     }
     else{
         LazyRow(Modifier.padding(start = 20.dp)) {
             itemsIndexed(itemList) { index, item ->
-                RecentEssayItem(item)
+                RecentEssayItem(item,navController = navController)
 
                 // 마지막 항목인 경우에만 Spacer와 VerticalDivider 실행
                 if (index < itemList.size - 1) {

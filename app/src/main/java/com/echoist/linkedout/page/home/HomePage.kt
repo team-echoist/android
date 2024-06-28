@@ -134,7 +134,7 @@ fun ModalBottomSheetContent(viewModel: HomeViewModel,navController: NavControlle
         drawerContainerColor = Color(0xE6141414)
     ) {
         Column(Modifier.verticalScroll(scrollState)) {
-            MyProfile(item = viewModel.getMyInfo())
+            MyProfile(item = viewModel.getMyInfo()){navController.navigate("SETTINGS")}
             HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
             MyLinkedOutBar()
             LineChartExample()
@@ -255,12 +255,13 @@ fun MyBottomNavigation(navController: NavController) {
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun MyProfile(item: UserInfo) {
+fun MyProfile(item: UserInfo, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(160.dp)
             .padding(20.dp)
+            .clickable { onClick() }
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxSize()) {
             GlideImage(

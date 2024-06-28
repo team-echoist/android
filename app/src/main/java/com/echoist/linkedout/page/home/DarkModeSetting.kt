@@ -43,7 +43,7 @@ fun DarkModeSettingPage(navController: NavController){
                     Spacer(modifier = Modifier.height(14.dp))
                     Box(modifier = Modifier
                         .fillMaxWidth()
-                        .height(290.dp), contentAlignment = Alignment.Center){
+                        .height(320.dp), contentAlignment = Alignment.Center){
 
                         ModeItem(
                             modeText = "라이트 모드",

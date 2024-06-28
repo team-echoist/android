@@ -95,6 +95,8 @@ import com.echoist.linkedout.page.settings.ChangeEmailPage
 import com.echoist.linkedout.page.settings.ChangePwPage
 import com.echoist.linkedout.page.settings.MyPage
 import com.echoist.linkedout.page.settings.ProfilePage
+import com.echoist.linkedout.page.settings.RecentEssayDetailPage
+import com.echoist.linkedout.page.settings.RecentViewedEssayPage
 import com.echoist.linkedout.page.settings.ResetPwPage
 import com.echoist.linkedout.page.settings.ResetPwPageWithEmail
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
@@ -211,7 +213,20 @@ class LoginPage : ComponentActivity() {
                     MyPage(navController)
                     //settings page
                 }
-                composable("AccountPage") {
+                composable("RecentViewedEssayPage") {
+                    RecentViewedEssayPage(navController,communityViewModel)
+                    //settings page
+                }
+                composable("RecentEssayDetailPage") {
+                    RecentEssayDetailPage(navController,communityViewModel)
+                    //settings page
+                }
+                composable("AccountPage",
+                    deepLinks = listOf(navDeepLink { uriPattern = "https://www.linkedout.com/AccountPage?token={token}" }),
+                    arguments = listOf(navArgument("token"){
+                        type = NavType.StringType
+                        defaultValue = ""
+                    })) {
                     AccountPage(navController)
                     //settings page
                 }

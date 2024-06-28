@@ -1,5 +1,7 @@
 package com.echoist.linkedout.page.settings
 
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
@@ -63,6 +65,11 @@ fun AccountWithdrawalPage(navController : NavController) {
     val viewModel: SettingsViewModel = hiltViewModel()
 
     var isWithdrawalClicked by remember { mutableStateOf(false) }
+    val reasonList = listOf(
+        "사용 빈도가 낮아서", "콘텐츠(글)의 질이 기대에 못 미쳐서", "앱의 기능 및 서비스가 불만족스러워서",
+        "앱 사용 중에 자꾸 문제가 생겨서(버그, 오류 등)", "다른 서비스가 더 좋아서","기타 문제"
+    )
+    val selectedItems = remember { mutableStateListOf<String>() }
 
     LinkedOutTheme {
         Scaffold(
@@ -94,11 +101,7 @@ fun AccountWithdrawalPage(navController : NavController) {
                     Spacer(modifier = Modifier.height(10.dp))
                     Text(text = "탈퇴하는 이유를 말씀해주세요. 링크드아웃 서비스 개선에 큰 도움이 될 것입니다. 이용해주셔서 감사합니다!", fontSize = 16.sp, color = Color(0xFF5D5D5D))
 
-                    val reasonList = listOf(
-                        "사용 빈도가 낮아서", "콘텐츠(글)의 질이 기대에 못 미쳐서", "앱의 기능 및 서비스가 불만족스러워서",
-                        "앱 사용 중에 자꾸 문제가 생겨서(버그, 오류 등)", "다른 서비스가 더 좋아서","기타 문제"
-                    )
-                    val selectedItems = remember { mutableStateListOf<String>() }
+
 
                     val onItemSelected: (String) -> Unit = { selectedItem ->
                         if (selectedItems.contains(selectedItem)) {
@@ -147,8 +150,7 @@ fun AccountWithdrawalPage(navController : NavController) {
 
                     Button(
                         onClick = { /* todo 탈퇴기능 구현 */
-                                  isWithdrawalClicked = true
-                                  viewModel.requestWithdrawal(reasonList)},
+                                  isWithdrawalClicked = true},
                         enabled =  enabled,
                         shape = RoundedCornerShape(20),
                         modifier = Modifier
@@ -180,9 +182,8 @@ fun AccountWithdrawalPage(navController : NavController) {
                         WithdrawalWarningBox(
                             isCancelClicked = { isWithdrawalClicked = false },
                             isWithdrawalClicked = {
-                                isWithdrawalClicked = false
-                                navController.popBackStack("LoginPage", true) //login 까지 삭제 inclusive - 포함
-                                navController.navigate("LoginPage")}
+                                Log.d(TAG, "AccountWithdrawalPage: $selectedItems")
+                                viewModel.requestWithdrawal(selectedItems.toList(),navController)}
                         ) //todo 수정필요 api 탈퇴기능구현
                     }
                 }
@@ -308,7 +309,8 @@ fun WithdrawalWarningBox( isCancelClicked: () ->Unit, isWithdrawalClicked: () ->
                         modifier = Modifier
                             .weight(1f)
                             .height(61.dp),
-                        onClick = { isWithdrawalClicked() },
+                        onClick = { isWithdrawalClicked()
+                                  },
                         shape = RoundedCornerShape(20)
                     ) {
                         Text(text = "확인", color = Color.Black, fontWeight = FontWeight.SemiBold)

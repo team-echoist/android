@@ -184,22 +184,23 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun requestWithdrawal(reasons : List<String>){
+    fun requestWithdrawal(reasons : List<String>, navController: NavController){
         viewModelScope.launch {
             isLoading = true
             try {
 
                 val body = UserApi.RequestDeactivate(reasons)
                 val response = userApi.requestDeactivate(Token.accessToken,body)
+                Log.d(TAG, "requestWithdrawal: $reasons")
 
                 if (response.isSuccessful){
                     Token.accessToken = (response.headers()["authorization"].toString())
-
+                    navController.navigate("LoginPage")
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
                 // api 요청 실패
-                Log.e("writeEssayApiFailed", "Failed to write essay: ${e.message}")
+                Log.e("ApiFailed", "Failed to write essay: ${e.message}")
             }
             finally {
                 isLoading = false

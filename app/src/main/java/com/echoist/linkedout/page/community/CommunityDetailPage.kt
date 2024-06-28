@@ -182,14 +182,14 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
                                     )
                                     {
                                         Text(
-                                            text = "'${viewModel.userItem.nickname!!} 아무개'의 이전 글",
+                                            text = "다른 글",
                                             fontSize = 14.sp,
                                             color = Color(0xFF616FED)
                                         )
 
                                     }
                                 }
-                                //todo 글쓴이의 이전 글 띄우기
+                                //todo 다른 랜덤 에세이 목록 띄워주기
                                 items(items = viewModel.previousEssayList) { it -> //랜덤리스트 말고 수정할것. 그사람의 리스트로
                                     EssayListItem(
                                         item = it,
@@ -295,6 +295,7 @@ fun CommunityTopAppBar(navController: NavController, viewModel: CommunityViewMod
                             )
                             if (viewModel.detailEssayBackStack.isNotEmpty()) {
                                 viewModel.detailEssay = viewModel.detailEssayBackStack.peek()
+                                viewModel.setBackDetailEssay(viewModel.detailEssayBackStack.peek()) //detailEssay값을 아예 수정
                             }
                         }
                         navController.popBackStack()
