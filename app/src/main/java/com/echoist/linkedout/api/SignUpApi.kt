@@ -1,7 +1,10 @@
 package com.echoist.linkedout.api
 
+import SignUpApiImpl
+import com.squareup.moshi.JsonClass
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Query
@@ -70,9 +73,37 @@ interface SignUpApi {
     @POST("api/support/devices/register")
     suspend fun requestRegisterDevice(
         @Header("Authorization") accessToken: String,
-        @Body registerDeviceRequest: RegisterDeviceRequest
+        @Body registerDeviceRequest: SignUpApiImpl.RegisterDeviceRequest
     ): Response<Unit>
 
-    data class RegisterDeviceRequest(val deviceId : String, val deviceToken : String)
+
+    @GET("api/support/settings/register/{deviceId}")
+    suspend fun getUserNotification(
+        @Header("Authorization") accessToken: String,
+        @Query("deviceId") deviceId: String,
+    ): Response<NotificationResponse>
+    @POST("api/support/settings/register/{deviceId}")
+    suspend fun updateUserNotification(
+        @Header("Authorization") accessToken: String,
+        @Query("deviceId") deviceId: String,
+        @Body requestSettings: NotificationSettings
+    ): Response<Unit>
+
+    data class NotificationSettings(
+        val viewed: Boolean,
+        val report : Boolean,
+        val timeAllowed : Boolean,
+        val remindTime : String? = null
+    )
+
+    @JsonClass(generateAdapter = true)
+    data class NotificationResponse(
+        val data: NotificationSettings,
+        val path: String?,
+        val success: Boolean,
+        val timestamp: String?,
+        val statusCode : Int?
+    )
+
 
 }

@@ -72,6 +72,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import com.echoist.linkedout.BuildConfig
+import com.echoist.linkedout.DeviceId
 import com.echoist.linkedout.R
 import com.echoist.linkedout.components.CropImagePage
 import com.echoist.linkedout.page.community.CommunityDetailPage
@@ -118,8 +119,8 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class LoginPage : ComponentActivity() {
-    private fun getSSAID(context: Context): String {
-        return Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+    private fun getSSAID(context: Context){
+        DeviceId.deviceId = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
     }
 
     override fun onStart() {
@@ -128,8 +129,8 @@ class LoginPage : ComponentActivity() {
         KakaoSdk.init(this, BuildConfig.kakao_native_app_key)
         Firebase.auth.signOut()
 
-        val ssaid = getSSAID(this)
-        Log.d("SSAID", "SSAID: $ssaid") //고유식별자
+        getSSAID(this)
+        Log.d("SSAID", "SSAID: ${DeviceId.deviceId}") //고유식별자
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

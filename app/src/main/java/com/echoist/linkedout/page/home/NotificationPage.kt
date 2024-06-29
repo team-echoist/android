@@ -45,14 +45,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.page.settings.SettingTopAppBar
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
+import com.echoist.linkedout.viewModels.HomeViewModel
 
 @Composable
-fun NotificationPage(navController: NavController) {
+fun NotificationPage(navController: NavController,homeViewModel: HomeViewModel = hiltViewModel()) {
+    homeViewModel.getUserNotification()
 
     LinkedOutTheme {
         Scaffold(
@@ -61,6 +64,12 @@ fun NotificationPage(navController: NavController) {
             },
             content = {
                 var isClickedTimeSelection by remember { mutableStateOf(false) }
+                
+                Box(modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp).padding(bottom = 60.dp), contentAlignment = Alignment.BottomCenter){
+                    Button(modifier = Modifier.fillMaxSize(), shape = RoundedCornerShape(20), onClick = { homeViewModel.updateUserNotification(navController) }) {
+                        Text(text = "저장", color = Color.Black)
+                    }
+                }
 
                 Column(Modifier.padding(it)) {
 
@@ -71,28 +80,19 @@ fun NotificationPage(navController: NavController) {
                         modifier = Modifier.padding(horizontal = 20.dp)
                     )
                     Spacer(modifier = Modifier.height(20.dp))
-
-                    //todo 기능 전부 구현필요
-                    var publishedNotification by remember { mutableStateOf(false) }
+                    
                     EssayNotificationBox(
-                        "발행한 글",
+                        "글 ",
                         "조회 알림",
-                        publishedNotification
-                    ) { it -> publishedNotification = it }
+                        homeViewModel.viewedNotification
+                    ) { it -> homeViewModel.viewedNotification = it
+                    }
 
-                    var linkedOutNotification by remember { mutableStateOf(false) }
                     EssayNotificationBox(
-                        "링크드아웃한 글",
-                        "조회 알림",
-                        linkedOutNotification
-                    ) { it -> linkedOutNotification = it }
-
-                    var reportNotification by remember { mutableStateOf(false) }
-                    EssayNotificationBox(
-                        "신고 완료",
+                        "신고 결과",
                         "알림",
-                        reportNotification
-                    ) { it -> reportNotification = it }
+                        homeViewModel.reportNotification
+                    ) { it -> homeViewModel.reportNotification = it }
 
                     Spacer(modifier = Modifier.height(20.dp))
 
@@ -104,11 +104,10 @@ fun NotificationPage(navController: NavController) {
                     )
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    var writingNotification by remember { mutableStateOf(false) }
 
                     WritingNotificationBox(
-                        writingNotification,
-                        { it -> writingNotification = it },
+                        homeViewModel.writingRemindNotification,
+                        { it -> homeViewModel.writingRemindNotification = it },
                         { isClickedTimeSelection = true }
                     )
 
@@ -346,7 +345,8 @@ fun NotificationTimePicker(
                 modifier = Modifier
                     .weight(1f)
                     .clickable {
-                        timePeriodIndex = (timePeriodIndex - 1 + timePeriods.size) % timePeriods.size
+                        timePeriodIndex =
+                            (timePeriodIndex - 1 + timePeriods.size) % timePeriods.size
                     },
                 tint = Color.White
             )
