@@ -98,6 +98,8 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel) {
         }
 
     ) {
+        val context = LocalContext.current
+        viewModel.requestRegisterDevice(context) //로그인 후 홈 진입 시 회원정보등록
 
         LinkedOutTheme {
             Scaffold(

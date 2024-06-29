@@ -67,4 +67,12 @@ interface SignUpApi {
         val timestamp: String,
         val path: String
     )
+    @POST("api/support/devices/register")
+    suspend fun requestRegisterDevice(
+        @Header("Authorization") accessToken: String,
+        @Body registerDeviceRequest: RegisterDeviceRequest
+    ): Response<Unit>
+
+    data class RegisterDeviceRequest(val deviceId : String, val deviceToken : String)
+
 }

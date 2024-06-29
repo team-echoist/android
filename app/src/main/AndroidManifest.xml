@@ -8,6 +8,7 @@
         android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:name=".App"
@@ -21,6 +22,15 @@
         android:supportsRtl="true"
         android:theme="@style/LinkedOut"
         tools:targetApi="31">
+        <service
+            android:name=".MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+                <!-- message 이벤트 추가 -->
+            </intent-filter>
+        </service>
+
         <activity
             android:name=".page.login.SplashPage"
             android:exported="true"
@@ -32,7 +42,9 @@
             </intent-filter>
 
 
+
     </activity>
+
 
         <activity
             android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
@@ -48,6 +60,7 @@
                     android:host="oauth"
                     android:scheme="@string/kakao_oauth_host" />
             </intent-filter>
+
         </activity>
 
         <activity
