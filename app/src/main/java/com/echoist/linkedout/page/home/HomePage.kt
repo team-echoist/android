@@ -145,8 +145,8 @@ fun ModalBottomSheetContent(viewModel: HomeViewModel,navController: NavControlle
             HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
             MyDrawableItem("화면 설정") {navController.navigate("DarkModeSettingPage")}
             MyDrawableItem("알림 설정") {navController.navigate("NotificationPage")}
-            MyDrawableItem("고객지원") {}
-            MyDrawableItem("업데이트 기록") {}
+            MyDrawableItem("고객지원") {navController.navigate("SupportPage")}
+            MyDrawableItem("업데이트 기록") {navController.navigate("UpdateHistoryPage")}
 
             LogoutBtn{isLogoutClicked = true} //todo logout 기능 만들기
             // ...other drawer items
