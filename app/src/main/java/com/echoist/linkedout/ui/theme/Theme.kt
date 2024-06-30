@@ -39,11 +39,14 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun LinkedOutTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    darkTheme: Boolean = isSystemInDarkTheme(), //이 값 대신 SharedPreferencesUtil을 사용
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
+    //val context = LocalContext.current
+    //val dark : Boolean = SharedPreferencesUtil.getDisplayInfo(context) == DARK_MODE
+
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current

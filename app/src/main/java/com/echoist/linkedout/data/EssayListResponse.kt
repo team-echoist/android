@@ -29,3 +29,10 @@ data class EssaysWithPrevious(
     val previous: List<EssayApi.EssayItem>? = null,
 )
 
+@JsonClass(generateAdapter = true)
+data class BasicResponse(
+    val path: String,
+    val success: Boolean,
+    val timestamp: String
+)
+

@@ -18,18 +18,6 @@ import retrofit2.http.Query
 
 interface EssayApi{
 
-    /**
-     *
-     * 일반 유저: 자유롭게 발행
-     * 블랙 유저: publish, linkedOut 요청시 에세이 테이블에 각 항목을 false로
-     * 우선 저장 후 리뷰테이블에 등록. 관리자 승인 필요
-     *
-     * 블랙유저가 publish 또는 linkedOut 요청시
-     * 응답에는 아래 메시지 필드 추가
-     * "message": "review has been requested.."
-     */
-    //보내는 용 string tag list
-
     data class Tag(val id : Int, val name : String)
 
     @POST("api/essays")

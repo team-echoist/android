@@ -1,5 +1,6 @@
 package com.echoist.linkedout.page.home
 
+import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -55,76 +56,87 @@ import com.echoist.linkedout.viewModels.HomeViewModel
 
 @Composable
 fun NotificationPage(navController: NavController,homeViewModel: HomeViewModel = hiltViewModel()) {
+
     homeViewModel.getUserNotification()
 
-    LinkedOutTheme {
-        Scaffold(
-            topBar = {
-                SettingTopAppBar("알림", navController)
-            },
-            content = {
-                var isClickedTimeSelection by remember { mutableStateOf(false) }
-                
-                Box(modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp).padding(bottom = 60.dp), contentAlignment = Alignment.BottomCenter){
-                    Button(modifier = Modifier.fillMaxSize(), shape = RoundedCornerShape(20), onClick = { homeViewModel.updateUserNotification(navController) }) {
-                        Text(text = "저장", color = Color.Black)
-                    }
-                }
+        LinkedOutTheme {
+            Scaffold(
+                topBar = {
+                    SettingTopAppBar("알림", navController)
+                },
+                content = {
+                    var isClickedTimeSelection by remember { mutableStateOf(false) }
 
-                Column(Modifier.padding(it)) {
-
-                    Text(
-                        text = "글 조회 알림",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(horizontal = 20.dp)
-                    )
-                    Spacer(modifier = Modifier.height(20.dp))
-                    
-                    EssayNotificationBox(
-                        "글 ",
-                        "조회 알림",
-                        homeViewModel.viewedNotification
-                    ) { it -> homeViewModel.viewedNotification = it
+                    Box(modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 20.dp)
+                        .padding(bottom = 60.dp), contentAlignment = Alignment.BottomCenter){
+                        Button(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(20), onClick = { homeViewModel.updateUserNotification(navController) }) {
+                            Text(text = "저장", color = Color.Black)
+                        }
                     }
 
-                    EssayNotificationBox(
-                        "신고 결과",
-                        "알림",
-                        homeViewModel.reportNotification
-                    ) { it -> homeViewModel.reportNotification = it }
+                    Column(Modifier.padding(it)) {
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                        Text(
+                            text = "글 조회 알림",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(horizontal = 20.dp)
+                        )
+                        Spacer(modifier = Modifier.height(20.dp))
 
-                    Text(
-                        text = "글쓰기 알림",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(horizontal = 20.dp)
-                    )
-                    Spacer(modifier = Modifier.height(20.dp))
+                        EssayNotificationBox(
+                            "글 ",
+                            "조회 알림",
+                            homeViewModel.viewedNotification
+                        ) { it -> homeViewModel.viewedNotification = it
+                            Log.d(TAG, "NotificationPage: $it")
+                        }
+
+                        EssayNotificationBox(
+                            "신고 결과",
+                            "알림",
+                            homeViewModel.reportNotification
+                        ) { it -> homeViewModel.reportNotification = it
+                            Log.d(TAG, "NotificationPage: $it")
+                        }
+
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        Text(
+                            text = "글쓰기 알림",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(horizontal = 20.dp)
+                        )
+                        Spacer(modifier = Modifier.height(20.dp))
 
 
-                    WritingNotificationBox(
-                        homeViewModel.writingRemindNotification,
-                        { it -> homeViewModel.writingRemindNotification = it },
-                        { isClickedTimeSelection = true }
-                    )
+                        WritingNotificationBox(
+                            homeViewModel.writingRemindNotification,
+                            { it -> homeViewModel.writingRemindNotification = it
+                                Log.d(TAG, "NotificationPage: $it")
+                            },
+                            { isClickedTimeSelection = true }
+                        )
 
+                    }
+
+                    AnimatedVisibility(
+                        visible = isClickedTimeSelection,
+                        enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)),
+                        exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
+                    ){
+                        NotificationTimePickerBox({ isClickedTimeSelection = false },navController)
+
+                    }
                 }
-
-                AnimatedVisibility(
-                    visible = isClickedTimeSelection,
-                    enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)),
-                    exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
-                ){
-                    NotificationTimePickerBox({ isClickedTimeSelection = false },navController)
-
-                }
-            }
-        )
+            )
+        }
     }
-}
+
+
 
 @Composable
 fun EssayNotificationBox(

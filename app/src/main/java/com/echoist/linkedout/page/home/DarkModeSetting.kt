@@ -18,12 +18,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.echoist.linkedout.DARK_MODE
+import com.echoist.linkedout.LIGHT_MODE
 import com.echoist.linkedout.R
+import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.page.settings.SettingTopAppBar
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
@@ -31,7 +35,10 @@ import com.echoist.linkedout.ui.theme.LinkedOutTheme
 @Composable
 fun DarkModeSettingPage(navController: NavController){
 
-    val (selectedMode, setSelectedMode) = remember { mutableStateOf<String?>(null) }
+    val context = LocalContext.current
+    // Destructuring Declaration을 통해 두 값을 나누어 사용 selectedMode를 설정하는 함수로 사용가능
+    val (selectedMode, setSelectedMode) = remember { mutableStateOf<String?>(SharedPreferencesUtil.getDisplayInfo(context)) }
+
 
     LinkedOutTheme {
         Scaffold(
@@ -47,16 +54,22 @@ fun DarkModeSettingPage(navController: NavController){
 
                         ModeItem(
                             modeText = "라이트 모드",
-                            modeImg = R.drawable.mode_light, // 라이트 모드 아이콘 리소스
-                            isSelected = selectedMode == "라이트 모드",
-                            onItemSelected = { setSelectedMode("라이트 모드") },
+                            modeImg = R.drawable.mode_light,
+                            isSelected = selectedMode == LIGHT_MODE,
+                            onItemSelected = {
+                                setSelectedMode("라이트 모드")
+                                SharedPreferencesUtil.saveDisplayInfo(context, LIGHT_MODE) //선택 시 shared에 저장
+                                             },
                             modifier = Modifier.padding(end = 140.dp)
                         )
                         ModeItem(
                             modeText = "다크 모드",
-                            modeImg = R.drawable.mode_dark, // 다크 모드 아이콘 리소스
-                            isSelected = selectedMode == "다크 모드",
-                            onItemSelected = { setSelectedMode("다크 모드") }, //todo setSeletedMode 만들것 기능. roomdb 활용
+                            modeImg = R.drawable.mode_dark,
+                            isSelected = selectedMode == DARK_MODE,
+                            onItemSelected = {
+                                setSelectedMode("다크 모드")
+                                SharedPreferencesUtil.saveDisplayInfo(context, DARK_MODE)
+                                             },
                             modifier = Modifier.padding(start = 140.dp)
 
                         )

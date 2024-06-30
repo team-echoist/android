@@ -7,6 +7,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface SignUpApi {
@@ -77,15 +78,15 @@ interface SignUpApi {
     ): Response<Unit>
 
 
-    @GET("api/support/settings/register/{deviceId}")
+    @GET("api/support/settings/{deviceId}")
     suspend fun getUserNotification(
         @Header("Authorization") accessToken: String,
-        @Query("deviceId") deviceId: String,
+        @Path("deviceId") deviceId: String,
     ): Response<NotificationResponse>
-    @POST("api/support/settings/register/{deviceId}")
+    @POST("api/support/settings/{deviceId}")
     suspend fun updateUserNotification(
         @Header("Authorization") accessToken: String,
-        @Query("deviceId") deviceId: String,
+        @Path("deviceId") deviceId: String,
         @Body requestSettings: NotificationSettings
     ): Response<Unit>
 

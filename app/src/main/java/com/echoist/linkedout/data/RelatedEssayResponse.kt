@@ -18,3 +18,4 @@ data class Essays2(
 )
 
 data class RelatedEssay(val id : Int,val title : String, val createdDate : String, val story: Int?)
+

@@ -437,7 +437,7 @@ fun LoginPage(
                         horizontalArrangement = Arrangement.Center
                     ) {
                         UnderlineText(text = "아이디 찾기") { } //아이디찾기 페이지 이동
-                        UnderlineText(text = "비밀번호 재설정") { } //비밀번호 재설정 페이지 이동
+                        UnderlineText(text = "비밀번호 재설정") { navController.navigate("ResetPwPageWithEmail")} //비밀번호 재설정 페이지 이동
                         UnderlineText(text = "회원가입") { navController.navigate("SIGNUP") } // 회원가입 페이지 이동
                     }
                     Spacer(modifier = Modifier.height(150.dp))

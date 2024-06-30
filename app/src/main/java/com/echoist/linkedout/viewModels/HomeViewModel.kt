@@ -98,10 +98,16 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val response = signUpApi.getUserNotification(Token.accessToken, DeviceId.deviceId)
+                Log.d(TAG, "getUserNotification: ${response.body()?.data!!}")
+
                 if (response.isSuccessful){
+                    Log.d(TAG, "getUserNotification: ${response.body()?.data!!}")
                     viewedNotification = response.body()?.data!!.viewed
                     reportNotification = response.body()?.data!!.report
                     writingRemindNotification = response.body()?.data!!.timeAllowed
+                }
+                else{
+                    Log.d(TAG, "getUserNotification: ${response.code()}")
                 }
 
             }catch (e:Exception){
@@ -117,7 +123,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 signUpApi.updateUserNotification(Token.accessToken,DeviceId.deviceId,body)
-                Log.d(TAG, "success: ")
+                Log.d(TAG, "success: $body")
                 navController.navigate("HOME")
             } catch (e: Exception) {
                 e.printStackTrace()
