@@ -57,7 +57,7 @@ import com.echoist.linkedout.viewModels.HomeViewModel
 @Composable
 fun NotificationPage(navController: NavController,homeViewModel: HomeViewModel = hiltViewModel()) {
 
-    homeViewModel.getUserNotification()
+    homeViewModel.readUserNotification()
 
         LinkedOutTheme {
             Scaffold(

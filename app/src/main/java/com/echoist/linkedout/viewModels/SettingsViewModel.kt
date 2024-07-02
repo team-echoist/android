@@ -47,7 +47,7 @@ class SettingsViewModel @Inject constructor(
 
 
     fun getMyInfo() : UserInfo{
-        Log.d(TAG, "getUserInfo: ${exampleItems.myProfile}")
+        Log.d(TAG, "readUserInfo: ${exampleItems.myProfile}")
         return exampleItems.myProfile
     }
 

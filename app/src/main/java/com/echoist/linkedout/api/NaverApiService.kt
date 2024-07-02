@@ -6,5 +6,5 @@ import retrofit2.http.Header
 
 interface NaverApiService {
     @GET("v1/nid/me")
-    suspend fun getUserInfo(@Header("Authorization") accessToken: String): NaverUserResponse
+    suspend fun readUserInfo(@Header("Authorization") accessToken: String): NaverUserResponse
 }

@@ -96,21 +96,21 @@ class HomeViewModel @Inject constructor(
         }
 
     //사용자 알림설정 get
-    fun getUserNotification() {
+    fun readUserNotification() {
 
         viewModelScope.launch {
             try {
-                val response = supportApi.getUserNotification(Token.accessToken, DeviceId.deviceId)
-                Log.d(TAG, "getUserNotification: ${response.body()?.data!!}")
+                val response = supportApi.readUserNotification(Token.accessToken, DeviceId.deviceId)
+                Log.d(TAG, "readUserNotification: ${response.body()?.data!!}")
 
                 if (response.isSuccessful){
-                    Log.d(TAG, "getUserNotification: success${response.body()?.data!!}")
+                    Log.d(TAG, "readUserNotification: success${response.body()?.data!!}")
                     viewedNotification = response.body()?.data!!.viewed
                     reportNotification = response.body()?.data!!.report
                     writingRemindNotification = response.body()?.data!!.timeAllowed
                 }
                 else{
-                    Log.d(TAG, "getUserNotification: success${response.code()}")
+                    Log.d(TAG, "readUserNotification: success${response.code()}")
                 }
 
             }catch (e:Exception){

@@ -1,3 +1,4 @@
+
 import com.echoist.linkedout.api.SignUpApi
 import retrofit2.Response
 import retrofit2.http.Body
@@ -45,24 +46,9 @@ class SignUpApiImpl : SignUpApi {
     }
 
     @POST("api/support/devices/register")
-    override suspend fun requestRegisterDevice(
+    suspend fun requestRegisterDevice(
         @Header("Authorization") accessToken: String,
         @Body registerDeviceRequest: RegisterDeviceRequest
-    ): Response<Unit> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun getUserNotification(
-        accessToken: String,
-        deviceId: String
-    ): Response<SignUpApi.NotificationResponse> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun updateUserNotification(
-        accessToken: String,
-        deviceId: String,
-        requestSettings: SignUpApi.NotificationSettings
     ): Response<Unit> {
         TODO("Not yet implemented")
     }

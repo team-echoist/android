@@ -18,14 +18,14 @@ import retrofit2.http.Query
 
 interface SupportApi {
     @GET("api/support/notices")
-    suspend fun requestNotices(
+    suspend fun readNotices(
         @Header("Authorization") accessToken: String,
         @Query("page") page : Int,
         @Query("limit") limit : Int
     ): NoticeResponse
 
     @GET("api/support/notices/{noticeId}")
-    suspend fun requestNoticeDetail(
+    suspend fun readNoticeDetail(
         @Header("Authorization") accessToken: String,
         @Path("noticeId") noticeId : String
     ): NoticeDetailResponse
@@ -37,18 +37,18 @@ interface SupportApi {
     ): Response<Unit>
 
     @GET("api/support/inquiries")
-    suspend fun requestInquiries(
+    suspend fun readInquiries(
         @Header("Authorization") accessToken: String
     ): AllInquiriesResponse
 
     @GET("api/support/inquiries/{inquiryId}")
-    suspend fun requestInquiryDetail(
+    suspend fun readInquiryDetail(
         @Header("Authorization") accessToken: String,
         @Path("inquiryId") inquiryId : String
     ): InquiryResponse
 
     @GET("api/support/updated-histories")
-    suspend fun requestUpdatedHistories(
+    suspend fun readUpdatedHistories(
         @Header("Authorization") accessToken: String,
         @Query("page") page : Int,
         @Query("limit") limit : Int
@@ -60,7 +60,7 @@ interface SupportApi {
         @Body registerDeviceRequest: SignUpApiImpl.RegisterDeviceRequest
     ): Response<Unit>
     @GET("api/support/settings/{deviceId}")
-    suspend fun getUserNotification(
+    suspend fun readUserNotification(
         @Header("Authorization") accessToken: String,
         @Path("deviceId") deviceId: String,
     ): Response<NotificationResponse>

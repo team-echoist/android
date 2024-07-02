@@ -327,7 +327,7 @@ class SocialLoginViewModel @Inject constructor(
         if (token != null) {
             viewModelScope.launch {
                 try {
-                    val userInfo = api.getUserInfo("Bearer ${NaverIdLoginSDK.getAccessToken()}")
+                    val userInfo = api.readUserInfo("Bearer ${NaverIdLoginSDK.getAccessToken()}")
                     val info = userInfo.response
                     // info.name 등으로 유저 정보 획득
                     Log.d("NaverUserInfo success", info.name.toString())
