@@ -36,7 +36,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.settings.SettingTopAppBar
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
@@ -91,14 +90,7 @@ fun LinkedOutSupportPage(
     }
 }
 
-data class Inquiry(
-    val id: String,
-    val title: String,
-    val content: String? = null,
-    val createdDate: String,
-    val processed: Boolean,
-    val user: UserInfo
-)
+
 
 @Preview
 @Composable

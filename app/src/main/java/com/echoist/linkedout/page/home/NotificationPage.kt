@@ -71,7 +71,8 @@ fun NotificationPage(navController: NavController,homeViewModel: HomeViewModel =
                         .fillMaxSize()
                         .padding(horizontal = 20.dp)
                         .padding(bottom = 60.dp), contentAlignment = Alignment.BottomCenter){
-                        Button(modifier = Modifier.fillMaxWidth().height(61.dp), shape = RoundedCornerShape(20), onClick = { homeViewModel.updateUserNotification(navController) }) {
+                        Button(modifier = Modifier.fillMaxWidth().height(61.dp), shape = RoundedCornerShape(20),
+                            onClick = { homeViewModel.updateUserNotification(navController) }) {
                             Text(text = "저장", color = Color.Black)
                         }
                     }

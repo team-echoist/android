@@ -5,6 +5,7 @@ import com.echoist.linkedout.api.BookMarkApi
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.api.SignUpApi
 import com.echoist.linkedout.api.StoryApi
+import com.echoist.linkedout.api.SupportApi
 import com.echoist.linkedout.api.UserApi
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -67,6 +68,12 @@ object AppModule {
     @Singleton
     fun provideBookMarkApiClient(retrofit: Retrofit) : BookMarkApi {
         return retrofit.create(BookMarkApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSupportApiClient(retrofit: Retrofit) : SupportApi {
+        return retrofit.create(SupportApi::class.java)
     }
 }
 

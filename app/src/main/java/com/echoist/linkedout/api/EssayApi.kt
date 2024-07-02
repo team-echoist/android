@@ -1,8 +1,8 @@
 package com.echoist.linkedout.api
 
-import SingleEssayResponse
 import com.echoist.linkedout.data.DetailEssayResponse
 import com.echoist.linkedout.data.EssayListResponse
+import com.echoist.linkedout.data.SingleEssayResponse
 import com.echoist.linkedout.data.Story
 import com.echoist.linkedout.data.UserInfo
 import com.squareup.moshi.JsonClass

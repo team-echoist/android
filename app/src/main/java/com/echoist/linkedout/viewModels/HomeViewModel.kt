@@ -14,7 +14,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.echoist.linkedout.DeviceId
 import com.echoist.linkedout.api.SignUpApi
+import com.echoist.linkedout.api.SupportApi
 import com.echoist.linkedout.data.ExampleItems
+import com.echoist.linkedout.data.NotificationSettings
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.myLog.Token
 import com.google.firebase.messaging.FirebaseMessaging
@@ -25,7 +27,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val exampleItems: ExampleItems,
-    private val signUpApi: SignUpApi) : ViewModel(){
+    private val signUpApi: SignUpApi,
+    private val supportApi: SupportApi) : ViewModel(){
 
     var myProfile by mutableStateOf(exampleItems.myProfile)
 
@@ -74,7 +77,7 @@ class HomeViewModel @Inject constructor(
                     viewModelScope.launch {
 
                         try {
-                            signUpApi.requestRegisterDevice(Token.accessToken,body)
+                            supportApi.requestRegisterDevice(Token.accessToken,body)
                             Log.d("FCM Token", "suc to fetch token $ssaid \n $token")
 
                         } catch (e: Exception) {
@@ -97,37 +100,37 @@ class HomeViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                val response = signUpApi.getUserNotification(Token.accessToken, DeviceId.deviceId)
+                val response = supportApi.getUserNotification(Token.accessToken, DeviceId.deviceId)
                 Log.d(TAG, "getUserNotification: ${response.body()?.data!!}")
 
                 if (response.isSuccessful){
-                    Log.d(TAG, "getUserNotification: ${response.body()?.data!!}")
+                    Log.d(TAG, "getUserNotification: success${response.body()?.data!!}")
                     viewedNotification = response.body()?.data!!.viewed
                     reportNotification = response.body()?.data!!.report
                     writingRemindNotification = response.body()?.data!!.timeAllowed
                 }
                 else{
-                    Log.d(TAG, "getUserNotification: ${response.code()}")
+                    Log.d(TAG, "getUserNotification: success${response.code()}")
                 }
 
             }catch (e:Exception){
                 e.printStackTrace()
-                Log.d(TAG, "failed: ${e.message}")
+                Log.d(TAG, "noti get failed: ${e.message}")
             }
         }
     }
 
     //사용자 알림설정 update
     fun updateUserNotification(navController: NavController){
-        val body = SignUpApi.NotificationSettings(viewedNotification,reportNotification,writingRemindNotification,"10:10")
+        val body = NotificationSettings(viewedNotification,reportNotification,writingRemindNotification,"10:10")
         viewModelScope.launch {
             try {
-                signUpApi.updateUserNotification(Token.accessToken,DeviceId.deviceId,body)
-                Log.d(TAG, "success: $body")
+                supportApi.updateUserNotification(Token.accessToken,DeviceId.deviceId,body)
+                Log.d(TAG, "updateUserNotification success: $body")
                 navController.navigate("HOME")
             } catch (e: Exception) {
                 e.printStackTrace()
-                Log.d(TAG, "failed: ${e.message}")
+                Log.d(TAG, "noti update failed: ${e.message}")
 
                 TODO("Not yet implemented")
             } finally {
