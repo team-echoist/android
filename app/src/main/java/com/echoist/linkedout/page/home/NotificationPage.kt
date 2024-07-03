@@ -58,8 +58,18 @@ import com.echoist.linkedout.viewModels.HomeViewModel
 fun NotificationPage(navController: NavController,homeViewModel: HomeViewModel = hiltViewModel()) {
 
     homeViewModel.readUserNotification()
+    val context = LocalContext.current
 
-        LinkedOutTheme {
+    val savedTimeSelection = remember { SharedPreferencesUtil.getTimeSelection(context) }
+    val hour by remember { mutableStateOf(SharedPreferencesUtil.getHourString(savedTimeSelection.hourIndex)) }
+    val min by remember { mutableStateOf(SharedPreferencesUtil.getMinuteString(savedTimeSelection.minuteIndex)) }
+    val period by remember { mutableStateOf(SharedPreferencesUtil.getPeriodString(savedTimeSelection.periodIndex)) }
+
+    var writingRemindNotification by remember { mutableStateOf(SharedPreferencesUtil.getWritingRemindNotification(context)) }
+
+
+
+    LinkedOutTheme {
             Scaffold(
                 topBar = {
                     SettingTopAppBar("알림", navController)
@@ -71,8 +81,20 @@ fun NotificationPage(navController: NavController,homeViewModel: HomeViewModel =
                         .fillMaxSize()
                         .padding(horizontal = 20.dp)
                         .padding(bottom = 60.dp), contentAlignment = Alignment.BottomCenter){
-                        Button(modifier = Modifier.fillMaxWidth().height(61.dp), shape = RoundedCornerShape(20),
-                            onClick = { homeViewModel.updateUserNotification(navController) }) {
+                        Button(modifier = Modifier
+                            .fillMaxWidth()
+                            .height(61.dp), shape = RoundedCornerShape(20),
+                            onClick = {
+                                homeViewModel.updateUserNotification(navController)
+                                SharedPreferencesUtil.saveWritingRemindNotification(context,writingRemindNotification) //글쓰기 시간 알림 설정 저장
+                                if (writingRemindNotification){
+                                    //homeViewModel.setAlarmAfter10(context) //테스트용 1초후알람
+                                    homeViewModel.setAlarmFromTimeString(context = context,hour,min,period) //정해진 시간에 알람설정.
+                                }
+                                else{
+                                    homeViewModel.cancelAlarm(context) //알람 취소
+                                }
+                            }) {
                             Text(text = "저장", color = Color.Black)
                         }
                     }
@@ -115,11 +137,12 @@ fun NotificationPage(navController: NavController,homeViewModel: HomeViewModel =
 
 
                         WritingNotificationBox(
-                            homeViewModel.writingRemindNotification,
-                            { it -> homeViewModel.writingRemindNotification = it
+                            writingRemindNotification,
+                            { it -> writingRemindNotification = it
                                 Log.d(TAG, "NotificationPage: $it")
                             },
-                            { isClickedTimeSelection = true }
+                            { isClickedTimeSelection = true },
+                            hour, min, period
                         )
 
                     }
@@ -171,13 +194,11 @@ fun EssayNotificationBox(
 fun WritingNotificationBox(
     isChecked: Boolean,
     onCheckChange: (Boolean) -> Unit,
-    isTimeSelectionClicked: () -> Unit
+    isTimeSelectionClicked: () -> Unit,
+    hour : String,
+    min : String,
+    period : String
 ) {
-    val context = LocalContext.current
-    val savedTimeSelection = remember { SharedPreferencesUtil.getTimeSelection(context) }
-    val hour by remember { mutableStateOf(SharedPreferencesUtil.getHourString(savedTimeSelection.hourIndex)) }
-    val min by remember { mutableStateOf(SharedPreferencesUtil.getMinuteString(savedTimeSelection.minuteIndex)) }
-    val period by remember { mutableStateOf(SharedPreferencesUtil.getPeriodString(savedTimeSelection.periodIndex)) }
 
     Box(
         modifier = Modifier
@@ -213,7 +234,7 @@ fun WritingNotificationBox(
                     .clickable { isTimeSelectionClicked() }
                     .background(Color(0xFF222222)), contentAlignment = Alignment.Center
             ) {
-                Text(text = "${hour}:${min} ${period}", color = Color(0xFF979797))
+                Text(text = "${hour}:${min} $period", color = Color(0xFF979797))
             }
         }
     }

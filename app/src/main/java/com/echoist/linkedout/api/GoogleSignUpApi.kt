@@ -5,7 +5,7 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface GoogleSignUpApi {
-    @POST("auth/google/android")
+    @POST("api/auth/google/android")
     suspend fun googleLogin(
         @Body userAccount : UserGoogleAccount
     ): Response<Unit>

@@ -62,9 +62,7 @@ data class Inquiry( // 고객문의
 
 data class NotificationSettings(
     val viewed: Boolean,
-    val report : Boolean,
-    val timeAllowed : Boolean,
-    val remindTime : String? = null
+    val report : Boolean
 )
 
 @JsonClass(generateAdapter = true)

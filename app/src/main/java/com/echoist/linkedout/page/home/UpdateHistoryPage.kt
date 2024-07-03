@@ -17,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -38,19 +37,19 @@ fun UpdateHistoryPage(navController : NavController){
                 Modifier
                     .padding(it)
                     .verticalScroll(rememberScrollState())) {
-                if(/*viewModel.updateHistory.isEmpty()todo*/){
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-                        Text(
-                            text = "업데이트 기록이 없습니다.",
-                            style = TextStyle(
-                                fontSize = 16.sp,
-                                lineHeight = 25.6.sp,
-                                fontWeight = FontWeight(400),
-                                color = Color(0xFF888888),
-                            )
-                        )
-                    }
-                }
+//                if(/*viewModel.updateHistory.isEmpty()todo*/){
+//                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+//                        Text(
+//                            text = "업데이트 기록이 없습니다.",
+//                            style = TextStyle(
+//                                fontSize = 16.sp,
+//                                lineHeight = 25.6.sp,
+//                                fontWeight = FontWeight(400),
+//                                color = Color(0xFF888888),
+//                            )
+//                        )
+//                    }
+//                }
             
                 UpdateHistoryBox()
                 UpdateHistoryBox()

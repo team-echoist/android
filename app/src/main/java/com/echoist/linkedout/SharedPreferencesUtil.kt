@@ -17,6 +17,20 @@ object SharedPreferencesUtil {
     private val hourMap = (0..11).associateWith { (it + 1).toString().padStart(2, '0') }
     private val minuteMap = (0..5).associateWith { (it * 10).toString().padStart(2, '0') }
 
+    fun saveWritingRemindNotification(context: Context, writingRemindNotification: Boolean) {
+        val sharedPreferences: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            putBoolean("writing_notification", writingRemindNotification)
+            apply()
+        }
+    }
+
+    fun getWritingRemindNotification(context: Context) : Boolean{
+        val sharedPreferences: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val displayInfo = sharedPreferences.getBoolean("writing_notification", false)
+        return displayInfo
+    }
+
     fun saveDisplayInfo(context: Context, displayInfo: String) {
         val sharedPreferences: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         with(sharedPreferences.edit()) {
