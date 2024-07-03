@@ -52,7 +52,9 @@ import javax.inject.Inject
 @HiltViewModel
 class SocialLoginViewModel @Inject constructor(
     private val userApi: UserApi,
-    private val exampleItems: ExampleItems
+    private val exampleItems: ExampleItems,
+    private val signUpApi: SignUpApi,
+    private val googleSignUpApi: GoogleSignUpApi
 ) : ViewModel() {
     private val auth: FirebaseAuth = Firebase.auth
 
@@ -169,7 +171,7 @@ class SocialLoginViewModel @Inject constructor(
                     googleUserToken,
                     googleUserId
                 )
-                val response = googleAuthApi.googleLogin(userAccount)
+                val response = googleSignUpApi.googleLogin(userAccount)
 
                 if (response.isSuccessful) {
                     Log.d("tokentoken", response.headers()["authorization"].toString())
@@ -345,30 +347,12 @@ class SocialLoginViewModel @Inject constructor(
 
     }
 
-    private val moshi = Moshi.Builder()
-        .addLast(KotlinJsonAdapterFactory())
-        .build()
-
-    private val authApi = Retrofit
-        .Builder()
-        .baseUrl("https://www.linkedoutapp.com/api/")
-        .addConverterFactory(MoshiConverterFactory.create(moshi))
-        .build()
-        .create(SignUpApi::class.java)
-
-    private val googleAuthApi = Retrofit
-        .Builder()
-        .baseUrl("https://www.linkedoutapp.com/api/")
-        .addConverterFactory(MoshiConverterFactory.create(moshi))
-        .build()
-        .create(GoogleSignUpApi::class.java)
-
     //로그인
     fun login(navController: NavController) {
         viewModelScope.launch {
             try {
                 val userAccount = SignUpApi.UserAccount(userId, userPw)
-                val response = authApi.login(userAccount)
+                val response = signUpApi.login(userAccount)
 
 
                 if (response.isSuccessful) {
