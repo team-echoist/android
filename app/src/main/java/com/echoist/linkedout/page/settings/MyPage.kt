@@ -647,7 +647,7 @@ fun ModifyMyProfileBottomSheet(
 
             SelectProfileImageIcon(
                 { viewModel.isClickedModifyImage = true },
-                imageUrl = url!!
+                imageUrl = url
             )
             Spacer(modifier = Modifier.height(26.dp))
             ModifyNickNameTextField( viewModel)

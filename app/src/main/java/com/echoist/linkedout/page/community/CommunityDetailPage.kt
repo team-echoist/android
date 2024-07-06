@@ -81,6 +81,7 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.components.EssayListItem
+import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.myLog.OptionItem
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
@@ -156,13 +157,16 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
                                 item {
 
                                     DetailEssay(
-                                        item = viewModel.detailEssay,
+                                        item = viewModel.readDetailEssay(),
                                         viewModel,
                                         navController
                                     )
                                     Spacer(modifier = Modifier.height(28.dp))
+
+                                    val userinfo = viewModel.readDetailEssay().author ?: UserInfo()
+
                                     SubscriberSimpleItem(
-                                        item = viewModel.userItem,
+                                        item = userinfo,
                                         viewModel = viewModel,
                                         navController = navController
                                     )
@@ -190,7 +194,7 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
                                     }
                                 }
                                 //todo 다른 랜덤 에세이 목록 띄워주기
-                                items(items = viewModel.previousEssayList) { it -> //랜덤리스트 말고 수정할것. 그사람의 리스트로
+                                items(items = viewModel.getFilteredRandomEssayList()) { it -> //랜덤리스트 말고 수정할것. 그사람의 리스트로
                                     EssayListItem(
                                         item = it,
                                         viewModel = viewModel,
@@ -362,7 +366,8 @@ fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navContro
         delay(200)
         isApiFinished = true
     }
-    var isEssayBookMarked by remember { mutableStateOf(false) }
+    var isEssayBookMarked by remember { mutableStateOf(item.isBookmarked) }
+    val iconImg = if (isEssayBookMarked) Icons.Default.Bookmark else Icons.Default.BookmarkBorder
 
     if (isApiFinished){
         Box {
@@ -382,7 +387,6 @@ fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navContro
                     Text(text = item.title!!, fontSize = viewModel.titleTextSize, modifier = Modifier)
                     Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
 
-                        val iconImg = if (isEssayBookMarked) Icons.Default.Bookmark else Icons.Default.BookmarkBorder
 
                         Icon(
                             imageVector = iconImg,
@@ -395,8 +399,7 @@ fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navContro
                                     viewModel.viewModelScope.launch {
                                         if (isEssayBookMarked) viewModel.addBookMark(item.id!!)
                                         else viewModel.deleteBookMark(
-                                            item.id!!,
-                                            navController = navController
+                                            item.id!!
                                         )
                                     }
 

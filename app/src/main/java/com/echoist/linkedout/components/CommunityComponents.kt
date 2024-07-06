@@ -48,12 +48,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -79,7 +77,6 @@ import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.viewModels.CommunityViewModel
 import com.echoist.linkedout.viewModels.SentenceInfo
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.saket.extendedspans.ExtendedSpans
 import me.saket.extendedspans.RoundedCornerSpanPainter
@@ -87,23 +84,11 @@ import me.saket.extendedspans.drawBehind
 
 @Composable
 fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) {
-    var isNotLoading by remember {
-        mutableStateOf(false)
-    }
 
-
-    //first sentence, lastsentence값은 실시간으로 바뀌지만, 첫문장 마지막문장에서 는 있는값을 교체하는것이기때문에 ?
-    var oneSentenceList = if (viewModel.sentenceInfo == SentenceInfo.First) viewModel.firstSentences else viewModel.lastSentences
-    //Log.d(TAG, "RandomSentences: ${oneSentenceList[0].content}")
-
-    LaunchedEffect(key1 = Unit) {
-        delay(50)
-        isNotLoading = true
-    }
-
+    val oneSentenceList by if (viewModel.sentenceInfo == SentenceInfo.First) viewModel.firstSentences.collectAsState() else viewModel.lastSentences.collectAsState()
 
     //한줄추천 받아온 리스트값이 비어있으면 안보여줌
-    if (isNotLoading && oneSentenceList.isNotEmpty()){
+    if (oneSentenceList.isNotEmpty()){
 
         val annotatedString = remember(viewModel.sentenceInfo, oneSentenceList) {
             buildAnnotatedString {
@@ -392,7 +377,7 @@ fun CommunityTopAppBar(
     text: String,
     pagerState: PagerState,
     onSearchClick: () -> Unit,
-    onClickSaved: () -> Unit
+    onClickBookMarked: () -> Unit
 ) {
     val color = if (pagerState.currentPage == 0) Color.Black else Color.White
 
@@ -417,7 +402,7 @@ fun CommunityTopAppBar(
                 contentDescription = "",
                 Modifier
                     .size(30.dp)
-                    .clickable { onClickSaved() },
+                    .clickable { onClickBookMarked() },
                 tint = color
             )
             Spacer(modifier = Modifier.width(15.dp))
@@ -564,6 +549,7 @@ fun EssayListItem(
         .fillMaxWidth()
         .background(Color.Black)
         .clickable {
+            Log.d(TAG, "EssayListItem: ${item.id}")
             viewModel.readDetailEssay(item.id!!, navController)
             //navigate
         }
@@ -638,6 +624,8 @@ fun EssayListItem(
 
 @Composable
 fun RandomCommunityPage(viewModel: CommunityViewModel, navController: NavController) {
+    val randomList by viewModel.randomList.collectAsState()
+
     LazyColumn(
         Modifier
             .background(Color(0xFFD9D9D9))
@@ -653,7 +641,7 @@ fun RandomCommunityPage(viewModel: CommunityViewModel, navController: NavControl
 
             }
         }
-        items(viewModel.randomList) { it ->
+        items(randomList) { it ->
             EssayListItem(item = it, viewModel = viewModel, navController = navController)
         }
 
@@ -805,6 +793,7 @@ fun CommunityPager(
     viewModel: CommunityViewModel,
     navController: NavController
 ) {
+
     HorizontalPager(state = pagerState) { page ->
         when (page) {
             0 -> RandomCommunityPage(viewModel, navController)

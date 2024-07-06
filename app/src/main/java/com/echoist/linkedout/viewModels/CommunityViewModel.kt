@@ -1,6 +1,5 @@
 package com.echoist.linkedout.viewModels
 
-import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -22,6 +21,9 @@ import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.data.Story
 import com.echoist.linkedout.page.myLog.Token
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -35,6 +37,26 @@ open class CommunityViewModel @Inject constructor(
     private val exampleItems: ExampleItems,
     private val bookMarkApi: BookMarkApi
 ) : ViewModel() {
+
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean>
+        get() = _isRefreshing.asStateFlow()
+
+    private val _randomList = MutableStateFlow<List<EssayApi.EssayItem>>(emptyList())
+    val randomList: StateFlow<List<EssayApi.EssayItem>>
+    get() = _randomList.asStateFlow()
+
+    open var _isLoading = MutableStateFlow(false)
+    val isLoading : StateFlow<Boolean>
+        get() = _isLoading.asStateFlow()
+
+    private var _firstSentences = MutableStateFlow<List<EssayApi.EssayItem>>(emptyList())
+    val firstSentences : StateFlow<List<EssayApi.EssayItem>>
+        get() = _firstSentences.asStateFlow()
+
+    private var _lastSentences  = MutableStateFlow<List<EssayApi.EssayItem>>(emptyList())
+    val lastSentences : StateFlow<List<EssayApi.EssayItem>>
+        get() = _lastSentences.asStateFlow()
 
     open var bookMarkEssayList by mutableStateOf(exampleItems.exampleEmptyEssayList)
 
@@ -59,14 +81,29 @@ open class CommunityViewModel @Inject constructor(
     var unSubscribeClicked by mutableStateOf(false)
 
     var detailEssay by mutableStateOf(exampleItems.detailEssay)
-    var randomList = exampleItems.randomList
     var subscribeUserList = exampleItems.subscribeUserList
     var userItem = exampleItems.userItem
     var followingList = exampleItems.followingList
-    var firstSentences = exampleItems.firstSentences
-    var lastSentences = exampleItems.lastSentences
+
+
+
     var previousEssayList by mutableStateOf(exampleItems.exampleEmptyEssayList)
 
+    fun refresh(){
+        viewModelScope.launch {
+
+            _isRefreshing.emit(true)
+            _isLoading.emit(true)
+            readRandomEssays()
+            readFollowingEssays()
+            readOneSentences("first")
+            readOneSentences("last")
+            _isRefreshing.emit(false)
+            _isLoading.emit(false)
+
+
+        }
+    }
     fun textSizeUp(){
         titleTextSize = if (titleTextSize.value <= MAX_TITLE_SIZE) titleTextSize.value.plus(1).sp else titleTextSize
         contentTextSize = if (contentTextSize.value <= MAX_CONTENT_SIZE) contentTextSize.value.plus(1).sp else contentTextSize
@@ -83,11 +120,20 @@ open class CommunityViewModel @Inject constructor(
         return exampleItems.recentViewedEssayList.filter { it.id != exampleItems.detailEssay.id }
     }
 
+    fun getFilteredRandomEssayList() : List<EssayApi.EssayItem>{ // detail essay를 뺀 다른 글 리스트를 보여줘야할것.
+        return exampleItems.randomList.filter { it.id != exampleItems.detailEssay.id }
+    }
+
     fun getRecentEssayList() : List<EssayApi.EssayItem>{
         return exampleItems.recentViewedEssayList
     }
 
+    fun readRandomEssayList() : List<EssayApi.EssayItem>{
+        return exampleItems.randomList
+    }
+
     fun readDetailEssay(): EssayApi.EssayItem {
+        Log.d(TAG, "readDetailEssay123123: ${exampleItems.detailEssay.author}")
         return exampleItems.detailEssay
     }
     fun setBackDetailEssay(essay: EssayApi.EssayItem) {
@@ -112,13 +158,13 @@ open class CommunityViewModel @Inject constructor(
             try {
                 val response = essayApi.readRandomEssays(Token.accessToken)
                 exampleItems.randomList = response.body()!!.data.essays.toMutableStateList()
+                _randomList.emit(response.body()!!.data.essays.toMutableStateList())
                 Log.d(
                     TAG,
                     "readRandomEssays: 성공인데요${response.body()!!.data.essays.toMutableStateList()}"
                 )
 
                 Log.d(TAG, "readRandomEssays: 성공입니다 아니면 예시 ${exampleItems.randomList}")
-                randomList = exampleItems.randomList
 
 
                 // API 호출 결과 처리 (예: response 데이터 사용)
@@ -163,6 +209,7 @@ open class CommunityViewModel @Inject constructor(
 
     }
 
+    var isApifinished by mutableStateOf(false)
     fun readOneSentences(type: String) {
         viewModelScope.launch {
             try {
@@ -172,14 +219,15 @@ open class CommunityViewModel @Inject constructor(
                     response.body()!!.data.essays.toMutableStateList()
                 else exampleItems.lastSentences = response.body()!!.data.essays.toMutableStateList()
 
-                firstSentences = exampleItems.firstSentences
-                lastSentences = exampleItems.lastSentences
+                _firstSentences.emit(exampleItems.firstSentences)
+                _lastSentences.emit(exampleItems.lastSentences)
 
-                Log.d(TAG, "readOneSentences: ${firstSentences[0].title}")
-                Log.d(TAG, "readOneSentences: ${lastSentences[0].title}")
 
             } catch (e: Exception) {
                 e.printStackTrace()
+            }
+            finally {
+                isApifinished = true
             }
         }
     }
@@ -187,6 +235,7 @@ open class CommunityViewModel @Inject constructor(
     open fun readDetailEssay(id: Int, navController: NavController) {
         viewModelScope.launch {
             try {
+                _isLoading.emit(true)
                 val response = essayApi.readDetailEssay(Token.accessToken,id)
                 exampleItems.detailEssay = response.body()!!.data.essay
                 detailEssay = exampleItems.detailEssay
@@ -212,6 +261,11 @@ open class CommunityViewModel @Inject constructor(
                 Log.d(TAG, "readRandomEssays: ${e.localizedMessage}")
 
             }
+            finally {
+                _isLoading.emit(false)
+
+
+            }
         }
     }
     fun readDetailRecentEssay(id: Int, navController: NavController) {
@@ -235,11 +289,15 @@ open class CommunityViewModel @Inject constructor(
                 Log.d(TAG, "readRandomEssays: ${e.message}")
 
             }
+
         }
     }
     fun readMyBookMarks(navController: NavController) {
         viewModelScope.launch {
             try {
+                _isLoading.emit(true)
+
+                Log.d(TAG, "readMyBookMarks: $isLoading")
                 val response = bookMarkApi.readMyBookMark(Token.accessToken)
                 if(response.success){
                     bookMarkEssayList = response.data.essays.toMutableStateList()
@@ -254,8 +312,12 @@ open class CommunityViewModel @Inject constructor(
                 // 예외 처리
                 e.printStackTrace()
                 Log.d(TAG, "bookMarkEssayList: ${e.message}")
-                Log.d(TAG, "bookMarkEssayList: ${e.cause}")
-                Log.d(TAG, "bookMarkEssayList: ${e.localizedMessage}")
+
+            }
+            finally {
+                _isLoading.emit(false)
+
+                Log.d(TAG, "readMyBookMarks: $isLoading")
 
             }
         }
@@ -266,32 +328,29 @@ open class CommunityViewModel @Inject constructor(
             try {
                 bookMarkApi.addBookMark(Token.accessToken,essayId)
 
-                Log.d(ContentValues.TAG, "bookMarkEssayList: 성공입니다  ${detailEssay.title}")
+                Log.d(TAG, "bookMarkEssayList: 성공입니다  ${detailEssay.title}")
 
                 // API 호출 결과 처리 (예: response 데이터 사용)
             } catch (e: Exception) {
 
                 // 예외 처리
                 e.printStackTrace()
-                Log.d(ContentValues.TAG, "bookMarkEssayList: ${e.message}")
-                Log.d(ContentValues.TAG, "bookMarkEssayList: ${e.cause}")
-                Log.d(ContentValues.TAG, "bookMarkEssayList: ${e.localizedMessage}")
+                Log.d(TAG, "bookMarkEssayList: ${e.message}")
 
             }
         }
 
     }
 
-    fun deleteBookMark(essayId : Int,navController: NavController){
+    fun deleteBookMark(essayId : Int){
         viewModelScope.launch {
             try {
                 val deleteEssayId = listOf(essayId)
-                val response = bookMarkApi.deleteBookMarks(Token.accessToken,deleteEssayId)
+                val response = bookMarkApi.deleteBookMarks(Token.accessToken,BookMarkApi.RequestDeleteBookMarks(deleteEssayId))
                 if (response.isSuccessful){
-                    readMyBookMarks(navController = navController)
+                    Log.d(TAG, "bookMarkEssayList: 단일 북마크삭제 성공 ${detailEssay.title}")
+                    Log.d(TAG, "bookMarkEssayList: 북마크삭제 성공 $deleteEssayId")
                 }
-
-                Log.d(TAG, "bookMarkEssayList: 성공입니다 아니면 예시 ${detailEssay.title}")
 
 
                 // API 호출 결과 처리 (예: response 데이터 사용)
@@ -300,8 +359,9 @@ open class CommunityViewModel @Inject constructor(
                 // 예외 처리
                 e.printStackTrace()
                 Log.d(TAG, "bookMarkEssayList: ${e.message}")
-                Log.d(TAG, "bookMarkEssayList: ${e.cause}")
-                Log.d(TAG, "bookMarkEssayList: ${e.localizedMessage}")
+
+            }
+            finally {
 
             }
         }
@@ -317,13 +377,13 @@ open class CommunityViewModel @Inject constructor(
                     deleteEssayId.add(it.id!!)
                 }
 
-                val response = bookMarkApi.deleteBookMarks(Token.accessToken,deleteEssayId)
+                val response = bookMarkApi.deleteBookMarks(Token.accessToken,BookMarkApi.RequestDeleteBookMarks(deleteEssayId))
                 if (response.isSuccessful){
                     //삭제하고 다시 북마크 로딩
                     readMyBookMarks(navController = navController)
                 }
-
-                Log.d(TAG, "bookMarkEssayList: 성공입니다 아니면 예시 ${detailEssay.title}")
+                Log.d(TAG, "bookMarkEssayList: 북마크삭제 성공 $deleteEssayId")
+                Log.d(TAG, "bookMarkEssayList: 북마크삭제 성공 $deleteEssayId")
 
 
                 // API 호출 결과 처리 (예: response 데이터 사용)

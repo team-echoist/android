@@ -26,7 +26,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
@@ -160,6 +159,8 @@ fun SubscriberSimpleItem(
     viewModel: CommunityViewModel,
     navController: NavController
 ) {
+    val nickname = item.nickname ?: ""
+
     Box(
         modifier = Modifier
             .clickable {
@@ -190,30 +191,30 @@ fun SubscriberSimpleItem(
                     modifier = Modifier.size(60.dp)
                 )
                 Spacer(modifier = Modifier.width(17.dp))
-                Text(text = "${item.nickname!!} ", fontSize = 16.sp)
+                Text(text = "$nickname ", fontSize = 16.sp)
                 Text(text = "아무개", fontSize = 16.sp, color = Color(0xFF656565))
 
             }
         }
-
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(end = 20.dp)
-                .size(73.dp, 24.dp), contentAlignment = Alignment.CenterEnd
-        ) {
-            CompositionLocalProvider(LocalRippleConfiguration provides null) {
-                Text(
-                    text = "구독중",
-                    color = Color(0xFF616FED),
-                    fontSize = 12.sp,
-                    modifier = Modifier
-                        .background(Color(0xFF191919), shape = RoundedCornerShape(20))
-                        .padding(start = 20.dp, top = 3.dp, end = 20.dp, bottom = 3.dp)
-                        .clickable { viewModel.unSubscribeClicked = true } //todo 유저 정보 보내기
-                )
-            }
-        }
+//todo 다음버전에 구독중 박스 넣을것.
+//        Box(
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .padding(end = 20.dp)
+//                .size(73.dp, 24.dp), contentAlignment = Alignment.CenterEnd
+//        ) {
+//            CompositionLocalProvider(LocalRippleConfiguration provides null) {
+//                Text(
+//                    text = "구독중",
+//                    color = Color(0xFF616FED),
+//                    fontSize = 12.sp,
+//                    modifier = Modifier
+//                        .background(Color(0xFF191919), shape = RoundedCornerShape(20))
+//                        .padding(start = 20.dp, top = 3.dp, end = 20.dp, bottom = 3.dp)
+//                        .clickable { viewModel.unSubscribeClicked = true } //todo 유저 정보 보내기
+//                )
+//            }
+//        }
     }
 
 }

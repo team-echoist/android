@@ -81,6 +81,15 @@ interface EssayApi{
 
     ): Response<EssayListResponse>
 
+    @GET("api/essays/search")
+    suspend fun readSearchingEssays(
+        @Header("Authorization") accessToken: String,
+        @Query("keyword") keyword: String,
+        @Query("page") page: Int = 1,
+        @Query("limit") limit: Int = 10
+
+    ): EssayListResponse
+
     data class ReportRequest(
         val reason: String
     )
@@ -129,7 +138,8 @@ interface EssayApi{
         val updatedDate: String? = null,
         val id: Int? = null,
         val author: UserInfo? = null,
-        val story: Story? = null
+        val story: Story? = null,
+        val isBookmarked: Boolean = false
 
     )
 

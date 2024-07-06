@@ -1,5 +1,7 @@
 package com.echoist.linkedout.page.community
 
+import android.content.ContentValues
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
@@ -12,6 +14,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
@@ -19,6 +22,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -35,8 +40,11 @@ import com.echoist.linkedout.components.CommunityChips
 import com.echoist.linkedout.components.CommunityPager
 import com.echoist.linkedout.components.CommunityTopAppBar
 import com.echoist.linkedout.page.home.MyBottomNavigation
+import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.launch
 
 
@@ -67,15 +75,15 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
         hasCalledApi.value = true
     }
 
-    if (pagerstate.currentPage == 1){
+    if (pagerstate.currentPage == 1) {
         viewModel.isClicked = false
     }
 
 
-    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl ) {
+    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         ModalNavigationDrawer(
             drawerState = drawerState,
-            drawerContent =  {
+            drawerContent = {
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
 
                     ModalDrawerSheet(
@@ -84,78 +92,116 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
                         drawerContainerColor = Color.Black
                     ) {
 
-                       SearchingPage(drawerState,navController)
+                        SearchingPage(drawerState, navController)
 
 
                         // ...other drawer items
                     }
                 }
-            } ,
+            },
             content = {
-                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr){
+                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
 
-                LinkedOutTheme {
-                    Scaffold(
-                        modifier = Modifier.background(color),
-                        topBar = {
-                            Column(Modifier.background(color)) {
-                                CommunityTopAppBar(
-                                    "커뮤니티",
-                                    pagerstate,
-                                    {
-                                        scope.launch {
-                                            drawerState.apply {
-                                                if (isClosed) open() else close()
+                    LinkedOutTheme {
+                        Scaffold(
+                            modifier = Modifier.background(color),
+                            topBar = {
+                                Column(Modifier.background(color)) {
+                                    CommunityTopAppBar(
+                                        "커뮤니티",
+                                        pagerstate,
+                                        onSearchClick =
+                                        {
+                                            scope.launch {
+                                                drawerState.apply {
+                                                    if (isClosed) open() else close()
+                                                }
+                                            }
+                                        },
+                                        onClickBookMarked =
+                                        {
+                                            viewModel.readMyBookMarks(navController)
+                                        }
+                                    )
+
+                                    CommunityChips(pagerstate)
+                                }
+                            },
+                            bottomBar = { MyBottomNavigation(navController) },
+                            content = {
+                                Log.d(
+                                    ContentValues.TAG,
+                                    "readMyBookMarksui: ${viewModel.isLoading}"
+                                )
+
+
+
+                                Box(modifier = Modifier.padding(it))
+                                val isRefreshing by viewModel.isRefreshing.collectAsState()
+
+                                SwipeRefresh(
+                                    state = rememberSwipeRefreshState(isRefreshing = isRefreshing),
+                                    onRefresh = { viewModel.refresh() }) {
+                                    if (viewModel.isApifinished) {
+                                        Box(
+                                            modifier = Modifier
+                                                .padding(top = 50.dp, bottom = 80.dp)
+                                        ) {
+                                            CommunityPager(
+                                                viewModel = viewModel,
+                                                pagerState = pagerstate,
+                                                navController = navController
+                                            )
+
+                                        }
+                                        AnimatedVisibility(
+                                            visible = viewModel.isClicked,
+                                            enter = fadeIn(
+                                                animationSpec = tween(
+                                                    durationMillis = 500,
+                                                    easing = FastOutSlowInEasing
+                                                )
+                                            ),
+                                            exit = fadeOut(
+                                                animationSpec = tween(
+                                                    durationMillis = 300,
+                                                    easing = LinearEasing
+                                                )
+                                            )
+                                        ) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxSize()
+                                                    .padding(top = 155.dp, end = 18.dp),
+                                                contentAlignment = Alignment.TopEnd
+                                            ) {
+                                                ChoiceBox(viewModel)
                                             }
                                         }
-                                    },
-                                    { viewModel.readMyBookMarks(navController)
-                                         }
-                                )
 
-                                CommunityChips(pagerstate)
-                            }
-                        },
-                        bottomBar = { MyBottomNavigation(navController) },
-                        content = {
-                            Box(modifier = Modifier.padding(it))
+                                        val isLoading by viewModel.isLoading.collectAsState()
 
-                            Box(modifier = Modifier.padding(top = 50.dp, bottom = 80.dp)) {
-                                CommunityPager(
-                                    viewModel = viewModel,
-                                    pagerState = pagerstate,
-                                    navController = navController
-                                )
-
-                            }
-                            AnimatedVisibility(
-                                visible = viewModel.isClicked,
-                                enter = fadeIn(
-                                    animationSpec = tween(
-                                        durationMillis = 500,
-                                        easing = FastOutSlowInEasing
-                                    )
-                                ),
-                                exit = fadeOut(
-                                    animationSpec = tween(
-                                        durationMillis = 300,
-                                        easing = LinearEasing
-                                    )
-                                )
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(top = 155.dp, end = 18.dp),
-                                    contentAlignment = Alignment.TopEnd
-                                ) {
-                                    ChoiceBox(viewModel)
+                                        if (isLoading) {
+                                            Box(
+                                                modifier = Modifier.fillMaxSize(),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                CircularProgressIndicator(color = LinkedInColor)
+                                            }
+                                        }
+                                    } else {
+                                        Box(
+                                            modifier = Modifier.fillMaxSize(),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            CircularProgressIndicator(color = LinkedInColor)
+                                        }
+                                    }
                                 }
-                            }
 
-                        }
-                    )
-                }
+                            }
+                        )
+                    }
                 }
             }
         )

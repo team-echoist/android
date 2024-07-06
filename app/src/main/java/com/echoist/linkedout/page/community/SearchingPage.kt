@@ -1,5 +1,7 @@
 package com.echoist.linkedout.page.community
 
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,6 +19,8 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.Cancel
@@ -33,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -88,7 +93,8 @@ fun SearchingPager(pagerState: PagerState,searchingViewModel: SearchingViewModel
     HorizontalPager(state = pagerState) { page ->
         when (page) {
             0-> LazyColumn {
-                items(items = searchingViewModel.previousEssayList) {   //랜덤리스트 말고 수정할것. 그사람의 리스트로
+                Log.d(TAG, "SearchingPager: ${searchingViewModel.searchingEssayList}")
+                items(items = searchingViewModel.searchingEssayList) {  
                     EssayListItem(
                         item = it,
                         viewModel = searchingViewModel,
@@ -146,6 +152,15 @@ fun SearchingBar(viewModel: SearchingViewModel, onClick: () -> Unit, drawerState
                 }
             )
             },
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = { //검색 누를시 검색
+                    Log.d(TAG, "SearchingBar: ${viewModel.searchingText}")
+                    viewModel.readSearchingEssays(viewModel.searchingText)
+                }
+            ),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = Color(0xFF222222),
                 unfocusedContainerColor = Color(0xFF222222),

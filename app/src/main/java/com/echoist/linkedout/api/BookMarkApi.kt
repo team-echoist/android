@@ -7,12 +7,13 @@ import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface BookMarkApi{
 
-    @GET("api/bookmark")
+    @GET("api/bookmarks")
     suspend fun readMyBookMark(
         @Header("Authorization") accessToken: String,
         @Query("page") page : Int? = null,
@@ -25,11 +26,13 @@ interface BookMarkApi{
         @Path("essayId") essayId: Int
     ): Response<Unit>
 
-    @DELETE("api/bookmarks")
+    @PUT("api/bookmarks")
     suspend fun deleteBookMarks(
         @Header("Authorization") accessToken: String,
-        @Body essayIds : List<Int>
+        @Body essayIds : RequestDeleteBookMarks
     ): Response<Unit>
+
+    data class RequestDeleteBookMarks(val essayIds: List<Int>)
 
     @DELETE("api/bookmarks/reset")
     suspend fun deleteAllBookMarks(
