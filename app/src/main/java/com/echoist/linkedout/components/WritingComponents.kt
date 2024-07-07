@@ -87,7 +87,6 @@ fun prevItem(){
     Column {
 
         FuncItem("인용구",R.drawable.keyboard_hashtag) {}
-        TextItem(R.drawable.social_googlebtn){}
     }
 
 }
@@ -119,8 +118,8 @@ fun FuncItem(text : String, icon: Int, clickable: () -> Unit){
     }
 }
 @Composable
-fun TextItem(icon : Int, clickable : () -> Unit){
-    val color =  if (isSystemInDarkTheme()) Color.White else Color.Black
+fun TextItem(icon : Int, color: Color, clickable : () -> Unit){
+
 
     Icon(
         painter = painterResource(id = icon),

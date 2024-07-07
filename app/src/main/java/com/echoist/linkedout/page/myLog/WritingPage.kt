@@ -53,7 +53,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -77,6 +80,7 @@ import com.echoist.linkedout.components.TextItem
 import com.echoist.linkedout.gps.RequestPermissionsUtil
 import com.echoist.linkedout.page.login.Keyboard
 import com.echoist.linkedout.page.login.keyboardAsState
+import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.WritingViewModel
 
@@ -87,7 +91,7 @@ object Token {
 @Preview
 @Composable
 fun PrevWritingPage() {
-    val viewModel : WritingViewModel = viewModel()
+    val viewModel: WritingViewModel = viewModel()
     WritingPage(
         navController = rememberNavController(),
         viewModel = viewModel
@@ -128,14 +132,17 @@ fun WritingPage(
 
                     ContentTextField(viewModel = viewModel)
                     MarkdownText(
-                        markdown = viewModel.content.value.text,
+                        markdown = viewModel.content.text,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = 20.dp, top = 80.dp),
                         color = Color.White
                     )
-                    if (bitmap!=null){
-                        Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(top = 100.dp)) {
+                    if (bitmap != null) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.padding(top = 100.dp)
+                        ) {
                             Image(bitmap = imageBitmap!!, contentDescription = "image")
                         }
                     }
@@ -155,7 +162,7 @@ fun WritingPage(
                     }
                     //장소 찍는
                     if (viewModel.longitude != null && viewModel.latitude != null && viewModel.isTextFeatOpened.value) {
-                        if (viewModel.isLocationClicked){
+                        if (viewModel.isLocationClicked) {
                             Row {
                                 LocationBox(viewModel = viewModel)
                                 Spacer(modifier = Modifier.width(2.dp))
@@ -168,7 +175,7 @@ fun WritingPage(
                         }
 
                     } else if (isKeyBoardOpened == Keyboard.Closed && !viewModel.isTextFeatOpened.value) {
-                        if (viewModel.locationList.isNotEmpty() || viewModel.longitude!= null){
+                        if (viewModel.locationList.isNotEmpty() || viewModel.longitude != null) {
                             LocationGroup(viewModel = viewModel)
                             Spacer(modifier = Modifier.height(10.dp))
                         }
@@ -176,7 +183,7 @@ fun WritingPage(
                     }
                     //해시태그 찍는
                     if (viewModel.hashTagList.isNotEmpty() && viewModel.isTextFeatOpened.value) {
-                        if (viewModel.isHashTagClicked){
+                        if (viewModel.isHashTagClicked) {
                             Row {
                                 viewModel.hashTagList.forEach {
                                     HashTagBtn(viewModel = viewModel, text = it)
@@ -185,7 +192,7 @@ fun WritingPage(
                         }
 
                     } else if (isKeyBoardOpened == Keyboard.Closed && !viewModel.isTextFeatOpened.value)
-                        if (viewModel.hashTagList.isNotEmpty()){
+                        if (viewModel.hashTagList.isNotEmpty()) {
                             Column {
                                 HashTagGroup(viewModel = viewModel)
                                 Spacer(modifier = Modifier.height(80.dp))
@@ -193,9 +200,55 @@ fun WritingPage(
                         }
 
                     if (isKeyBoardOpened == Keyboard.Opened || viewModel.isTextFeatOpened.value) {
+                        var isTextSettingSelected by remember { mutableStateOf(false) }
+                        var isTextAlignSelected by remember { mutableStateOf(false) }
+                        var isTextUnderLineSelected by remember { mutableStateOf(false) }
 
-                        TextEditBar(viewModel)
-                        KeyboardLocationFunc(viewModel,navController)
+                        if (isTextSettingSelected){
+                            TextSettingsBar(viewModel)
+                        }
+                        if (isTextAlignSelected){
+                            Row {
+                                Spacer(modifier = Modifier.width(40.dp))
+                                TextAlignBar()
+                                
+                            }
+                        }
+                        TextEditBar(viewModel,
+                            isTextSettingSelected, {
+                                isTextSettingSelected = it
+                                isTextAlignSelected = false
+                                isTextUnderLineSelected = false
+                            },
+                            isTextAlignSelected,
+                            {
+                                isTextAlignSelected = it
+                                isTextSettingSelected = false
+                                isTextUnderLineSelected = false
+                            },
+                            isTextUnderLineSelected,
+                            {
+                                isTextUnderLineSelected = it
+                                isTextAlignSelected = false
+                                isTextSettingSelected = false
+
+                                    if (viewModel.content.selection.start != viewModel.content.selection.end){
+                                        val cursorPosition = viewModel.content.selection.start
+                                        val endPosition = viewModel.content.selection.end
+                                        val newText = viewModel.content.text.substring(0, cursorPosition) +
+                                                "<u>" + viewModel.content.text.substring(cursorPosition, endPosition) + "</u>" +
+                                                viewModel.content.text.substring(endPosition, viewModel.content.text.length)
+
+
+                                        viewModel.content = TextFieldValue(
+                                            text = newText,
+                                        )
+                                    }
+
+
+
+                            })
+                        KeyboardLocationFunc(viewModel, navController)
 
                     }
                 }
@@ -253,10 +306,9 @@ fun WritingTopAppBar(
                     modifier = Modifier
                         .padding(start = 20.dp, top = 15.dp)
                         .clickable {
-                            if (viewModel.title.value.text.isEmpty() && viewModel.content.value.text.isEmpty()){
+                            if (viewModel.title.value.text.isEmpty() && viewModel.content.text.isEmpty()) {
                                 navController.popBackStack()
-                            }
-                            else{
+                            } else {
                                 viewModel.isCanCelClicked.value = true
                                 keyboardController?.hide()
                             }
@@ -271,8 +323,14 @@ fun WritingTopAppBar(
                 modifier = Modifier
                     .weight(1f) // 텍스트 필드와 완료 버튼을 균등하게 확장 // 오른쪽 여백 추가
             ) {
-                val xdp = animateDpAsState(targetValue = if (viewModel.titleFocusState.value) (-40).dp else 0.dp, label = "").value
-                val ydp = animateDpAsState(targetValue = if (viewModel.titleFocusState.value) 50.dp else 0.dp, label = "").value
+                val xdp = animateDpAsState(
+                    targetValue = if (viewModel.titleFocusState.value) (-40).dp else 0.dp,
+                    label = ""
+                ).value
+                val ydp = animateDpAsState(
+                    targetValue = if (viewModel.titleFocusState.value) 50.dp else 0.dp,
+                    label = ""
+                ).value
                 TextField(
                     modifier = Modifier
                         .offset(x = xdp, y = ydp)
@@ -319,7 +377,7 @@ fun WritingTopAppBar(
                 modifier = Modifier
                     .padding(end = 20.dp, top = 15.dp)
                     .clickable {
-                        if (viewModel.title.value.text.isNotEmpty() && viewModel.content.value.text.length >= viewModel.minLength)
+                        if (viewModel.title.value.text.isNotEmpty() && viewModel.content.text.length >= viewModel.minLength)
                             navController.navigate("WritingCompletePage")
                         else {
                             isContentNotEmpty.value = true
@@ -332,8 +390,8 @@ fun WritingTopAppBar(
 
     }
     //컨텐츠가 비어있다면 경고
-    if (isContentNotEmpty.value){
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+    if (isContentNotEmpty.value) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             BlankWarningAlert(isContentNotEmpty)
         }
     }
@@ -342,10 +400,12 @@ fun WritingTopAppBar(
 
 @Composable
 fun ContentTextField(viewModel: WritingViewModel) {
-    val content = viewModel.content
     val focusState = viewModel.focusState
 
-    val ydp = animateDpAsState(targetValue = if (viewModel.titleFocusState.value) 40.dp else 0.dp, label = "").value
+    val ydp = animateDpAsState(
+        targetValue = if (viewModel.titleFocusState.value) 40.dp else 0.dp,
+        label = ""
+    ).value
 
     Column {
         TextField(
@@ -355,10 +415,10 @@ fun ContentTextField(viewModel: WritingViewModel) {
                 .onFocusChanged { focusState.value = it.isFocused }
                 .fillMaxWidth()
                 .padding(5.dp),
-            value = content.value,
+            value = viewModel.content,
             onValueChange = {
                 if (viewModel.maxLength >= it.text.length)
-                    content.value = it
+                    viewModel.content = it
             },
             placeholder = {
                 Text(
@@ -378,13 +438,12 @@ fun ContentTextField(viewModel: WritingViewModel) {
         Spacer(modifier = Modifier.height(20.dp))
 
         Text(
-            text = "${viewModel.content.value.text.length} / ${viewModel.maxLength}",
+            text = "${viewModel.content.text.length} / ${viewModel.maxLength}",
             color = Color.Gray,
             textAlign = TextAlign.End,
             modifier = Modifier.fillMaxWidth()
         )
     }
-
 
 
 }
@@ -492,13 +551,24 @@ fun WritingCancelCard(viewModel: WritingViewModel, navController: NavController)
 }
 
 @Composable
-fun KeyboardLocationFunc(viewModel: WritingViewModel,navController: NavController) {
+fun KeyboardLocationFunc(viewModel: WritingViewModel, navController: NavController) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val requestPermissionsUtil = RequestPermissionsUtil(LocalContext.current, viewModel)
 
     val funcItems = listOf(
         FuncItemData("인용구", R.drawable.keyboard_quote) {},
-        FuncItemData("구분선", R.drawable.keyboard_divider) {},
+        FuncItemData("구분선", R.drawable.keyboard_divider) {
+
+                val cursorPosition = viewModel.content.selection.start
+                val newText = viewModel.content.text.substring(0, cursorPosition) +
+                        "\n---\n" +
+                        viewModel.content.text.substring(cursorPosition)
+            viewModel.content = TextFieldValue(
+                    text = newText,
+                    selection = TextRange(cursorPosition + 5) // 커서 위치를 구분선 뒤로 이동
+                )
+
+        },
         FuncItemData("위치", R.drawable.keyboard_location) {
             viewModel.isHashTagClicked = false
             viewModel.isLocationClicked = !viewModel.isLocationClicked
@@ -519,7 +589,7 @@ fun KeyboardLocationFunc(viewModel: WritingViewModel,navController: NavControlle
             Log.d("tagtag", "tag")
         },
         FuncItemData("맞춤법 검사", R.drawable.keyboard_spelling) {},
-        FuncItemData("이미지", R.drawable.keyboard_img) {navController.navigate("CropImagePage")},
+        FuncItemData("이미지", R.drawable.keyboard_img) { navController.navigate("CropImagePage") },
         FuncItemData("이미지", R.drawable.pw_eye) {},
     )
     Box(
@@ -545,7 +615,15 @@ fun KeyboardLocationFunc(viewModel: WritingViewModel,navController: NavControlle
 }
 
 @Composable
-fun TextEditBar(viewModel: WritingViewModel) {
+fun TextEditBar(
+    viewModel: WritingViewModel,
+    isTextSettingSelected: Boolean,
+    onTextSettingSelected: (Boolean) -> Unit,
+    isTextAlignSelected: Boolean,
+    onTextAlignSelected: (Boolean) -> Unit,
+    isTextUnderLineSelected: Boolean,
+    onTextUnderLineSelected: (Boolean) -> Unit,
+) {
     val keyboardController = LocalSoftwareKeyboardController.current
     var isKeyboardApeared by remember { mutableStateOf(true) }
     val requestPermissionsUtil = RequestPermissionsUtil(LocalContext.current, viewModel)
@@ -559,7 +637,7 @@ fun TextEditBar(viewModel: WritingViewModel) {
     ) {
         if (viewModel.isHashTagClicked && !viewModel.isLocationClicked) {
             Spacer(modifier = Modifier.width(20.dp))
-            TextItem(icon = R.drawable.keyboard_hashtag) {}
+            TextItem(icon = R.drawable.keyboard_hashtag, LinkedInColor) {}
             HashTagTextField(viewModel = viewModel)
         } else if (viewModel.isLocationClicked && !viewModel.isHashTagClicked) {
             Spacer(modifier = Modifier.width(15.dp))
@@ -579,15 +657,43 @@ fun TextEditBar(viewModel: WritingViewModel) {
             Icon(
                 painter = painterResource(id = R.drawable.editbar_thick),
                 contentDescription = "icon",
-                tint = if (isSystemInDarkTheme()) Color.White else Color.Black,
+                tint = if (isSystemInDarkTheme()) {
+                    if (!isTextSettingSelected) Color.White else LinkedInColor
+                } else {
+                    if (!isTextSettingSelected) Color.Black else
+                        LinkedInColor
+                },
                 modifier = Modifier
                     .size(30.dp)
                     .padding(end = 14.dp)
-                    .clickable { }
+                    .clickable { onTextSettingSelected(!isTextSettingSelected) }
             )
 
-            TextItem(icon = R.drawable.editbar_alignment) {}
-            TextItem(icon = R.drawable.editbar_underline) {}
+            //글 정렬
+
+                TextItem(
+                    icon = R.drawable.editbar_alignment, if (isSystemInDarkTheme()) {
+                        if (!isTextAlignSelected) Color.White else LinkedInColor
+                    } else {
+                        if (!isTextAlignSelected) Color.Black else
+                            LinkedInColor
+                    }
+                ) {
+                    onTextAlignSelected(!isTextAlignSelected)
+                }
+
+
+            //밑줄
+            TextItem(
+                icon = R.drawable.editbar_underline, if (isSystemInDarkTheme()) {
+                    if (!isTextUnderLineSelected) Color.White else LinkedInColor
+                } else {
+                    if (!isTextUnderLineSelected) Color.Black else
+                        LinkedInColor
+                }
+            ) {
+                onTextUnderLineSelected(!isTextUnderLineSelected)
+            }
             Icon(
                 painter = painterResource(id = R.drawable.editbar_more),
                 contentDescription = "icon",
@@ -603,16 +709,107 @@ fun TextEditBar(viewModel: WritingViewModel) {
             )
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    TextItem(icon = R.drawable.editbar_folder) {}
+                    TextItem(
+                        icon = R.drawable.editbar_folder, if (isSystemInDarkTheme()) {
+                            if (!isTextSettingSelected) Color.White else LinkedInColor
+                        } else {
+                            if (!isTextSettingSelected) Color.Black else
+                                LinkedInColor
+                        }
+                    ) {}
                     VerticalDivider(
                         modifier = Modifier
                             .height(34.dp)
                             .padding(end = 12.dp), thickness = 1.dp
                     )
-                    TextItem(icon = R.drawable.editbar_next) {}
+                    TextItem(
+                        icon = R.drawable.editbar_next, if (isSystemInDarkTheme()) {
+                            if (!isTextSettingSelected) Color.White else LinkedInColor
+                        } else {
+                            if (!isTextSettingSelected) Color.Black else
+                                LinkedInColor
+                        }
+                    ) {}
 
                 }
             }
         }
+    }
+}
+
+@Composable
+fun TextSettingsBar(viewModel: WritingViewModel) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .height(50.dp)
+            .background(color = Color(0xFF313131)),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Spacer(modifier = Modifier.width(20.dp))
+        Text(text = "기본고딕", color = Color.White, modifier = Modifier.clickable {  })
+        Spacer(modifier = Modifier.width(20.dp))
+        Text(text = "나눔명조", color = Color.White, modifier = Modifier.clickable {  })
+        Spacer(modifier = Modifier.width(20.dp))
+        Text(text = "16", color = Color.White, modifier = Modifier.clickable {  })
+        Spacer(modifier = Modifier.width(20.dp))
+        Text(text = "B", fontWeight = FontWeight.Bold, color = Color.White, modifier = Modifier.clickable {
+            if (viewModel.content.selection.start != viewModel.content.selection.end){
+                val cursorPosition = viewModel.content.selection.start
+                val endPosition = viewModel.content.selection.end
+                val newText = viewModel.content.text.substring(0, cursorPosition) +
+                        "<b>" + viewModel.content.text.substring(cursorPosition, endPosition) + "</b>" +
+                        viewModel.content.text.substring(endPosition, viewModel.content.text.length)
+
+
+                viewModel.content = TextFieldValue(
+                    text = newText,
+                )
+            }
+        })
+    }
+}
+
+@Preview
+@Composable
+fun TextAlignBar() {
+    Column(
+        Modifier
+            .size(44.dp, 150.dp)
+            .background(color = Color(0xFF1D1D1D)),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.textalignleft),
+            tint = Color.White,
+            contentDescription = "",
+            modifier = Modifier
+                .weight(
+                    1f
+                ).size(20.dp)
+                .clickable { }
+        )
+        Icon(
+            painter = painterResource(id = R.drawable.textalighright),
+            tint = Color.White,
+            contentDescription = "",
+            modifier = Modifier
+                .weight(
+                    1f
+                ).size(20.dp)
+                .clickable { }
+        )
+
+        Icon(
+            painter = painterResource(id = R.drawable.textalignmiddle),
+            tint = Color.White,
+            contentDescription = "",
+            modifier = Modifier
+                .weight(
+                    1f
+                ).size(20.dp)
+                .clickable { }
+        )
+
     }
 }

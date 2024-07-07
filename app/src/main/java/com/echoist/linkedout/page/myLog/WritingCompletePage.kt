@@ -25,7 +25,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
@@ -223,7 +222,7 @@ fun CompleteTitle(viewModel: WritingViewModel) {
 @Composable
 fun CompleteContents(viewModel: WritingViewModel) {
     MarkdownText(
-        markdown = viewModel.content.value.text,
+        markdown = viewModel.content.text,
         fontSize = 16.sp,
         color = Color(0xFFB4B4B4),
         modifier = Modifier.padding(start = 25.dp, bottom = 42.dp, end = 25.dp)
@@ -269,7 +268,7 @@ fun CompleteDate(viewModel: WritingViewModel) {
 fun GroupRingImg(viewModel: WritingViewModel) {
 
     val ringImage =
-        when (viewModel.ringTouchedTime.intValue) {
+        when (viewModel.ringTouchedTime) {
             1 -> R.drawable.ring
             2 -> R.drawable.ring2
             3 -> R.drawable.ring3
@@ -283,9 +282,9 @@ fun GroupRingImg(viewModel: WritingViewModel) {
         Icon(painter = painterResource(id = ringImage), tint = LinkedInColor, contentDescription = "ring",
             modifier = Modifier
                 .height(45.dp)
-                .clickable() {
-                    if (viewModel.ringTouchedTime.intValue != 1) {
-                        viewModel.ringTouchedTime.intValue -= 1
+                .clickable {
+                    if (viewModel.ringTouchedTime != 1) {
+                        viewModel.ringTouchedTime -= 1
                     }
                 }
             )
@@ -298,7 +297,7 @@ fun GroupRingImg(viewModel: WritingViewModel) {
 @Composable
 fun SingleRing(viewModel: WritingViewModel) {
     Row(modifier = Modifier.animateContentSize()){
-        when (viewModel.ringTouchedTime.intValue) {
+        when (viewModel.ringTouchedTime) {
 
             4 -> RingImg(viewModel)
 
@@ -327,12 +326,11 @@ fun RingImg(viewModel: WritingViewModel) {
         contentDescription = null,
         modifier = Modifier
             .height(45.dp)
-            .clickable { viewModel.ringTouchedTime.value += 1 }
+            .clickable { viewModel.ringTouchedTime += 1 }
     )
 
 }
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun WritingCompletePager(viewModel: WritingViewModel, navController: NavController) {
     val scrollState = rememberScrollState()
@@ -405,7 +403,7 @@ fun WritingCompletePager(viewModel: WritingViewModel, navController: NavControll
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        viewModel.hashTagList.forEach {it->
+                        viewModel.hashTagList.forEach {
                             Text(text = "#$it", color = Color.White)
                             Spacer(modifier = Modifier.width(22.dp))
                         }

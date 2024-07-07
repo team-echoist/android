@@ -34,8 +34,8 @@ class WritingViewModel @Inject constructor(private val essayApi: EssayApi,privat
     var titleFocusState = mutableStateOf(false)
 
     var title = mutableStateOf(TextFieldValue(""))
-    var content = mutableStateOf(TextFieldValue(""))
-    var ringTouchedTime = mutableIntStateOf(5)
+    var content by mutableStateOf(TextFieldValue(""))
+    var ringTouchedTime by mutableIntStateOf(5)
 
     var latitude :Double? by mutableStateOf(null)
     var longitude :Double? by mutableStateOf(null)
@@ -66,9 +66,9 @@ class WritingViewModel @Inject constructor(private val essayApi: EssayApi,privat
         titleFocusState.value = false
         focusState.value = false
         title.value = TextFieldValue("")
-        content.value = TextFieldValue("")
+        content = TextFieldValue("")
         date.value = ""
-        ringTouchedTime.value = 5
+        ringTouchedTime = 5
         isCanCelClicked.value = false
         isDeleteClicked.value = false
         latitude = null
@@ -95,8 +95,8 @@ class WritingViewModel @Inject constructor(private val essayApi: EssayApi,privat
 
                 val essayData = EssayApi.WritingEssayItem(
                     title.value.text,
-                    content.value.text,
-                    linkedOutGauge = ringTouchedTime.intValue,
+                    content.text,
+                    linkedOutGauge = ringTouchedTime,
                     //categoryId = 0, 이값도 넣어야할것
                     //thumbnail = imageBitmap, bitmap -> url
                     status = status,
@@ -163,8 +163,8 @@ class WritingViewModel @Inject constructor(private val essayApi: EssayApi,privat
             try {
                 val essayData = EssayApi.WritingEssayItem(
                     title.value.text,
-                    content.value.text,
-                    linkedOutGauge = ringTouchedTime.value,
+                    content.text,
+                    linkedOutGauge = ringTouchedTime,
                     status = status,
                     latitude = latitude,
                     longitude = longitude,

@@ -5,13 +5,13 @@
       <entry key="InquiryBox">
         <State />
       </entry>
-      <entry key="NotificationPage">
-        <State />
-      </entry>
       <entry key="NotificationTimePicker">
         <State />
       </entry>
       <entry key="NotificationTimePickerBox">
+        <State />
+      </entry>
+      <entry key="TextAlignBar">
         <State />
       </entry>
       <entry key="UpdateHistoryBox">
