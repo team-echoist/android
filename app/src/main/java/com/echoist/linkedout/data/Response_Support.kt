@@ -40,16 +40,18 @@ data class AllInquiriesResponse(
     val statusCode : Int,
 )
 
-
+//공지사항
 @JsonClass(generateAdapter = true)
-data class Notice( //공지사항
+data class Notice(
     val id: Int,
     val title: String,
     val content: String? = null,
     val createdDate: String
 )
+//공지사항
 
-data class Inquiry( // 고객문의
+// 고객문의
+data class Inquiry(
     val id: String,
     val title: String,
     val content: String? = null,
@@ -73,3 +75,40 @@ data class NotificationResponse(
     val timestamp: String?,
     val statusCode : Int?
 )
+// 고객문의
+
+//업데이트 api
+@JsonClass(generateAdapter = true)
+data class UpdateHistoryResponse(
+    val data: HistoryResponse,
+    val path: String?,
+    val success: Boolean,
+    val timestamp: String?,
+    val statusCode : Int?
+)
+
+data class HistoryResponse(
+    val histories : List<History>,
+    val total : Int,
+    val page : Int,
+    val totalPage : Int
+    )
+
+data class History(
+    val id: Int,
+    val history : String,
+    val createdDate: String,
+    val updatedDate: String,
+    val processor: Processor? = null
+)
+
+data class Processor(
+    val id: Int,
+    val name: String,
+    val email: String,
+    val profileImage: String,
+    val activated : Boolean,
+    val info : String,
+    val createdDate: String,
+)
+//업데이트 api

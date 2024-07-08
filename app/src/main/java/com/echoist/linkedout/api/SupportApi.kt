@@ -8,6 +8,7 @@ import com.echoist.linkedout.data.NoticeDetailResponse
 import com.echoist.linkedout.data.NoticeResponse
 import com.echoist.linkedout.data.NotificationResponse
 import com.echoist.linkedout.data.NotificationSettings
+import com.echoist.linkedout.data.UpdateHistoryResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -50,9 +51,9 @@ interface SupportApi {
     @GET("api/support/updated-histories")
     suspend fun readUpdatedHistories(
         @Header("Authorization") accessToken: String,
-        @Query("page") page : Int,
-        @Query("limit") limit : Int
-    ): InquiryResponse
+        @Query("page") page : Int = 1,
+        @Query("limit") limit : Int = 10
+    ): Response<UpdateHistoryResponse>
 
     @POST("api/support/devices/register")
     suspend fun requestRegisterDevice(

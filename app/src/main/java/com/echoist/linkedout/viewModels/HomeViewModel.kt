@@ -10,8 +10,11 @@ import android.content.Intent
 import android.provider.Settings
 import android.util.Log
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
@@ -20,6 +23,7 @@ import com.echoist.linkedout.DeviceId
 import com.echoist.linkedout.api.SignUpApi
 import com.echoist.linkedout.api.SupportApi
 import com.echoist.linkedout.data.ExampleItems
+import com.echoist.linkedout.data.History
 import com.echoist.linkedout.data.NotificationSettings
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.myLog.Token
@@ -44,6 +48,9 @@ class HomeViewModel @Inject constructor(
     var writingRemindNotification by mutableStateOf(false)
 
     var isLoading by mutableStateOf(false)
+
+    var updateHistory: SnapshotStateList<History> =  mutableStateListOf()
+
 
 
     fun getMyInfo(): UserInfo { // 함수 이름 변경
@@ -217,6 +224,27 @@ class HomeViewModel @Inject constructor(
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
 
         Log.d(TAG, "Alarm set for 10 seconds later.")
+    }
+
+    fun readUpdateHistory(){
+        viewModelScope.launch {
+            try {
+                isLoading = true
+                val response = supportApi.readUpdatedHistories(Token.accessToken)
+                if (response.isSuccessful){
+                    updateHistory = response.body()!!.data.histories.toMutableStateList()
+                    Token.accessToken = (response.headers()["authorization"].toString())
+
+                }
+            }catch (e:Exception){
+                e.printStackTrace()
+
+            }
+            finally {
+                isLoading = false
+            }
+        }
+
     }
 }
 
