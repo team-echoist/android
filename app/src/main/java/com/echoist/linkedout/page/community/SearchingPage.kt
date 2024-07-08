@@ -228,36 +228,37 @@ fun SearchingChips(pagerState: PagerState) {
                 }
 
             }
-            Column(
-                modifier = Modifier
-                    .padding(end = 12.dp)
-                    .size(60.dp, 40.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    color = color,
-                    fontSize = 14.sp,
-                    text = "사용자",// 색상을 먼저 적용합니다
-                    modifier = Modifier.clickable {
-
-                        coroutineScope.launch {
-                            pagerState.animateScrollToPage(1)
-                        }
-
-                    } // Modifier.clickable을 마지막에 적용합니다
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-                if (pagerState.currentPage == 1) {
-                    HorizontalDivider(
-                        modifier = Modifier
-                            .width(65.dp),
-                        color = color,
-                        thickness = 3.dp
-                    )
-                }
-            }
+            //todo 다음 업데이트에 사용자 파트추가
+//            Column(
+//                modifier = Modifier
+//                    .padding(end = 12.dp)
+//                    .size(60.dp, 40.dp),
+//                verticalArrangement = Arrangement.Center,
+//                horizontalAlignment = Alignment.CenterHorizontally
+//            ) {
+//                Text(
+//                    color = color,
+//                    fontSize = 14.sp,
+//                    text = "사용자",// 색상을 먼저 적용합니다
+//                    modifier = Modifier.clickable {
+//
+//                        coroutineScope.launch {
+//                            pagerState.animateScrollToPage(1)
+//                        }
+//
+//                    } // Modifier.clickable을 마지막에 적용합니다
+//                )
+//
+//                Spacer(modifier = Modifier.height(4.dp))
+//                if (pagerState.currentPage == 1) {
+//                    HorizontalDivider(
+//                        modifier = Modifier
+//                            .width(65.dp),
+//                        color = color,
+//                        thickness = 3.dp
+//                    )
+//                }
+//            }
 
         }
 

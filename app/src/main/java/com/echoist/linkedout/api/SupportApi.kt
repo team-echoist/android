@@ -1,6 +1,7 @@
 package com.echoist.linkedout.api
 
 import SignUpApiImpl
+import com.echoist.linkedout.data.AlertsResponse
 import com.echoist.linkedout.data.AllInquiriesResponse
 import com.echoist.linkedout.data.Inquiry
 import com.echoist.linkedout.data.InquiryResponse
@@ -13,6 +14,7 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -70,6 +72,19 @@ interface SupportApi {
         @Header("Authorization") accessToken: String,
         @Path("deviceId") deviceId: String,
         @Body requestSettings: NotificationSettings
+    ): Response<Unit>
+
+    @GET("api/alerts")
+    suspend fun readAlertsList(
+        @Header("Authorization") accessToken: String,
+        @Query("page") page : Int = 1,
+        @Query("limit") limit : Int = 10
+    ): Response<AlertsResponse>
+
+    @PATCH("api/alerts/read/{alertId}")
+    suspend fun readAlert(
+        @Header("Authorization") accessToken: String,
+        @Path("alertId") alertId : Int,
     ): Response<Unit>
 
 

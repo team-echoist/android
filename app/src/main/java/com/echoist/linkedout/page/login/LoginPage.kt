@@ -83,6 +83,7 @@ import com.echoist.linkedout.page.home.DarkModeSettingPage
 import com.echoist.linkedout.page.home.HomePage
 import com.echoist.linkedout.page.home.LinkedOutSupportPage
 import com.echoist.linkedout.page.home.NotificationPage
+import com.echoist.linkedout.page.home.NotificationSettingPage
 import com.echoist.linkedout.page.home.SupportPage
 import com.echoist.linkedout.page.home.UpdateHistoryPage
 import com.echoist.linkedout.page.myLog.CompletedEssayPage
@@ -182,6 +183,9 @@ class LoginPage : ComponentActivity() {
                 }
                 composable("NotificationPage") {
                     NotificationPage(navController)
+                }
+                composable("NotificationSettingPage") {
+                    NotificationSettingPage(navController)
                 }
                 composable("SupportPage") {
                     SupportPage(navController)

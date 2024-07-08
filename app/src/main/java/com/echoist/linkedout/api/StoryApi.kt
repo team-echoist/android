@@ -15,7 +15,7 @@ import retrofit2.http.Query
 
 interface StoryApi {
 
-    @GET("api/essays/stories")
+    @GET("api/stories")
     suspend fun readMyStories(
         @Header("Authorization") accessToken: String,
     ): Response<StoryResponse>
@@ -27,14 +27,14 @@ interface StoryApi {
     ): Response<StoryResponse>
 
     data class StoryData(val name : String, val essayIds : List<Int>? = null)
-    @POST("api/essays/stories")
+    @POST("api/stories")
     suspend fun createStory(
         @Header("Authorization") accessToken: String,
         @Body storyData: StoryData
     ): Response<BasicResponse>
 
 
-    @PUT("api/essays/stories/{storyId}")
+    @PUT("api/stories/{storyId}")
     suspend fun modifyStory(
         @Header("Authorization") accessToken: String,
         @Path("storyId") storyId: Int,
@@ -42,7 +42,7 @@ interface StoryApi {
     ): Response<BasicResponse>
 
 
-    @DELETE("api/essays/stories/{storyId}")
+    @DELETE("api/stories/{storyId}")
     suspend fun deleteStory(
         @Header("Authorization") accessToken: String,
         @Path("storyId") storyId: Int
@@ -57,14 +57,14 @@ interface StoryApi {
 
     ): Response<RelatedEssayResponse>
 
-    @PUT("api/essays/{essayId}/stories/{storyId}")
+    @PUT("api/stories/{storyId}/essays/{essayId}/")
     suspend fun modifyEssayInStory(
         @Header("Authorization") accessToken: String,
         @Path("essayId") essayId: Int,
         @Path("storyId") storyId: Int
     ): Response<BasicResponse>
 
-    @DELETE("api/essays/{essayId}/stories")
+    @DELETE("api/stories/essays/{essayId}")
     suspend fun deleteEssayInStory(
         @Header("Authorization") accessToken: String,
         @Path("essayId") essayId: Int

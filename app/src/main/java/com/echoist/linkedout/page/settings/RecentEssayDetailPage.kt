@@ -48,6 +48,7 @@ import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.api.EssayApi
+import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.community.CommunityTopAppBar
 import com.echoist.linkedout.page.community.DetailEssay
 import com.echoist.linkedout.page.community.ReportComplete
@@ -132,8 +133,10 @@ fun RecentEssayDetailPage(navController: NavController, viewModel: CommunityView
                                         navController
                                     )
                                     Spacer(modifier = Modifier.height(28.dp))
+                                    val userinfo = viewModel.readDetailEssay().author ?: UserInfo()
+
                                     SubscriberSimpleItem(
-                                        item = viewModel.userItem,
+                                        item = userinfo,
                                         viewModel = viewModel,
                                         navController = navController
                                     )

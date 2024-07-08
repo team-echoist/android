@@ -80,14 +80,14 @@ data class NotificationResponse(
 //업데이트 api
 @JsonClass(generateAdapter = true)
 data class UpdateHistoryResponse(
-    val data: HistoryResponse,
+    val data: Histories,
     val path: String?,
     val success: Boolean,
     val timestamp: String?,
     val statusCode : Int?
 )
 
-data class HistoryResponse(
+data class Histories(
     val histories : List<History>,
     val total : Int,
     val page : Int,
@@ -112,3 +112,28 @@ data class Processor(
     val createdDate: String,
 )
 //업데이트 api
+
+//alert api
+data class AlertsResponse(
+    val data: Alerts,
+    val path: String?,
+    val success: Boolean,
+    val timestamp: String?,
+    val statusCode : Int?
+)
+
+data class Alerts(
+    val alerts: List<Alert>,
+    val total: Int,
+    val page: Int,
+    val totalPage: Int
+)
+data class Alert(
+    val id: Int,
+    val title: String,
+    val content: String,
+    val body: String? = null,
+    val type: String,
+    val read: Boolean,
+    val createdDate: String
+)

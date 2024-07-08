@@ -13,7 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
     primary = LinkedInColor,
-    secondary = PurpleGrey80,
+    secondary = LinkedInColor,
     tertiary = Pink80,
     background = Color(0xFF000000),
 

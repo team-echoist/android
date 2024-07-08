@@ -105,13 +105,13 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel) {
             Scaffold(
                 topBar = {
 
-                    CustomTopAppBar {
+                    CustomTopAppBar( {
                         scope.launch {
                             drawerState.apply {
                                 if (isClosed) open() else close()
                             }
                         }
-                    }
+                    },{navController.navigate("NotificationPage")})
                 },
                 bottomBar = { MyBottomNavigation(navController) },
                 floatingActionButton = { WriteFTB(navController) },
@@ -144,7 +144,7 @@ fun ModalBottomSheetContent(viewModel: HomeViewModel,navController: NavControlle
             ShopDrawerItem()
             HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
             MyDrawableItem("화면 설정") {navController.navigate("DarkModeSettingPage")}
-            MyDrawableItem("알림 설정") {navController.navigate("NotificationPage")}
+            MyDrawableItem("알림 설정") {navController.navigate("notificationSettingPage")}
             MyDrawableItem("고객지원") {navController.navigate("SupportPage")}
             MyDrawableItem("업데이트 기록") {navController.navigate("UpdateHistoryPage")}
 
@@ -186,7 +186,7 @@ fun WriteFTB(navController: NavController) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CustomTopAppBar(onClick: () -> Unit) {
+fun CustomTopAppBar(onClick: () -> Unit,onClickNotification : ()->Unit) {
     TopAppBar(
         title = { }, colors = TopAppBarDefaults.topAppBarColors(Color.Transparent),
         navigationIcon = {
@@ -205,7 +205,7 @@ fun CustomTopAppBar(onClick: () -> Unit) {
                 Icons.Default.Notifications,
                 contentDescription = "Notifications",
                 modifier = Modifier
-                    .clickable {/* Todo 알림 표시 클릭 시 작동 기능 구현 필요 */ }
+                    .clickable {onClickNotification() }
                     .padding(end = 20.dp)
                     .size(30.dp)
             )

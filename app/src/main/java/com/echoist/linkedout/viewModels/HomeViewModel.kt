@@ -38,7 +38,6 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val exampleItems: ExampleItems,
-    private val signUpApi: SignUpApi,
     private val supportApi: SupportApi) : ViewModel() {
 
     var myProfile by mutableStateOf(exampleItems.myProfile)
