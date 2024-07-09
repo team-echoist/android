@@ -56,7 +56,7 @@ fun StoryDetailPage(viewModel: MyLogViewModel, navController: NavController) {
             {
                 Column(Modifier.padding(it)) {
                     StoryDetailTitle(viewModel.getSelectedStory(),viewModel.getUserInfo().nickname!!)
-                    StoryDetailList(viewModel)
+                    StoryDetailList(viewModel,navController)
                 }
                 if (viewModel.isModifyStoryClicked){
                     ModifyStoryBox(viewModel = viewModel, navController = navController)
@@ -121,9 +121,10 @@ fun StoryDetailTitle(story: Story,userName : String){
 }
 //viewmodel.modiftstorylist
 @Composable
-fun StoryDetailItem(essayItem: RelatedEssay, num : Int){
+fun StoryDetailItem(essayItem: RelatedEssay, num : Int,isItemClicked : ()->Unit){
     Box(modifier = Modifier
         .fillMaxWidth()
+        .clickable { isItemClicked() }
         .height(91.dp)){
         Row(Modifier.padding(horizontal = 20.dp), verticalAlignment = Alignment.CenterVertically) {
             Text(text = "$num")
@@ -142,12 +143,12 @@ fun StoryDetailItem(essayItem: RelatedEssay, num : Int){
 }
 
 @Composable
-fun StoryDetailList(viewModel: MyLogViewModel){
+fun StoryDetailList(viewModel: MyLogViewModel,navController : NavController){
     LazyColumn {
         items(viewModel.modifyStoryEssayItems){
         }
         itemsIndexed(viewModel.modifyStoryEssayItems){i,essay->
-            StoryDetailItem(essay,i+1)
+            StoryDetailItem(essay,i+1){viewModel.readDetailEssayInStory(essay.id,navController,i+1)}
 
         }
     }

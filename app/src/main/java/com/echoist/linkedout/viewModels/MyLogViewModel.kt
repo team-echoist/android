@@ -3,6 +3,7 @@ package com.echoist.linkedout.viewModels
 import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -33,6 +34,8 @@ class MyLogViewModel @Inject constructor(
 ) : CommunityViewModel(essayApi, exampleItems,bookMarkApi) {
 
     var myProfile by mutableStateOf(exampleItems.myProfile)
+    var storyEssayNumber: Int by mutableIntStateOf(0)
+    val storyEssayTitle: String by mutableStateOf("")
 
     //스토리 생성할때 true값
     var isCreateStory by mutableStateOf(false)
@@ -385,6 +388,7 @@ class MyLogViewModel @Inject constructor(
                 Log.d(TAG, "readDetailEssay: previouse ${exampleItems.detailEssay}")
 
                 Log.d(TAG, "readDetailEssay: previouse ${exampleItems.previousEssayList}")
+
                 //여기서 차이를 둔다.
                 navController.navigate("MyLogDetailPage")
 
@@ -394,8 +398,30 @@ class MyLogViewModel @Inject constructor(
                 // 예외 처리
                 e.printStackTrace()
                 Log.d(TAG, "readRandomEssays: ${e.message}")
-                Log.d(TAG, "readRandomEssays: ${e.cause}")
-                Log.d(TAG, "readRandomEssays: ${e.localizedMessage}")
+
+            }
+        }
+    }
+
+    fun readDetailEssayInStory(id: Int, navController: NavController,number : Int) {
+        viewModelScope.launch {
+            try {
+                val response = essayApi.readDetailEssay(Token.accessToken,id)
+                exampleItems.detailEssay = response.body()!!.data.essay
+                detailEssay = exampleItems.detailEssay
+                Log.d(TAG, "readdetailEssay: 성공인데요${response.body()!!.data}")
+
+                storyEssayNumber = number
+
+                //여기서 차이를 둔다.
+                navController.navigate("DetailEssayInStoryPage")
+
+                // API 호출 결과 처리 (예: response 데이터 사용)
+            } catch (e: Exception) {
+
+                // 예외 처리
+                e.printStackTrace()
+                Log.d(TAG, "readRandomEssays: ${e.message}")
 
             }
         }

@@ -98,13 +98,13 @@ fun MyLogDetailPage(navController: NavController, viewModel: MyLogViewModel) {
                         visible = viewModel.isActionClicked,
                         enter = fadeIn(
                             animationSpec = tween(
-                                durationMillis = 1000,
+                                durationMillis = 500,
                                 easing = FastOutSlowInEasing
                             )
                         ),
                         exit = fadeOut(
                             animationSpec = tween(
-                                durationMillis = 500,
+                                durationMillis = 200,
                                 easing = LinearEasing
                             )
                         )
@@ -130,66 +130,74 @@ fun ModifyOption(viewModel: MyLogViewModel, navController: NavController) {
     if (isStoryClicked){
         StoryModifyBox({
             isStoryClicked = false
+            viewModel.isActionClicked = false
             viewModel.deleteEssayInStory(navController)
-            //todo 박스가 닫히는것 외에도 기능구현필요
         },{
             isStoryClicked = false
+            viewModel.isActionClicked = false
             viewModel.modifyEssayInStory(navController)
-        },viewModel)
+        },
+            {
+                viewModel.isActionClicked = false
+                isStoryClicked = false
+            },viewModel)
     }
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(end = 23.dp),
-        contentAlignment = Alignment.TopEnd
-    ){
-        Surface(modifier = Modifier.size(180.dp, 305.dp), shape = RoundedCornerShape(2)) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
+    if (!isStoryClicked){
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(end = 23.dp),
+            contentAlignment = Alignment.TopEnd
+        ){
+            Surface(modifier = Modifier.size(180.dp, 305.dp), shape = RoundedCornerShape(2)) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.text_minus),
-                        contentDescription = "minus",
-                        modifier = Modifier.clickable { viewModel.textSizeDown()}
-                    )
-                    Spacer(modifier = Modifier.width(30.dp))
-                    Text(text = "가")
-                    Spacer(modifier = Modifier.width(30.dp))
-                    Icon(
-                        painter = painterResource(id = R.drawable.text_plus),
-                        contentDescription = "minus",
-                        modifier = Modifier.clickable { viewModel.textSizeUp() }
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.text_minus),
+                            contentDescription = "minus",
+                            modifier = Modifier.clickable { viewModel.textSizeDown()}
+                        )
+                        Spacer(modifier = Modifier.width(30.dp))
+                        Text(text = "가")
+                        Spacer(modifier = Modifier.width(30.dp))
+                        Icon(
+                            painter = painterResource(id = R.drawable.text_plus),
+                            contentDescription = "minus",
+                            modifier = Modifier.clickable { viewModel.textSizeUp() }
 
-                    )
+                        )
+
+                    }
+                    HorizontalDivider()
+                    OptionItem(text = "수정", Color.White,{},R.drawable.ftb_edit)
+                    HorizontalDivider()
+                    OptionItem(text = "발행", Color.White,{},R.drawable.option_link)
+                    HorizontalDivider()
+                    OptionItem(text = "Linked-out", Color.White,{},R.drawable.option_linkedout)
+                    HorizontalDivider()
+                    OptionItem(text = "스토리 선택", Color(0xFF616FED),
+                        {
+                            isStoryClicked = true
+                        },R.drawable.option_check)
+                    HorizontalDivider()
+                    OptionItem(text = "삭제", Color.Red,{
+                        viewModel.deleteEssay(navController = navController)
+                        Log.d(TAG, "ModifyOption: dd")
+                    },R.drawable.option_trash)
 
                 }
-                HorizontalDivider()
-                OptionItem(text = "수정", Color.White,{},R.drawable.ftb_edit)
-                HorizontalDivider()
-                OptionItem(text = "발행", Color.White,{},R.drawable.option_link)
-                HorizontalDivider()
-                OptionItem(text = "Linked-out", Color.White,{},R.drawable.option_linkedout)
-                HorizontalDivider()
-                OptionItem(text = "스토리 선택", Color(0xFF616FED),
-                    {
-                        isStoryClicked = true
-                    },R.drawable.option_check)
-                HorizontalDivider()
-                OptionItem(text = "삭제", Color.Red,{
-                    viewModel.deleteEssay(navController = navController)
-                    Log.d(TAG, "ModifyOption: dd")
-                },R.drawable.option_trash)
-
             }
         }
     }
+
+
 
 }
 
@@ -379,6 +387,7 @@ fun DetailEssay(viewModel: MyLogViewModel) {
 fun StoryModifyBox(
     isDeleteClicked: () -> Unit,
     isModifyClicked: () -> Unit,
+    isBackgroundClicked : ()->Unit,
     viewModel: MyLogViewModel
 ) {
 
@@ -387,6 +396,7 @@ fun StoryModifyBox(
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .clickable { isBackgroundClicked() }
             .background(Color.Black.copy(0.5f))
     ) {
         Box(
