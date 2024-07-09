@@ -106,7 +106,6 @@ fun StoryTopAppBar(navController: NavController, viewModel: MyLogViewModel) {
         }
     )
 }
-//todo story list 들어갔을때 리스트 ui 필요
 //todo 스토리 수정하기들어갔을때 리스트값이 없는데 전체 1개 표시됨.
 @Composable
 fun StoryTitleTextField(viewModel: MyLogViewModel) {

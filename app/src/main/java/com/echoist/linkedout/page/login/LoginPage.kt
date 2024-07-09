@@ -92,6 +92,7 @@ import com.echoist.linkedout.page.myLog.MyLogDetailPage
 import com.echoist.linkedout.page.myLog.MyLogPage
 import com.echoist.linkedout.page.myLog.StoryDetailPage
 import com.echoist.linkedout.page.myLog.StoryPage
+import com.echoist.linkedout.page.myLog.TemporaryStoragePage
 import com.echoist.linkedout.page.myLog.Token
 import com.echoist.linkedout.page.myLog.WritingCompletePage
 import com.echoist.linkedout.page.myLog.WritingPage
@@ -210,6 +211,7 @@ class LoginPage : ComponentActivity() {
                 composable("DetailEssayInStoryPage") {
                     DetailEssayInStoryPage(navController,myLogViewModel)
                 }
+
                 composable("MyLogDetailPage") {
                     MyLogDetailPage(navController = navController,myLogViewModel)
                 }
@@ -289,6 +291,9 @@ class LoginPage : ComponentActivity() {
                 }
                 composable("WritingCompletePage") {
                     WritingCompletePage(navController, writingViewModel)
+                }
+                composable("TemporaryStoragePage") {
+                    TemporaryStoragePage(navController,writingViewModel)
                 }
                 composable("CropImagePage") {
                     CropImagePage(navController,writingViewModel)

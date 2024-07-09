@@ -419,7 +419,7 @@ fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navContro
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
                     Column {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
-                            (if (item.author !=null) item.author.nickname else "")?.let {
+                            (if (item.author !=null) item.author!!.nickname else "")?.let {
                                 Text(
                                     text = it,
                                     fontSize = 12.sp,
@@ -441,14 +441,14 @@ fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navContro
                         if (item.linkedOutGauge != null){
                             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
                                 Row {
-                                    repeat(item.linkedOutGauge) {
+                                    repeat(item.linkedOutGauge!!) {
                                         Image(
                                             painter = painterResource(id = R.drawable.ring),
                                             contentDescription = "ring",
                                             modifier = Modifier.size(14.dp),
                                             colorFilter = ColorFilter.tint(Color(0xFF686868))
                                         )
-                                        if (it != item.linkedOutGauge - 1) Spacer(
+                                        if (it != item.linkedOutGauge!! - 1) Spacer(
                                             modifier = Modifier.width(
                                                 4.dp
                                             )
@@ -463,13 +463,13 @@ fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navContro
                 Spacer(modifier = Modifier.height(28.dp))
                 if (item.tags != null){
                     Row {
-                        repeat(item.tags.size){
+                        repeat(item.tags!!.size){
                             SuggestionChip(
                                 onClick = { },
-                                label = { Text(item.tags[it].name) },
+                                label = { Text(item.tags!![it].name) },
                                 shape = RoundedCornerShape(50)
                             )
-                            if (it != item.tags.size-1) Spacer(modifier = Modifier.width(10.dp))
+                            if (it != item.tags!!.size-1) Spacer(modifier = Modifier.width(10.dp))
                         }
                     }
                 }

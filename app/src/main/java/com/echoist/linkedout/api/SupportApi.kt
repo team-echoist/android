@@ -1,6 +1,5 @@
 package com.echoist.linkedout.api
 
-import SignUpApiImpl
 import com.echoist.linkedout.data.AlertsResponse
 import com.echoist.linkedout.data.AllInquiriesResponse
 import com.echoist.linkedout.data.Inquiry

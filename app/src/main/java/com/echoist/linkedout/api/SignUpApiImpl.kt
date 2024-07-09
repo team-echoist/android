@@ -1,5 +1,4 @@
-
-import com.echoist.linkedout.api.SignUpApi
+package com.echoist.linkedout.api
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Header

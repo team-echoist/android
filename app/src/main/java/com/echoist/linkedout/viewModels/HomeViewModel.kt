@@ -1,6 +1,6 @@
 package com.echoist.linkedout.viewModels
 
-import SignUpApiImpl
+import com.echoist.linkedout.api.SignUpApiImpl
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.ContentValues
@@ -20,7 +20,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.echoist.linkedout.AlarmReceiver
 import com.echoist.linkedout.DeviceId
-import com.echoist.linkedout.api.SignUpApi
 import com.echoist.linkedout.api.SupportApi
 import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.data.History

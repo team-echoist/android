@@ -1,5 +1,7 @@
 package com.echoist.linkedout.api
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.echoist.linkedout.data.DetailEssayResponse
 import com.echoist.linkedout.data.EssayListResponse
 import com.echoist.linkedout.data.SingleEssayResponse
@@ -121,27 +123,31 @@ interface EssayApi{
         val story: Story? = null
     )
 
+    @Entity
     //받는용 Tag List id와 name으로 구별하여받음.
     @JsonClass(generateAdapter = true)
     data class EssayItem(
-        val title: String? = null,
-        val content: String? = null,
-        val status: String? = null,
-        val categoryId: Int? = null,
-        val thumbnail: String? = null,
-        val linkedOutGauge: Int? = null,
-        val latitude: Double? = null,
-        val longitude: Double? = null,
-        val location: String? = null,
-        val tags: List<Tag>? = null, //받는용 Tag List id와 name으로 구별하여받음.
-        val createdDate: String? = null,
-        val updatedDate: String? = null,
-        val id: Int? = null,
-        val author: UserInfo? = null,
-        val story: Story? = null,
-        val isBookmarked: Boolean = false
+        var title: String? = null,
+        var content: String? = null,
+        var status: String? = null,
+        var categoryId: Int? = null,
+        var thumbnail: String? = null,
+        var linkedOutGauge: Int? = null,
+        var latitude: Double? = null,
+        var longitude: Double? = null,
+        var location: String? = null,
+        var tags: List<Tag>? = null,
+        var createdDate: String? = null,
+        var updatedDate: String? = null,
+        var id: Int? = null,
+        var author: UserInfo? = null,
+        var story: Story? = null,
+        var isBookmarked: Boolean = false,
 
+        @PrimaryKey(autoGenerate = true)
+        var essayPrimaryId: Int = 0
     )
+
 
 
 

@@ -66,6 +66,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.colintheshots.twain.MarkdownText
 import com.echoist.linkedout.R
+import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.components.BlankWarningAlert
 import com.echoist.linkedout.components.FuncItem
 import com.echoist.linkedout.components.FuncItemData
@@ -204,14 +205,14 @@ fun WritingPage(
                         var isTextAlignSelected by remember { mutableStateOf(false) }
                         var isTextUnderLineSelected by remember { mutableStateOf(false) }
 
-                        if (isTextSettingSelected){
+                        if (isTextSettingSelected) {
                             TextSettingsBar(viewModel)
                         }
-                        if (isTextAlignSelected){
+                        if (isTextAlignSelected) {
                             Row {
                                 Spacer(modifier = Modifier.width(40.dp))
                                 TextAlignBar()
-                                
+
                             }
                         }
                         TextEditBar(viewModel,
@@ -232,19 +233,25 @@ fun WritingPage(
                                 isTextAlignSelected = false
                                 isTextSettingSelected = false
 
-                                    if (viewModel.content.selection.start != viewModel.content.selection.end){
-                                        val cursorPosition = viewModel.content.selection.start
-                                        val endPosition = viewModel.content.selection.end
-                                        val newText = viewModel.content.text.substring(0, cursorPosition) +
-                                                "<u>" + viewModel.content.text.substring(cursorPosition, endPosition) + "</u>" +
-                                                viewModel.content.text.substring(endPosition, viewModel.content.text.length)
+                                if (viewModel.content.selection.start != viewModel.content.selection.end) {
+                                    val cursorPosition = viewModel.content.selection.start
+                                    val endPosition = viewModel.content.selection.end
+                                    val newText =
+                                        viewModel.content.text.substring(0, cursorPosition) +
+                                                "<u>" + viewModel.content.text.substring(
+                                            cursorPosition,
+                                            endPosition
+                                        ) + "</u>" +
+                                                viewModel.content.text.substring(
+                                                    endPosition,
+                                                    viewModel.content.text.length
+                                                )
 
 
-                                        viewModel.content = TextFieldValue(
-                                            text = newText,
-                                        )
-                                    }
-
+                                    viewModel.content = TextFieldValue(
+                                        text = newText,
+                                    )
+                                }
 
 
                             })
@@ -559,14 +566,14 @@ fun KeyboardLocationFunc(viewModel: WritingViewModel, navController: NavControll
         FuncItemData("인용구", R.drawable.keyboard_quote) {},
         FuncItemData("구분선", R.drawable.keyboard_divider) {
 
-                val cursorPosition = viewModel.content.selection.start
-                val newText = viewModel.content.text.substring(0, cursorPosition) +
-                        "\n---\n" +
-                        viewModel.content.text.substring(cursorPosition)
+            val cursorPosition = viewModel.content.selection.start
+            val newText = viewModel.content.text.substring(0, cursorPosition) +
+                    "\n---\n" +
+                    viewModel.content.text.substring(cursorPosition)
             viewModel.content = TextFieldValue(
-                    text = newText,
-                    selection = TextRange(cursorPosition + 5) // 커서 위치를 구분선 뒤로 이동
-                )
+                text = newText,
+                selection = TextRange(cursorPosition + 5) // 커서 위치를 구분선 뒤로 이동
+            )
 
         },
         FuncItemData("위치", R.drawable.keyboard_location) {
@@ -582,7 +589,10 @@ fun KeyboardLocationFunc(viewModel: WritingViewModel, navController: NavControll
             }
 
         },
-        FuncItemData("쓰다 만 글", R.drawable.keyboard_storage) {},
+        FuncItemData(
+            "쓰다 만 글",
+            R.drawable.keyboard_storage
+        ) { navController.navigate("TemporaryStoragePage") },
         FuncItemData("감정 해시태그", R.drawable.keyboard_hashtag) {
             viewModel.isLocationClicked = false
             viewModel.isHashTagClicked = !viewModel.isHashTagClicked
@@ -671,16 +681,16 @@ fun TextEditBar(
 
             //글 정렬
 
-                TextItem(
-                    icon = R.drawable.editbar_alignment, if (isSystemInDarkTheme()) {
-                        if (!isTextAlignSelected) Color.White else LinkedInColor
-                    } else {
-                        if (!isTextAlignSelected) Color.Black else
-                            LinkedInColor
-                    }
-                ) {
-                    onTextAlignSelected(!isTextAlignSelected)
+            TextItem(
+                icon = R.drawable.editbar_alignment, if (isSystemInDarkTheme()) {
+                    if (!isTextAlignSelected) Color.White else LinkedInColor
+                } else {
+                    if (!isTextAlignSelected) Color.Black else
+                        LinkedInColor
                 }
+            ) {
+                onTextAlignSelected(!isTextAlignSelected)
+            }
 
 
             //밑줄
@@ -708,15 +718,17 @@ fun TextEditBar(
                 tint = Color.Unspecified
             )
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
+                val context = LocalContext.current
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    TextItem(
-                        icon = R.drawable.editbar_folder, if (isSystemInDarkTheme()) {
-                            if (!isTextSettingSelected) Color.White else LinkedInColor
-                        } else {
-                            if (!isTextSettingSelected) Color.Black else
-                                LinkedInColor
-                        }
-                    ) {}
+                    Text(text = "저장", color = Color.White, modifier = Modifier.clickable {
+                        viewModel.storeEssay(
+                            EssayApi.EssayItem(
+                                viewModel.title.value.text,
+                                viewModel.content.text,
+                                createdDate = viewModel.getCurrentDate()
+                            )
+                        )
+                    })
                     VerticalDivider(
                         modifier = Modifier
                             .height(34.dp)
@@ -747,26 +759,36 @@ fun TextSettingsBar(viewModel: WritingViewModel) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Spacer(modifier = Modifier.width(20.dp))
-        Text(text = "기본고딕", color = Color.White, modifier = Modifier.clickable {  })
+        Text(text = "기본고딕", color = Color.White, modifier = Modifier.clickable { })
         Spacer(modifier = Modifier.width(20.dp))
-        Text(text = "나눔명조", color = Color.White, modifier = Modifier.clickable {  })
+        Text(text = "나눔명조", color = Color.White, modifier = Modifier.clickable { })
         Spacer(modifier = Modifier.width(20.dp))
-        Text(text = "16", color = Color.White, modifier = Modifier.clickable {  })
+        Text(text = "16", color = Color.White, modifier = Modifier.clickable { })
         Spacer(modifier = Modifier.width(20.dp))
-        Text(text = "B", fontWeight = FontWeight.Bold, color = Color.White, modifier = Modifier.clickable {
-            if (viewModel.content.selection.start != viewModel.content.selection.end){
-                val cursorPosition = viewModel.content.selection.start
-                val endPosition = viewModel.content.selection.end
-                val newText = viewModel.content.text.substring(0, cursorPosition) +
-                        "<b>" + viewModel.content.text.substring(cursorPosition, endPosition) + "</b>" +
-                        viewModel.content.text.substring(endPosition, viewModel.content.text.length)
+        Text(
+            text = "B",
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+            modifier = Modifier.clickable {
+                if (viewModel.content.selection.start != viewModel.content.selection.end) {
+                    val cursorPosition = viewModel.content.selection.start
+                    val endPosition = viewModel.content.selection.end
+                    val newText = viewModel.content.text.substring(0, cursorPosition) +
+                            "<b>" + viewModel.content.text.substring(
+                        cursorPosition,
+                        endPosition
+                    ) + "</b>" +
+                            viewModel.content.text.substring(
+                                endPosition,
+                                viewModel.content.text.length
+                            )
 
 
-                viewModel.content = TextFieldValue(
-                    text = newText,
-                )
-            }
-        })
+                    viewModel.content = TextFieldValue(
+                        text = newText,
+                    )
+                }
+            })
     }
 }
 
@@ -786,7 +808,8 @@ fun TextAlignBar() {
             modifier = Modifier
                 .weight(
                     1f
-                ).size(20.dp)
+                )
+                .size(20.dp)
                 .clickable { }
         )
         Icon(
@@ -796,7 +819,8 @@ fun TextAlignBar() {
             modifier = Modifier
                 .weight(
                     1f
-                ).size(20.dp)
+                )
+                .size(20.dp)
                 .clickable { }
         )
 
@@ -807,7 +831,8 @@ fun TextAlignBar() {
             modifier = Modifier
                 .weight(
                     1f
-                ).size(20.dp)
+                )
+                .size(20.dp)
                 .clickable { }
         )
 

@@ -127,7 +127,7 @@ class MyLogViewModel @Inject constructor(
                     publishedEssayList.forEach {
                         Log.d("TAG", "readPublishedEssay: ${it.title}")
                         if (it.story !=null)
-                        Log.d("TAG", "readPublishedEssay: ${it.story.name}")
+                        Log.d("TAG", "readPublishedEssay: ${it.story!!.name}")
 
                     }
 

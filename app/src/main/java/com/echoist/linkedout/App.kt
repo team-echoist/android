@@ -1,6 +1,8 @@
 package com.echoist.linkedout
 
 import android.app.Application
+import android.content.Context
+import androidx.room.Room
 import com.echoist.linkedout.api.BookMarkApi
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.api.GoogleSignUpApi
@@ -8,12 +10,15 @@ import com.echoist.linkedout.api.SignUpApi
 import com.echoist.linkedout.api.StoryApi
 import com.echoist.linkedout.api.SupportApi
 import com.echoist.linkedout.api.UserApi
+import com.echoist.linkedout.room.EssayStorageDB
+import com.echoist.linkedout.room.EssayStoreDao
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.HiltAndroidApp
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -82,6 +87,21 @@ object AppModule {
     fun provideSupportApiClient(retrofit: Retrofit) : SupportApi {
         return retrofit.create(SupportApi::class.java)
     }
+    @Singleton
+    @Provides
+    fun provideDatabase(@ApplicationContext context: Context): EssayStorageDB {
+        return Room.databaseBuilder(
+            context,
+            EssayStorageDB::class.java,
+            "todo-database"
+        ).build()
+    }
+
+    @Provides
+    fun provideEssayStoreDao(database: EssayStorageDB): EssayStoreDao {
+        return database.essayStoreDao()
+    }
+
 }
 
 

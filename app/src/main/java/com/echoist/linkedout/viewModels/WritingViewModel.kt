@@ -16,12 +16,22 @@ import androidx.navigation.NavController
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.page.myLog.Token
+import com.echoist.linkedout.room.EssayStoreDao
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
-class WritingViewModel @Inject constructor(private val essayApi: EssayApi,private val exampleItems: ExampleItems) : ViewModel() {
+class WritingViewModel @Inject constructor(
+    private val essayApi: EssayApi,
+    private val exampleItems: ExampleItems,
+    private val essayStoreDao: EssayStoreDao
+) : ViewModel() {
+
+
 
     var myProfile by mutableStateOf(exampleItems.myProfile)
 
@@ -44,7 +54,7 @@ class WritingViewModel @Inject constructor(private val essayApi: EssayApi,privat
     var locationText by mutableStateOf("")
     var hashTagList by mutableStateOf(mutableStateListOf<String>())
 
-
+    val storageEssaysList = exampleItems.exampleEmptyEssayList
 
 
     var date = mutableStateOf("")
@@ -62,6 +72,28 @@ class WritingViewModel @Inject constructor(private val essayApi: EssayApi,privat
 
 
     var isTextFeatOpened = mutableStateOf(false)
+
+
+    fun getCurrentDate(): String {
+        val currentDate = LocalDate.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
+        return currentDate.format(formatter)
+    }
+    fun setStorageEssay(essayItem: EssayApi.EssayItem){
+        exampleItems.storageEssay = essayItem
+    }
+
+    fun getStorageEssay() : EssayApi.EssayItem{
+        return exampleItems.storageEssay
+    }
+
+    fun storeEssay(essayItem: EssayApi.EssayItem) {
+        viewModelScope.launch(Dispatchers.IO) {
+            essayStoreDao.insertEssay(essayItem) //todo 공백도 허용할것?
+        }
+    }
+
+
     fun initialize() {
         titleFocusState.value = false
         focusState.value = false

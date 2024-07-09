@@ -315,7 +315,7 @@ fun DetailEssay(viewModel: MyLogViewModel) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
                 Column {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
-                        (if (essay.author !=null) essay.author.nickname else "")?.let {
+                        (if (essay.author !=null) essay.author!!.nickname else "")?.let {
                             Text(
                                 text = it,
                                 fontSize = 12.sp,
@@ -337,14 +337,14 @@ fun DetailEssay(viewModel: MyLogViewModel) {
                     if (essay.linkedOutGauge != null){
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
                             Row {
-                                repeat(essay.linkedOutGauge) {
+                                repeat(essay.linkedOutGauge!!) {
                                     Image(
                                         painter = painterResource(id = R.drawable.ring),
                                         contentDescription = "ring",
                                         modifier = Modifier.size(14.dp),
                                         colorFilter = ColorFilter.tint(Color(0xFF686868))
                                     )
-                                    if (it != essay.linkedOutGauge - 1) Spacer(
+                                    if (it != essay.linkedOutGauge!! - 1) Spacer(
                                         modifier = Modifier.width(
                                             4.dp
                                         )
@@ -359,13 +359,13 @@ fun DetailEssay(viewModel: MyLogViewModel) {
             Spacer(modifier = Modifier.height(28.dp))
             if (essay.tags != null){
                 Row {
-                    repeat(essay.tags.size){
+                    repeat(essay.tags!!.size){
                         SuggestionChip(
                             onClick = { },
-                            label = { Text(essay.tags[it].name) },
+                            label = { Text(essay.tags!![it].name) },
                             shape = RoundedCornerShape(50)
                         )
-                        if (it != essay.tags.size-1) Spacer(modifier = Modifier.width(10.dp))
+                        if (it != essay.tags!!.size-1) Spacer(modifier = Modifier.width(10.dp))
                     }
                 }
             }
@@ -495,7 +495,7 @@ fun SingleSelectableList(items: List<Story>,viewModel: MyLogViewModel) {
 @Composable
 fun CompletedEssayPage(navController: NavController, viewModel: MyLogViewModel) {
     var hasCalledApi by remember { mutableStateOf(false) }
-    LaunchedEffect(key1 = Unit) { //todo 현재글 밀려서 나타나는오류 수정필요. 아근데 안할래
+    LaunchedEffect(key1 = Unit) {
         if (!hasCalledApi) {
             viewModel.readMyEssay()
             viewModel.readPublishEssay()
@@ -602,7 +602,7 @@ fun DetailEssay2(viewModel: MyLogViewModel) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
                 Column {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
-                        (if (essay.author !=null) essay.author.nickname else "")?.let {
+                        (if (essay.author !=null) essay.author!!.nickname else "")?.let {
                             Text(
                                 text = it,
                                 fontSize = 12.sp,
@@ -624,14 +624,14 @@ fun DetailEssay2(viewModel: MyLogViewModel) {
                     if (essay.linkedOutGauge != null){
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
                             Row {
-                                repeat(essay.linkedOutGauge) {
+                                repeat(essay.linkedOutGauge!!) {
                                     Image(
                                         painter = painterResource(id = R.drawable.ring),
                                         contentDescription = "ring",
                                         modifier = Modifier.size(14.dp),
                                         colorFilter = ColorFilter.tint(Color(0xFF686868))
                                     )
-                                    if (it != essay.linkedOutGauge - 1) Spacer(
+                                    if (it != essay.linkedOutGauge!! - 1) Spacer(
                                         modifier = Modifier.width(
                                             4.dp
                                         )
@@ -646,13 +646,13 @@ fun DetailEssay2(viewModel: MyLogViewModel) {
             Spacer(modifier = Modifier.height(28.dp))
             if (essay.tags != null){
                 Row {
-                    repeat(essay.tags.size){
+                    repeat(essay.tags!!.size){
                         SuggestionChip(
                             onClick = { },
-                            label = { Text(essay.tags[it].name) },
+                            label = { Text(essay.tags!![it].name) },
                             shape = RoundedCornerShape(50)
                         )
-                        if (it != essay.tags.size-1) Spacer(modifier = Modifier.width(10.dp))
+                        if (it != essay.tags!!.size-1) Spacer(modifier = Modifier.width(10.dp))
                     }
                 }
             }

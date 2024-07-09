@@ -17,6 +17,8 @@ class ExampleItems @Inject constructor(){
 
     var detailEssayBackStack = Stack<EssayApi.EssayItem>()
 
+    var storageEssay by mutableStateOf(EssayApi.EssayItem("",""))
+
 
     private var exampleBadge by mutableStateOf(
         BadgeBoxItem(R.drawable.badge_love,"love","emotion",1,5)
@@ -111,6 +113,7 @@ class ExampleItems @Inject constructor(){
     var lastSentences : SnapshotStateList<EssayApi.EssayItem> = mutableStateListOf(detailEssay,detailEssay,detailEssay,detailEssay,detailEssay)
     var previousEssayList: SnapshotStateList<EssayApi.EssayItem> =  mutableStateListOf(detailEssay,detailEssay,detailEssay,detailEssay,detailEssay)
     var recentViewedEssayList: SnapshotStateList<EssayApi.EssayItem> =  mutableStateListOf(EssayApi.EssayItem(title = "최근 본 글이 없습니다.", content = "empty"))
+    var storageEssayList : SnapshotStateList<EssayApi.EssayItem> = mutableStateListOf(detailEssay,detailEssay,detailEssay,detailEssay)
 
 
 
