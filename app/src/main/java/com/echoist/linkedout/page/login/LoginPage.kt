@@ -89,6 +89,7 @@ import com.echoist.linkedout.page.home.UpdateHistoryPage
 import com.echoist.linkedout.page.myLog.CompletedEssayPage
 import com.echoist.linkedout.page.myLog.MyLogDetailPage
 import com.echoist.linkedout.page.myLog.MyLogPage
+import com.echoist.linkedout.page.myLog.StoryDetailPage
 import com.echoist.linkedout.page.myLog.StoryPage
 import com.echoist.linkedout.page.myLog.Token
 import com.echoist.linkedout.page.myLog.WritingCompletePage
@@ -201,6 +202,9 @@ class LoginPage : ComponentActivity() {
                 }
                 composable("StoryPage") {
                     StoryPage(myLogViewModel,navController)
+                }
+                composable("StoryDetailPage") {
+                    StoryDetailPage(myLogViewModel,navController)
                 }
                 composable("MyLogDetailPage") {
                     MyLogDetailPage(navController = navController,myLogViewModel)

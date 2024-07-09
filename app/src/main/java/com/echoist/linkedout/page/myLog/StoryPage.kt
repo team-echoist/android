@@ -100,8 +100,6 @@ fun StoryTopAppBar(navController: NavController, viewModel: MyLogViewModel) {
                     .size(30.dp)
                     .clickable {
                         navController.popBackStack()
-                        viewModel.selectedStory.name = ""
-                        viewModel.storyTextFieldTitle = ""
                     },
                 tint = Color.White
             )
@@ -112,7 +110,7 @@ fun StoryTopAppBar(navController: NavController, viewModel: MyLogViewModel) {
 //todo 스토리 수정하기들어갔을때 리스트값이 없는데 전체 1개 표시됨.
 @Composable
 fun StoryTitleTextField(viewModel: MyLogViewModel) {
-    var text by remember { mutableStateOf(viewModel.selectedStory.name) }
+    var text by remember { mutableStateOf(viewModel.getSelectedStory().name) }
     viewModel.storyTextFieldTitle = text
 
     Box(

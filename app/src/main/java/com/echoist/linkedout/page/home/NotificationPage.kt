@@ -85,7 +85,7 @@ fun NotificationPage(navController: NavController, viewModel: SupportViewModel =
                         alerts.forEach { alert ->
                             NotificationItem(alert) {
                                 viewModel.readAlert(alert.id)
-                                if (alert.type == "linkedout"){
+                                if (alert.type == "linkedout"){ //todo linkedout 말고 고객지원도 추가할것
                                     isAlertClicked = true
                                     clickedAlert = alert
                                 }
@@ -159,7 +159,7 @@ fun NotificationIcon(alert: Alert) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 5.dp), contentAlignment = Alignment.TopCenter
+                .padding(top = 2.dp), contentAlignment = Alignment.TopCenter
         ) {
             Icon(
                 painter = painterResource(id = imageResource),

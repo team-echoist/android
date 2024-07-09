@@ -463,7 +463,7 @@ fun SingleSelectableList(items: List<Story>,viewModel: MyLogViewModel) {
                             null
                         } else item
                         if (selectedItem != null) {
-                            viewModel.selectedStory = selectedItem!!
+                            viewModel.setSelectStory(selectedItem!!)
                         }
 
                     }

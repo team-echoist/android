@@ -259,7 +259,7 @@ fun StoryListPage(viewModel: MyLogViewModel,navController: NavController){
         Spacer(modifier = Modifier.height(20.dp))
         LazyColumn {
             items(viewModel.storyList) {
-                StoryItem(it,viewModel)
+                StoryItem(it,viewModel,navController)
                 Spacer(modifier = Modifier.height(20.dp))
                 HorizontalDivider()
                 Spacer(modifier = Modifier.height(10.dp))
@@ -271,10 +271,12 @@ fun StoryListPage(viewModel: MyLogViewModel,navController: NavController){
 }
 
 @Composable
-fun StoryItem(story: Story,viewModel: MyLogViewModel){// story일듯?
+fun StoryItem(story: Story,viewModel: MyLogViewModel,navController: NavController){
     Box(modifier = Modifier
         .fillMaxWidth()
-        .clickable { }
+        .clickable {
+            viewModel.setSelectStory(story)
+        navController.navigate("StoryDetailPage")}
         .height(60.dp)){
         Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
             StoryCountIcon(story.essaysCount!!)
@@ -289,9 +291,9 @@ fun StoryItem(story: Story,viewModel: MyLogViewModel){// story일듯?
                     .clickable {
                         viewModel.isModifyStoryClicked = true
                         viewModel.isCreateStory = false
-                        viewModel.selectedStory = story
-                        Log.d(TAG, "StoryItem: ${viewModel.selectedStory.name}")
-                        Log.d(TAG, "StoryItem: ${viewModel.selectedStory.name}")
+                        viewModel.setSelectStory(story)
+                        Log.d(TAG, "StoryItem: ${viewModel.getSelectedStory().name}")
+                        Log.d(TAG, "StoryItem: ${viewModel.getSelectedStory().name}")
 
                     }
                     .size(30.dp)
@@ -331,7 +333,7 @@ fun ModifyStoryBox(
             ) {
 
                 Text(
-                    text = "에세이 편집",
+                    text = "스토리 편집",
                     color = Color.White,
                     fontSize = 16.sp,
                     modifier = Modifier.clickable {
@@ -347,12 +349,12 @@ fun ModifyStoryBox(
                 Spacer(modifier = Modifier.height(20.dp))
 
                     Text(
-                        text = "에세이 삭제",
+                        text = "스토리 삭제",
                         color = Color.Red,
                         fontSize = 16.sp,
                         modifier = Modifier.clickable {
                             viewModel.isModifyStoryClicked = false
-                            viewModel.deleteMyStory(viewModel.selectedStory!!.id!!,navController)
+                            viewModel.deleteMyStory(viewModel.getSelectedStory().id!!,navController)
                         }
                     )
 

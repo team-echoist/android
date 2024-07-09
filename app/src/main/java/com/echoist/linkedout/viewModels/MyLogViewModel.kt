@@ -17,6 +17,7 @@ import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.data.RelatedEssay
 import com.echoist.linkedout.data.RelatedEssayResponse
 import com.echoist.linkedout.data.Story
+import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.myLog.Token
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -44,9 +45,6 @@ class MyLogViewModel @Inject constructor(
 
     var isActionClicked by mutableStateOf(false)
 
-    var selectedStory by mutableStateOf(exampleItems.exampleStroy)
-
-
     var storyTextFieldTitle by mutableStateOf("")
     override var storyList by mutableStateOf<List<Story>>(emptyList())
 
@@ -55,6 +53,16 @@ class MyLogViewModel @Inject constructor(
 
     var createStoryEssayItems by mutableStateOf<List<RelatedEssay>>(emptyList())
     var modifyStoryEssayItems by mutableStateOf<List<RelatedEssay>>(emptyList())
+
+    fun getUserInfo() : UserInfo{
+        return exampleItems.myProfile
+    }
+    fun getSelectedStory():Story{
+        return exampleItems.exampleStroy
+    }
+    fun setSelectStory(story: Story){
+        exampleItems.exampleStroy = story
+    }
 
     //에세이 option에서 스토리 확인하기
     fun findStoryInEssay() : Story?{
@@ -76,14 +84,14 @@ class MyLogViewModel @Inject constructor(
 
         if (isCreateStory){
             createStoryEssayItems.forEach {
-                if (it.story == selectedStory.id) {
+                if (it.story == getSelectedStory().id) {
                     relatedEssayList.add(it)
                 }
             }
         }
         else{
             modifyStoryEssayItems.forEach {
-                if (it.story == selectedStory.id) {
+                if (it.story == getSelectedStory().id) {
                     relatedEssayList.add(it)
                 }
             }
@@ -258,7 +266,6 @@ class MyLogViewModel @Inject constructor(
 
                 if (response.isSuccessful) {
                     Token.accessToken = (response.headers()["authorization"].toString())
-                    selectedStory.name = ""
                     navController.navigate("MYLOG")
 
                     Log.e("writeEssayApiSuccess", "${response.headers()}")
@@ -283,11 +290,10 @@ class MyLogViewModel @Inject constructor(
             try {
                 val storyData = StoryApi.StoryData(storyTextFieldTitle,essayIdList)
 
-                val response = storyApi.modifyStory(Token.accessToken,selectedStory.id!!,storyData)
+                val response = storyApi.modifyStory(Token.accessToken,getSelectedStory().id!!,storyData)
 
                 if (response.isSuccessful) {
                     Token.accessToken = (response.headers()["authorization"].toString())
-                    selectedStory.name = ""
                     navController.navigate("MYLOG")
 
                     Log.e("writeEssayApiSuccess", "${response.headers()}")
@@ -311,11 +317,10 @@ class MyLogViewModel @Inject constructor(
         viewModelScope.launch {
             try {
 
-                val response = storyApi.modifyEssayInStory(Token.accessToken,detailEssay.id!!,selectedStory.id!!)
+                val response = storyApi.modifyEssayInStory(Token.accessToken,detailEssay.id!!,getSelectedStory().id!!)
 
                 if (response.isSuccessful) {
                     Token.accessToken = (response.headers()["authorization"].toString())
-                    selectedStory.name = ""
                     isActionClicked = false
                     navController.navigate("MYLOG")
 
@@ -344,7 +349,6 @@ class MyLogViewModel @Inject constructor(
 
                 if (response.isSuccessful) {
                     Token.accessToken = (response.headers()["authorization"].toString())
-                    selectedStory.name = ""
                     isActionClicked = false
                     navController.navigate("MYLOG")
 
@@ -402,9 +406,9 @@ class MyLogViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 var response : Response<RelatedEssayResponse>? = null
-                Log.d(TAG, "readStoryEssayList: ${selectedStory.name},${selectedStory.id}")
+                Log.d(TAG, "readStoryEssayList: ${getSelectedStory().name},${getSelectedStory().id}")
                 response = if (!isCreateStory) { //스토리 편집하기를 누른경우 selectedStory가 존재할것.
-                    storyApi.readStoryEssayList(Token.accessToken, selectedStory.id)
+                    storyApi.readStoryEssayList(Token.accessToken, getSelectedStory().id)
                 } else{
                     storyApi.readStoryEssayList(Token.accessToken)
                 }
@@ -412,6 +416,7 @@ class MyLogViewModel @Inject constructor(
                 if (response.isSuccessful) {
 
                     Token.accessToken = response.headers()["authorization"].toString()
+                    Log.d(TAG, "readStoryEssayList: ${getSelectedStory()}")
 
                     Log.e("writeEssayApiSuccess", "${response.headers()}")
                     Log.e("writeEssayApiSuccess", "${response.code()}")
