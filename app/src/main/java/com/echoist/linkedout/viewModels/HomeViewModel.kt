@@ -20,6 +20,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.echoist.linkedout.AlarmReceiver
 import com.echoist.linkedout.DeviceId
+import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.api.SupportApi
 import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.data.History
@@ -50,6 +51,9 @@ class HomeViewModel @Inject constructor(
     var updateHistory: SnapshotStateList<History> =  mutableStateListOf()
 
 
+    fun setStorageEssay(essayItem: EssayApi.EssayItem){
+        exampleItems.storageEssay = essayItem
+    }
 
     fun getMyInfo(): UserInfo { // 함수 이름 변경
         return exampleItems.myProfile

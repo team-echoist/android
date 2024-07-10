@@ -37,8 +37,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.echoist.linkedout.R
+import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.components.ModifyStoryBox
-import com.echoist.linkedout.data.RelatedEssay
 import com.echoist.linkedout.data.Story
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
@@ -46,7 +46,7 @@ import com.echoist.linkedout.viewModels.MyLogViewModel
 
 @Composable
 fun StoryDetailPage(viewModel: MyLogViewModel, navController: NavController) {
-    viewModel.readStoryEssayList()
+    viewModel.readEssayListInStory()
 
         LinkedOutTheme {
             Scaffold(topBar = { StoryDetailTopAppBar(navController, viewModel) {
@@ -75,9 +75,9 @@ fun StoryDetailTopAppBar(navController: NavController, viewModel: MyLogViewModel
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     SuggestionChip(onClick = { }, label = { Text(text = "스토리", fontSize = 10.sp) })
                     Spacer(modifier = Modifier.width(10.dp))
-                    Text(text = "돌연한 출발", fontWeight = FontWeight.Bold, textAlign = TextAlign.Center, fontSize = 16.sp)
+                    Text(text = viewModel.getSelectedStory().name, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center, fontSize = 16.sp)
                     Spacer(modifier = Modifier.width(10.dp))
-                    Text(text = "8편", color =  Color(0xFF6B6B6B), fontSize = 16.sp)
+                    Text(text = "${viewModel.getSelectedStory().essaysCount}편", color =  Color(0xFF6B6B6B), fontSize = 16.sp)
 
                 }
             }
@@ -121,7 +121,7 @@ fun StoryDetailTitle(story: Story,userName : String){
 }
 //viewmodel.modiftstorylist
 @Composable
-fun StoryDetailItem(essayItem: RelatedEssay, num : Int,isItemClicked : ()->Unit){
+fun StoryDetailItem(essayItem: EssayApi.EssayItem, num : Int,isItemClicked : ()->Unit){
     Box(modifier = Modifier
         .fillMaxWidth()
         .clickable { isItemClicked() }
@@ -133,11 +133,14 @@ fun StoryDetailItem(essayItem: RelatedEssay, num : Int,isItemClicked : ()->Unit)
                 Modifier
                     .weight(0.5f)
                     .fillMaxSize(),verticalArrangement = Arrangement.Center) {
-                Text(text = essayItem.title)
+                Text(text = essayItem.title!!, fontSize = 16.sp, color = LinkedInColor)
                 Spacer(modifier = Modifier.width(10.dp))
-                Text(text = essayItem.createdDate)
+                Text(text = essayItem.createdDate!!, fontSize = 12.sp, color = Color(0xFF3E415B))
             }
-            Icon(painter = painterResource(id = R.drawable.option_linkedout), tint = Color.Unspecified, contentDescription = "")
+            if (essayItem.status == "published"){
+                Icon(painter = painterResource(id = R.drawable.option_linkedout), tint = Color(0xFF3E415B), contentDescription = "", modifier = Modifier.size(20.dp))
+
+            }
         }
     }
 }
@@ -147,8 +150,8 @@ fun StoryDetailList(viewModel: MyLogViewModel,navController : NavController){
     LazyColumn {
         items(viewModel.modifyStoryEssayItems){
         }
-        itemsIndexed(viewModel.modifyStoryEssayItems){i,essay->
-            StoryDetailItem(essay,i+1){viewModel.readDetailEssayInStory(essay.id,navController,i+1)}
+        itemsIndexed(viewModel.essayListInStroy){i,essay->
+            StoryDetailItem(essay,i+1){viewModel.readDetailEssayInStory(essay.id!! ,navController,i+1)}
 
         }
     }

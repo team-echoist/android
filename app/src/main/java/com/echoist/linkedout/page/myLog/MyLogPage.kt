@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.components.EssayChips
 import com.echoist.linkedout.components.EssayPager
@@ -35,6 +36,7 @@ import com.echoist.linkedout.page.community.SearchingPage
 import com.echoist.linkedout.page.home.MyBottomNavigation
 import com.echoist.linkedout.page.home.WriteFTB
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
+import com.echoist.linkedout.viewModels.HomeViewModel
 import com.echoist.linkedout.viewModels.MyLogViewModel
 import kotlinx.coroutines.launch
 
@@ -43,6 +45,7 @@ import kotlinx.coroutines.launch
 fun MyLogPage(navController : NavController,viewModel: MyLogViewModel) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val homeViewModel : HomeViewModel = hiltViewModel()
 
     val pagerstate = rememberPagerState { 3 }
     val hasCalledApi = remember { mutableStateOf(false) }
@@ -94,8 +97,9 @@ fun MyLogPage(navController : NavController,viewModel: MyLogViewModel) {
                                     EssayChips(pagerstate, viewModel)
                                 }
                             },
+
                             bottomBar = { MyBottomNavigation(navController) },
-                            floatingActionButton = { WriteFTB(navController) },
+                            floatingActionButton = { WriteFTB(navController,homeViewModel) },
                             content = {
                                 Box(Modifier.padding(it)) {
                                     EssayPager(

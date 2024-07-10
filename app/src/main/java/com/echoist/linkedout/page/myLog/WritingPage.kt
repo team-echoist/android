@@ -1,5 +1,6 @@
 package com.echoist.linkedout.page.myLog
 
+import android.content.ContentValues.TAG
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
@@ -269,8 +270,9 @@ fun WritingTopAppBar(
     navController: NavController,
     viewModel: WritingViewModel
 ) {
+    Log.d(TAG, "WritingTopAppBar: ${viewModel.title}")
     val isKeyboardOpen by keyboardAsState() //keyBoard.Opened
-    val textState = viewModel.title
+
     val focusRequester = remember { FocusRequester() }
     val focusState = viewModel.focusState
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -358,8 +360,8 @@ fun WritingTopAppBar(
                             )
                         }
                     },
-                    value = textState.value,
-                    onValueChange = { textState.value = it },
+                    value = viewModel.title.value,
+                    onValueChange = { viewModel.title.value = it },
                     textStyle = TextStyle(
                         textAlign = if (viewModel.titleFocusState.value) TextAlign.Start else TextAlign.Center,
                         fontSize = if (viewModel.titleFocusState.value) 20.sp else 16.sp
@@ -522,7 +524,20 @@ fun WritingCancelCard(viewModel: WritingViewModel, navController: NavController)
                 Text(
                     modifier = Modifier
                         .padding(top = 20.dp, bottom = 20.dp)
-                        .clickable { /*todo 임시저장 기능구현필요 */ },
+                        .clickable { viewModel.updateOrInsertEssay(
+                            EssayApi.EssayItem(
+                                title = viewModel.title.value.text,
+                                content = viewModel.content.text,
+                                longitude = viewModel.longitude,
+                                latitude = viewModel.latitude,
+                                createdDate = viewModel.getCurrentDate(),
+                                essayPrimaryId = viewModel.essayPrimaryId ?: 0
+                            )
+
+                        )
+                            navController.popBackStack()
+                            viewModel.initialize()
+                                   },
                     fontSize = 16.sp,
                     text = "임시저장",
                     textAlign = TextAlign.Center,
@@ -718,17 +733,23 @@ fun TextEditBar(
                 tint = Color.Unspecified
             )
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
-                val context = LocalContext.current
+
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "저장", color = Color.White, modifier = Modifier.clickable {
-                        viewModel.storeEssay(
+                        //room db에 저장
+                        viewModel.updateOrInsertEssay(
                             EssayApi.EssayItem(
-                                viewModel.title.value.text,
-                                viewModel.content.text,
-                                createdDate = viewModel.getCurrentDate()
+                                title = viewModel.title.value.text,
+                                content = viewModel.content.text,
+                                longitude = viewModel.longitude,
+                                latitude = viewModel.latitude,
+                                createdDate = viewModel.getCurrentDate(),
+                                essayPrimaryId = viewModel.essayPrimaryId ?: 0
+
                             )
                         )
                     })
+                    Spacer(modifier = Modifier.width(15.dp))
                     VerticalDivider(
                         modifier = Modifier
                             .height(34.dp)

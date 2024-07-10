@@ -20,6 +20,7 @@ import com.echoist.linkedout.room.EssayStoreDao
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
@@ -31,6 +32,7 @@ class WritingViewModel @Inject constructor(
     private val essayStoreDao: EssayStoreDao
 ) : ViewModel() {
 
+    var storedDetailEssay by mutableStateOf(EssayApi.EssayItem()) //이 값으로 다시 writingpage로 이동시키기
 
 
     var myProfile by mutableStateOf(exampleItems.myProfile)
@@ -43,9 +45,11 @@ class WritingViewModel @Inject constructor(
     var focusState = mutableStateOf(false)
     var titleFocusState = mutableStateOf(false)
 
+    //ftb 를 통해 들어가면 storedDetailEssay를 null값으로 만들면됨
     var title = mutableStateOf(TextFieldValue(""))
     var content by mutableStateOf(TextFieldValue(""))
     var ringTouchedTime by mutableIntStateOf(5)
+    var essayPrimaryId : Int? by mutableStateOf(null)
 
     var latitude :Double? by mutableStateOf(null)
     var longitude :Double? by mutableStateOf(null)
@@ -79,17 +83,54 @@ class WritingViewModel @Inject constructor(
         val formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
         return currentDate.format(formatter)
     }
-    fun setStorageEssay(essayItem: EssayApi.EssayItem){
-        exampleItems.storageEssay = essayItem
-    }
 
-    fun getStorageEssay() : EssayApi.EssayItem{
-        return exampleItems.storageEssay
-    }
-
-    fun storeEssay(essayItem: EssayApi.EssayItem) {
+    fun getEssayById(id: Int,navController: NavController) {
         viewModelScope.launch(Dispatchers.IO) {
-            essayStoreDao.insertEssay(essayItem) //todo 공백도 허용할것?
+            storedDetailEssay = essayStoreDao.getEssayById(id)!!
+            title.value = TextFieldValue(storedDetailEssay.title.toString())
+            content = TextFieldValue(storedDetailEssay.content.toString())
+            longitude = storedDetailEssay.longitude
+            latitude = storedDetailEssay.latitude
+            essayPrimaryId = storedDetailEssay.essayPrimaryId
+
+
+            Log.d(TAG, "getEssayById: $storedDetailEssay")
+            withContext(Dispatchers.Main) {
+                navController.navigate("WritingPage")
+            }
+
+        }
+    }
+
+
+    fun deleteEssays(essayIds: List<Int?>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                essayStoreDao.deleteEssaysByIds(essayIds!!) //todo 공백도 허용할것?
+                getAllStoredData()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun updateOrInsertEssay(essayItem: EssayApi.EssayItem) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                essayStoreDao.updateOrInsertEssay(essayItem) //todo 공백도 허용할것?
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun getAllStoredData(){
+        viewModelScope.launch(Dispatchers.IO) {
+            val storedData = essayStoreDao.getAllReadData()
+            Log.d(TAG, "getAllStoredData: $storedData")
+            storageEssaysList.clear()
+            storageEssaysList.addAll(storedData)
         }
     }
 
@@ -113,6 +154,7 @@ class WritingViewModel @Inject constructor(
         isLocationClicked = false
         imageBitmap = mutableStateOf(null)
         isTextFeatOpened.value = false
+        essayPrimaryId = null
     }
 
 

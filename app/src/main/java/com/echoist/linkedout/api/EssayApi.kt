@@ -45,8 +45,8 @@ interface EssayApi{
     @GET("api/essays")
     suspend fun readMyEssay(
         @Header("Authorization") accessToken: String,
-        @Query("published") published: Boolean? = false,
-        @Query("storyId") storyId: String = "",
+        @Query("published") published: Boolean? = null,
+        @Query("storyId") storyId: Int? = null,
         @Query("limit") limit: Int = 100, //이 값은 기본 10 수정가능
     ): Response<EssayListResponse>
 
@@ -145,7 +145,7 @@ interface EssayApi{
         var isBookmarked: Boolean = false,
 
         @PrimaryKey(autoGenerate = true)
-        var essayPrimaryId: Int = 0
+        var essayPrimaryId: Int =0
     )
 
 

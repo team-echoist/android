@@ -199,9 +199,10 @@ dependencies {
     //lottie
     implementation ("com.airbnb.android:lottie-compose:6.4.1")
 
-    implementation ("androidx.room:room-runtime:2.4.0")
-    kapt ("androidx.room:room-compiler:2.2.5")
-    implementation ("androidx.room:room-ktx:2.4.0")
+    val room_version = "2.6.1"
+    implementation ("androidx.room:room-runtime:$room_version")
+    kapt ("androidx.room:room-compiler:$room_version")
+    implementation ("androidx.room:room-ktx:$room_version")
 
     kapt ("org.xerial:sqlite-jdbc:3.34.0")
 

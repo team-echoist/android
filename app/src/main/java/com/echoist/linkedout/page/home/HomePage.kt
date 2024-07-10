@@ -68,6 +68,7 @@ import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
+import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.BottomNavItem
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.ui.theme.LinkedInColor
@@ -114,7 +115,7 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel) {
                     },{navController.navigate("NotificationPage")})
                 },
                 bottomBar = { MyBottomNavigation(navController) },
-                floatingActionButton = { WriteFTB(navController) },
+                floatingActionButton = { WriteFTB(navController,viewModel) },
                 content = {
                     Column(modifier = Modifier.padding(it)) {
 
@@ -166,12 +167,13 @@ fun ModalBottomSheetContent(viewModel: HomeViewModel,navController: NavControlle
 }
 
 @Composable
-fun WriteFTB(navController: NavController) {
+fun WriteFTB(navController: NavController,viewModel: HomeViewModel) {
 
 
     FloatingActionButton(
         modifier = Modifier.padding(end = 25.dp, bottom = 25.dp),
-        onClick = { navController.navigate("WritingPage") },
+        onClick = { navController.navigate("WritingPage")
+                  viewModel.setStorageEssay(EssayApi.EssayItem())},
         shape = RoundedCornerShape(100.dp),
         containerColor = if (isSystemInDarkTheme()) Color.White else Color.Gray
     ) {
@@ -205,7 +207,7 @@ fun CustomTopAppBar(onClick: () -> Unit,onClickNotification : ()->Unit) {
                 Icons.Default.Notifications,
                 contentDescription = "Notifications",
                 modifier = Modifier
-                    .clickable {onClickNotification() }
+                    .clickable { onClickNotification() }
                     .padding(end = 20.dp)
                     .size(30.dp)
             )
@@ -416,7 +418,9 @@ fun ShopDrawerItem() {
         selected = false,
         onClick = { },
         badge = {
-            Box(modifier = Modifier.size(60.dp,24.dp).background(Color(0xFF191919), shape = RoundedCornerShape(40)), contentAlignment = Alignment.Center){
+            Box(modifier = Modifier
+                .size(60.dp, 24.dp)
+                .background(Color(0xFF191919), shape = RoundedCornerShape(40)), contentAlignment = Alignment.Center){
                 Text(text = "  준비중  ", fontWeight = FontWeight.SemiBold, color = LinkedInColor, fontSize = 12.sp )
 
             }

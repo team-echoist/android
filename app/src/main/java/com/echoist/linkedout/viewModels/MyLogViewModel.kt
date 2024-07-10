@@ -56,6 +56,8 @@ class MyLogViewModel @Inject constructor(
 
     var createStoryEssayItems by mutableStateOf<List<RelatedEssay>>(emptyList())
     var modifyStoryEssayItems by mutableStateOf<List<RelatedEssay>>(emptyList())
+    var essayListInStroy by mutableStateOf<List<EssayApi.EssayItem>>(emptyList())
+
 
     fun getUserInfo() : UserInfo{
         return exampleItems.myProfile
@@ -457,6 +459,28 @@ class MyLogViewModel @Inject constructor(
                 }
                 else //스토리 수정을 누른경우
                     modifyStoryEssayItems = response.body()!!.data.essays
+            } catch (e: Exception) {
+                Log.e("writeEssayApiError", "An error occurred: ${e.message}")
+            }
+
+        }
+    }
+
+    fun readEssayListInStory(){
+        viewModelScope.launch {
+            try {
+                var response = essayApi.readMyEssay(Token.accessToken, storyId = getSelectedStory().id!!)
+
+                if (response.isSuccessful) {
+
+                    Token.accessToken = response.headers()["authorization"].toString()
+                    essayListInStroy = response.body()!!.data.essays.toMutableStateList()
+
+                } else {
+                    Log.e("writeEssayApiFailed", "${response.errorBody()}")
+                    Log.e("writeEssayApiFailed", "${response.code()}")
+                }
+
             } catch (e: Exception) {
                 Log.e("writeEssayApiError", "An error occurred: ${e.message}")
             }

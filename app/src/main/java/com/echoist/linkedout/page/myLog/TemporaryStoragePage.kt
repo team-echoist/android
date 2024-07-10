@@ -30,6 +30,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,15 +38,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.ui.theme.LinkedInColor
@@ -54,9 +50,15 @@ import com.echoist.linkedout.viewModels.WritingViewModel
 
 
 @Composable
-fun TemporaryStoragePage(navController: NavController, viewModel: WritingViewModel = hiltViewModel()) {
+fun TemporaryStoragePage(navController: NavController, viewModel: WritingViewModel) {
     var isModifyClicked by remember { mutableStateOf(false) }
     var selectedItems by remember { mutableStateOf<Set<EssayApi.EssayItem>>(emptySet()) }
+
+    // 데이터 로드를 위한 remember와 LaunchedEffect
+    val storageEssaysList by remember { mutableStateOf(viewModel.storageEssaysList)  }
+    LaunchedEffect(Unit) {
+        viewModel.getAllStoredData()
+    }
 
     LinkedOutTheme {
         Scaffold(topBar = {
@@ -69,23 +71,31 @@ fun TemporaryStoragePage(navController: NavController, viewModel: WritingViewMod
             Column(Modifier.padding(it)) {
                 StorageWritingEssay(viewModel.title.value.text, viewModel.getCurrentDate())
                 if (isModifyClicked) {
-                    StorageSelectBox()
-                }
-                else{
+                    StorageSelectBox(viewModel.storageEssaysList)
+                } else {
                     Spacer(modifier = Modifier.height(20.dp))
                 }
                 StorageEssayList(
-                    essayList = viewModel.storageEssaysList, // todo roomdb에 저장되어있는 임시저장 리스트 불러오기
+                    essayList = storageEssaysList,
                     isModifyClicked = isModifyClicked,
                     selectedItems = selectedItems,
-                    onSelectionChange = { it -> selectedItems = it }
+                    onSelectionChange = { selectedItems = it },
+                    viewModel = viewModel,
+                    navController = navController,
+                    modifier = Modifier.weight(7f)
                 )
                 val btnColor = if (selectedItems.isEmpty()) Color(0xFF868686) else LinkedInColor
-                DeleteBtn(count = selectedItems.size, onDeleteClicked = { /*TODO*/ }, btnColor = btnColor)
+                val selectedIds = selectedItems.map { it.essayPrimaryId }
+                DeleteBtn(count = selectedItems.size,
+                    onDeleteClicked = {
+                    viewModel.deleteEssays(selectedIds)
+                        Log.d(TAG, "TemporaryStoragePage: $selectedIds")
+                    selectedItems = emptySet() }, btnColor = btnColor)
             }
         }
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -160,29 +170,21 @@ fun StorageWritingEssay(title : String, createdDate : String) {
     }
 }
 
-@Preview
 @Composable
-fun StorageSelectBox() {
-    val text = remember {
-        AnnotatedString.Builder().apply {
-            append("전체 ")
-            withStyle(
-                style = SpanStyle(
-                    color = LinkedInColor,
-                )
-            ) {
-                append("8")
-            }
-            append("개")
-        }.toAnnotatedString()
-    }
+fun StorageSelectBox(storageEssayList : List<EssayApi.EssayItem>) {
+
     Row(
         Modifier
             .fillMaxWidth()
             .height(61.dp)
             .padding(horizontal = 35.dp), verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = text, modifier = Modifier.weight(8f), color = Color.White)
+        Row (Modifier.weight(8f)){
+            Text(text = "전체 ", color = Color.White)
+            Text(text = "${storageEssayList.size} ", color = LinkedInColor)
+            Text(text = "개 ", color = Color.White)
+
+        }
         Box(
             modifier = Modifier
                 .width(62.dp)
@@ -197,15 +199,18 @@ fun StorageSelectBox() {
 
 @Composable
 fun StorageEssayItem(
+    essayItem: EssayApi.EssayItem,
     isModifyClicked: Boolean,
     isSelected: Boolean,
-    onItemSelected: (Boolean) -> Unit
+    onItemSelected: (Boolean) -> Unit,
+    isEssayClicked: () -> Unit
 ) {
     val color = if (isSelected) LinkedInColor else Color(0xFF252525)
 
     Box( modifier = Modifier
         .padding(horizontal = 35.dp)
         .fillMaxWidth()
+        .clickable { if (!isModifyClicked) isEssayClicked() } //수정 상태가 아닐 때만 클릭 가능
         .height(73.dp)){
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -216,10 +221,10 @@ fun StorageEssayItem(
                     .weight(8f),
                 verticalArrangement = Arrangement.Center
             ) {
-                Text(text = "뜻밖의 사실", color = Color.White) // Added color to match the theme
+                Text(text = essayItem.title!!, color = Color.White) // Added color to match the theme
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "2024.05.19", fontSize = 10.sp,
+                    text = essayItem.createdDate!!, fontSize = 10.sp,
                     lineHeight = 15.sp,
                     color = Color(0xFF727070),
                 )
@@ -252,13 +257,17 @@ fun StorageEssayList(
     essayList: List<EssayApi.EssayItem>,
     isModifyClicked: Boolean,
     selectedItems: Set<EssayApi.EssayItem>,
-    onSelectionChange: (Set<EssayApi.EssayItem>) -> Unit
+    onSelectionChange: (Set<EssayApi.EssayItem>) -> Unit,
+    viewModel: WritingViewModel,
+    navController: NavController,
+    modifier: Modifier
 ) {
-    LazyColumn {
+    LazyColumn(modifier) {
         items(essayList) { item ->
             val isSelected = item in selectedItems
 
             StorageEssayItem(
+                item,
                 isModifyClicked = isModifyClicked,
                 isSelected = isSelected,
                 onItemSelected = { selected ->
@@ -268,7 +277,7 @@ fun StorageEssayList(
                         selectedItems - item
                     }
                     onSelectionChange(newSelectedItems)
-                }
+                },{viewModel.getEssayById(item.essayPrimaryId!!,navController)}
             )
         }
 
