@@ -46,6 +46,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -87,6 +88,11 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 fun HomePage(navController: NavController,viewModel: HomeViewModel) {
+
+    LaunchedEffect(key1 = Unit) {
+        viewModel.readMyInfo()
+
+    }
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -172,8 +178,11 @@ fun WriteFTB(navController: NavController,viewModel: HomeViewModel) {
 
     FloatingActionButton(
         modifier = Modifier.padding(end = 25.dp, bottom = 25.dp),
-        onClick = { navController.navigate("WritingPage")
-                  viewModel.setStorageEssay(EssayApi.EssayItem())},
+        onClick = {
+            navController.navigate("WritingPage")
+            viewModel.initializeDetailEssay()
+            viewModel.setStorageEssay(EssayApi.EssayItem())
+                  },
         shape = RoundedCornerShape(100.dp),
         containerColor = if (isSystemInDarkTheme()) Color.White else Color.Gray
     ) {

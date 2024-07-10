@@ -38,9 +38,10 @@ import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.MyLogViewModel
+import com.echoist.linkedout.viewModels.WritingViewModel
 
 @Composable
-fun DetailEssayInStoryPage(navController: NavController, viewModel: MyLogViewModel) {
+fun DetailEssayInStoryPage(navController: NavController, viewModel: MyLogViewModel,writingViewModel: WritingViewModel) {
     val scrollState = rememberScrollState()
 
 
@@ -80,7 +81,7 @@ fun DetailEssayInStoryPage(navController: NavController, viewModel: MyLogViewMod
                         )
                     ) {
 
-                        ModifyOption(viewModel, navController = navController)
+                        ModifyOption(viewModel, navController = navController, writingViewModel = writingViewModel)
 
                     }
 

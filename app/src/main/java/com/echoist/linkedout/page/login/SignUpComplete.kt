@@ -41,6 +41,7 @@ import kotlinx.coroutines.delay
 fun SignUpCompletePage(homeViewModel: HomeViewModel,navController: NavController) {
 
     LaunchedEffect(key1 = Unit) {
+        homeViewModel.readMyInfo()
         delay(2000)
         navController.navigate("HOME")
     }

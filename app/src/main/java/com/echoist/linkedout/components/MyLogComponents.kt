@@ -53,19 +53,20 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyLogTopAppBar(onClickSearch : ()->Unit,nickName : String){
+fun MyLogTopAppBar(onClickSearch : ()->Unit,nickName : String,onClickNotification : ()->Unit){
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
         title = {
             Text(text = "$nickName 님")
         },
         actions = {
-            Icon(imageVector = Icons.Default.Search, contentDescription = "", Modifier.size(30.dp).clickable { onClickSearch() })
+            Icon(imageVector = Icons.Default.Search, contentDescription = "",
+                Modifier.size(30.dp).clickable { onClickSearch() })
             Spacer(modifier = Modifier.width(13.dp))
             Icon(
                 imageVector = Icons.Default.Notifications,
                 contentDescription = "",
-                Modifier.size(30.dp)
+                Modifier.size(30.dp).clickable { onClickNotification() }
             )
             Spacer(modifier = Modifier.width(15.dp))
 

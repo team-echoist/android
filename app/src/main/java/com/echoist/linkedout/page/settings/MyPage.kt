@@ -74,10 +74,19 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.echoist.linkedout.INSPECT_POPUP_URL
-import com.echoist.linkedout.LINKEDOUT_POPUP_URL
 import com.echoist.linkedout.PRIVATE_POPUP_URL
-import com.echoist.linkedout.PUBLISHED_POPUP_URL
+import com.echoist.linkedout.PROFILE_IMAGE_01
+import com.echoist.linkedout.PROFILE_IMAGE_02
+import com.echoist.linkedout.PROFILE_IMAGE_03
+import com.echoist.linkedout.PROFILE_IMAGE_04
+import com.echoist.linkedout.PROFILE_IMAGE_05
+import com.echoist.linkedout.PROFILE_IMAGE_06
+import com.echoist.linkedout.PROFILE_IMAGE_07
+import com.echoist.linkedout.PROFILE_IMAGE_08
+import com.echoist.linkedout.PROFILE_IMAGE_09
+import com.echoist.linkedout.PROFILE_IMAGE_10
+import com.echoist.linkedout.PROFILE_IMAGE_11
+import com.echoist.linkedout.PROFILE_IMAGE_12
 import com.echoist.linkedout.R
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.BadgeBoxItem
@@ -693,9 +702,18 @@ fun SelectProfileImageIcon(onClickModifyImage: () -> Unit, imageUrl : String ) {
 @Composable
 fun SelectProfileIconBottomSheet(viewModel: SettingsViewModel){
 
-    val icons = listOf(PRIVATE_POPUP_URL,
-        PUBLISHED_POPUP_URL,
-        LINKEDOUT_POPUP_URL,PRIVATE_POPUP_URL,PRIVATE_POPUP_URL, INSPECT_POPUP_URL)
+    val icons = listOf(PROFILE_IMAGE_01,
+        PROFILE_IMAGE_02,
+        PROFILE_IMAGE_03,
+        PROFILE_IMAGE_04,
+        PROFILE_IMAGE_05,
+        PROFILE_IMAGE_06,
+        PROFILE_IMAGE_07,
+        PROFILE_IMAGE_08,
+        PROFILE_IMAGE_09,
+        PROFILE_IMAGE_10,
+        PROFILE_IMAGE_11,
+        PROFILE_IMAGE_12)
 
     Box(modifier = Modifier
         .fillMaxWidth()
@@ -749,6 +767,8 @@ fun SelectProfileIconBottomSheet(viewModel: SettingsViewModel){
                     )
                 }
             }
+            Spacer(modifier = Modifier.height(20.dp))
+
         }
     }
 }

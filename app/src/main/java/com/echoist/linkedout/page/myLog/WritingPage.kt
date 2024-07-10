@@ -524,15 +524,26 @@ fun WritingCancelCard(viewModel: WritingViewModel, navController: NavController)
                 Text(
                     modifier = Modifier
                         .padding(top = 20.dp, bottom = 20.dp)
-                        .clickable { viewModel.updateOrInsertEssay(
-                            EssayApi.EssayItem(
-                                title = viewModel.title.value.text,
-                                content = viewModel.content.text,
-                                longitude = viewModel.longitude,
-                                latitude = viewModel.latitude,
-                                createdDate = viewModel.getCurrentDate(),
-                                essayPrimaryId = viewModel.essayPrimaryId ?: 0
-                            )
+                        .clickable {
+
+                            val tagList = mutableListOf<EssayApi.Tag>()
+
+                            viewModel.hashTagList.forEach {
+                                tagList.add(EssayApi.Tag(1,it))
+                            }
+
+                            viewModel.updateOrInsertEssay(
+                                EssayApi.EssayItem(
+                                    title = viewModel.title.value.text,
+                                    content = viewModel.content.text,
+                                    longitude = viewModel.longitude,
+                                    latitude = viewModel.latitude,
+                                    createdDate = viewModel.getCurrentDate(),
+                                    tags = tagList,
+                                    essayPrimaryId = viewModel.essayPrimaryId ?: 0
+
+                                )
+
 
                         )
                             navController.popBackStack()
@@ -737,6 +748,11 @@ fun TextEditBar(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "저장", color = Color.White, modifier = Modifier.clickable {
                         //room db에 저장
+                        val tagList = mutableListOf<EssayApi.Tag>()
+                        viewModel.hashTagList.forEach {
+                            tagList.add(EssayApi.Tag(1,it))
+                        }
+
                         viewModel.updateOrInsertEssay(
                             EssayApi.EssayItem(
                                 title = viewModel.title.value.text,
@@ -744,6 +760,7 @@ fun TextEditBar(
                                 longitude = viewModel.longitude,
                                 latitude = viewModel.latitude,
                                 createdDate = viewModel.getCurrentDate(),
+                                tags = tagList,
                                 essayPrimaryId = viewModel.essayPrimaryId ?: 0
 
                             )

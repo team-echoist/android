@@ -1,6 +1,7 @@
 package com.echoist.linkedout.components
 
 import android.app.Activity
+import android.content.ContentValues.TAG
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
@@ -207,7 +208,10 @@ fun HashTagTextField(viewModel: WritingViewModel) {
                 val trimmedText = it.trim()
                 if (trimmedText.isNotBlank() && viewModel.hashTagList.size < 4) {
                     viewModel.hashTagList.add(trimmedText)
+                    Log.d(TAG, "HashTagTextField: ${viewModel.hashTagText}")
+
                     viewModel.hashTagText = ""
+                    Log.d(TAG, "HashTagTextField: ${viewModel.hashTagList}")
                 }
             } else {
                 viewModel.hashTagText = it
@@ -327,8 +331,10 @@ fun HashTagGroup(viewModel: WritingViewModel){
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier
                     .padding(end = 11.5.dp)
-                    .clickable { viewModel.isHashTagClicked = true
-                        viewModel.isTextFeatOpened.value = true }
+                    .clickable {
+                        viewModel.isHashTagClicked = true
+                        viewModel.isTextFeatOpened.value = true
+                    }
             )
         }
     }

@@ -42,10 +42,10 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-fun MyLogPage(navController : NavController,viewModel: MyLogViewModel) {
+fun MyLogPage(navController: NavController, viewModel: MyLogViewModel) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    val homeViewModel : HomeViewModel = hiltViewModel()
+    val homeViewModel: HomeViewModel = hiltViewModel()
 
     val pagerstate = rememberPagerState { 3 }
     val hasCalledApi = remember { mutableStateOf(false) }
@@ -86,22 +86,25 @@ fun MyLogPage(navController : NavController,viewModel: MyLogViewModel) {
                             topBar = {
                                 Column {
 
-                                    MyLogTopAppBar({
-                                        scope.launch {
-                                            drawerState.apply {
-                                                if (isClosed) open() else close()
+                                    MyLogTopAppBar(
+                                        {
+                                            scope.launch {
+                                                drawerState.apply {
+                                                    if (isClosed) open() else close()
+                                                }
                                             }
-                                        }
-                                        navController.navigate("NotificationPage")
 
-                                    },viewModel.myProfile.nickname!!)
+
+                                        },
+                                        viewModel.myProfile.nickname!!,
+                                        { navController.navigate("NotificationPage") })
 
                                     EssayChips(pagerstate, viewModel)
                                 }
                             },
 
                             bottomBar = { MyBottomNavigation(navController) },
-                            floatingActionButton = { WriteFTB(navController,homeViewModel) },
+                            floatingActionButton = { WriteFTB(navController, homeViewModel) },
                             content = {
                                 Box(Modifier.padding(it)) {
                                     EssayPager(

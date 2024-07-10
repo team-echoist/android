@@ -357,7 +357,7 @@ class SocialLoginViewModel @Inject constructor(
 
                 if (response.isSuccessful) {
                     Log.d("tokentoken", response.headers()["authorization"].toString())
-                    accessToken = (response.headers()["authorization"].toString())
+                    Token.accessToken = (response.headers()["authorization"].toString())
                     Log.e("authApiSuccess2", response.body()?.success.toString())
                     Log.e("authApiSuccess2", response.message())
                     Log.e("authApiSuccess2", "${response.raw()}")
@@ -373,7 +373,7 @@ class SocialLoginViewModel @Inject constructor(
                         StandardCharsets.UTF_8.toString()
                     )
                     navController.popBackStack("OnBoarding", false) //onboarding까지 전부 삭제.
-                    navController.navigate("HOMEaccessToken")
+                    navController.navigate("HOME")
                 } else {
                     Log.e("authApiFailed2", "Failed : ${response.headers().get("authorization")}")
                     Log.e("authApifailed32", "${response.code()}")

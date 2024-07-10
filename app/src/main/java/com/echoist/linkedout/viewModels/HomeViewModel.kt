@@ -1,6 +1,5 @@
 package com.echoist.linkedout.viewModels
 
-import com.echoist.linkedout.api.SignUpApiImpl
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.ContentValues
@@ -21,7 +20,9 @@ import androidx.navigation.NavController
 import com.echoist.linkedout.AlarmReceiver
 import com.echoist.linkedout.DeviceId
 import com.echoist.linkedout.api.EssayApi
+import com.echoist.linkedout.api.SignUpApiImpl
 import com.echoist.linkedout.api.SupportApi
+import com.echoist.linkedout.api.UserApi
 import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.data.History
 import com.echoist.linkedout.data.NotificationSettings
@@ -38,6 +39,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val exampleItems: ExampleItems,
+    private val userApi: UserApi,
     private val supportApi: SupportApi) : ViewModel() {
 
     var myProfile by mutableStateOf(exampleItems.myProfile)
@@ -51,8 +53,25 @@ class HomeViewModel @Inject constructor(
     var updateHistory: SnapshotStateList<History> =  mutableStateListOf()
 
 
+    fun initializeDetailEssay(){
+        exampleItems.detailEssay = EssayApi.EssayItem()
+    }
     fun setStorageEssay(essayItem: EssayApi.EssayItem){
         exampleItems.storageEssay = essayItem
+    }
+
+    suspend fun readMyInfo(){
+        viewModelScope.launch {
+            try {
+                val response = userApi.readMyInfo(Token.accessToken)
+                exampleItems.myProfile = response.data
+                getMyInfo()
+
+            }catch (_: Exception){
+                Log.d(ContentValues.TAG, "readMyInfo: error err")
+            }
+        }
+
     }
 
     fun getMyInfo(): UserInfo { // 함수 이름 변경

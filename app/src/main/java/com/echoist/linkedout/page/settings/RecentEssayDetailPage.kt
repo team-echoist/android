@@ -227,7 +227,7 @@ fun RecentEssayDetailPage(navController: NavController, viewModel: CommunityView
                                 )
                             )
                         ) {
-                            SequenceBottomBar()
+                            SequenceBottomBar(viewModel.readDetailEssay(),viewModel)
                         }
                     }
                     if (viewModel.isReportClicked)

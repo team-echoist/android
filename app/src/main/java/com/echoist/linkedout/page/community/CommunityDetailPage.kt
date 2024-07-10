@@ -257,7 +257,7 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
                                 )
                             )
                         ) {
-                            SequenceBottomBar()
+                            SequenceBottomBar(viewModel.readDetailEssay(),viewModel)
                         }
                     }
                     if (viewModel.isReportClicked)
@@ -480,16 +480,31 @@ fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navContro
 }
 
 @Composable
-fun SequenceBottomBar(){
+fun SequenceBottomBar(item: EssayApi.EssayItem,viewModel: CommunityViewModel){
+
+    var isEssayBookMarked by remember { mutableStateOf(item.isBookmarked) }
+    val iconImg = if (isEssayBookMarked) Icons.Default.Bookmark else Icons.Default.BookmarkBorder
+
     Box(modifier = Modifier
         .background(Color.Black)
         .fillMaxWidth()
         .height(70.dp)){
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart){
 
-            Icon(imageVector = Icons.Default.BookmarkBorder, contentDescription = "bookMark",
+            Icon(imageVector = iconImg, contentDescription = "bookMark",
                 Modifier
                     .padding(start = 20.dp)
+                    .clickable {
+                        isEssayBookMarked = !isEssayBookMarked
+
+                        viewModel.viewModelScope.launch {
+                            if (isEssayBookMarked) viewModel.addBookMark(item.id!!)
+                            else viewModel.deleteBookMark(
+                                item.id!!
+                            )
+                        }
+
+                    }
                     .size(35.dp))
         }
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){

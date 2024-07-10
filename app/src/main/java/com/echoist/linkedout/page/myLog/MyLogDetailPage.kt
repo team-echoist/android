@@ -47,12 +47,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -69,11 +71,12 @@ import com.echoist.linkedout.data.Story
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.MyLogViewModel
+import com.echoist.linkedout.viewModels.WritingViewModel
 import kotlinx.coroutines.delay
 
 
 @Composable
-fun MyLogDetailPage(navController: NavController, viewModel: MyLogViewModel) {
+fun MyLogDetailPage(navController: NavController, viewModel: MyLogViewModel,writingViewModel: WritingViewModel) {
     val scrollState = rememberScrollState()
 
 
@@ -110,7 +113,7 @@ fun MyLogDetailPage(navController: NavController, viewModel: MyLogViewModel) {
                         )
                     ) {
 
-                        ModifyOption(viewModel, navController = navController)
+                        ModifyOption(viewModel, navController = navController,writingViewModel)
 
                     }
 
@@ -123,7 +126,7 @@ fun MyLogDetailPage(navController: NavController, viewModel: MyLogViewModel) {
 }
 
 @Composable
-fun ModifyOption(viewModel: MyLogViewModel, navController: NavController) {
+fun ModifyOption(viewModel: MyLogViewModel, navController: NavController,writingViewModel : WritingViewModel) {
 
     var isStoryClicked by remember { mutableStateOf(false) }
 
@@ -176,7 +179,18 @@ fun ModifyOption(viewModel: MyLogViewModel, navController: NavController) {
 
                     }
                     HorizontalDivider()
-                    OptionItem(text = "수정", Color.White,{},R.drawable.ftb_edit)
+                    OptionItem(text = "수정", Color.White,{
+                        writingViewModel.title.value = TextFieldValue(viewModel.readDetailEssay().title!!)
+                        writingViewModel.content = TextFieldValue(viewModel.readDetailEssay().content!!)
+                        writingViewModel.hashTagList = viewModel.readDetailEssay().tags!!.map { it.name }.toMutableStateList()
+                        writingViewModel.latitude = viewModel.readDetailEssay().latitude
+                        writingViewModel.longitude = viewModel.readDetailEssay().longitude
+                        writingViewModel.locationText = viewModel.readDetailEssay().location ?: ""
+
+
+                        navController.navigate("WritingPage")
+
+                                                        },R.drawable.ftb_edit)
                     HorizontalDivider()
                     OptionItem(text = "발행", Color.White,{viewModel.updateEssayToPublished(navController)},R.drawable.option_link)
                     HorizontalDivider()
@@ -493,7 +507,7 @@ fun SingleSelectableList(items: List<Story>,viewModel: MyLogViewModel) {
 
 
 @Composable
-fun CompletedEssayPage(navController: NavController, viewModel: MyLogViewModel) {
+fun CompletedEssayPage(navController: NavController, viewModel: MyLogViewModel,writingViewModel: WritingViewModel) {
     var hasCalledApi by remember { mutableStateOf(false) }
     LaunchedEffect(key1 = Unit) {
         if (!hasCalledApi) {
@@ -545,7 +559,7 @@ fun CompletedEssayPage(navController: NavController, viewModel: MyLogViewModel) 
                             )
                         ) {
 
-                            ModifyOption(viewModel, navController = navController)
+                            ModifyOption(viewModel, navController = navController, writingViewModel = writingViewModel)
 
                         }
                         val text = when(viewModel.readDetailEssay().status){
@@ -563,7 +577,9 @@ fun CompletedEssayPage(navController: NavController, viewModel: MyLogViewModel) 
         }
     }
     else{
-        Box(modifier = Modifier.fillMaxSize().background(Color.Black))
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black))
     }
 
 
@@ -709,7 +725,9 @@ fun WriteCompleteBox(type : String){
                         .padding(horizontal = 20.dp)
                         .padding(bottom = 30.dp)
                         .fillMaxSize(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
-                    GlideImage(model = imageUrl, contentDescription = "", modifier = Modifier.weight(2f).height(210.dp))
+                    GlideImage(model = imageUrl, contentDescription = "", modifier = Modifier
+                        .weight(2f)
+                        .height(210.dp))
                     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(4f)) {
                         Row {
                             Text(text = "$type ", color = LinkedInColor, fontSize = 24.sp)

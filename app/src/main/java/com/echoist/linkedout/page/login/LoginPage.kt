@@ -167,7 +167,7 @@ class LoginPage : ComponentActivity() {
                     SignUpPage(navController, signUpViewModel)
                 }
                 composable("SignUpComplete",
-                    deepLinks = listOf(navDeepLink { uriPattern = "https://www.linkedout.com/SignUpComplete?token={token}" }),
+                    deepLinks = listOf(navDeepLink { uriPattern = "https://linkedout.com/SignUpComplete?token={token}" }),
                     arguments = listOf(navArgument("token"){
                         type = NavType.StringType
                         defaultValue = ""
@@ -176,6 +176,7 @@ class LoginPage : ComponentActivity() {
                     //딥링크를 통해서 token을 받고 저장함.
                     Token.accessToken = it.arguments?.getString("token").toString()
                     Log.d(TAG, "tokentoken: ${Token.accessToken}")
+
                     SignUpCompletePage(homeViewModel,navController)
                 }
                 composable("HOME") {
@@ -209,14 +210,14 @@ class LoginPage : ComponentActivity() {
                     StoryDetailPage(myLogViewModel,navController)
                 }
                 composable("DetailEssayInStoryPage") {
-                    DetailEssayInStoryPage(navController,myLogViewModel)
+                    DetailEssayInStoryPage(navController,myLogViewModel,writingViewModel)
                 }
 
                 composable("MyLogDetailPage") {
-                    MyLogDetailPage(navController = navController,myLogViewModel)
+                    MyLogDetailPage(navController = navController,myLogViewModel,writingViewModel)
                 }
                 composable("CompletedEssayPage") {
-                    CompletedEssayPage(navController = navController,myLogViewModel)
+                    CompletedEssayPage(navController = navController,myLogViewModel,writingViewModel)
                 }
                 composable("COMMUNITY") {
                     CommunityPage(navController = navController,communityViewModel)
@@ -249,11 +250,7 @@ class LoginPage : ComponentActivity() {
                     //settings page
                 }
                 composable("AccountPage",
-                    deepLinks = listOf(navDeepLink { uriPattern = "https://www.linkedout.com/AccountPage?token={token}" }),
-                    arguments = listOf(navArgument("token"){
-                        type = NavType.StringType
-                        defaultValue = ""
-                    })) {
+                    deepLinks = listOf(navDeepLink { uriPattern = "https://linkedout.com/AccountPage" })) {
                     AccountPage(navController)
                     //settings page
                 }
@@ -270,7 +267,7 @@ class LoginPage : ComponentActivity() {
                     //settings page
                 }
                 composable("ResetPwPage",
-                    deepLinks = listOf(navDeepLink { uriPattern = "https://www.linkedout.com/ResetPwPage?token={token}" }),
+                    deepLinks = listOf(navDeepLink { uriPattern = "https://linkedout.com/ResetPwPage?token={token}" }),
                     arguments = listOf(navArgument("token"){
                         type = NavType.StringType
                         defaultValue = ""

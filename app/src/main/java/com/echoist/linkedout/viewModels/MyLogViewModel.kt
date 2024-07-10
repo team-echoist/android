@@ -182,6 +182,7 @@ class MyLogViewModel @Inject constructor(
                 val item = exampleItems.detailEssay.toWritingEssayItem().copy(status = "published")
                 val response = essayApi.modifyEssay(Token.accessToken,exampleItems.detailEssay.id!!,item)
                 if (response.isSuccessful){
+                    isActionClicked = false
                     Token.accessToken = (response.headers()["authorization"].toString())
                     navController.navigate("MYLOG")
                 }
@@ -196,6 +197,7 @@ class MyLogViewModel @Inject constructor(
                     val item = exampleItems.detailEssay.toWritingEssayItem().copy(status = "linkedout")
                     val response = essayApi.modifyEssay(Token.accessToken,exampleItems.detailEssay.id!!,item)
                     if (response.isSuccessful){
+                        isActionClicked = false
                         Token.accessToken = (response.headers()["authorization"].toString())
                         navController.navigate("MYLOG")
                     }
@@ -212,15 +214,10 @@ class MyLogViewModel @Inject constructor(
 
                 Log.d("writeEssayApiSuccess2", "writeEssayApiSuccess: ${response.isSuccessful}")
                 Log.d("writeEssayApiFailed", "deleteEssaytoken: ${Token.accessToken}")
-                Log.d("writeEssayApiFailed", "deleteEssayid: ${exampleItems.detailEssay.id}")
-
-                Log.d("writeEssayApiFailed", "deleteEssay: ${response.errorBody()}")
-                Log.d("writeEssayApiFailed", "deleteEssay: ${response.code()}")
 
 
                 if (response.isSuccessful) {
                     Token.accessToken = (response.headers()["authorization"].toString())
-                    Log.e("writeEssayApiSuccess", "${response.headers()}")
                     Log.e("writeEssayApiSuccess", "${response.code()}")
                     isActionClicked = false
                     navController.navigate("MYLOG") {
@@ -228,16 +225,10 @@ class MyLogViewModel @Inject constructor(
                             inclusive = false
                         }
                     }
-                } else {
-                    Log.e("writeEssayApiFailed", "${response.errorBody()}")
-                    Log.e("writeEssayApiFailed", "${response.code()}")
                 }
-
 
             } catch (e: Exception) {
                 e.printStackTrace()
-                // api 요청 실패
-                Log.e("writeEssayApiFailed", "Failed to write essay: ${e.message}")
             }
         }
     }
