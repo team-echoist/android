@@ -13,6 +13,7 @@ import androidx.navigation.NavController
 import com.echoist.linkedout.api.BookMarkApi
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.api.StoryApi
+import com.echoist.linkedout.api.toWritingEssayItem
 import com.echoist.linkedout.data.BadgeBoxItem
 import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.data.RelatedEssay
@@ -149,7 +150,7 @@ class MyLogViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                val response = essayApi.readMyEssay(accessToken = Token.accessToken)
+                val response = essayApi.readMyEssay(accessToken = Token.accessToken, published = false)
                 Log.d("essaylist data", response.body()!!.path + response.body()!!.data)
 
                 if (response.isSuccessful) {
@@ -175,6 +176,34 @@ class MyLogViewModel @Inject constructor(
         }
     }
 
+    fun updateEssayToPublished(navController: NavController) {
+        viewModelScope.launch {
+            try {
+                val item = exampleItems.detailEssay.toWritingEssayItem().copy(status = "published")
+                val response = essayApi.modifyEssay(Token.accessToken,exampleItems.detailEssay.id!!,item)
+                if (response.isSuccessful){
+                    Token.accessToken = (response.headers()["authorization"].toString())
+                    navController.navigate("MYLOG")
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+    fun updateEssayToLinkedOut(navController: NavController){
+            viewModelScope.launch {
+                try {
+                    val item = exampleItems.detailEssay.toWritingEssayItem().copy(status = "linkedout")
+                    val response = essayApi.modifyEssay(Token.accessToken,exampleItems.detailEssay.id!!,item)
+                    if (response.isSuccessful){
+                        Token.accessToken = (response.headers()["authorization"].toString())
+                        navController.navigate("MYLOG")
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
 
     fun deleteEssay(navController: NavController) {
         viewModelScope.launch {

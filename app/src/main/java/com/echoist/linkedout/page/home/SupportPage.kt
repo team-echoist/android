@@ -18,7 +18,7 @@ fun SupportPage(navController : NavController){
         }) {
 
             Column(Modifier.padding(it)) {
-                ModifyBox("링크드아웃 고개센터") {navController.navigate("LinkedOutSupportPage")}
+                ModifyBox("링크드아웃 고객센터") {navController.navigate("LinkedOutSupportPage")}
                 ModifyBox("공지사항") {}
                 ModifyBox("법적 고지") {}
 

@@ -178,9 +178,9 @@ fun ModifyOption(viewModel: MyLogViewModel, navController: NavController) {
                     HorizontalDivider()
                     OptionItem(text = "수정", Color.White,{},R.drawable.ftb_edit)
                     HorizontalDivider()
-                    OptionItem(text = "발행", Color.White,{},R.drawable.option_link)
+                    OptionItem(text = "발행", Color.White,{viewModel.updateEssayToPublished(navController)},R.drawable.option_link)
                     HorizontalDivider()
-                    OptionItem(text = "Linked-out", Color.White,{},R.drawable.option_linkedout)
+                    OptionItem(text = "Linked-out", Color.White,{viewModel.updateEssayToLinkedOut(navController)},R.drawable.option_linkedout)
                     HorizontalDivider()
                     OptionItem(text = "스토리 선택", Color(0xFF616FED),
                         {

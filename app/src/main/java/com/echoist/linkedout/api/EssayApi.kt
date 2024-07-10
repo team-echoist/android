@@ -29,9 +29,10 @@ interface EssayApi{
     ): Response<SingleEssayResponse>
 
 
-    @PUT("api/essays/:essayId") //바디로 바꿔야함
+    @PUT("api/essays/{essayId}") //바디로 바꿔야함
     suspend fun modifyEssay(
         @Header("Authorization") accessToken: String,
+        @Path("essayId") essayId: Int,
         @Body essayData: WritingEssayItem
     ): Response<SingleEssayResponse>
 
@@ -39,7 +40,7 @@ interface EssayApi{
     @DELETE("api/essays/{essayId}")
     suspend fun deleteEssay(
         @Header("Authorization") accessToken: String,
-        @Path("storyId") storyId: Int = 0
+        @Path("essayId") essayId: Int
     ): Response<Unit>
 
     @GET("api/essays")
@@ -147,8 +148,24 @@ interface EssayApi{
         @PrimaryKey(autoGenerate = true)
         var essayPrimaryId: Int =0
     )
-
-
-
-
+}
+fun EssayApi.EssayItem.toWritingEssayItem(): EssayApi.WritingEssayItem {
+    return EssayApi.WritingEssayItem(
+        title = this.title ?: "",
+        content = this.content ?: "",
+        status = this.status,
+        categoryId = this.categoryId,
+        thumbnail = this.thumbnail,
+        linkedOutGauge = this.linkedOutGauge,
+        latitude = this.latitude,
+        longitude = this.longitude,
+        location = this.location,
+        tags = this.tags?.map { it.name },
+        createdDate = this.createdDate,
+        updatedDate = this.updatedDate,
+        id = this.id,
+        nickName = this.author?.nickname,
+        author = this.author,
+        story = this.story
+    )
 }

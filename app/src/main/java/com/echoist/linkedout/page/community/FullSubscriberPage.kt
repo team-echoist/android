@@ -163,12 +163,12 @@ fun SubscriberSimpleItem(
 
     Box(
         modifier = Modifier
-            .clickable {
-                if (!viewModel.unSubscribeClicked) {
-                    viewModel.userItem = item
-                    navController.navigate("SubscriberPage")
-                }
-            }
+//            .clickable { //todo 2업데이트에 추가 구독 화면
+//                if (!viewModel.unSubscribeClicked) {
+//                    viewModel.userItem = item
+//                    navController.navigate("SubscriberPage")
+//                }
+//            }
             .fillMaxWidth()
             .height(100.dp)
             .padding(horizontal = 20.dp)

@@ -92,6 +92,8 @@ fun MyLogPage(navController : NavController,viewModel: MyLogViewModel) {
                                                 if (isClosed) open() else close()
                                             }
                                         }
+                                        navController.navigate("NotificationPage")
+
                                     },viewModel.myProfile.nickname!!)
 
                                     EssayChips(pagerstate, viewModel)

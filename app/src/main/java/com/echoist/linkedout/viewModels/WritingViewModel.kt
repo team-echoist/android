@@ -248,6 +248,7 @@ class WritingViewModel @Inject constructor(
 
 
                 val response = essayApi.modifyEssay( Token.accessToken,
+                    exampleItems.detailEssay.id!!,
                     essayData = essayData
                 )
                 accessToken = (response.headers()["authorization"].toString())
