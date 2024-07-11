@@ -1,9 +1,11 @@
 package com.echoist.linkedout.viewModels
 
+import android.content.ContentResolver
 import android.content.ContentValues.TAG
-import android.graphics.Bitmap
+import android.content.Context
+import android.net.Uri
+import android.provider.OpenableColumns
 import android.util.Log
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -14,6 +16,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.echoist.linkedout.api.EssayApi
+import com.echoist.linkedout.api.UserApi
 import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.page.myLog.Token
 import com.echoist.linkedout.room.EssayStoreDao
@@ -21,6 +24,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
@@ -28,6 +37,7 @@ import javax.inject.Inject
 @HiltViewModel
 class WritingViewModel @Inject constructor(
     private val essayApi: EssayApi,
+    private val userApi: UserApi,
     private val exampleItems: ExampleItems,
     private val essayStoreDao: EssayStoreDao
 ) : ViewModel() {
@@ -54,7 +64,9 @@ class WritingViewModel @Inject constructor(
     var latitude :Double? by mutableStateOf(null)
     var longitude :Double? by mutableStateOf(null)
 
-    var imageBitmap: MutableState<Bitmap?> = mutableStateOf(null)
+    var imageUri : Uri? by mutableStateOf(null)
+    var imageUrl : String by mutableStateOf("")
+
     var locationText by mutableStateOf("")
     var hashTagList by mutableStateOf(mutableStateListOf<String>())
 
@@ -152,7 +164,8 @@ class WritingViewModel @Inject constructor(
         locationText = ""
         locationList = mutableStateListOf()
         isLocationClicked = false
-        imageBitmap = mutableStateOf(null)
+        imageUri = null
+        imageUrl = ""
         isTextFeatOpened.value = false
         essayPrimaryId = null
     }
@@ -172,7 +185,7 @@ class WritingViewModel @Inject constructor(
                     content.text,
                     linkedOutGauge = ringTouchedTime,
                     //categoryId = 0, 이값도 넣어야할것
-                    //thumbnail = imageBitmap, bitmap -> url
+                    thumbnail = imageUrl,
                     status = status,
                     latitude = latitude,
                     longitude = longitude,
@@ -206,16 +219,10 @@ class WritingViewModel @Inject constructor(
                     }
 
                     Log.e("writeEssayApiSuccess 성공!", "${response.headers()}")
-                    Log.e("writeEssayApiSuccess", response.body()?.data?.title!!)
-
-                    Log.e("writeEssayApiSuccess", "${response.code()}")
                     navController.popBackStack("Home", false) //onboarding까지 전부 삭제.
                     navController.navigate("CompletedEssayPage")
                     initialize()
                 } else {
-                    Log.e("writeEssayApiFailed token", "Failed to write essay: $accessToken")
-                    Log.e("writeEssayApiFailed1", "Failed to write essay: ${response.code()}")
-                    Log.e("writeEssayApiFailed1", "Failed to write essay: ${response.body()}")
                     Log.e(TAG, "writeEssay: $latitude , $longitude, $locationText 로케이션텍스트 널 ??", )
 
                 }
@@ -239,6 +246,7 @@ class WritingViewModel @Inject constructor(
                     title.value.text,
                     content.text,
                     linkedOutGauge = ringTouchedTime,
+                    thumbnail = imageUrl,
                     status = status,
                     latitude = latitude,
                     longitude = longitude,
@@ -269,5 +277,55 @@ class WritingViewModel @Inject constructor(
                 Log.e("writeEssayApiFailed", "Failed to write essay: ${e.message}")
             }
         }
+    }
+
+    private fun getFileFromUri(uri: Uri, context: Context): File {
+        val contentResolver = context.contentResolver
+        val fileName = getFileName(uri, contentResolver)
+        val file = File(context.cacheDir, fileName.toString())
+        val inputStream: InputStream? = contentResolver.openInputStream(uri)
+        val outputStream = FileOutputStream(file)
+        inputStream?.copyTo(outputStream)
+        inputStream?.close()
+        outputStream.close()
+        return file
+    }
+
+    private fun getFileName(uri: Uri, contentResolver: ContentResolver): String? {
+        var name: String? = null
+        val cursor = contentResolver.query(uri, null, null, null, null)
+        cursor?.use {
+            if (it.moveToFirst()) {
+                name = it.getString(it.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME))
+            }
+        }
+        return name
+    }
+
+    suspend fun uploadImage(uri: Uri, context: Context): String? { //서버에 이미지 업로드하고 url을 반환
+
+        try {
+            val file = getFileFromUri(uri, context)
+            val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+            val body = MultipartBody.Part.createFormData("image", file.name, requestFile)
+
+            // 서버로 업로드 요청 보내기
+            val response = userApi.userImageUpload(Token.accessToken, body)
+
+            if (response.isSuccessful){
+                imageUrl = response.body()!!.data.imageUrl
+                Log.d(TAG, "uploadImage: $imageUrl")
+                return response.body()!!.data.imageUrl
+            }else
+                return  null
+
+            // 서버 응답에서 URL 추출
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return null
+        } finally {
+
+        }
+
     }
 }

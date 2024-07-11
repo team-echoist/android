@@ -3,10 +3,7 @@ package com.echoist.linkedout.components
 import android.app.Activity
 import android.content.ContentValues.TAG
 import android.content.res.Configuration
-import android.graphics.Bitmap
-import android.graphics.ImageDecoder
-import android.os.Build
-import android.provider.MediaStore
+import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.Image
@@ -51,7 +48,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -60,6 +56,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.canhub.cropper.CropImageContract
 import com.canhub.cropper.CropImageContractOptions
 import com.canhub.cropper.CropImageOptions
@@ -342,34 +340,23 @@ fun HashTagGroup(viewModel: WritingViewModel){
 }
 
 //사진 자르기
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalGlideComposeApi::class)
 @Composable
-fun CropImagePage(navController: NavController,viewModel: WritingViewModel) {
+fun CropImagePage(navController: NavController, viewModel: WritingViewModel) {
 
-    var bitmap: Bitmap? by remember { mutableStateOf(null) }
+    var imageUri: Uri? by remember { mutableStateOf(null) }
     val context = LocalContext.current as Activity
     val fullWidth = context.resources.displayMetrics.widthPixels
     Log.d("width", fullWidth.toString())
 
-
     val imageCropLauncher =
         rememberLauncherForActivityResult(contract = CropImageContract()) { result ->
             if (result.isSuccessful) {
-                result.uriContent?.let {
-
-                    //getBitmap method is deprecated in Android SDK 29 or above so we need to do this check here
-                    bitmap = if (Build.VERSION.SDK_INT < 28) {
-                        MediaStore.Images
-                            .Media.getBitmap(context.contentResolver, it)
-                    } else {
-                        val source = ImageDecoder
-                            .createSource(context.contentResolver, it)
-                        ImageDecoder.decodeBitmap(source)
-                    }
+                result.uriContent?.let { uri ->
+                    imageUri = uri
                 }
-
             } else {
-                //If something went wrong you can handle the error here
+                // Handle error if cropping fails
                 println("ImageCropping error: ${result.error}")
             }
         }
@@ -380,7 +367,7 @@ fun CropImagePage(navController: NavController,viewModel: WritingViewModel) {
                 navigationIcon = {
                     Icon(
                         imageVector = Icons.Default.Close,
-                        contentDescription = ""
+                        contentDescription = "Close"
                     )
                 },
                 title = { Text("Crop Image") },
@@ -422,7 +409,7 @@ fun CropImagePage(navController: NavController,viewModel: WritingViewModel) {
                                     minCropResultWidth = 2000,
                                     minCropResultHeight = 700,
                                     maxCropResultWidth = 2000,
-                                    maxCropResultHeight = 700, //todo 이 값 정해야할듯..
+                                    maxCropResultHeight = 700,
                                     cropperLabelText = "자르기234"
                                 )
                             )
@@ -439,30 +426,24 @@ fun CropImagePage(navController: NavController,viewModel: WritingViewModel) {
         }
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
-            bitmap?.let {
-                Image(
-                    bitmap = it.asImageBitmap(),
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize()
-
-                )
-                Log.d("bitmap",it.toString())
-                Log.d("bitmap",bitmap.toString())
-                Log.d("bitmap",viewModel.imageBitmap.value.toString())
-
-                viewModel.imageBitmap.value = bitmap
-
+            imageUri?.let { uri ->
+                GlideImage(model = uri, contentDescription = "",modifier = Modifier.fillMaxSize())
+                viewModel.imageUri = uri
+                Log.d(TAG, "CropImagePage: $uri")
+                
             }
         }
     }
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter){
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
         Button(onClick = {
+            // Pass the imageUri to ViewModel or use it as needed
             navController.navigate("WritingPage")
         }) {
             Text(text = "완료")
         }
     }
 }
+
 
 //임시저장 개수 아이콘
 @Composable

@@ -1,11 +1,9 @@
 package com.echoist.linkedout.page.myLog
 
-import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -51,8 +49,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
@@ -64,6 +60,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.colintheshots.twain.MarkdownText
 import com.echoist.linkedout.R
 import com.echoist.linkedout.components.HashTagGroup
@@ -76,7 +74,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalGlideComposeApi::class)
 @Composable
 fun WritingCompletePage(
     navController: NavController,
@@ -88,8 +86,6 @@ fun WritingCompletePage(
         bottomSheetState = bottomSheetState
     )
 
-    val bitmap: Bitmap? = viewModel.imageBitmap.value
-    val imageBitmap: ImageBitmap? = bitmap?.asImageBitmap()
 
     LinkedOutTheme {
         BottomSheetScaffold(
@@ -120,9 +116,9 @@ fun WritingCompletePage(
                             .padding(it)
                             .padding(bottom = 67.dp)
                     ) {
-                        if (imageBitmap != null){
+                        if (viewModel.imageUri != null){
                             Box(contentAlignment = Alignment.Center) {
-                                Image(bitmap = imageBitmap, contentDescription = "image")
+                                GlideImage(model = viewModel.imageUri, contentDescription = "")
                             }
                         }
                         Spacer(modifier = Modifier.height(20.dp))

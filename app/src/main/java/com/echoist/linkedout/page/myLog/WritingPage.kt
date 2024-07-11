@@ -1,11 +1,9 @@
 package com.echoist.linkedout.page.myLog
 
 import android.content.ContentValues.TAG
-import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -41,6 +39,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,8 +47,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -65,6 +62,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.colintheshots.twain.MarkdownText
 import com.echoist.linkedout.R
 import com.echoist.linkedout.api.EssayApi
@@ -85,6 +84,7 @@ import com.echoist.linkedout.page.login.keyboardAsState
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.WritingViewModel
+import kotlinx.coroutines.launch
 
 object Token {
     var accessToken: String = "EMPTYTOKEN"
@@ -101,6 +101,7 @@ fun PrevWritingPage() {
 
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun WritingPage(
     navController: NavController,
@@ -111,8 +112,6 @@ fun WritingPage(
     val scrollState = rememberScrollState()
     val background = if (isSystemInDarkTheme()) Color.Black else Color.White
 
-    val bitmap: Bitmap? = viewModel.imageBitmap.value
-    val imageBitmap: ImageBitmap? = bitmap?.asImageBitmap()
 
 
 
@@ -140,12 +139,12 @@ fun WritingPage(
                             .padding(start = 20.dp, top = 80.dp),
                         color = Color.White
                     )
-                    if (bitmap != null) {
+                    if (viewModel.imageUri != null) {
                         Box(
                             contentAlignment = Alignment.Center,
                             modifier = Modifier.padding(top = 100.dp)
                         ) {
-                            Image(bitmap = imageBitmap!!, contentDescription = "image")
+                            GlideImage(model = viewModel.imageUri, contentDescription = "uri")
                         }
                     }
 
@@ -377,7 +376,8 @@ fun WritingTopAppBar(
                     maxLines = 2
                 )
             }
-
+            val context = LocalContext.current
+            val scope = rememberCoroutineScope()
             // 완료 버튼을 오른쪽에 배치
             Text(
                 color = Color.White,
@@ -388,7 +388,13 @@ fun WritingTopAppBar(
                     .clickable {
                         if (viewModel.title.value.text.isNotEmpty() && viewModel.content.text.length >= viewModel.minLength)
                             navController.navigate("WritingCompletePage")
-                        else {
+                        if (viewModel.imageUri != null) {
+                            scope.launch {
+
+                                    viewModel.uploadImage(viewModel.imageUri!!, context)!!
+
+                            }
+                        } else {
                             isContentNotEmpty.value = true
                         }
                     }
@@ -529,7 +535,7 @@ fun WritingCancelCard(viewModel: WritingViewModel, navController: NavController)
                             val tagList = mutableListOf<EssayApi.Tag>()
 
                             viewModel.hashTagList.forEach {
-                                tagList.add(EssayApi.Tag(1,it))
+                                tagList.add(EssayApi.Tag(1, it))
                             }
 
                             viewModel.updateOrInsertEssay(
@@ -540,15 +546,16 @@ fun WritingCancelCard(viewModel: WritingViewModel, navController: NavController)
                                     latitude = viewModel.latitude,
                                     createdDate = viewModel.getCurrentDate(),
                                     tags = tagList,
-                                    essayPrimaryId = viewModel.essayPrimaryId ?: 0
+                                    essayPrimaryId = viewModel.essayPrimaryId ?: 0,
+                                    thumbnail = viewModel.imageUrl
 
                                 )
 
 
-                        )
+                            )
                             navController.popBackStack()
                             viewModel.initialize()
-                                   },
+                        },
                     fontSize = 16.sp,
                     text = "임시저장",
                     textAlign = TextAlign.Center,

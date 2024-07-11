@@ -37,6 +37,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -167,8 +168,21 @@ fun EssayListItem(
         }
         .height(180.dp)){
         if (item.thumbnail != null){
-            Box(modifier = Modifier.fillMaxSize()){
-                GlideImage(model = item.thumbnail, contentDescription = "")
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+
+                GlideImage(
+                    model = item.thumbnail,
+                    contentScale = ContentScale.Crop,
+                    contentDescription = "",
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.7f))
+                )
             }
         }
         //타이틀

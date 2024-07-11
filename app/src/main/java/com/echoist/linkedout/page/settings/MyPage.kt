@@ -805,7 +805,7 @@ val context = LocalContext.current
                         contentDescription = "arrow back",
                         modifier = Modifier
                             .clickable { viewModel.isClickedModifyImage = false }
-                            .size(24.dp, 21.dp)
+                            .size(40.dp)
                             .padding(start = 10.dp),
                         tint = Color.White
                     )
@@ -849,8 +849,11 @@ val context = LocalContext.current
                         )
                     }
                 }
+                item {
+                    Spacer(modifier = Modifier.height(15.dp))
+
+                }
             }
-            Spacer(modifier = Modifier.height(20.dp))
 
         }
     }

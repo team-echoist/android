@@ -61,17 +61,30 @@ class HomeViewModel @Inject constructor(
     }
 
     suspend fun readMyInfo(){
-        viewModelScope.launch {
-            try {
-                val response = userApi.readMyInfo(Token.accessToken)
-                exampleItems.myProfile = response.data
-                getMyInfo()
+        try {
+            val response = userApi.readMyInfo(Token.accessToken)
+            Log.d(TAG, "readMyInfo: suc1")
 
-            }catch (_: Exception){
-                Log.d(ContentValues.TAG, "readMyInfo: error err")
-            }
+            exampleItems.myProfile = response.data
+            Log.d(TAG, "readMyInfo: suc2")
+
+            val responseDetail = userApi.readMyInfoDetail(Token.accessToken,response.data.id!!)
+            Log.d(TAG, "readMyInfo: suc3")
+
+            exampleItems.myProfile = responseDetail.data.user
+            exampleItems.myProfile.essayStats = responseDetail.data.essayStats
+            Log.d(TAG, "readMyInfo: suc4")
+            Log.d(TAG, "readMyInfo: ${exampleItems.myProfile}")
+
+
+        }catch (e: Exception){
+            Log.d(TAG, "readMyInfo: error err")
+            e.printStackTrace()
+            Log.d(TAG, e.message.toString())
+            Log.d(TAG, e.cause.toString())
+
+
         }
-
     }
 
     fun getMyInfo(): UserInfo { // 함수 이름 변경
