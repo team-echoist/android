@@ -1,6 +1,10 @@
 package com.echoist.linkedout.viewModels
 
+import android.content.ContentResolver
 import android.content.ContentValues.TAG
+import android.content.Context
+import android.net.Uri
+import android.provider.OpenableColumns
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,6 +25,12 @@ import com.echoist.linkedout.page.myLog.Token
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
 import javax.inject.Inject
 
 @HiltViewModel
@@ -36,18 +46,93 @@ class SettingsViewModel @Inject constructor(
     var isLevelUpSuccess by mutableStateOf(false)
 
     var isBadgeClicked by mutableStateOf(false)
-    var badgeBoxItem : BadgeBoxItem? by mutableStateOf(null)
+    var badgeBoxItem: BadgeBoxItem? by mutableStateOf(null)
 
     var isLoading by mutableStateOf(false)
 
+    fun getFileFromUri(uri: Uri, context: Context): File {
+        val contentResolver = context.contentResolver
+        val fileName = getFileName(uri, contentResolver)
+        val file = File(context.cacheDir, fileName.toString())
+        val inputStream: InputStream? = contentResolver.openInputStream(uri)
+        val outputStream = FileOutputStream(file)
+        inputStream?.copyTo(outputStream)
+        inputStream?.close()
+        outputStream.close()
+        return file
+    }
 
+    private fun getFileName(uri: Uri, contentResolver: ContentResolver): String? {
+        var name: String? = null
+        val cursor = contentResolver.query(uri, null, null, null, null)
+        cursor?.use {
+            if (it.moveToFirst()) {
+                name = it.getString(it.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME))
+            }
+        }
+        return name
+    }
+
+    suspend fun uploadImage(uri: Uri, context: Context): String? { //서버에 이미지 업로드하고 url을 반환
+
+            try {
+                val file = getFileFromUri(uri, context)
+                val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+                val body = MultipartBody.Part.createFormData("image", file.name, requestFile)
+
+                // 서버로 업로드 요청 보내기
+                val response = userApi.userImageUpload(Token.accessToken, body)
+
+                if (response.isSuccessful){
+                    newProfile.profileImage = response.body()!!.data.imageUrl
+                    exampleItems.myProfile.profileImage = response.body()!!.data.imageUrl
+                    return response.body()!!.data.imageUrl
+                }else
+                    return  null
+
+                // 서버 응답에서 URL 추출
+            } catch (e: Exception) {
+                e.printStackTrace()
+                return null
+            } finally {
+
+            }
+
+    }
     fun getRecentViewedEssayList() : List<EssayApi.EssayItem>{
         return exampleItems.recentViewedEssayList
     }
 
+    private suspend fun readMyInfo(){
+        try {
+            val response = userApi.readMyInfo(Token.accessToken)
+            Log.d(TAG, "readMyInfo: suc1")
+
+            exampleItems.myProfile = response.data
+            Log.d(TAG, "readMyInfo: suc2")
+
+            val responseDetail = userApi.readMyInfoDetail(Token.accessToken,response.data.id!!)
+            Log.d(TAG, "readMyInfo: suc3")
+
+            exampleItems.myProfile = responseDetail.data.user
+            exampleItems.myProfile.essayStats = responseDetail.data.essayStats
+            Log.d(TAG, "readMyInfo: suc4")
+            Log.d(TAG, "readMyInfo: ${exampleItems.myProfile}")
+
+
+        }catch (e: Exception){
+            Log.d(TAG, "readMyInfo: error err")
+            e.printStackTrace()
+            Log.d(TAG, e.message.toString())
+            Log.d(TAG, e.cause.toString())
+
+
+        }
+    }
+
 
     fun getMyInfo() : UserInfo{
-        Log.d(TAG, "readUserInfo: ${exampleItems.myProfile}")
+        Log.d(TAG, "readMyInfo: ${exampleItems.myProfile}")
         return exampleItems.myProfile
     }
 
@@ -55,7 +140,7 @@ class SettingsViewModel @Inject constructor(
         //이게 작동되는지가 중요
         viewModelScope.launch {
             try {
-
+                readMyInfo()
                 val response = userApi.readBadgeList( Token.accessToken)
                 Log.d(TAG, "readSimpleBadgeList: ${response.body()!!.data.badges}")
                 response.body()?.data?.badges!!.let{badges ->
@@ -133,6 +218,8 @@ class SettingsViewModel @Inject constructor(
             try {
 
                 val response = userApi.userUpdate(Token.accessToken, userInfo)
+
+
                 Log.d(TAG, "updateMyInfo: ${userInfo.profileImage}")
                 Log.d(TAG, "updateMyInfo: ${newProfile.profileImage}")
 

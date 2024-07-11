@@ -1,7 +1,12 @@
 package com.echoist.linkedout.page.settings
 
+import android.app.Activity
 import android.content.ContentValues.TAG
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
@@ -25,6 +30,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -57,9 +63,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
@@ -90,6 +100,7 @@ import com.echoist.linkedout.PROFILE_IMAGE_12
 import com.echoist.linkedout.R
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.BadgeBoxItem
+import com.echoist.linkedout.data.EssayStats
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.home.MyBottomNavigation
 import com.echoist.linkedout.ui.theme.LinkedInColor
@@ -109,10 +120,16 @@ fun MyPage(
 
     val viewModel : SettingsViewModel = hiltViewModel()
 
+    var isApiFinished by remember {
+        mutableStateOf(false)
+    }
+    LaunchedEffect(key1 = isApiFinished) {
+        viewModel.readSimpleBadgeList()
+        viewModel.getMyInfo()
+        viewModel.readRecentEssays()
+        isApiFinished = false
+    }
 
-    viewModel.readSimpleBadgeList()
-    viewModel.getMyInfo()
-    viewModel.readRecentEssays()
 
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
@@ -182,6 +199,7 @@ fun MyPage(
 
                     ) {
                         MySettings(item = viewModel.getMyInfo()) {
+                            Log.d(TAG, "MyPage: ${viewModel.getMyInfo()}")
                             scope.launch {
                                 bottomSheetState.expand()
                             }
@@ -239,12 +257,26 @@ fun MySettings(item: UserInfo, onClick: () -> Unit) {
     ) {
         Spacer(modifier = Modifier.height(40.dp))
         if (item.profileImage != null){
-            GlideImage(
-                model = item.profileImage,
-                contentDescription = "profileImage",
-                Modifier.size(108.dp)
-            )
+            Box(
+                modifier = Modifier
+                    .size(108.dp)
+                    .clip(CircleShape)
+            ) {
+                GlideImage(
+                    model = item.profileImage,
+                    contentDescription = "profileImage",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .graphicsLayer {
+                            // 이미지를 원 중앙에 정렬
+                            clip = true
+                            shape = CircleShape
+                        },
+                    contentScale = ContentScale.Crop // 이미지를 자르고 원에 맞게 보여줍니다.
+                )
+            }
         }
+        val essayStats = item.essayStats ?: EssayStats()
 
         Spacer(modifier = Modifier.height(10.dp))
         Text(text = annotatedString, fontWeight = FontWeight.Bold, fontSize = 24.sp)
@@ -268,7 +300,8 @@ fun MySettings(item: UserInfo, onClick: () -> Unit) {
                     Text(text = "쓴글", fontSize = 10.sp, color = Color(0xFF616161))
                     Spacer(modifier = Modifier.height(1.dp))
                     Text(
-                        text = item.essayStats!!.totalEssays.toString(),
+
+                        text = essayStats.totalEssays.toString(),
                         fontSize = 18.sp,
                         color = Color(0xFF616161)
                     )
@@ -282,7 +315,7 @@ fun MySettings(item: UserInfo, onClick: () -> Unit) {
                     Text(text = "발행", fontSize = 10.sp, color = Color(0xFF616161))
                     Spacer(modifier = Modifier.height(1.dp))
                     Text(
-                        text = item.essayStats!!.publishedEssays.toString(),
+                        text = essayStats.publishedEssays.toString(),
                         fontSize = 18.sp,
                         color = Color(0xFF616161)
                     )
@@ -297,7 +330,7 @@ fun MySettings(item: UserInfo, onClick: () -> Unit) {
                     Text(text = "링크드아웃", fontSize = 10.sp, color = Color(0xFF616161))
                     Spacer(modifier = Modifier.height(1.dp))
                     Text(
-                        text = item.essayStats!!.linkedOutEssays.toString(),
+                        text = essayStats.linkedOutEssays.toString(),
                         fontSize = 18.sp,
                         color = Color(0xFF616161)
                     )
@@ -376,7 +409,8 @@ fun RecentEssayItem(item: EssayApi.EssayItem,viewModel : CommunityViewModel = hi
     Box(modifier = Modifier
         .size(150.dp, 120.dp)
         .clickable { /* 에세이로 이동 */
-        viewModel.readDetailRecentEssay(item.id!!,navController)}) {
+            viewModel.readDetailRecentEssay(item.id!!, navController)
+        }) {
         Column {
             Text(text = item.title!!)
             Spacer(modifier = Modifier.height(10.dp))
@@ -674,11 +708,24 @@ fun SelectProfileImageIcon(onClickModifyImage: () -> Unit, imageUrl : String ) {
 
 
     Box(modifier = Modifier.size(120.dp)) {
-        GlideImage(
-            modifier = Modifier.fillMaxSize(),
-            model = imageUrl,
-            contentDescription = "img"
-        )
+        Box(
+            modifier = Modifier
+                .size(120.dp)
+                .clip(CircleShape)
+        ) {
+            GlideImage(
+                model = imageUrl,
+                contentDescription = "profileImage",
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer {
+                        // 이미지를 원 중앙에 정렬
+                        clip = true
+                        shape = CircleShape
+                    },
+                contentScale = ContentScale.Crop // 이미지를 자르고 원에 맞게 보여줍니다.
+            )
+        }
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
             Box(
                 modifier = Modifier
@@ -701,6 +748,27 @@ fun SelectProfileImageIcon(onClickModifyImage: () -> Unit, imageUrl : String ) {
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SelectProfileIconBottomSheet(viewModel: SettingsViewModel){
+
+val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            selectedImageUri = result.data?.data
+            selectedImageUri?.let {
+                // 선택된 이미지를 ViewModel에 저장합니다.
+                viewModel.newProfile.profileImage = it.toString()
+                viewModel.isClickedModifyImage = false
+                Log.d(TAG, "MyPage: ${viewModel.newProfile}")
+
+                scope.launch {
+                    viewModel.uploadImage(it, context = context)
+                }
+            }
+        }
+    }
 
     val icons = listOf(PROFILE_IMAGE_01,
         PROFILE_IMAGE_02,
@@ -752,19 +820,34 @@ fun SelectProfileIconBottomSheet(viewModel: SettingsViewModel){
                 verticalArrangement = Arrangement.spacedBy(40.dp),
                 horizontalArrangement = Arrangement.Center
             ) {
-                items(icons) {
-                    GlideImage(
-                        model = it,
-                        contentDescription = "image",
-                        Modifier
-                            .size(120.dp)
-                            .clickable {
-                                viewModel.isClickedModifyImage = false
-                                viewModel.newProfile.profileImage = it
-                                Log.d(TAG, "MyPage: ${viewModel.newProfile}")
+                itemsIndexed(icons) { index, icon ->
+                    if (index == 1) {
+                        GlideImage(
+                            model = icon,
+                            contentDescription = "image",
+                            Modifier
+                                .size(120.dp)
+                                .clickable {
+                                    val intent = Intent(Intent.ACTION_PICK)
+                                    intent.type = "image/*"
+                                    galleryLauncher.launch(intent)
 
-                            }
-                    )
+                                }
+                        )
+                    } else {
+                        // 나머지 항목
+                        GlideImage(
+                            model = icon,
+                            contentDescription = "image",
+                            Modifier
+                                .size(120.dp)
+                                .clickable {
+                                    viewModel.isClickedModifyImage = false
+                                    viewModel.newProfile.profileImage = icon
+                                    Log.d(TAG, "MyPage: ${viewModel.newProfile}")
+                                }
+                        )
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(20.dp))

@@ -45,6 +45,8 @@ import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import kotlinx.coroutines.delay
@@ -55,7 +57,7 @@ fun PrevOnBoardingPage() {
     OnBoardingPage(rememberNavController())
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalGlideComposeApi::class)
 @Composable
 fun OnBoardingPage(navController: NavController) {
     var isChanged by remember { mutableStateOf(true) }
@@ -84,14 +86,15 @@ fun OnBoardingPage(navController: NavController) {
                         OnBoardingPager(
                             mainText = "오직 나만을 위한 글쓰기",
                             subText = "모든 글쓰기 활동은 '필명'으로 진행됩니다.\n여러 관계에서 벗어나\n솔직한 나를 표현해보세요.",
-                            R.raw.onboarding1,
+                            R.drawable.onboarding_final_1,
                         )
                     } else {
                         Box(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
                         ) {
-                            VideoPlayer(resId = R.raw.onboarding5)
+                            //VideoPlayer(resId = R.raw.onboarding5)
+                            GlideImage(model = R.drawable.splash_final, contentDescription = "", modifier = Modifier.fillMaxSize())
 
                         }
                     }
@@ -100,21 +103,21 @@ fun OnBoardingPage(navController: NavController) {
                         OnBoardingPager(
                         mainText = "글의 행방 결정하기",
                         subText = "작성한 글은 3가지 방향으로 보낼 수 있어요.\n원하는 방법으로 감정을 해소하세요.",
-                        R.raw.onboarding2
+                            R.drawable.onboarding_final_2
                     )
 
                     2 ->
                         OnBoardingPager(
                         mainText = "에세이 엮기",
                         subText = "써두었던 글을 모아\n나만의 에세이 모음집을 만들 수 있어요.",
-                        R.raw.onboarding3
+                            R.drawable.onboarding_final_3
                     )
 
                     3 ->
                         OnBoardingPager(
                             mainText = "다양한 감정 마주하기",
                             subText = "타인의 솔직한 글을 읽는 경험을 할 수 있어요\n문장 속에 담긴 다양한 감정을 마주해보세요.",
-                            resId = R.raw.onboarding4
+                            resId = R.drawable.onboarding_final_4
                         )
 
 
@@ -190,6 +193,7 @@ fun OnBoardingPage(navController: NavController) {
 
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun OnBoardingPager(
     mainText: String,
@@ -198,7 +202,8 @@ fun OnBoardingPager(
 ) {
     Box(modifier = Modifier.fillMaxSize()){
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-            VideoPlayer(resId)
+//            VideoPlayer(resId)
+            GlideImage(model = resId, contentDescription = "", modifier = Modifier.fillMaxSize())
         }
 
         Column(

@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -54,8 +55,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -86,6 +90,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun HomePage(navController: NavController,viewModel: HomeViewModel) {
 
@@ -96,6 +101,7 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel) {
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -109,6 +115,7 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel) {
         viewModel.requestRegisterDevice(context) //로그인 후 홈 진입 시 회원정보등록
 
         LinkedOutTheme {
+
             Scaffold(
                 topBar = {
 
@@ -124,6 +131,15 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel) {
                 floatingActionButton = { WriteFTB(navController,viewModel) },
                 content = {
                     Column(modifier = Modifier.padding(it)) {
+
+                    }
+                    Box(modifier = Modifier.fillMaxSize()){
+                        GlideImage(
+                            model = R.drawable.home_basic,
+                            contentDescription = "home_img",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.FillWidth
+                        )
 
                     }
                 }
@@ -277,11 +293,24 @@ fun MyProfile(item: UserInfo, onClick: () -> Unit) {
             .clickable { onClick() }
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxSize()) {
-            GlideImage(
-                model = item.profileImage,
-                contentDescription = "profileImage",
-                Modifier.size(80.dp)
-            )
+            Box(
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(CircleShape)
+            ) {
+                GlideImage(
+                    model = item.profileImage,
+                    contentDescription = "profileImage",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .graphicsLayer {
+                            // 이미지를 원 중앙에 정렬
+                            clip = true
+                            shape = CircleShape
+                        },
+                    contentScale = ContentScale.Crop // 이미지를 자르고 원에 맞게 보여줍니다.
+                )
+            }
             Spacer(modifier = Modifier.width(20.dp))
             Column {
                 Row {
