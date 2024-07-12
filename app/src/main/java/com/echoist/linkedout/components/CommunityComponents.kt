@@ -54,8 +54,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.SpanStyle
@@ -592,10 +594,13 @@ fun EssayListItem(
                 GlideImage(
                     model = item.thumbnail,
                     contentDescription = null,
+                    contentScale = ContentScale.Crop,
                     modifier = Modifier
+                        .fillMaxHeight()
                         .size(110.dp)
-                        .padding(start = 20.dp, top = 20.dp, bottom = 20.dp)
+                        .padding(horizontal = 10.dp, vertical = 10.dp)
                         .weight(3f) // 이미지 비율 조정
+                        .clip(RoundedCornerShape(10.dp)) // 둥근 모서리 적용
                 )
             }
         }
@@ -606,7 +611,11 @@ fun EssayListItem(
                 .fillMaxSize()
                 .padding(start = 20.dp, bottom = 10.dp)
         ) {
-            Text(text = if (item.author?.nickname != null) item.author!!.nickname!! else "", fontSize = 10.sp, color = Color(0xFF686868))
+            Text(
+                text = if (item.author?.nickname != null) item.author!!.nickname!! else "",
+                fontSize = 10.sp,
+                color = Color(0xFF686868)
+            )
         }
         Box(
             contentAlignment = Alignment.BottomEnd, modifier = Modifier

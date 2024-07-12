@@ -8,13 +8,16 @@ import com.echoist.linkedout.data.SingleEssayResponse
 import com.echoist.linkedout.data.Story
 import com.echoist.linkedout.data.UserInfo
 import com.squareup.moshi.JsonClass
+import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.PUT
+import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -42,6 +45,14 @@ interface EssayApi{
         @Header("Authorization") accessToken: String,
         @Path("essayId") essayId: Int
     ): Response<Unit>
+
+    @POST("api/essays/images")
+    @Multipart
+    suspend fun uploadThumbnail(
+        @Header("Authorization") accessToken: String,
+        @Part image: MultipartBody.Part,
+        @Part("essayId") essayId : Int? = null
+    ): Response<UserApi.ImageUrlResponse>
 
     @GET("api/essays")
     suspend fun readMyEssay(

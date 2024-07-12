@@ -41,7 +41,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -146,7 +148,7 @@ fun SavedEssayListItem(
 
 
 
-        Row {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Column(
                 modifier = Modifier
                     .fillMaxHeight()
@@ -175,35 +177,47 @@ fun SavedEssayListItem(
                     color = color,
                     overflow = TextOverflow.Ellipsis
                 )
-            }
+                Spacer(modifier = Modifier.height(30.dp))
 
+                Text(
+                        text = item.author?.nickname ?: "닉없음 아무개",
+                        fontSize = 10.sp,
+                        color = Color(0xFF686868)
+                )
+
+            }
             if (item.thumbnail != null) {
                 GlideImage(
                     model = item.thumbnail,
                     contentDescription = null,
+                    contentScale = ContentScale.Crop,
                     modifier = Modifier
+                        .fillMaxHeight()
                         .size(110.dp)
-                        .padding(start = 20.dp, top = 20.dp, bottom = 20.dp)
-                        .weight(3f)
+                        .padding(horizontal = 10.dp, vertical = 10.dp)
+                        .clip(RoundedCornerShape(10.dp)) // 둥근 모서리 적용
                 )
+            }
+
+            val checkColor = if (isSelected) LinkedInColor else Color(0xFF252525)
+
+            if (viewModel.isSavedEssaysModifyClicked) {
+
+                    IconButton(onClick = { onItemSelected(!isSelected)
+                    }) {
+                        Icon(
+                            modifier = Modifier.padding(horizontal = 10.dp).weight(1f),
+                            imageVector = Icons.Default.CheckCircle,
+                            tint = checkColor,
+                            contentDescription = null
+                        )
+                    }
+
             }
         }
 
 
 
-
-        Box(
-            contentAlignment = Alignment.BottomStart,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(start = 20.dp, bottom = 10.dp)
-        ) {
-            Text(
-                text = item.author?.nickname ?: "",
-                fontSize = 10.sp,
-                color = Color(0xFF686868)
-            )
-        }
         Box(
             contentAlignment = Alignment.BottomEnd,
             modifier = Modifier.fillMaxSize()
@@ -216,20 +230,7 @@ fun SavedEssayListItem(
                 .fillMaxSize()
                 .background(Color.Black.copy(0.7f)))
         }
-        val checkColor = if (isSelected) LinkedInColor else Color(0xFF252525)
 
-        if (viewModel.isSavedEssaysModifyClicked) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
-                IconButton(onClick = { onItemSelected(!isSelected)
-                }) {
-                    Icon(
-                        imageVector = Icons.Default.CheckCircle,
-                        tint = checkColor,
-                        contentDescription = null
-                    )
-                }
-            }
-        }
     }
 }
 

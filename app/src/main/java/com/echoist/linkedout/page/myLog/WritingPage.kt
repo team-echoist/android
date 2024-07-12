@@ -391,7 +391,7 @@ fun WritingTopAppBar(
                         if (viewModel.imageUri != null) {
                             scope.launch {
 
-                                    viewModel.uploadImage(viewModel.imageUri!!, context)!!
+                                    viewModel.uploadThumbnail(viewModel.imageUri!!, context)!!
 
                             }
                         } else {

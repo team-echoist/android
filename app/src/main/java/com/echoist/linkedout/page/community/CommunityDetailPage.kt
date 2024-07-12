@@ -377,11 +377,14 @@ fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navContro
                     .padding(horizontal = 20.dp)
             ) {
                 if (item.thumbnail != null) {
-                    GlideImage(
-                        model = item.thumbnail, contentDescription = "", modifier = Modifier
-                            .fillMaxWidth()
-                            .height(220.dp)
-                    )
+                    Column {
+                        GlideImage(
+                            model = item.thumbnail, contentDescription = "", modifier = Modifier
+                                .fillMaxWidth()
+                                .height(220.dp)
+                        )
+                    Spacer(modifier = Modifier.height(20.dp))
+                    }
                 }
                 Row {
                     Text(text = item.title!!, fontSize = viewModel.titleTextSize, modifier = Modifier)

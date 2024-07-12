@@ -52,6 +52,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
@@ -307,11 +308,12 @@ fun DetailEssay(viewModel: MyLogViewModel) {
             if (essay.thumbnail !=null){
                 Box(modifier = Modifier
                     .fillMaxWidth()
-                    .height(220.dp)){
-                    GlideImage(model = essay.thumbnail, contentDescription = "essay Thumbnail")
+                    .height(220.dp), contentAlignment = Alignment.Center){
+                    GlideImage(model = essay.thumbnail, contentDescription = "essay Thumbnail", contentScale = ContentScale.FillHeight)
 
                 }
             }
+
             Column(modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp)) {
@@ -515,11 +517,7 @@ fun CompletedEssayPage(navController: NavController, viewModel: MyLogViewModel,w
         }
     }
 
-    
-
-
     val scrollState = rememberScrollState()
-
 
     if (hasCalledApi){
         LinkedOutTheme {
@@ -593,11 +591,12 @@ fun DetailEssay2(viewModel: MyLogViewModel) {
                 .padding(horizontal = 20.dp)
         ) {
             if (essay.thumbnail !=null){
-                Box(modifier = Modifier
-                    .fillMaxWidth()
-                    .height(170.dp)){
-                    GlideImage(model = essay.thumbnail, contentDescription = "essay Thumbnail")
-
+                Column {
+                    GlideImage(
+                        model = essay.thumbnail, contentDescription = "", modifier = Modifier
+                            .fillMaxWidth()
+                            .height(220.dp)
+                    )
                 }
             }
             Spacer(modifier = Modifier.height(20.dp))
@@ -669,13 +668,6 @@ fun DetailEssay2(viewModel: MyLogViewModel) {
                 }
             }
 
-        }
-        if (essay.thumbnail != null) {
-            GlideImage(
-                model = essay.thumbnail, contentDescription = "", modifier = Modifier
-                    .fillMaxWidth()
-                    .height(220.dp)
-            )
         }
 
     }

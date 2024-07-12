@@ -16,7 +16,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.echoist.linkedout.api.EssayApi
-import com.echoist.linkedout.api.UserApi
 import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.page.myLog.Token
 import com.echoist.linkedout.room.EssayStoreDao
@@ -37,7 +36,6 @@ import javax.inject.Inject
 @HiltViewModel
 class WritingViewModel @Inject constructor(
     private val essayApi: EssayApi,
-    private val userApi: UserApi,
     private val exampleItems: ExampleItems,
     private val essayStoreDao: EssayStoreDao
 ) : ViewModel() {
@@ -302,7 +300,7 @@ class WritingViewModel @Inject constructor(
         return name
     }
 
-    suspend fun uploadImage(uri: Uri, context: Context): String? { //서버에 이미지 업로드하고 url을 반환
+    suspend fun uploadThumbnail(uri: Uri, context: Context): String? { //서버에 이미지 업로드하고 url을 반환
 
         try {
             val file = getFileFromUri(uri, context)
@@ -310,7 +308,7 @@ class WritingViewModel @Inject constructor(
             val body = MultipartBody.Part.createFormData("image", file.name, requestFile)
 
             // 서버로 업로드 요청 보내기
-            val response = userApi.userImageUpload(Token.accessToken, body)
+            val response = essayApi.uploadThumbnail(Token.accessToken, body, exampleItems.detailEssay.id)
 
             if (response.isSuccessful){
                 imageUrl = response.body()!!.data.imageUrl
@@ -322,6 +320,8 @@ class WritingViewModel @Inject constructor(
             // 서버 응답에서 URL 추출
         } catch (e: Exception) {
             e.printStackTrace()
+            Log.d(TAG, "uploadImage: ${e.message}")
+
             return null
         } finally {
 
