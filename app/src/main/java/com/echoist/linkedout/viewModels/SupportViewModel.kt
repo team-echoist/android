@@ -1,6 +1,7 @@
 package com.echoist.linkedout.viewModels
 
 import android.content.ContentValues
+import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -15,8 +16,12 @@ import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.api.SupportApi
 import com.echoist.linkedout.data.Alert
 import com.echoist.linkedout.data.ExampleItems
+import com.echoist.linkedout.data.Inquiry
 import com.echoist.linkedout.page.myLog.Token
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,6 +34,10 @@ class SupportViewModel @Inject constructor(
 
     var isLoading by mutableStateOf(false)
     var alertList: SnapshotStateList<Alert> =  mutableStateListOf()
+
+     private val _inquiryList = MutableStateFlow<List<Inquiry>>(emptyList())
+    val inquiryList: StateFlow<List<Inquiry>>
+        get() = _inquiryList.asStateFlow()
 
     fun readAlertsList(){
         viewModelScope.launch {
@@ -97,6 +106,64 @@ class SupportViewModel @Inject constructor(
             finally {
                 isLoading = false
             }
+        }
+    }
+
+    fun writeInquiry(title : String, content : String, type : String, navController: NavController){
+        viewModelScope.launch {
+            isLoading = true
+            try {
+                val body = Inquiry(title = title,content = content,type = type)
+                val response = supportApi.writeInquiry(Token.accessToken,body)
+                if (response.isSuccessful){
+                    Token.accessToken = (response.headers()["authorization"].toString())
+                    //todo alert 성공!
+                    navController.navigate("HOME")
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            finally {
+                isLoading = false
+            }
+        }
+    }
+
+    fun readInquiryList(){
+        viewModelScope.launch {
+            isLoading = true
+            try {
+                val response = supportApi.readInquiries(Token.accessToken)
+                if (response.isSuccessful){
+                    Token.accessToken = (response.headers()["authorization"].toString())
+                    //todo alert 성공!
+                    _inquiryList.emit(response.body()!!.data)
+                    Log.d(TAG, "readInquiryList: $inquiryList")
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            finally {
+                isLoading = false
+            }
+        }
+    }
+
+    suspend fun readDetailInquiry(inquiryId: Int): Inquiry? {
+        isLoading = true
+        return try {
+            val response = supportApi.readInquiryDetail(Token.accessToken, inquiryId)
+            if (response.isSuccessful) {
+                Token.accessToken = response.headers()["authorization"].toString()
+                response.body()?.data // 성공 시 response.body()?.data를 반환
+            } else {
+                null // 실패 시 null 반환
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null // 예외 발생 시 null 반환
+        } finally {
+            isLoading = false
         }
     }
 }

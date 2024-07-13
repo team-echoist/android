@@ -195,9 +195,9 @@ fun CustomOutlinedTextField(
     modifier: Modifier = Modifier,
 ) {
     OutlinedTextField(
-        shape = RoundedCornerShape(20),
+        shape = RoundedCornerShape(10),
         value = text,
-        placeholder = { Text(text = hint, fontSize = 18.sp, color = Color(0xFF5D5D5D)) },
+        placeholder = { Text(text = hint, fontSize = 16.sp, color = Color(0xFF5D5D5D)) },
         onValueChange = onTextChange,
         isError = isError,
         modifier = modifier

@@ -81,6 +81,7 @@ import com.echoist.linkedout.page.community.CommunitySavedEssayPage
 import com.echoist.linkedout.page.community.FullSubscriberPage
 import com.echoist.linkedout.page.home.DarkModeSettingPage
 import com.echoist.linkedout.page.home.HomePage
+import com.echoist.linkedout.page.home.InquiryPage
 import com.echoist.linkedout.page.home.LinkedOutSupportPage
 import com.echoist.linkedout.page.home.NotificationPage
 import com.echoist.linkedout.page.home.NotificationSettingPage
@@ -196,6 +197,9 @@ class LoginPage : ComponentActivity() {
                 }
                 composable("LinkedOutSupportPage") {
                     LinkedOutSupportPage(navController)
+                }
+                composable("InquiryPage") {
+                    InquiryPage(navController)
                 }
                 composable("UpdateHistoryPage") {
                     UpdateHistoryPage(navController)

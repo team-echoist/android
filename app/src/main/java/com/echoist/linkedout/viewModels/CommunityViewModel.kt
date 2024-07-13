@@ -86,9 +86,14 @@ open class CommunityViewModel @Inject constructor(
     var followingList = exampleItems.followingList
 
 
-
     var previousEssayList by mutableStateOf(exampleItems.exampleEmptyEssayList)
 
+    init {
+        readRandomEssays()
+        readFollowingEssays()
+        readOneSentences("first")
+        readOneSentences("last")
+    }
     fun refresh(){
         viewModelScope.launch {
 
@@ -153,18 +158,22 @@ open class CommunityViewModel @Inject constructor(
         }
     }
 
-    fun readRandomEssays() {
+    fun readRandomEssays(limit : Int = 20) {
         viewModelScope.launch {
             try {
-                val response = essayApi.readRandomEssays(Token.accessToken)
-                exampleItems.randomList = response.body()!!.data.essays.toMutableStateList()
-                _randomList.emit(response.body()!!.data.essays.toMutableStateList())
-                Log.d(
-                    TAG,
-                    "readRandomEssays: 성공인데요${response.body()!!.data.essays.toMutableStateList()}"
-                )
+                _isLoading.emit(true)
+                val response = essayApi.readRandomEssays(Token.accessToken, limit = limit)
 
-                Log.d(TAG, "readRandomEssays: 성공입니다 아니면 예시 ${exampleItems.randomList}")
+                if (response.isSuccessful){
+                    exampleItems.randomList = response.body()!!.data.essays.toMutableStateList()
+                    _randomList.emit(response.body()!!.data.essays.toMutableStateList())
+                    Log.d(
+                        TAG,
+                        "readRandomEssays: 성공인데요${response.body()!!.data.essays.toMutableStateList()}"
+                    )
+                    Log.d(TAG, "readRandomEssays: 성공입니다 아니면 예시 ${exampleItems.randomList}")
+                }
+
 
 
                 // API 호출 결과 처리 (예: response 데이터 사용)
@@ -176,6 +185,9 @@ open class CommunityViewModel @Inject constructor(
                 Log.d(TAG, "readRandomEssays: ${e.cause}")
                 Log.d(TAG, "readRandomEssays: ${e.localizedMessage}")
 
+            }
+            finally {
+                _isLoading.emit(false)
             }
 
         }

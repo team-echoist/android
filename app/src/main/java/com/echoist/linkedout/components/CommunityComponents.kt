@@ -13,6 +13,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,8 +30,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -48,10 +51,14 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -86,8 +93,8 @@ import me.saket.extendedspans.drawBehind
 
 @Composable
 fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) {
-
     val oneSentenceList by if (viewModel.sentenceInfo == SentenceInfo.First) viewModel.firstSentences.collectAsState() else viewModel.lastSentences.collectAsState()
+
 
     //한줄추천 받아온 리스트값이 비어있으면 안보여줌
     if (oneSentenceList.isNotEmpty()){
@@ -99,7 +106,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                     withStyle(
                         style = SpanStyle(
                             color = Color.White,
-                            background = Color.Black,
+                            //background = Color.Black,
                             fontSize = 14.sp,
                         )
                     ) {
@@ -113,7 +120,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                     withStyle(
                         style = SpanStyle(
                             color = Color.Black,
-                            background = Color.White,
+                            //background = Color.White,
                             fontSize = 14.sp,
                         )
                     ) {
@@ -126,7 +133,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                     withStyle(
                         style = SpanStyle(
                             color = Color.White,
-                            background = Color.Black,
+                            //background = Color.Black,
                             fontSize = 14.sp,
                         )
                     ) {
@@ -139,7 +146,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                     withStyle(
                         style = SpanStyle(
                             color = Color.Black,
-                            background = Color.White,
+                            //background = Color.White,
                             fontSize = 14.sp,
                         )
                     ) {
@@ -152,7 +159,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                     withStyle(
                         style = SpanStyle(
                             color = Color.White,
-                            background = Color.Black,
+                            //background = Color.Black,
                             fontSize = 14.sp,
                         )
                     ) {
@@ -180,10 +187,10 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                 )
             )
         }
+
         Column {
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
                     .padding(start = 10.dp, end = 6.dp), contentAlignment = Alignment.Center
 
             ) {
@@ -193,6 +200,8 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                         extendedSpans.extend(annotatedString)
                     },
                     modifier = Modifier
+                        .horizontalScroll(state = rememberScrollState())
+                       // .fillMaxWidth()
                         .drawBehind(extendedSpans)
                         .pointerInput(Unit) {
                             detectTapGestures { offsetPosition ->
@@ -635,8 +644,25 @@ fun EssayListItem(
 fun RandomCommunityPage(viewModel: CommunityViewModel, navController: NavController) {
     val randomList by viewModel.randomList.collectAsState()
 
+    val listState = rememberLazyListState()
+    var limit by remember { mutableStateOf(20) }
+
+
+    LaunchedEffect(listState) {
+        // 스크롤 상태를 감지하는 LaunchedEffect
+        snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull() }
+            .collect { lastVisibleItem ->
+                // 리스트의 마지막 아이템에 도달하면
+                if (lastVisibleItem?.index == randomList.size - 1) {
+                    viewModel.readRandomEssays(limit)
+                    limit += 20
+                }
+            }
+    }
+
     LazyColumn(
-        Modifier
+        state = listState,
+        modifier = Modifier
             .background(Color(0xFFD9D9D9))
             .padding(top = 20.dp)
     ) {

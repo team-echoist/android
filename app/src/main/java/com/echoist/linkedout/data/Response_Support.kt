@@ -52,14 +52,14 @@ data class Notice(
 
 // 고객문의
 data class Inquiry(
-    val id: String,
-    val title: String,
-    val content: String? = null,
-    val createdDate: String,
+    val id: Int? = null,
+    var title: String,
+    var content: String? = null,
+    val createdDate: String? = null,
     val processed: Boolean? = null,
-    val user: UserInfo, //문의자 정보
-    val type : String? = null,
-    val answer : String? = null //문의답변
+    val user: UserInfo? = null, //문의자 정보
+    var type : String? = null,
+    var answer : String? = null //문의답변
 )
 
 data class NotificationSettings(

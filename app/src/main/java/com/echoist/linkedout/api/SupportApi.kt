@@ -41,13 +41,13 @@ interface SupportApi {
     @GET("api/support/inquiries")
     suspend fun readInquiries(
         @Header("Authorization") accessToken: String
-    ): AllInquiriesResponse
+    ): Response<AllInquiriesResponse>
 
     @GET("api/support/inquiries/{inquiryId}")
     suspend fun readInquiryDetail(
         @Header("Authorization") accessToken: String,
-        @Path("inquiryId") inquiryId : String
-    ): InquiryResponse
+        @Path("inquiryId") inquiryId : Int
+    ): Response<InquiryResponse>
 
     @GET("api/support/updated-histories")
     suspend fun readUpdatedHistories(

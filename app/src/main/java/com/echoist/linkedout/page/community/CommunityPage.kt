@@ -24,8 +24,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -62,23 +60,15 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
     val scope = rememberCoroutineScope()
 
     val pagerstate = rememberPagerState { 1 } //todo 다음버전에 구독페이지 추가하기. pagerstate 2로 수정
-    val hasCalledApi = remember { mutableStateOf(false) }
     val color = if (pagerstate.currentPage == 0) Color(0xFFD9D9D9) else Color.Black
 
 
-    //화면 새로 생길때 한번씩만 호출되게끔
-    if (!hasCalledApi.value) {
-        viewModel.readRandomEssays()
-        viewModel.readFollowingEssays()
-        viewModel.readOneSentences("first")
-        viewModel.readOneSentences("last")
-        hasCalledApi.value = true
-    }
+
 
     if (pagerstate.currentPage == 1) {
         viewModel.isClicked = false
     }
-
+    val isLoading by viewModel.isLoading.collectAsState()
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         ModalNavigationDrawer(
@@ -179,7 +169,6 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
                                             }
                                         }
 
-                                        val isLoading by viewModel.isLoading.collectAsState()
 
                                         if (isLoading) {
                                             Box(
@@ -199,7 +188,9 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
                                     }
                                 }
 
+
                             }
+
                         )
                     }
                 }

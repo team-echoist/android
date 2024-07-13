@@ -102,7 +102,6 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -266,11 +265,12 @@ fun MyBottomNavigation(navController: NavController) {
                 selected = currentRoute == item.screenRoute,
                 onClick = {
                     navController.navigate(item.screenRoute)
+
                 },
                 icon = {
                     Icon(
                         painter = painterResource(id = item.icon),
-                        contentDescription = item.title!!,
+                        contentDescription = item.title,
                         modifier = Modifier.size(32.dp),
                         tint = if (currentRoute == item.screenRoute) Color.White else Color(
                             0xFF686868
