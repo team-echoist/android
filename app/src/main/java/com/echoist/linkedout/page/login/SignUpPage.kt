@@ -1,9 +1,17 @@
 package com.echoist.linkedout.page.login
 
 import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,9 +26,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -28,6 +38,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,8 +60,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.echoist.linkedout.R
+import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.SignUpViewModel
+import kotlinx.coroutines.delay
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Preview
@@ -70,6 +83,23 @@ fun SignUpPage(
     val keyboardController = LocalSoftwareKeyboardController.current
     val scrollState = rememberScrollState()
 
+    LaunchedEffect(key1 = viewModel.isSignUpApiFinished) {
+        if (viewModel.isSignUpApiFinished){
+
+            delay(2000)
+            viewModel.isSignUpApiFinished = false
+            navController.navigate("LoginPage")
+        }
+    }
+
+    LaunchedEffect(key1 = viewModel.isErr) {
+        if (viewModel.isErr){
+
+            delay(2000)
+            viewModel.isErr = false
+        }
+    }
+
     LinkedOutTheme {
         Scaffold(
             modifier = Modifier.pointerInput(Unit) { //배경 터치 시 키보드 숨김
@@ -78,6 +108,11 @@ fun SignUpPage(
                 })
             },
             content = {
+                if (viewModel.isLoading){
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                        CircularProgressIndicator(color = LinkedInColor)
+                    }
+                }
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -186,9 +221,44 @@ fun SignUpPage(
                     }
 
                 }
+                AnimatedVisibility(
+                    visible = viewModel.isSignUpApiFinished ,
+                    enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)),
+                    exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
+                ){
+                    Box(modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(0.7f))
+                        .clickable(enabled = false) { }){
+                        Box(modifier = Modifier
+                            .fillMaxSize()
+                            .padding(bottom = 20.dp), contentAlignment = Alignment.BottomCenter){
+                            SendSignUpFinishedAlert({viewModel.isSignUpApiFinished = false},"이메일 주소로 인증 메일이 발송됐습니다.","링크를 클릭해 회원가입을 완료해주세요 !!")
 
+                        }
+                    }
+                }
+
+                AnimatedVisibility(
+                    visible = viewModel.isErr,
+                    enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)),
+                    exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
+                ){
+                    Box(modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(0.7f))
+                        .clickable(enabled = false) { }){
+                        Box(modifier = Modifier
+                            .fillMaxSize()
+                            .padding(bottom = 20.dp), contentAlignment = Alignment.BottomCenter){
+                            SendSignUpFinishedAlert({viewModel.isErr = false},"에러가 발생했습니다.","사용중인 이메일이거나 뭔가오류임")
+
+                        }
+                    }
+                }
 
             }
+
         )
     }
 
@@ -309,5 +379,31 @@ fun AgreementText(text: String, clickable: () -> Unit, color: Color) {
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(text = text, fontSize = 14.sp, color = Color(0xFF919191))
+    }
+}
+
+@Composable
+fun SendSignUpFinishedAlert(isClicked : ()->Unit,text1 : String, text2 : String){
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .height(81.dp)
+        .padding(horizontal = 20.dp)
+        .background(Color(0xFF212121), shape = RoundedCornerShape(20))){
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(start = 15.dp), contentAlignment = Alignment.CenterStart){
+            Column {
+                Text(text = text1, fontSize = 14.sp)
+                Text(text = text2, color = LinkedInColor, fontSize = 14.sp)
+
+            }
+        }
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(end = 15.dp), contentAlignment = Alignment.CenterEnd){
+            Icon(imageVector = Icons.Default.Close, contentDescription = "close", modifier = Modifier.clickable { isClicked() })
+        }
+
+
     }
 }

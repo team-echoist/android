@@ -1,6 +1,7 @@
 package com.echoist.linkedout.viewModels
 
 import android.content.ContentValues
+import android.content.ContentValues.TAG
 import android.util.Log
 import android.util.Patterns
 import androidx.compose.runtime.getValue
@@ -35,6 +36,7 @@ class SignUpViewModel @Inject constructor(
     var agreement_marketing by mutableStateOf(false)
 
     var isLoading by mutableStateOf(false)
+    var isErr by mutableStateOf(false)
 
     fun getMyInfo() : UserInfo{
         return exampleItems.myProfile
@@ -54,8 +56,11 @@ class SignUpViewModel @Inject constructor(
     }
 
     //이메일 중복검사 1차
+    var isSignUpApiFinished by mutableStateOf(false)
     fun getUserEmailCheck(userEmail: String,navController: NavController) {
+
         viewModelScope.launch {
+            isLoading = true
             try {
                 val email = SignUpApi.EmailRequest(userEmail)
                 val response = signUpApi.emailDuplicateConfirm(email)
@@ -66,14 +71,20 @@ class SignUpViewModel @Inject constructor(
 
                     emailVerify(navController)
                 } else {
+                    isErr = true
                     Log.e("authApiFailed1", "Failed : ${response.errorBody()}")
                         //todo check 404 뜨는 에러 해결해야할것.
                     Log.e("authApiSuccess", "${response.code()}")
+                    if (response.code() == 409) Log.e(TAG, "getUserEmailCheck: 이미 사용중인 이메일입니다.", )
                 }
 
             } catch (e: Exception) {
+                isErr = true
                 // api 요청 실패
                 Log.e("writeEssayApiFailed1", "Failed: ${e.message}")
+            }
+            finally {
+                isLoading = false
             }
         }
     }
@@ -87,24 +98,37 @@ class SignUpViewModel @Inject constructor(
             val response = signUpApi.emailVerify(userAccount)
 
             if (response.isSuccessful) {
+
+                if (response.code() == 400) isErr = true
+                else if (response.code() == 200) isErr = true
                 Log.e("authApiSuccess2", "${response.raw()}")
                 Log.e("authApiSuccess2", "${response.headers()}")
                 Log.e("authApiSuccess2", "${response.code()}")
+                Log.e("authApiSuccess2", "$isErr")
+
+                isSignUpApiFinished = true
 
                 Log.d("tokentoken", response.headers()["authorization"].toString())
                 Token.accessToken = (response.headers()["authorization"].toString())
             } else {
+                isErr = true
                 Log.e("authApiFailed2", "Failed : ${response.headers()}")
                 Log.e("authApiSuccess2", "${response.code()}")
             }
 
         } catch (e: Exception) {
+            isErr = true
             // api 요청 실패
             Log.e("writeEssayApiFailed2", "Failed: ${e.message}")
+        }
+        finally {
+            isLoading = false
+
         }
     }
 
     var isSendEmailVerifyApiFinished by mutableStateOf(false)
+    //이메일변경용 메일요청
     fun sendEmailVerificationForChange(email : String) { //코루틴스코프에서 순차적으로 수행된다. 뷰모델스코프는 위에걸로
         viewModelScope.launch {
             try {

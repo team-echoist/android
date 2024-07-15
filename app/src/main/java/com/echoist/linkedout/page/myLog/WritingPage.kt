@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -36,6 +37,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,8 +50,10 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
@@ -59,6 +63,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -112,7 +118,9 @@ fun WritingPage(
     val scrollState = rememberScrollState()
     val background = if (isSystemInDarkTheme()) Color.Black else Color.White
 
-
+    var isTextSettingSelected by remember { mutableStateOf(false) }
+    var isTextAlignSelected by remember { mutableStateOf(false) }
+    var isTextUnderLineSelected by remember { mutableStateOf(false) }
 
 
     LinkedOutTheme {
@@ -201,9 +209,7 @@ fun WritingPage(
                         }
 
                     if (isKeyBoardOpened == Keyboard.Opened || viewModel.isTextFeatOpened.value) {
-                        var isTextSettingSelected by remember { mutableStateOf(false) }
-                        var isTextAlignSelected by remember { mutableStateOf(false) }
-                        var isTextUnderLineSelected by remember { mutableStateOf(false) }
+
 
                         if (isTextSettingSelected) {
                             TextSettingsBar(viewModel)
@@ -255,9 +261,55 @@ fun WritingPage(
 
 
                             })
+
                         KeyboardLocationFunc(viewModel, navController)
 
                     }
+                }
+                if (isKeyBoardOpened == Keyboard.Opened || viewModel.isTextFeatOpened.value) {
+
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
+//                    TextEditBar(viewModel,
+//                        isTextSettingSelected, {
+//                            isTextSettingSelected = it
+//                            isTextAlignSelected = false
+//                            isTextUnderLineSelected = false
+//                        },
+//                        isTextAlignSelected,
+//                        {
+//                            isTextAlignSelected = it
+//                            isTextSettingSelected = false
+//                            isTextUnderLineSelected = false
+//                        },
+//                        isTextUnderLineSelected,
+//                        {
+//                            isTextUnderLineSelected = it
+//                            isTextAlignSelected = false
+//                            isTextSettingSelected = false
+//
+//                            if (viewModel.content.selection.start != viewModel.content.selection.end) {
+//                                val cursorPosition = viewModel.content.selection.start
+//                                val endPosition = viewModel.content.selection.end
+//                                val newText =
+//                                    viewModel.content.text.substring(0, cursorPosition) +
+//                                            "<u>" + viewModel.content.text.substring(
+//                                        cursorPosition,
+//                                        endPosition
+//                                    ) + "</u>" +
+//                                            viewModel.content.text.substring(
+//                                                endPosition,
+//                                                viewModel.content.text.length
+//                                            )
+//
+//
+//                                viewModel.content = TextFieldValue(
+//                                    text = newText,
+//                                )
+//                            }
+//
+//
+//                        })
+                }
                 }
             }
         }
@@ -282,6 +334,7 @@ fun WritingTopAppBar(
 
     Column(
         modifier = Modifier
+            .systemBarsPadding()
             .fillMaxWidth()
     ) {
         Row(
@@ -391,7 +444,7 @@ fun WritingTopAppBar(
                         if (viewModel.imageUri != null) {
                             scope.launch {
 
-                                    viewModel.uploadThumbnail(viewModel.imageUri!!, context)!!
+                                viewModel.uploadThumbnail(viewModel.imageUri!!, context)!!
 
                             }
                         } else {
@@ -598,16 +651,14 @@ fun KeyboardLocationFunc(viewModel: WritingViewModel, navController: NavControll
     val funcItems = listOf(
         FuncItemData("인용구", R.drawable.keyboard_quote) {},
         FuncItemData("구분선", R.drawable.keyboard_divider) {
-
             val cursorPosition = viewModel.content.selection.start
             val newText = viewModel.content.text.substring(0, cursorPosition) +
                     "\n---\n" +
                     viewModel.content.text.substring(cursorPosition)
             viewModel.content = TextFieldValue(
                 text = newText,
-                selection = TextRange(cursorPosition + 5) // 커서 위치를 구분선 뒤로 이동
+                selection = TextRange(cursorPosition + 5)
             )
-
         },
         FuncItemData("위치", R.drawable.keyboard_location) {
             viewModel.isHashTagClicked = false
@@ -615,17 +666,12 @@ fun KeyboardLocationFunc(viewModel: WritingViewModel, navController: NavControll
             requestPermissionsUtil.RequestLocation()
             if (requestPermissionsUtil.isLocationPermitted()) {
                 requestPermissionsUtil.RequestLocationUpdates()
-
             } else {
                 requestPermissionsUtil.RequestLocationUpdates()
                 Log.d("MainActivity", "위치 권한 거부")
             }
-
         },
-        FuncItemData(
-            "쓰다 만 글",
-            R.drawable.keyboard_storage
-        ) { navController.navigate("TemporaryStoragePage") },
+        FuncItemData("쓰다 만 글", R.drawable.keyboard_storage) { navController.navigate("TemporaryStoragePage") },
         FuncItemData("감정 해시태그", R.drawable.keyboard_hashtag) {
             viewModel.isLocationClicked = false
             viewModel.isHashTagClicked = !viewModel.isHashTagClicked
@@ -635,18 +681,40 @@ fun KeyboardLocationFunc(viewModel: WritingViewModel, navController: NavControll
         FuncItemData("이미지", R.drawable.keyboard_img) { navController.navigate("CropImagePage") },
         FuncItemData("이미지", R.drawable.pw_eye) {},
     )
+
+    val density = LocalDensity.current
+    val keyboardHeightDp = remember { mutableStateOf(283.dp) }
+    var hasCalculatedKeyboardHeight by remember { mutableStateOf(false) }
+
+    val view = LocalView.current
+
+    LaunchedEffect(view) {
+        if (!hasCalculatedKeyboardHeight) {
+            // Get the root view insets
+            val insets = ViewCompat.getRootWindowInsets(view)
+            // Get the IME insets
+            val imeHeightPx = insets?.getInsets(WindowInsetsCompat.Type.ime())?.bottom ?: 0
+
+            if (imeHeightPx > 0) {
+                // Convert pixels to dp
+                keyboardHeightDp.value = with(density) { imeHeightPx.toDp() }
+                hasCalculatedKeyboardHeight = true
+                Log.d("TAG", "Keyboard height in dp: ${keyboardHeightDp.value}")
+            }
+        }
+    }
+
     Box(
         modifier = Modifier
             .background(Color(0xFF313131))
             .fillMaxWidth()
-            .height(283.dp)
-            .padding(horizontal = 16.dp), // 수평 방향으로 패딩 추가
+            .height(keyboardHeightDp.value)  // Use the remembered dp value
+            .padding(horizontal = 16.dp),
         contentAlignment = Alignment.Center
     ) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(4),
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(60.dp),
             horizontalArrangement = Arrangement.Center
         ) {
@@ -656,7 +724,6 @@ fun KeyboardLocationFunc(viewModel: WritingViewModel, navController: NavControll
         }
     }
 }
-
 @Composable
 fun TextEditBar(
     viewModel: WritingViewModel,
@@ -667,14 +734,24 @@ fun TextEditBar(
     isTextUnderLineSelected: Boolean,
     onTextUnderLineSelected: (Boolean) -> Unit,
 ) {
+
+    val insets = ViewCompat.getRootWindowInsets(LocalView.current)
+    val imeHeightPx = insets?.getInsets(WindowInsetsCompat.Type.ime())?.bottom ?: 0
+    val density = LocalDensity.current
+
+    // Convert pixels to dp
+    val imeHeightDp = with(density) { imeHeightPx.toDp() }
+
+    Log.d("TAG", "Keyboard height in dp: $imeHeightDp")
+
     val keyboardController = LocalSoftwareKeyboardController.current
     var isKeyboardApeared by remember { mutableStateOf(true) }
     val requestPermissionsUtil = RequestPermissionsUtil(LocalContext.current, viewModel)
-
     Row(
         modifier = Modifier
             .background(Color(0xFF1D1D1D))
             .fillMaxWidth()
+            //.imePadding()
             .height(50.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

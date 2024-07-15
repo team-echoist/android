@@ -263,8 +263,11 @@ fun EssayListPage2(viewModel: MyLogViewModel, pagerState: PagerState, navControl
 fun StoryListPage(viewModel: MyLogViewModel,navController: NavController){
     Column (Modifier.padding(horizontal = 20.dp)){
         Button(
-            onClick = { navController.navigate("StoryPage")
-                      viewModel.isCreateStory = true},
+            onClick = {
+                viewModel.isCreateStory = true
+                viewModel.essayIdList.clear()
+                navController.navigate("StoryPage")
+                    viewModel.storyTextFieldTitle = "" },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(20),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF252525))

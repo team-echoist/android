@@ -81,7 +81,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data android:scheme="https" />
-                <data android:host="www.linkedout.com" />
+                <data android:host="linkedout.com" />
             </intent-filter>
         </activity>
 

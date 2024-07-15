@@ -1,4 +1,6 @@
 package com.echoist.linkedout.api
+import android.content.ContentValues.TAG
+import android.util.Log
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Header
@@ -48,8 +50,8 @@ class SignUpApiImpl : SignUpApi {
     suspend fun requestRegisterDevice(
         @Header("Authorization") accessToken: String,
         @Body registerDeviceRequest: RegisterDeviceRequest
-    ): Response<Unit> {
-        TODO("Not yet implemented")
+    ) {
+        Log.d(TAG, "requestRegisterDevice: ")
     }
 
 

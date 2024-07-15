@@ -292,6 +292,8 @@ class MyLogViewModel @Inject constructor(
                 if (response.isSuccessful) {
                     Token.accessToken = (response.headers()["authorization"].toString())
                     navController.navigate("MYLOG")
+                    storyTextFieldTitle = ""
+                    essayIdList.clear()
 
                     Log.e("writeEssayApiSuccess", "${response.headers()}")
                     Log.e("writeEssayApiSuccess", "${response.code()}")
@@ -319,6 +321,8 @@ class MyLogViewModel @Inject constructor(
 
                 if (response.isSuccessful) {
                     Token.accessToken = (response.headers()["authorization"].toString())
+                    storyTextFieldTitle = ""
+                    essayIdList.clear()
                     navController.navigate("MYLOG")
 
                     Log.e("writeEssayApiSuccess", "${response.headers()}")
@@ -376,6 +380,8 @@ class MyLogViewModel @Inject constructor(
                     Token.accessToken = (response.headers()["authorization"].toString())
                     isActionClicked = false
                     navController.navigate("MYLOG")
+                    storyTextFieldTitle = ""
+                    essayIdList.clear()
 
                     Log.e("writeEssayApiSuccess", "${response.headers()}")
                     Log.e("writeEssayApiSuccess", "${response.code()}")

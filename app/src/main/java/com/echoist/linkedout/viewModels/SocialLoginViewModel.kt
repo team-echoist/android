@@ -99,6 +99,43 @@ class SocialLoginViewModel @Inject constructor(
         }
     }
 
+    //로그인
+    fun login(navController: NavController) {
+        viewModelScope.launch {
+            try {
+                val userAccount = SignUpApi.UserAccount(userId, userPw)
+                val response = signUpApi.login(userAccount)
+
+
+                if (response.isSuccessful) {
+                    Log.d("tokentoken", response.headers()["authorization"].toString())
+                    Token.accessToken = (response.headers()["authorization"].toString())
+                    Log.e(
+                        "authApiSuccess3",
+                        "로그인 성공! ${response.headers()["authorization"]}"
+                    ) // 이값을 항상 헤더에 넣을것.
+                    Log.e("authApiSuccess3", "${response.code()}")
+                    Log.e("authApiSuccess3 헤더", "${response.headers()}")
+
+                    val encodedUrl = URLEncoder.encode( // http 인코드
+                        "android-app://androidx.navigation/HOMEaccessToken",
+                        StandardCharsets.UTF_8.toString()
+                    )
+                    navController.popBackStack("OnBoarding", false) //onboarding까지 전부 삭제.
+                    navController.navigate("HOME")
+                } else {
+                    Log.e("authApifailed32", "${response.code()}")
+                    Log.e("authApifailed32", response.message())
+
+                }
+
+            } catch (e: Exception) {
+                // api 요청 실패
+                Log.e("writeEssayApiFailed2", "Failed: ${e.message}")
+            }
+        }
+    }
+
 
     fun signInWithGoogle(
         launcher: ManagedActivityResultLauncher<Intent, ActivityResult>,
@@ -347,46 +384,7 @@ class SocialLoginViewModel @Inject constructor(
 
     }
 
-    //로그인
-    fun login(navController: NavController) {
-        viewModelScope.launch {
-            try {
-                val userAccount = SignUpApi.UserAccount(userId, userPw)
-                val response = signUpApi.login(userAccount)
 
-
-                if (response.isSuccessful) {
-                    Log.d("tokentoken", response.headers()["authorization"].toString())
-                    Token.accessToken = (response.headers()["authorization"].toString())
-                    Log.e("authApiSuccess2", response.body()?.success.toString())
-                    Log.e("authApiSuccess2", response.message())
-                    Log.e("authApiSuccess2", "${response.raw()}")
-                    Log.e(
-                        "authApiSuccess3",
-                        "로그인 성공! ${response.headers()["authorization"]}"
-                    ) // 이값을 항상 헤더에 넣을것.
-                    Log.e("authApiSuccess3", "${response.code()}")
-                    Log.e("authApiSuccess3 헤더", "${response.headers()}")
-
-                    val encodedUrl = URLEncoder.encode( // http 인코드
-                        "android-app://androidx.navigation/HOMEaccessToken",
-                        StandardCharsets.UTF_8.toString()
-                    )
-                    navController.popBackStack("OnBoarding", false) //onboarding까지 전부 삭제.
-                    navController.navigate("HOME")
-                } else {
-                    Log.e("authApiFailed2", "Failed : ${response.headers().get("authorization")}")
-                    Log.e("authApifailed32", "${response.code()}")
-                    Log.e("authApifailed32", response.message())
-
-                }
-
-            } catch (e: Exception) {
-                // api 요청 실패
-                Log.e("writeEssayApiFailed2", "Failed: ${e.message}")
-            }
-        }
-    }
 }
 
 

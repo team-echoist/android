@@ -64,6 +64,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.view.WindowCompat
 import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -151,7 +152,7 @@ class LoginPage : ComponentActivity() {
         val myLogViewModel : MyLogViewModel by viewModels()
         val communityViewModel : CommunityViewModel by viewModels()
         val settingsViewModel : SettingsViewModel by viewModels()
-
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
             val keyHash = Utility.getKeyHash(this)
