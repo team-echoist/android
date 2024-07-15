@@ -22,7 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.HorizontalDivider
@@ -124,7 +124,7 @@ fun SearchingBar(viewModel: SearchingViewModel, onClick: () -> Unit, drawerState
         .fillMaxWidth()
         .padding(20.dp), verticalAlignment = Alignment.CenterVertically){
         Icon(
-            imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
+            imageVector =Icons.AutoMirrored.Filled.ArrowBack,
             contentDescription = "back",
             tint = Color.White,
             modifier = Modifier.clickable {

@@ -26,7 +26,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
-import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.DensitySmall
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -155,7 +155,7 @@ fun ModalBottomSheetContent(viewModel: HomeViewModel,navController: NavControlle
 
     ModalDrawerSheet(
         drawerShape = RectangleShape,
-        drawerContainerColor = Color(0xE6141414)
+        drawerContainerColor = Color(0xFF121212)
     ) {
         Column(Modifier.verticalScroll(scrollState)) {
             MyProfile(item = viewModel.getMyInfo()){navController.navigate("SETTINGS")}
@@ -218,7 +218,7 @@ fun CustomTopAppBar(onClick: () -> Unit,onClickNotification : ()->Unit) {
         navigationIcon = {
             Icon(
                 tint = if (isSystemInDarkTheme()) Color.White else Color.Gray,
-                imageVector = Icons.Default.Menu,
+                imageVector = Icons.Default.DensitySmall, //todo 3줄짜리로 이미지 export필요
                 contentDescription = "Menu",
                 modifier = Modifier
                     .clickable { onClick() }

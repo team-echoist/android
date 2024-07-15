@@ -111,12 +111,12 @@ fun StoryDetailTitle(story: Story,userName : String){
             .fillMaxWidth()
             .height(170.dp)
             .padding(horizontal = 44.dp)) {
-        Text(text = "${story.essaysCount}편의 글", fontSize = 12.sp)
+        Text(text = "${story.essaysCount}편의 글", fontSize = 12.sp, color = Color.Black, fontWeight = FontWeight.Normal)
         Spacer(modifier = Modifier.height(4.dp))
-        Text(text = story.name,fontSize = 24.sp,
+        Text(text = story.name,fontSize = 24.sp, fontWeight = FontWeight.Bold,
             color = Color(0xFF000000),)
         Spacer(modifier = Modifier.height(11.dp))
-        Text(text = "$userName 아무개", fontSize = 12.sp)
+        Text(text = "$userName 아무개", fontSize = 12.sp,color = Color.Black, fontWeight = FontWeight.SemiBold)
     }
 }
 //viewmodel.modiftstorylist

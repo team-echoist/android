@@ -216,13 +216,13 @@ fun StoryEssayListScreen(viewModel: MyLogViewModel, navController: NavController
                         .height(48.dp), contentAlignment = Alignment.CenterStart
                 ) {
                     Text(
-                        text = annotatedString
+                        text = annotatedString, fontSize = 12.sp
                     )
                 }
 
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = "전체 선택")
+                        Text(text = "전체 선택", fontSize = 12.sp)
                         Spacer(modifier = Modifier.width(5.dp))
                         IconButton(
                             onClick = {
@@ -291,7 +291,7 @@ fun StoryEssayListScreen(viewModel: MyLogViewModel, navController: NavController
                 colors = ButtonDefaults.buttonColors(containerColor = containerColor),
                 shape = RoundedCornerShape(20)
             ) {
-                Text("총 ${selectedItems.size}개의 글 모으기")
+                Text("총 ${selectedItems.size}개의 글 모으기",color = Color.Black)
             }
         }
     }

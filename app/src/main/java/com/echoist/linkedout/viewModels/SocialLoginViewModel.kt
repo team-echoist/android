@@ -20,9 +20,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.echoist.linkedout.BuildConfig
-import com.echoist.linkedout.api.GoogleSignUpApi
 import com.echoist.linkedout.api.NaverApiService
 import com.echoist.linkedout.api.SignUpApi
+import com.echoist.linkedout.api.SocialSignUpApi
 import com.echoist.linkedout.api.UserApi
 import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.page.myLog.Token
@@ -44,8 +44,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 import javax.inject.Inject
 
 
@@ -54,7 +52,7 @@ class SocialLoginViewModel @Inject constructor(
     private val userApi: UserApi,
     private val exampleItems: ExampleItems,
     private val signUpApi: SignUpApi,
-    private val googleSignUpApi: GoogleSignUpApi
+    private val socialSignUpApi: SocialSignUpApi
 ) : ViewModel() {
     private val auth: FirebaseAuth = Firebase.auth
 
@@ -67,6 +65,12 @@ class SocialLoginViewModel @Inject constructor(
     private var googleUserToken by mutableStateOf("")
     private var googleUserId by mutableStateOf("")
     private var googleUserEmail by mutableStateOf("")
+
+    private var kakaoUserToken by mutableStateOf("")
+    private var kakaoUserId by mutableStateOf("")
+
+    private var naverUserToken by mutableStateOf("")
+    private var naverUserId by mutableStateOf("")
 
 
     var userId by mutableStateOf("")
@@ -108,30 +112,21 @@ class SocialLoginViewModel @Inject constructor(
 
 
                 if (response.isSuccessful) {
-                    Log.d("tokentoken", response.headers()["authorization"].toString())
+                    Log.d("server header token", response.headers()["authorization"].toString())
                     Token.accessToken = (response.headers()["authorization"].toString())
-                    Log.e(
-                        "authApiSuccess3",
-                        "로그인 성공! ${response.headers()["authorization"]}"
-                    ) // 이값을 항상 헤더에 넣을것.
-                    Log.e("authApiSuccess3", "${response.code()}")
-                    Log.e("authApiSuccess3 헤더", "${response.headers()}")
+                    Log.d("authApiSuccess3", "로그인 성공! ${response.headers()["authorization"]}") // 이값을 항상 헤더에 넣을것.
 
-                    val encodedUrl = URLEncoder.encode( // http 인코드
-                        "android-app://androidx.navigation/HOMEaccessToken",
-                        StandardCharsets.UTF_8.toString()
-                    )
                     navController.popBackStack("OnBoarding", false) //onboarding까지 전부 삭제.
                     navController.navigate("HOME")
                 } else {
-                    Log.e("authApifailed32", "${response.code()}")
-                    Log.e("authApifailed32", response.message())
+                    Log.e("login_failed", "${response.code()}")
+                    Log.e("login_failed", response.message())
 
                 }
 
             } catch (e: Exception) {
-                // api 요청 실패
-                Log.e("writeEssayApiFailed2", "Failed: ${e.message}")
+                e.printStackTrace()
+                Log.e("login_failed", "Failed: ${e.message}")
             }
         }
     }
@@ -167,27 +162,18 @@ class SocialLoginViewModel @Inject constructor(
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         googleLoginstate.value = true
-                        // 로그인 성공
-                        // 회원정보 획득 가능
                         googleUserId = account.id.toString()
                         googleUserToken = account.idToken.toString()
-                        googleUserEmail = account.email.toString()
-                        googleLogin(navController)
-                        Log.d(
 
-                            TAG,
-                            "firebaseAuthWithGoogle current user:" + auth.currentUser!!.email.toString()
+                        requestGoogleLogin(navController)
+                        Log.i(
+                            "Google_Firebase_UserInfo:", "구글 사용자 정보 요청 성공:" +
+                                    "\nEmail: ${auth.currentUser?.email}" +
+                                    "\nUser Token: $googleUserToken" +  //회원 토큰
+                                    "\nPhoto URL: ${auth.currentUser?.photoUrl}" +  // 회원 사진 URL
+                                    "\nUser ID: $googleUserId" //회원 아이디
                         )
-                        Log.d(
-                            TAG,
-                            "firebaseAuthWithGoogle current user:$googleUserToken"
-                        ) //회원 이름
-                        Log.d(
-                            TAG,
-                            "firebaseAuthWithGoogle current user:" + auth.currentUser!!.photoUrl.toString()
-                        ) //회원 사진 Url
 
-                        // 추가 작업 수행
                     } else {
                         // 로그인 실패
                         Log.w(TAG, "signInWithCredential:failure", task.exception)
@@ -201,37 +187,34 @@ class SocialLoginViewModel @Inject constructor(
     }
 
     //서버로 구글로그인 인증받아온 후 홈화면진입.
-    private fun googleLogin(navController: NavController) {
+    private fun requestGoogleLogin(navController: NavController) {
         viewModelScope.launch {
             try {
-                val userAccount = GoogleSignUpApi.UserGoogleAccount(
+                val userAccount = SocialSignUpApi.UserAccount(
                     googleUserToken,
                     googleUserId
                 )
-                val response = googleSignUpApi.googleLogin(userAccount)
+                val response = socialSignUpApi.requestGoogleLogin(userAccount)
 
                 if (response.isSuccessful) {
-                    Log.d("tokentoken", response.headers()["authorization"].toString())
-                    accessToken = (response.headers()["authorization"].toString())
-                    Token.accessToken = accessToken
-                    Log.d(TAG, "tokentoken"+ Token.accessToken)
-                    Log.e("authApiSuccess2", response.message())
+                    Token.accessToken = (response.headers()["authorization"].toString())
+                    Log.d(TAG, "token_with server"+ Token.accessToken)
+                    Log.d("google_login_success", response.code().toString())
 
                     readMyInfo()
-
-                    navController.navigate("HOME")
+                    if (response.code() == 205){
+                        navController.navigate("SignUpComplete")
+                    }
+                    else{
+                        navController.navigate("HOME")
+                    }
                 } else {
-                    Log.e("authApiFailed2", "Failed : ${response.headers().get("authorization")}")
-                    Log.e("authApifailed32", "${response.code()}")
-                    Log.e("authApifailed32", googleUserToken)
-                    Log.e("authApifailed32", googleUserId)
-                    Log.e("authApifailed32", googleUserEmail)
-
+                    Log.e("google_login 서버와 api", "Failed ${response.code()}")
                 }
 
             } catch (e: Exception) {
-                // api 요청 실패
-                Log.e("writeEssayApiFailed2", "Failed: ${e.message}")
+                e.printStackTrace()
+                Log.e("google_login", "Failed: ${e.message}")
             }
         }
     }
@@ -242,61 +225,97 @@ class SocialLoginViewModel @Inject constructor(
 
         // 카카오계정으로 로그인 공통 callback 구성
         // 카카오톡으로 로그인 할 수 없어 카카오계정으로 로그인할 경우 사용됨
-        val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
+        val callback: (OAuthToken?, Throwable?) -> Unit = { kakaoToken, error ->
             if (error != null) {
                 Log.e(TAG, "카카오계정으로 로그인 실패", error)
-            } else if (token != null) {
+            } else if (kakaoToken != null) {
                 kakaoLoginstate.value = true
+                kakaoUserToken = kakaoToken.accessToken
+                getKakaoUserInfo(navController)
 
-
-                navController.navigate("HOME")
-                Log.i(TAG, "카카오계정으로 로그인 성공 ${token.accessToken} ")
+                Log.i("Kakao_TokenInfo", "카카오계정으로 로그인 성공 ${kakaoToken.accessToken} ") //카카오 계정 토큰
             }
         }
 
         // 카카오톡이 설치되어 있으면 카카오톡으로 로그인, 아니면 카카오계정으로 로그인
         if (UserApiClient.instance.isKakaoTalkLoginAvailable(context)) {
-            UserApiClient.instance.loginWithKakaoTalk(context) { token, error ->
+            UserApiClient.instance.loginWithKakaoTalk(context) { kakaoToken, error ->
                 if (error != null) {
-                    Log.e(TAG, "카카오톡으로 로그인 실패", error)
+                    Log.e("Kakao_err", "카카오톡으로 로그인 실패", error)
 
                     // 사용자가 카카오톡 설치 후 디바이스 권한 요청 화면에서 로그인을 취소한 경우,
                     // 의도적인 로그인 취소로 보고 카카오계정으로 로그인 시도 없이 로그인 취소로 처리 (예: 뒤로 가기)
+
                     if (error is ClientError && error.reason == ClientErrorCause.Cancelled) {
                         return@loginWithKakaoTalk
                     }
 
                     // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인 시도
                     UserApiClient.instance.loginWithKakaoAccount(context, callback = callback)
-                } else if (token != null) {
+                } else if (kakaoToken != null) {
                     kakaoLoginstate.value = true
+                    kakaoUserToken = kakaoToken.accessToken
+                    Log.i("Kakao_Success", "카카오톡으로 로그인 성공 ${kakaoToken.accessToken}")
 
-                    navController.navigate("HOME")
-                    Log.i(TAG, "카카오톡으로 로그인 성공 ${token.accessToken}")
+                    getKakaoUserInfo(navController)
                 }
             }
         } else {
             UserApiClient.instance.loginWithKakaoAccount(context, callback = callback)
         }
 
-        getKakaoUserInfo()
 
     }
 
-    // 로그인과 동시에 사용자 정보 요청 (기본) 따로 메서드를 빼서 활용가능할듯합니다.
-    // 메일이나 프로필, 등의 추가정보를 얻기위해선 비즈니스 앱 등록이 필요함.
-    private fun getKakaoUserInfo() {
+    //카카오 유저 정보 획득
+    private fun getKakaoUserInfo(navController: NavController) {
         UserApiClient.instance.me { user, error ->
             if (error != null) {
-                Log.e(TAG, "사용자 정보 요청 실패", error)
+                Log.e("Kakao_err", "사용자 정보 요청 실패", error)
             } else if (user != null) {
+                kakaoUserId = user.id.toString()
                 Log.i(
-                    TAG, "사용자 정보 요청 성공" +
+                    "Kakao_userInfo", "카카오 사용자 정보 요청 성공" +
+                            "\n토큰: $kakaoUserToken" +
                             "\n회원번호: ${user.id}" +
                             "\n이메일: ${user.kakaoAccount?.email}" +
                             "\n닉네임: ${user.kakaoAccount?.profile?.nickname}" +
                             "\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}"
                 )
+
+                requestKakaoLogin(navController)
+
+            }
+        }
+    }
+
+    // 카카오 sdk 거친 후에 서버로 카카오인증 토큰,아이디 보내고 홈화면진입
+    private fun requestKakaoLogin(navController: NavController) {
+        viewModelScope.launch {
+            try {
+                val userAccount = SocialSignUpApi.UserAccount(kakaoUserToken, kakaoUserId)
+                val response = socialSignUpApi.requestKakaoLogin(userAccount)
+
+                if (response.isSuccessful) {
+                    Log.d("server header token", response.headers()["authorization"].toString())
+                    Token.accessToken = (response.headers()["authorization"].toString())
+                    Log.d(TAG, "requestKakaoLogin: ${response.code()}")
+
+                    readMyInfo()
+                    if (response.code() == 205){
+                        navController.navigate("SignUpComplete")
+                    }
+                    else{
+                        navController.navigate("HOME")
+                    }
+                } else {
+                    Log.e("kakao_login 서버와 api", "Failed ${response.code()}")
+                }
+
+            } catch (e: Exception) {
+                // api 요청 실패
+                e.printStackTrace()
+                Log.e("kakao login fiailed", "Failed: ${e.message}")
             }
         }
     }
@@ -323,23 +342,26 @@ class SocialLoginViewModel @Inject constructor(
     fun handleNaverLoginResult(result: ActivityResult, navController: NavController) {
         when (result.resultCode) {
             RESULT_OK -> {
+                naverUserToken = NaverIdLoginSDK.getAccessToken() ?: "null"
                 // 네이버 로그인 인증이 성공했을 때 수행할 코드 추가
-                Log.d("Naver_getAccessToken", NaverIdLoginSDK.getAccessToken().toString())
-                Log.d("Naver_getRefreshToken", NaverIdLoginSDK.getRefreshToken().toString())
-                Log.d("Naver_getExpiresAt", NaverIdLoginSDK.getExpiresAt().toString())
-                Log.d("Naver_getTokenType", NaverIdLoginSDK.getTokenType().toString())
-                Log.d("Naver_getState", NaverIdLoginSDK.getState().toString())
+                Log.i(
+                    "Naver_TokenInfo", "Naver Token Information:" +
+                            "\nAccess Token: ${NaverIdLoginSDK.getAccessToken()}" +
+                            "\nRefresh Token: ${NaverIdLoginSDK.getRefreshToken()}" +
+                            "\nExpires At: ${NaverIdLoginSDK.getExpiresAt()}" +
+                            "\nToken Type: ${NaverIdLoginSDK.getTokenType()}" +
+                            "\nState: ${NaverIdLoginSDK.getState()}"
+                )
 
                 naverLoginstate.value = true
-                navController.navigate("HOME")
                 // 로그인 성공 시 유저 정보 획득
-                getNaverUserInfo()
+                getNaverUserInfo(navController)
             }
 
             RESULT_CANCELED -> {
                 // 실패 or 에러
-                Log.d("errorCode", NaverIdLoginSDK.getLastErrorCode().code)
-                Log.d("errorDescription", NaverIdLoginSDK.getLastErrorDescription().toString())
+                Log.d("Naver_errorCode", NaverIdLoginSDK.getLastErrorCode().code)
+                Log.d("Naver_errorDescription", NaverIdLoginSDK.getLastErrorDescription().toString())
 
                 // Handle failure accordingly
             }
@@ -350,7 +372,7 @@ class SocialLoginViewModel @Inject constructor(
         NaverIdLoginSDK.logout()
     }
 
-    private fun getNaverUserInfo() {
+    private fun getNaverUserInfo(navController: NavController) {
         val token = NaverIdLoginSDK.getAccessToken()
         val moshi = Moshi.Builder()
             .addLast(KotlinJsonAdapterFactory())
@@ -368,12 +390,20 @@ class SocialLoginViewModel @Inject constructor(
                 try {
                     val userInfo = api.readUserInfo("Bearer ${NaverIdLoginSDK.getAccessToken()}")
                     val info = userInfo.response
-                    // info.name 등으로 유저 정보 획득
-                    Log.d("NaverUserInfo success", info.name.toString())
-                    Log.d("NaverUserInfo success", info.profile_image.toString())
-
+                    naverUserId = info.id ?: "null"
+                    Log.i(
+                        "Naver_userInfo", "네이버 사용자 정보 요청 성공" +
+                                "\n토큰: $naverUserToken" +
+                                "\n이름: ${info.name}" +
+                                "\n아이디: ${info.id}" +
+                                "\n이메일: ${info.email}" +
+                                "\n모바일: ${info.mobile}" +
+                                "\n프로필사진: ${info.profile_image}"
+                    )
+                    requestNaverLogin(navController)
                 } catch (e: Exception) {
                     // 사용자 정보 가져오기 실패
+                    e.printStackTrace()
                     Log.e("NaverUserInfo", "Failed to get user info: ${e.message}")
                 }
             }
@@ -383,9 +413,42 @@ class SocialLoginViewModel @Inject constructor(
         }
 
     }
+    // 네이버 sdk 거친 후에 서버로 카카오인증 토큰,아이디 보내고 홈화면진입
+    private fun requestNaverLogin(navController: NavController) {
+        viewModelScope.launch {
+            try {
+                val userAccount = SocialSignUpApi.UserAccount(naverUserToken, naverUserId)
+                val response = socialSignUpApi.requestNaverLogin(userAccount)
+
+                if (response.isSuccessful) {
+                    Log.d(TAG, "requestNaverLogin: 로그인 성공")
+                    Log.d("server header token", response.headers()["authorization"].toString())
+                    Token.accessToken = (response.headers()["authorization"].toString())
+                    Log.d(TAG, "requestNaverLogin: ${response.code()}")
 
 
+                    readMyInfo()
+                    //첫 회원가입일 경우 205 나머지는 Homed
+                    if (response.code() == 205){
+                        navController.navigate("SignUpComplete")
+                    }
+                    else{
+                        navController.navigate("HOME")
+                    }
+                } else {
+                    Log.e("naver_login 서버와 api", "Failed ${response.code()}")
+                }
+
+            } catch (e: Exception) {
+                // api 요청 실패
+                e.printStackTrace()
+                Log.e("naver login failed", "Failed: ${e.message}")
+            }
+        }
+    }
 }
+
+
 
 
 //로그인 성공시 일단 간단한 토스트메세지 띄움

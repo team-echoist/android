@@ -36,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -104,7 +105,7 @@ fun LinkedOutSupportPage(
                         .height(61.dp),
                     onClick = { navController.navigate("InquiryPage") }
                 ) {
-                    Text(text = "1:1 문의하기", color = Color.Black)
+                    Text(text = "1:1 문의하기", color = Color.Black, fontWeight = FontWeight.Bold)
                 }
             }
         }

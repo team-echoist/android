@@ -614,9 +614,8 @@ fun ModifyNickNameTextField( viewModel: SettingsViewModel) {
                 unfocusedTextColor = LinkedInColor,
                 unfocusedContainerColor = Color.Transparent,
                 focusedContainerColor = Color.Transparent
-
             ),
-            suffix = { Text(text = "아무개         ", color = Color.White) },
+            shape = RoundedCornerShape(10),
             )
         Spacer(modifier = Modifier.height(5.dp))
         Text(text = "   *필명은 최대 6자, 한글로만 입력 가능합니다.", color = LinkedInColor, fontSize = 10.sp)

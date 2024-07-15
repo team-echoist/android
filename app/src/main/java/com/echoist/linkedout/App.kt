@@ -5,8 +5,8 @@ import android.content.Context
 import androidx.room.Room
 import com.echoist.linkedout.api.BookMarkApi
 import com.echoist.linkedout.api.EssayApi
-import com.echoist.linkedout.api.GoogleSignUpApi
 import com.echoist.linkedout.api.SignUpApi
+import com.echoist.linkedout.api.SocialSignUpApi
 import com.echoist.linkedout.api.StoryApi
 import com.echoist.linkedout.api.SupportApi
 import com.echoist.linkedout.api.UserApi
@@ -60,8 +60,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideGoogleSignUpApiClient(retrofit: Retrofit) : GoogleSignUpApi {
-        return retrofit.create(GoogleSignUpApi::class.java)
+    fun provideGoogleSignUpApiClient(retrofit: Retrofit) : SocialSignUpApi {
+        return retrofit.create(SocialSignUpApi::class.java)
     }
 
     @Provides

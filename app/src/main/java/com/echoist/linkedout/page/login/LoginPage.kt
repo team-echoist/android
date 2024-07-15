@@ -436,9 +436,10 @@ fun LoginPage(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "arrowback",
+
                         tint = if (isSystemInDarkTheme()) Color.White else Color.Gray,
                         modifier = Modifier
-
+                            .size(50.dp)
                             .padding(16.dp)
                             .clickable { navController.popBackStack() } //뒤로가기
                     )

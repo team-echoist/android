@@ -287,8 +287,9 @@ fun CommunityTopAppBar(navController: NavController, viewModel: CommunityViewMod
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "arrow back",
-                tint = if (isSystemInDarkTheme()) Color(0xFF727070) else Color.Gray,
+                tint = if (isSystemInDarkTheme()) Color.White else Color.Gray,
                 modifier = Modifier
+                    .size(50.dp)
                     .padding(start = 20.dp)
                     .clickable {
                         if (viewModel.detailEssayBackStack.isNotEmpty()) {
@@ -374,8 +375,9 @@ fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navContro
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
+                    .padding(horizontal = 20.dp) //todo 없애기
             ) {
+                Spacer(modifier = Modifier.height(40.dp))
                 if (item.thumbnail != null) {
                     Column {
                         GlideImage(
@@ -392,7 +394,7 @@ fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navContro
 
 
                         Icon(
-                            imageVector = iconImg,
+                            imageVector = iconImg, //todo 이미지 출력
                             contentDescription = "",
                             Modifier
                                 .size(30.dp)

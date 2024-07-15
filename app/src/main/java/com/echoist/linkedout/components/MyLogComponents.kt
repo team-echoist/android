@@ -39,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -58,7 +59,7 @@ fun MyLogTopAppBar(onClickSearch : ()->Unit,nickName : String,onClickNotificatio
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
         title = {
-            Text(text = "$nickName 님")
+            Text(text = "$nickName 님", fontWeight = FontWeight.Bold)
         },
         actions = {
             Icon(imageVector = Icons.Default.Search, contentDescription = "",
@@ -70,7 +71,6 @@ fun MyLogTopAppBar(onClickSearch : ()->Unit,nickName : String,onClickNotificatio
                 Modifier.size(30.dp).clickable { onClickNotification() }
             )
             Spacer(modifier = Modifier.width(15.dp))
-
 
         }
     )

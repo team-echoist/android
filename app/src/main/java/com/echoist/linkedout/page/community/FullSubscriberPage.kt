@@ -176,7 +176,7 @@ fun SubscriberSimpleItem(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .border(width = 2.dp, color = Color.Gray, shape = RoundedCornerShape(20)),
+                .border(width = 1.dp, color = Color(0xFF191919), shape = RoundedCornerShape(10)),
             contentAlignment = Alignment.CenterStart
         ) {
             Row(

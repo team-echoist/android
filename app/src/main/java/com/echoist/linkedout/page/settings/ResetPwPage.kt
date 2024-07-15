@@ -115,7 +115,7 @@ fun ResetPwPage(navController: NavController, token : String = "empty_token") {
 
                             )
                     ) {
-                        Text(text = "변경하기")
+                        Text(text = "변경하기", color = Color.Black)
                     }
                 }
 

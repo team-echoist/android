@@ -115,7 +115,7 @@ fun ResetPwPageWithEmail(navController: NavController) {
 
                             )
                     ) {
-                        Text(text = "이메일 보내기")
+                        Text(text = "이메일 보내기", color = Color.Black)
                     }
                 }
                 AnimatedVisibility(

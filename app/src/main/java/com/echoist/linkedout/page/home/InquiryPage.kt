@@ -59,7 +59,7 @@ fun InquiryPage(
 )
 {
 
-    val inquiryOptions = listOf("기술 지원\n관련", "계정 및 결제", "콘텐츠 관련", "기능 요청 및 제안", "기타")
+    val inquiryOptions = listOf("기술 지원 관련", "계정 및 결제", "콘텐츠 관련", "기능 요청 및 제안", "기타")
     var selectedItem by remember { mutableStateOf("") }
 
 

@@ -181,7 +181,7 @@ fun LastEssayPager(viewModel: MyLogViewModel, navController: NavController){
         Text(
             text = "이전 글",
             Modifier.padding(start = 20.dp, top = 16.dp, bottom = 16.dp),
-            color = Color(0xFFE4A89E)
+            color = Color(0xFF616FED)
         )
         HorizontalDivider(color = Color(0xFF686868))
 

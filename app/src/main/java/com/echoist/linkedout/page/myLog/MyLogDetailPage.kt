@@ -166,19 +166,24 @@ fun ModifyOption(viewModel: MyLogViewModel, navController: NavController,writing
                         Icon(
                             painter = painterResource(id = R.drawable.text_minus),
                             contentDescription = "minus",
-                            modifier = Modifier.clickable { viewModel.textSizeDown()}
+                            modifier = Modifier
+                                .size(30.dp)
+                                .clickable { viewModel.textSizeDown() }
                         )
                         Spacer(modifier = Modifier.width(30.dp))
-                        Text(text = "가")
+                        Text(text = "가", fontSize = 24.sp)
                         Spacer(modifier = Modifier.width(30.dp))
                         Icon(
                             painter = painterResource(id = R.drawable.text_plus),
                             contentDescription = "minus",
-                            modifier = Modifier.clickable { viewModel.textSizeUp() }
+                            modifier = Modifier
+                                .size(30.dp)
+                                .clickable { viewModel.textSizeUp() }
 
                         )
 
                     }
+                    Spacer(modifier = Modifier.height(12.dp))
                     HorizontalDivider()
                     OptionItem(text = "수정", Color.White,{
                         writingViewModel.title.value = TextFieldValue(viewModel.readDetailEssay().title!!)
@@ -711,7 +716,7 @@ fun WriteCompleteBox(type : String){
                 Row(
                     Modifier
                         .padding(horizontal = 20.dp)
-                        .padding(bottom = 30.dp)
+                        .padding(bottom = 50.dp)
                         .fillMaxSize(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
                     GlideImage(model = imageUrl, contentDescription = "", modifier = Modifier
                         .weight(2f)
