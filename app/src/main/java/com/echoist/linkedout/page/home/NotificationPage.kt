@@ -10,6 +10,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -64,6 +65,16 @@ fun NotificationPage(navController: NavController, viewModel: SupportViewModel =
     var isAlertClicked by remember { mutableStateOf(false) }
     var clickedAlert: Alert? by remember { mutableStateOf(null) }
 
+    val myProfile = viewModel.readMyProfile()
+
+    val annotatedString = AnnotatedString.Builder().apply {
+        withStyle(style = SpanStyle(color = LinkedInColor)) { append("${myProfile.nickname} 아무개님의 ") }
+        append("새 글")
+        withStyle(style = SpanStyle(color = LinkedInColor)) { append("이\n") }
+        append("숨바꼭질")
+        withStyle(style = SpanStyle(color = LinkedInColor)) { append("을 시작했어요!") }
+    }.toAnnotatedString()
+
     LinkedOutTheme {
         Scaffold(
             topBar = {
@@ -72,6 +83,7 @@ fun NotificationPage(navController: NavController, viewModel: SupportViewModel =
         ) {
             Column(
                 Modifier
+                    .fillMaxSize()
                     .padding(it)
                     .padding(horizontal = 20.dp)
                     .verticalScroll(rememberScrollState())
@@ -83,7 +95,7 @@ fun NotificationPage(navController: NavController, viewModel: SupportViewModel =
                         NotificationDate(date)
                         Spacer(modifier = Modifier.height(5.dp))
                         alerts.forEach { alert ->
-                            NotificationItem(alert) {
+                            NotificationItem(viewModel.readMyProfile().nickname ?: "",alert) {
                                 viewModel.readAlert(alert.id)
                                 if (alert.type == "linkedout"){ //todo linkedout 말고 고객지원도 추가할것
                                     isAlertClicked = true
@@ -94,20 +106,25 @@ fun NotificationPage(navController: NavController, viewModel: SupportViewModel =
                             Spacer(modifier = Modifier.height(10.dp))
                         }
                     }
-                } else {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text(
-                            text = "알림이 없습니다.",
-                            style = TextStyle(
-                                fontSize = 16.sp,
-                                lineHeight = 25.6.sp,
-                                fontWeight = FontWeight(400),
-                                color = Color(0xFF888888),
-                            )
-                        )
-                    }
                 }
             }
+            if (viewModel.alertList.isEmpty()){
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Row(modifier = Modifier.border(width = 1.dp, color = Color(0xFF191919), shape = RoundedCornerShape(size = 10.dp))
+                        .width(350.dp)
+                        .height(119.dp)
+                        .background(
+                            color = Color(0xFF000000),
+                            shape = RoundedCornerShape(size = 10.dp)
+                        ), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+                        Text(
+                            text = annotatedString
+                        )
+                    }
+
+                }
+            }
+
             AnimatedVisibility(
                 visible = isAlertClicked,
                 enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)),
@@ -190,10 +207,10 @@ fun NotificationIcon(alert: Alert) {
 }
 
 @Composable
-fun NotificationItem(alert: Alert, isAlertClicked: () -> Unit) {
+fun NotificationItem(nickName : String,alert: Alert, isAlertClicked: () -> Unit) {
     val annotatedString = remember {
         AnnotatedString.Builder().apply {
-            append("다른 아무개가 칠이구 아무개님의 ")
+            append("다른 아무개가 $nickName 아무개님의 ")
             withStyle(
                 style = SpanStyle(
                     color = LinkedInColor,

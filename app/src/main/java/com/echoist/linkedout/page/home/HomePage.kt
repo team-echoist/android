@@ -95,8 +95,7 @@ import java.time.format.DateTimeFormatter
 fun HomePage(navController: NavController,viewModel: HomeViewModel) {
 
     LaunchedEffect(key1 = Unit) {
-        viewModel.readMyInfo()
-
+        viewModel.requestMyInfo()
     }
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)

@@ -6,6 +6,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -175,7 +176,7 @@ fun WritingPage(
                             Row {
                                 LocationBox(viewModel = viewModel)
                                 Spacer(modifier = Modifier.width(2.dp))
-                                Row {
+                                Row(Modifier.padding(horizontal = 20.dp).horizontalScroll(rememberScrollState())) {
                                     viewModel.locationList.forEach {
                                         LocationBtn(viewModel = viewModel, text = it)
                                     }
@@ -187,15 +188,18 @@ fun WritingPage(
                         if (viewModel.locationList.isNotEmpty() || viewModel.longitude != null) {
                             LocationGroup(viewModel = viewModel)
                             Spacer(modifier = Modifier.height(10.dp))
+                            if (viewModel.hashTagList.isEmpty()){
+                                Spacer(modifier = Modifier.height(80.dp))
+                            }
                         }
-
                     }
                     //해시태그 찍는
                     if (viewModel.hashTagList.isNotEmpty() && viewModel.isTextFeatOpened.value) {
                         if (viewModel.isHashTagClicked) {
-                            Row {
+                            Row(Modifier.horizontalScroll(rememberScrollState()).padding(horizontal = 20.dp)) {
                                 viewModel.hashTagList.forEach {
                                     HashTagBtn(viewModel = viewModel, text = it)
+                                    Spacer(modifier = Modifier.width(6.dp))
                                 }
                             }
                         }
@@ -266,55 +270,11 @@ fun WritingPage(
 
                     }
                 }
-                if (isKeyBoardOpened == Keyboard.Opened || viewModel.isTextFeatOpened.value) {
-
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
-//                    TextEditBar(viewModel,
-//                        isTextSettingSelected, {
-//                            isTextSettingSelected = it
-//                            isTextAlignSelected = false
-//                            isTextUnderLineSelected = false
-//                        },
-//                        isTextAlignSelected,
-//                        {
-//                            isTextAlignSelected = it
-//                            isTextSettingSelected = false
-//                            isTextUnderLineSelected = false
-//                        },
-//                        isTextUnderLineSelected,
-//                        {
-//                            isTextUnderLineSelected = it
-//                            isTextAlignSelected = false
-//                            isTextSettingSelected = false
-//
-//                            if (viewModel.content.selection.start != viewModel.content.selection.end) {
-//                                val cursorPosition = viewModel.content.selection.start
-//                                val endPosition = viewModel.content.selection.end
-//                                val newText =
-//                                    viewModel.content.text.substring(0, cursorPosition) +
-//                                            "<u>" + viewModel.content.text.substring(
-//                                        cursorPosition,
-//                                        endPosition
-//                                    ) + "</u>" +
-//                                            viewModel.content.text.substring(
-//                                                endPosition,
-//                                                viewModel.content.text.length
-//                                            )
-//
-//
-//                                viewModel.content = TextFieldValue(
-//                                    text = newText,
-//                                )
-//                            }
-//
-//
-//                        })
-                }
                 }
             }
         }
     }
-}
+
 
 @Composable
 fun WritingTopAppBar(
@@ -341,13 +301,14 @@ fun WritingTopAppBar(
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(horizontal = 20.dp)
+                , verticalAlignment = Alignment.CenterVertically
         ) {
             if (isKeyboardOpen == Keyboard.Opened || viewModel.isTextFeatOpened.value) {
                 Icon(
                     imageVector = Icons.Default.Done,
                     contentDescription = "keyboardDown",
                     modifier = Modifier
-                        .padding(start = 20.dp, top = 15.dp)
                         .clickable {
                             focusManager.clearFocus()
                             viewModel.titleFocusState.value = false
@@ -365,8 +326,8 @@ fun WritingTopAppBar(
                     text = "취소",
                     color = Color(0xFF686868),
                     modifier = Modifier
-                        .padding(start = 20.dp, top = 15.dp)
                         .clickable {
+                            viewModel.initialize()
                             if (viewModel.title.value.text.isEmpty() && viewModel.content.text.isEmpty()) {
                                 navController.popBackStack()
                             } else {
@@ -437,7 +398,6 @@ fun WritingTopAppBar(
                 text = "완료",
                 fontSize = 16.sp,
                 modifier = Modifier
-                    .padding(end = 20.dp, top = 15.dp)
                     .clickable {
                         if (viewModel.title.value.text.isNotEmpty() && viewModel.content.text.length >= viewModel.minLength)
                             navController.navigate("WritingCompletePage")
@@ -752,7 +712,7 @@ fun TextEditBar(
             .background(Color(0xFF1D1D1D))
             .fillMaxWidth()
             //.imePadding()
-            .height(50.dp),
+            .height(60.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (viewModel.isHashTagClicked && !viewModel.isLocationClicked) {

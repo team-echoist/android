@@ -46,12 +46,14 @@ class HomeViewModel @Inject constructor(
 
     var viewedNotification by mutableStateOf(false)
     var reportNotification by mutableStateOf(false)
-    var writingRemindNotification by mutableStateOf(false)
 
     var isLoading by mutableStateOf(false)
 
     var updateHistory: SnapshotStateList<History> =  mutableStateListOf()
 
+    fun readMyProfile() : UserInfo{
+        return exampleItems.myProfile
+    }
 
     fun initializeDetailEssay(){
         exampleItems.detailEssay = EssayApi.EssayItem()
@@ -60,28 +62,30 @@ class HomeViewModel @Inject constructor(
         exampleItems.storageEssay = essayItem
     }
 
-    suspend fun readMyInfo(){
+    suspend fun requestMyInfo(){
         try {
+            //유저 아이디 찾아내기 용
             val response = userApi.readMyInfo(Token.accessToken)
             Log.d(TAG, "readMyInfo: suc1")
 
             exampleItems.myProfile = response.data
-            Log.d(TAG, "readMyInfo: suc2")
+            Log.d(TAG, "readMyInfo: ")
 
+            //유저 디테일 정보 get
             val responseDetail = userApi.readMyInfoDetail(Token.accessToken,response.data.id!!)
             Log.d(TAG, "readMyInfo: suc3")
 
-            exampleItems.myProfile = responseDetail.data.user
             exampleItems.myProfile.essayStats = responseDetail.data.essayStats
             Log.d(TAG, "readMyInfo: suc4")
             Log.d(TAG, "readMyInfo: ${exampleItems.myProfile}")
+            Log.i("header token_current", " ${Token.accessToken}")
+
 
 
         }catch (e: Exception){
-            Log.d(TAG, "readMyInfo: error err")
+            Log.e(TAG, "readMyInfo: error err")
             e.printStackTrace()
-            Log.d(TAG, e.message.toString())
-            Log.d(TAG, e.cause.toString())
+            Log.e(TAG, e.message.toString())
 
 
         }

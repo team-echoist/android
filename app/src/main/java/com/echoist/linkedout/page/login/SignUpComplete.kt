@@ -35,13 +35,12 @@ import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.HomeViewModel
 import kotlinx.coroutines.delay
 
-@Preview
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun SignUpCompletePage(homeViewModel: HomeViewModel,navController: NavController) {
 
     LaunchedEffect(key1 = Unit) {
-        homeViewModel.readMyInfo()
+        homeViewModel.requestMyInfo()
         delay(2000)
         navController.navigate("HOME")
     }
@@ -53,7 +52,7 @@ fun SignUpCompletePage(homeViewModel: HomeViewModel,navController: NavController
                     .padding(it)
                     .fillMaxSize(), contentAlignment = Alignment.Center) {
                 Column(Modifier.padding(horizontal = 20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                    LoadingText(nickName = homeViewModel.myProfile.nickname!!)
+                    LoadingText(nickName = homeViewModel.readMyProfile().nickname!!)
                     Spacer(modifier = Modifier.height(56.dp))
                     GlideImage(model = R.drawable.login_table, modifier = Modifier.size(246.dp,266.dp), contentDescription = "login table")
                     Spacer(modifier = Modifier.height(87.dp))

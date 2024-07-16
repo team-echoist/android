@@ -1,6 +1,5 @@
 package com.echoist.linkedout.page.login
 
-import android.content.ContentValues.TAG
 import android.content.Context
 import android.graphics.Rect
 import android.os.Bundle
@@ -15,7 +14,6 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,6 +30,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -109,6 +108,7 @@ import com.echoist.linkedout.page.settings.RecentEssayDetailPage
 import com.echoist.linkedout.page.settings.RecentViewedEssayPage
 import com.echoist.linkedout.page.settings.ResetPwPage
 import com.echoist.linkedout.page.settings.ResetPwPageWithEmail
+import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
 import com.echoist.linkedout.viewModels.HomeViewModel
@@ -175,9 +175,12 @@ class LoginPage : ComponentActivity() {
                         defaultValue = ""
                     })
                 ) {
-                    //딥링크를 통해서 token을 받고 저장함.
-                    Token.accessToken = it.arguments?.getString("token").toString()
-                    Log.d(TAG, "tokentoken: ${Token.accessToken}")
+                    //딥링크를 통해서 token을 받고 저장함. 없을 시 쓰던 토큰으로 사용함
+                    if (it.arguments?.getString("token").toString().isNotEmpty()){
+                        Token.accessToken = it.arguments?.getString("token").toString()
+                        Log.i("header token by deepLink:", " ${Token.accessToken}")
+                    }
+
 
                     SignUpCompletePage(homeViewModel,navController)
                 }
@@ -461,6 +464,20 @@ fun LoginPage(
                     IdTextField(viewModel)
                     PwTextField(viewModel)
 
+                    var clickedAutoLogin by remember { mutableStateOf(false) }
+                    val autoLoginColor = if (clickedAutoLogin) LinkedInColor else Color.Gray
+
+                    Row (modifier = Modifier.padding(horizontal = 20.dp), verticalAlignment = Alignment.CenterVertically){
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            tint = autoLoginColor,
+                            contentDescription = "check",
+                            modifier = Modifier
+                                .clickable { clickedAutoLogin = !clickedAutoLogin }
+                        )
+                        Text(text = "자동 로그인", fontSize = 14.sp, color = autoLoginColor)
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
                     LoginBtn(navController = navController,viewModel)
                     Row(
                         modifier = Modifier
@@ -502,6 +519,7 @@ fun LoginPage(
                     }
 
                     SocialLoginBar(navController, viewModel)
+                    Spacer(modifier = Modifier.height(20.dp))
                 }
             }
         )
@@ -596,7 +614,7 @@ fun PwTextField(viewModel: SocialLoginViewModel) {
         shape = RoundedCornerShape(8.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp, bottom = 42.dp)
+            .padding(start = 16.dp, end = 16.dp, bottom = 13.dp)
     )
 }
 
@@ -606,18 +624,17 @@ fun LoginBtn(
     viewModel: SocialLoginViewModel
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
+    // val isPressed by interactionSource.collectIsPressedAsState()
+    val error = viewModel.userId.isEmpty() || viewModel.userPw.isEmpty()
+    
     Button(
         shape = RoundedCornerShape(10.dp),
+        enabled = !error,
         onClick = {
             viewModel.login(navController)
         },
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (isSystemInDarkTheme()) {
-                if (isPressed) Color.LightGray else Color.White
-            } else {
-                if (isPressed) Color.Gray else Color.Black
-            }
+            containerColor = if (error) Color.Gray else LinkedInColor
         ),
         interactionSource = interactionSource,
         modifier = Modifier

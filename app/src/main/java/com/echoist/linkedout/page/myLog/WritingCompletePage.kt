@@ -149,6 +149,9 @@ fun WritingCompletePage(
 
                     }
                 }
+                if (bottomSheetState.currentValue == SheetValue.Expanded || viewModel.isDeleteClicked.value){
+                    Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(0.7f)))
+                }
                 //바텀시트 올라와있으면 패딩값 추가
                 val expandDp =  if (bottomSheetState.currentValue == SheetValue.Expanded) 350.dp else 40.dp
                 Box(
@@ -164,6 +167,7 @@ fun WritingCompletePage(
                         WritingDeleteCard(viewModel = viewModel, navController = navController)
                     }
                 }
+
 
 
             }
@@ -355,7 +359,7 @@ fun WritingCompletePager(viewModel: WritingViewModel, navController: NavControll
                     modifier = Modifier
                         .padding(20.dp)
                         .fillMaxWidth()
-                        .height(279.dp),
+                        .height(250.dp),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {

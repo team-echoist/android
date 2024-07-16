@@ -1,7 +1,5 @@
 package com.echoist.linkedout.page.community
 
-import android.content.ContentValues
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
@@ -119,13 +117,6 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
                             },
                             bottomBar = { MyBottomNavigation(navController) },
                             content = {
-                                Log.d(
-                                    ContentValues.TAG,
-                                    "readMyBookMarksui: ${viewModel.isLoading}"
-                                )
-
-
-
                                 Box(modifier = Modifier.padding(it))
                                 val isRefreshing by viewModel.isRefreshing.collectAsState()
 
@@ -135,7 +126,7 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
                                     if (viewModel.isApifinished) {
                                         Box(
                                             modifier = Modifier
-                                                .padding(top = 50.dp, bottom = 80.dp)
+                                                .padding(top = 80.dp, bottom = 80.dp)
                                         ) {
                                             CommunityPager(
                                                 viewModel = viewModel,

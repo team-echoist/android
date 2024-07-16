@@ -114,7 +114,6 @@ class SettingsViewModel @Inject constructor(
             val responseDetail = userApi.readMyInfoDetail(Token.accessToken,response.data.id!!)
             Log.d(TAG, "readMyInfo: suc3")
 
-            exampleItems.myProfile = responseDetail.data.user
             exampleItems.myProfile.essayStats = responseDetail.data.essayStats
             Log.d(TAG, "readMyInfo: suc4")
             Log.d(TAG, "readMyInfo: ${exampleItems.myProfile}")

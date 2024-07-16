@@ -42,9 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -70,6 +68,7 @@ fun AccountWithdrawalPage(navController : NavController) {
         "앱 사용 중에 자꾸 문제가 생겨서(버그, 오류 등)", "다른 서비스가 더 좋아서","기타 문제"
     )
     val selectedItems = remember { mutableStateListOf<String>() }
+    Log.d(TAG, "AccountWithdrawalPage: $selectedItems")
 
     LinkedOutTheme {
         Scaffold(
@@ -115,43 +114,42 @@ fun AccountWithdrawalPage(navController : NavController) {
                     MultiSelectDeleteList(reasonList,selectedItems,onItemSelected)
                     Spacer(modifier = Modifier.height(32.dp))
 
-                    var pw by remember { mutableStateOf("") }
-                    val isError by remember { mutableStateOf(false) }
+//                    var pw by remember { mutableStateOf("") }
+//                    val isError by remember { mutableStateOf(false) }
 
-                    Text(text = "현재 비밀번호", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    CustomOutlinedTextField( //todo 비밀번호 에러 만들것?
-                        pw,
-                        { newText ->
-                            pw = newText
-                        },
-                        isError = isError,
-                        hint = "비밀번호"
-                    )
-                    if (isError) {
-                        Text(text = "* 비밀번호를 정확하게 입력해주세요.", color = Color.Red, fontSize = 12.sp)
-                    }
-
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Row (verticalAlignment = Alignment.CenterVertically){
-                        Text(text = "비밀번호를 잊으셨나요? ", fontSize = 12.sp, color = Color(0xFF5D5D5D))
-                        Text(
-                            text = "비밀번호 재설정",
-                            fontSize = 12.sp,
-                            color = Color(0xFF5D5D5D),
-                            modifier = Modifier.clickable { navController.navigate("ResetPwPageWithEmail") },
-                            style = TextStyle(textDecoration = TextDecoration.Underline)
-                        )
-                    }
+//                    Text(text = "현재 비밀번호", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+//                    Spacer(modifier = Modifier.height(12.dp))
+//
+//                    CustomOutlinedTextField(
+//                        pw,
+//                        { newText ->
+//                            pw = newText
+//                        },
+//                        isError = isError,
+//                        hint = "비밀번호"
+//                    )
+//                    if (isError) {
+//                        Text(text = "* 비밀번호를 정확하게 입력해주세요.", color = Color.Red, fontSize = 12.sp)
+//                    }
+//
+//                    Spacer(modifier = Modifier.height(10.dp))
+//                    Row (verticalAlignment = Alignment.CenterVertically){
+//                        Text(text = "비밀번호를 잊으셨나요? ", fontSize = 12.sp, color = Color(0xFF5D5D5D))
+//                        Text(
+//                            text = "비밀번호 재설정",
+//                            fontSize = 12.sp,
+//                            color = Color(0xFF5D5D5D),
+//                            modifier = Modifier.clickable { navController.navigate("ResetPwPageWithEmail") },
+//                            style = TextStyle(textDecoration = TextDecoration.Underline)
+//                        )
+//                    }
                     Spacer(modifier = Modifier.height(32.dp))
 
-                    val enabled = !(isError || pw.isEmpty() || selectedItems.isEmpty())
 
                     Button(
                         onClick = { /* todo 탈퇴기능 구현 */
                                   isWithdrawalClicked = true},
-                        enabled =  enabled,
+                        enabled = !selectedItems.isEmpty(),
                         shape = RoundedCornerShape(20),
                         modifier = Modifier
                             .fillMaxWidth()
@@ -162,7 +160,7 @@ fun AccountWithdrawalPage(navController : NavController) {
 
                             )
                     ) {
-                        Text(text = "탈퇴하기")
+                        Text(text = "탈퇴하기", color = Color.Black)
                     }
 
 
@@ -184,7 +182,7 @@ fun AccountWithdrawalPage(navController : NavController) {
                             isWithdrawalClicked = {
                                 Log.d(TAG, "AccountWithdrawalPage: $selectedItems")
                                 viewModel.requestWithdrawal(selectedItems.toList(),navController)}
-                        ) //todo 수정필요 api 탈퇴기능구현
+                        )
                     }
                 }
 

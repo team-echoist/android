@@ -46,7 +46,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.echoist.linkedout.R
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.home.LogoutBox
 import com.echoist.linkedout.ui.theme.LinkedInColor
@@ -85,16 +84,16 @@ fun AccountPage(navController: NavController, viewModel: SettingsViewModel = hil
                     Spacer(modifier = Modifier.height(20.dp))
                     ModifyBox("탈퇴하기") {navController.navigate("AccountWithdrawalPage")}
                     Spacer(modifier = Modifier.height(37.dp))
-                    Text(text = "소셜", fontSize = 18.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(horizontal = 20.dp))
-                    Spacer(modifier = Modifier.height(31.dp))
-
-                    SocialLoginBox(R.drawable.social_googlebtn,"구글",viewModel.getMyInfo())
-                    Spacer(modifier = Modifier.height(10.dp))
-                    SocialLoginBox(R.drawable.social_kakaobtn,"카카오톡",viewModel.getMyInfo())
-                    Spacer(modifier = Modifier.height(10.dp))
-                    SocialLoginBox(R.drawable.social_naverbtn,"네이버",viewModel.getMyInfo())
-                    Spacer(modifier = Modifier.height(10.dp))
-                    SocialLoginBox(R.drawable.social_applebtn,"애플",viewModel.getMyInfo())
+                    //Text(text = "소셜", fontSize = 18.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(horizontal = 20.dp))
+//                    Spacer(modifier = Modifier.height(31.dp))
+//
+//                    SocialLoginBox(R.drawable.social_googlebtn,"구글",viewModel.getMyInfo())
+//                    Spacer(modifier = Modifier.height(10.dp))
+//                    SocialLoginBox(R.drawable.social_kakaobtn,"카카오톡",viewModel.getMyInfo())
+//                    Spacer(modifier = Modifier.height(10.dp))
+//                    SocialLoginBox(R.drawable.social_naverbtn,"네이버",viewModel.getMyInfo())
+//                    Spacer(modifier = Modifier.height(10.dp))
+//                    SocialLoginBox(R.drawable.social_applebtn,"애플",viewModel.getMyInfo())
                     Spacer(modifier = Modifier.height(10.dp))
 
 

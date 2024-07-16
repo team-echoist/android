@@ -7,6 +7,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -17,12 +18,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraEnhance
 import androidx.compose.material.icons.filled.Close
@@ -147,10 +150,10 @@ fun LocationTextField(viewModel: WritingViewModel){
 
             ),
             placeholder = {
-                Text(text = "장소를 입력하고 줄을 띄워주세요", color = Color.Gray, fontSize = 12.sp)
+                Text(text = "장소를 입력하고 줄을 띄워주세요", color = Color.Gray, fontSize = 14.sp)
                           },
             onValueChange = { it ->
-                if (it.isNotEmpty() && (it.last() == '\n')) {
+                if (it.isNotEmpty() && (it.last() == '\n') && viewModel.locationList.size < 1) {
                     val trimmedText = it.trim()
                     if (trimmedText.isNotBlank()) {
                         viewModel.locationList.add(trimmedText)
@@ -169,7 +172,7 @@ fun LocationBox(viewModel: WritingViewModel){
     Button(modifier = Modifier.padding(bottom = 15.dp),
         onClick = {
         }) {
-        Text(text =  "${viewModel.longitude} ${viewModel.latitude}", fontSize = 14.sp)
+        Text(text =  "${viewModel.longitude} ${viewModel.latitude}", fontSize = 14.sp, color = Color.White)
     }
 
 }
@@ -179,12 +182,13 @@ fun LocationBtn(viewModel: WritingViewModel,text: String){
         onClick = {
             viewModel.locationList.remove(text)
         }) {
-        Text(text = text, fontSize = 14.sp)
+        Text(text = text, fontSize = 14.sp, color = Color.White)
         Spacer(modifier = Modifier.width(2.dp))
         Icon(
             imageVector = Icons.Default.Close,
             contentDescription = "",
-            modifier = Modifier.size(16.dp)
+            modifier = Modifier.size(16.dp),
+            tint = Color.White
         )
     }
 }
@@ -204,7 +208,7 @@ fun HashTagTextField(viewModel: WritingViewModel) {
         onValueChange = {//태그개수 4개 제한
             if (it.isNotEmpty() && (it.last() == ' ' || it.last() == '\n')) {
                 val trimmedText = it.trim()
-                if (trimmedText.isNotBlank() && viewModel.hashTagList.size < 4) {
+                if (trimmedText.isNotBlank()) {
                     viewModel.hashTagList.add(trimmedText)
                     Log.d(TAG, "HashTagTextField: ${viewModel.hashTagText}")
 
@@ -221,7 +225,7 @@ fun HashTagTextField(viewModel: WritingViewModel) {
 @Composable
 fun LocationGroup(viewModel: WritingViewModel){
     val scrollState = rememberScrollState()
-    Box(modifier = Modifier.size(350.dp,50.dp)){
+    Box(modifier = Modifier.height(55.dp).fillMaxWidth().padding(horizontal = 20.dp)){
         Image( painter = painterResource(id = R.drawable.group_location),
             contentDescription = "hashtagGroup")
         Box(
@@ -241,7 +245,7 @@ fun LocationGroup(viewModel: WritingViewModel){
                     verticalAlignment = Alignment.CenterVertically
                 ){
                     viewModel.locationList.forEach {
-                        Text(text = it)
+                        Text(text = it, fontSize = 14.sp, color = Color.White)
                         Spacer(modifier = Modifier.width(13.dp))
                     }
                 }
@@ -250,7 +254,7 @@ fun LocationGroup(viewModel: WritingViewModel){
                     .width(220.dp),
                     text = "${viewModel.longitude} ${viewModel.latitude}",
                     fontSize = 12.sp,
-                    color = Color.Gray)
+                    color = Color(0xFFA8AEE4))
 
             }
 
@@ -264,6 +268,7 @@ fun LocationGroup(viewModel: WritingViewModel){
             Text(
                 fontSize = 16.sp,
                 text = "편집",
+                color = Color.White,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier
                     .padding(end = 11.5.dp)
@@ -279,24 +284,40 @@ fun LocationGroup(viewModel: WritingViewModel){
 
 @Composable
 fun HashTagBtn(viewModel: WritingViewModel,text: String){
-    Button(modifier = Modifier.padding(bottom = 15.dp),
-        onClick = {
-            viewModel.hashTagList.remove(text)
-        }) {
-        Text(text = text, fontSize = 14.sp)
+
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center, modifier = Modifier
+        .padding(bottom = 15.dp)
+        .clickable { viewModel.hashTagList.remove(text) }
+        .background(color = Color(0xFF616FED), shape = RoundedCornerShape(size = 65.dp))
+        .padding(start = 8.dp, top = 3.dp, end = 8.dp, bottom = 3.dp)) {
+        Text(text = text, fontSize = 14.sp, color = Color.White)
         Spacer(modifier = Modifier.width(2.dp))
         Icon(
             imageVector = Icons.Default.Close,
             contentDescription = "",
-            modifier = Modifier.size(16.dp)
+            modifier = Modifier.size(16.dp),
+            tint = Color.White
         )
     }
+//    Button(modifier = Modifier.padding(bottom = 15.dp),
+//        onClick = {
+//            viewModel.hashTagList.remove(text)
+//        }) {
+//        Text(text = text, fontSize = 14.sp, color = Color.White)
+//        Spacer(modifier = Modifier.width(2.dp))
+//        Icon(
+//            imageVector = Icons.Default.Close,
+//            contentDescription = "",
+//            modifier = Modifier.size(16.dp),
+//            tint = Color.White
+//        )
+//    }
 }
 
 @Composable
 fun HashTagGroup(viewModel: WritingViewModel){
     val scrollState = rememberScrollState()
-    Box(modifier = Modifier.size(350.dp,50.dp)){
+    Box(modifier = Modifier.height(55.dp).fillMaxWidth().padding(horizontal = 20.dp)){
         Image( painter = painterResource(id = R.drawable.group_hashtag),
             contentDescription = "hashtagGroup")
         Box(
@@ -313,7 +334,7 @@ fun HashTagGroup(viewModel: WritingViewModel){
                 verticalAlignment = Alignment.CenterVertically
             ){
                 viewModel.hashTagList.forEach {
-                    Text(text = "#$it")
+                    Text(text = "#$it", color = Color.White)
                     Spacer(modifier = Modifier.width(13.dp))
                 }
             }
@@ -326,6 +347,7 @@ fun HashTagGroup(viewModel: WritingViewModel){
             Text(
                 fontSize = 16.sp,
                 text = "편집",
+                color = Color.White,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier
                     .padding(end = 11.5.dp)

@@ -221,7 +221,9 @@ class WritingViewModel @Inject constructor(
                     navController.navigate("CompletedEssayPage")
                     initialize()
                 } else {
-                    Log.e(TAG, "writeEssay: $latitude , $longitude, $locationText 로케이션텍스트 널 ??", )
+
+                    Log.e("writeEssayErr", "writeEssayErr: ${response.code()}", )
+                    Log.e("writeEssayErr", "writeEssayErr: ${Token.accessToken}", )
 
                 }
 

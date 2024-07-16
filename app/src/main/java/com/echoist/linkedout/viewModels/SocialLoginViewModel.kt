@@ -25,6 +25,7 @@ import com.echoist.linkedout.api.SignUpApi
 import com.echoist.linkedout.api.SocialSignUpApi
 import com.echoist.linkedout.api.UserApi
 import com.echoist.linkedout.data.ExampleItems
+import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.myLog.Token
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -56,15 +57,12 @@ class SocialLoginViewModel @Inject constructor(
 ) : ViewModel() {
     private val auth: FirebaseAuth = Firebase.auth
 
-    var accessToken by mutableStateOf("")
-
     var googleLoginstate = mutableStateOf(false)
     var kakaoLoginstate = mutableStateOf(false)
     var naverLoginstate = mutableStateOf(false)
 
     private var googleUserToken by mutableStateOf("")
     private var googleUserId by mutableStateOf("")
-    private var googleUserEmail by mutableStateOf("")
 
     private var kakaoUserToken by mutableStateOf("")
     private var kakaoUserId by mutableStateOf("")
@@ -87,10 +85,10 @@ class SocialLoginViewModel @Inject constructor(
             val responseDetail = userApi.readMyInfoDetail(Token.accessToken,response.data.id!!)
             Log.d(TAG, "readMyInfo: suc3")
 
-            exampleItems.myProfile = responseDetail.data.user
             exampleItems.myProfile.essayStats = responseDetail.data.essayStats
             Log.d(TAG, "readMyInfo: suc4")
-            Log.d(TAG, "readMyInfo: ${exampleItems.myProfile}")
+            Log.i(TAG, "readMyInfo: ${exampleItems.myProfile}")
+            Log.i("header token_current", " ${Token.accessToken}")
 
 
         }catch (e: Exception){
@@ -112,7 +110,7 @@ class SocialLoginViewModel @Inject constructor(
 
 
                 if (response.isSuccessful) {
-                    Log.d("server header token", response.headers()["authorization"].toString())
+                    Log.i("server header token", response.headers()["authorization"].toString())
                     Token.accessToken = (response.headers()["authorization"].toString())
                     Log.d("authApiSuccess3", "로그인 성공! ${response.headers()["authorization"]}") // 이값을 항상 헤더에 넣을것.
 
@@ -198,12 +196,15 @@ class SocialLoginViewModel @Inject constructor(
 
                 if (response.isSuccessful) {
                     Token.accessToken = (response.headers()["authorization"].toString())
-                    Log.d(TAG, "token_with server"+ Token.accessToken)
+                    Log.i("server header token(구글)", Token.accessToken)
                     Log.d("google_login_success", response.code().toString())
 
                     readMyInfo()
-                    if (response.code() == 205){
+                    if (response.code() == 205){ //최초로그인시 205 부여받음. 최초로그인 시 user update통해 isFirst값을 false로 선언
                         navController.navigate("SignUpComplete")
+
+                        setFirstUserToExistUser()
+
                     }
                     else{
                         navController.navigate("HOME")
@@ -297,13 +298,16 @@ class SocialLoginViewModel @Inject constructor(
                 val response = socialSignUpApi.requestKakaoLogin(userAccount)
 
                 if (response.isSuccessful) {
-                    Log.d("server header token", response.headers()["authorization"].toString())
+                    Log.i("server header token(카카오)", response.headers()["authorization"].toString())
                     Token.accessToken = (response.headers()["authorization"].toString())
                     Log.d(TAG, "requestKakaoLogin: ${response.code()}")
 
                     readMyInfo()
                     if (response.code() == 205){
                         navController.navigate("SignUpComplete")
+
+                        setFirstUserToExistUser()
+
                     }
                     else{
                         navController.navigate("HOME")
@@ -422,7 +426,7 @@ class SocialLoginViewModel @Inject constructor(
 
                 if (response.isSuccessful) {
                     Log.d(TAG, "requestNaverLogin: 로그인 성공")
-                    Log.d("server header token", response.headers()["authorization"].toString())
+                    Log.i("server header token(네이버)", response.headers()["authorization"].toString())
                     Token.accessToken = (response.headers()["authorization"].toString())
                     Log.d(TAG, "requestNaverLogin: ${response.code()}")
 
@@ -431,6 +435,8 @@ class SocialLoginViewModel @Inject constructor(
                     //첫 회원가입일 경우 205 나머지는 Homed
                     if (response.code() == 205){
                         navController.navigate("SignUpComplete")
+
+                        setFirstUserToExistUser()
                     }
                     else{
                         navController.navigate("HOME")
@@ -446,7 +452,20 @@ class SocialLoginViewModel @Inject constructor(
             }
         }
     }
+
+    private suspend fun setFirstUserToExistUser(){
+        try {
+            val isNotFirst = UserInfo(isFirst = false)
+            val response = userApi.userUpdate(Token.accessToken,isNotFirst)
+            Log.d(TAG, "setFirstUserToExistUser: ${response.code()}")
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Log.e("error","set user first to exist error ")
+        }
+    }
 }
+
+
 
 
 

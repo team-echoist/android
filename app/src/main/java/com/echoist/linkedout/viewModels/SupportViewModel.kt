@@ -17,6 +17,7 @@ import com.echoist.linkedout.api.SupportApi
 import com.echoist.linkedout.data.Alert
 import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.data.Inquiry
+import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.myLog.Token
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,6 +39,10 @@ class SupportViewModel @Inject constructor(
      private val _inquiryList = MutableStateFlow<List<Inquiry>>(emptyList())
     val inquiryList: StateFlow<List<Inquiry>>
         get() = _inquiryList.asStateFlow()
+
+    fun readMyProfile() : UserInfo{
+        return exampleItems.myProfile
+    }
 
     fun readAlertsList(){
         viewModelScope.launch {
