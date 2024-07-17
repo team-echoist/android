@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -27,12 +28,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CameraEnhance
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DensitySmall
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -51,6 +55,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -65,6 +70,8 @@ import com.canhub.cropper.CropImageContract
 import com.canhub.cropper.CropImageContractOptions
 import com.canhub.cropper.CropImageOptions
 import com.echoist.linkedout.R
+import com.echoist.linkedout.ui.theme.LinkedInColor
+import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.WritingViewModel
 
 class FuncItemData(val text : String, var icon: Int, var clickable: () -> Unit )
@@ -225,7 +232,10 @@ fun HashTagTextField(viewModel: WritingViewModel) {
 @Composable
 fun LocationGroup(viewModel: WritingViewModel){
     val scrollState = rememberScrollState()
-    Box(modifier = Modifier.height(55.dp).fillMaxWidth().padding(horizontal = 20.dp)){
+    Box(modifier = Modifier
+        .height(55.dp)
+        .fillMaxWidth()
+        .padding(horizontal = 20.dp)){
         Image( painter = painterResource(id = R.drawable.group_location),
             contentDescription = "hashtagGroup")
         Box(
@@ -317,7 +327,10 @@ fun HashTagBtn(viewModel: WritingViewModel,text: String){
 @Composable
 fun HashTagGroup(viewModel: WritingViewModel){
     val scrollState = rememberScrollState()
-    Box(modifier = Modifier.height(55.dp).fillMaxWidth().padding(horizontal = 20.dp)){
+    Box(modifier = Modifier
+        .height(55.dp)
+        .fillMaxWidth()
+        .padding(horizontal = 20.dp)){
         Image( painter = painterResource(id = R.drawable.group_hashtag),
             contentDescription = "hashtagGroup")
         Box(
@@ -366,7 +379,7 @@ fun HashTagGroup(viewModel: WritingViewModel){
 @Composable
 fun CropImagePage(navController: NavController, viewModel: WritingViewModel) {
 
-    var imageUri: Uri? by remember { mutableStateOf(null) }
+    var imageUri: Uri? by remember { mutableStateOf(viewModel.imageUri) }
     val context = LocalContext.current as Activity
     val fullWidth = context.resources.displayMetrics.widthPixels
     Log.d("width", fullWidth.toString())
@@ -382,88 +395,158 @@ fun CropImagePage(navController: NavController, viewModel: WritingViewModel) {
                 println("ImageCropping error: ${result.error}")
             }
         }
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                navigationIcon = {
+    var isImageExist by remember { mutableStateOf(false) }
+
+    LinkedOutTheme {
+        Scaffold(
+            topBar = {
+                TopAppBar(modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .background(Color.Black),
+                    navigationIcon = {
+                        Icon(
+                            modifier = Modifier
+                                .size(50.dp)
+                                .clickable { navController.popBackStack() },
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Close"
+                        )
+                    },
+                    title = { Text("  이미지 업로드",fontSize = 24.sp, color = Color.White) },
+                    actions = {
+                        IconButton(
+                            onClick = {
+                                val cropOptions = CropImageContractOptions(
+                                    null,
+                                    CropImageOptions(
+                                        imageSourceIncludeCamera = false,
+                                        minCropResultWidth = screenWidth *5,
+                                        minCropResultHeight = 1000,
+                                        maxCropResultWidth = screenWidth *10,
+                                        maxCropResultHeight = 1000,
+                                        cropperLabelText = "자르기"
+                                    )
+                                )
+                                imageCropLauncher.launch(cropOptions)
+                            }
+                        ) {
+                            Icon(
+                                modifier = Modifier.size(50.dp),
+                                tint = Color.White,
+                                imageVector = Icons.Filled.Image,
+                                contentDescription = "Background from gallery"
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(2.dp))
+
+                        IconButton(
+                            onClick = {
+                                val cropOptions = CropImageContractOptions(
+                                    null,
+                                    CropImageOptions(
+                                        imageSourceIncludeGallery = false,
+                                        minCropResultWidth = screenWidth *5,
+                                        minCropResultHeight = 1000,
+                                        maxCropResultWidth = screenWidth *10,
+                                        maxCropResultHeight = 1000,
+                                        cropperLabelText = "자르기"
+                                    )
+                                )
+                                imageCropLauncher.launch(cropOptions)
+                            }
+                        ) {
+                            Icon(
+
+                                Icons.Filled.CameraEnhance,
+                                modifier = Modifier.size(40.dp),
+                                tint = Color.White,
+                                contentDescription = "Background from camera"
+                            )
+                        }
+                    }
+                )
+            }
+        ) { paddingValues ->
+            Box(modifier = Modifier.padding(paddingValues)) {
+                imageUri?.let { uri ->
+                    viewModel.imageUri = uri
+                    GlideImage(model = viewModel.imageUri, contentDescription = "",modifier = Modifier.fillMaxSize())
+
+
                     Icon(
                         imageVector = Icons.Default.Close,
-                        contentDescription = "Close"
+                        contentDescription = "close",
+                        modifier = Modifier
+                            .size(40.dp)
+                            .offset(x = 10.dp, y = 10.dp)
+                            .clickable {
+                                viewModel.imageUri = null
+                                imageUri = null
+                            }
                     )
-                },
-                title = { Text("Crop Image") },
-                actions = {
-                    IconButton(
-                        onClick = {
-                            val cropOptions = CropImageContractOptions(
-                                null,
-                                CropImageOptions(
-                                    imageSourceIncludeCamera = false,
-                                    minCropResultWidth = 1500,
-                                    minCropResultHeight = 700,
-                                    maxCropResultWidth = 1500,
-                                    maxCropResultHeight = 700,
-                                    activityMenuIconColor = android.graphics.Color.RED,
-                                    cropMenuCropButtonIcon = R.drawable.keyboard_hashtag,
-                                    cropperLabelText = "안녕하십니까?",
-                                    cropperLabelTextColor = android.graphics.Color.RED,
-                                    toolbarTitleColor = android.graphics.Color.RED,
-                                    activityBackgroundColor = android.graphics.Color.BLUE,
-                                    cropMenuCropButtonTitle = "김김김"
-                                )
+                    Log.d(TAG, "CropImagePage: $uri")
+                    isImageExist = true
+                }
+                if (imageUri == null) {
+                    isImageExist = false
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(bottom = 30.dp)
+                        , contentAlignment = Alignment.Center){
+                        Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                tint = LinkedInColor,
+                                contentDescription = "image upload",
+                                modifier = Modifier
+                                    .size(55.dp)
+                                    .clickable
+                                    {
+                                        val cropOptions = CropImageContractOptions(
+                                            null,
+                                            CropImageOptions(
+                                                imageSourceIncludeCamera = false,
+                                                minCropResultWidth = screenWidth * 5,
+                                                minCropResultHeight = 1000,
+                                                maxCropResultWidth = screenWidth * 10,
+                                                maxCropResultHeight = 1000,
+                                                cropperLabelText = "자르기"
+                                            )
+                                        )
+                                        imageCropLauncher.launch(cropOptions)
+                                    }
+
                             )
-                            imageCropLauncher.launch(cropOptions)
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Text(text = "사진을 업로드 해주세요" , fontSize = 20.sp, color = LinkedInColor, fontWeight = FontWeight.SemiBold)
                         }
-                    ) {
-                        Icon(
-                            Icons.Filled.Image,
-                            contentDescription = "Background from gallery"
-                        )
                     }
 
-                    IconButton(
-                        onClick = {
-                            val cropOptions = CropImageContractOptions(
-                                null,
-                                CropImageOptions(
-                                    imageSourceIncludeGallery = false,
-                                    minCropResultWidth = 2000,
-                                    minCropResultHeight = 700,
-                                    maxCropResultWidth = 2000,
-                                    maxCropResultHeight = 700,
-                                    cropperLabelText = "자르기234"
-                                )
-                            )
-                            imageCropLauncher.launch(cropOptions)
-                        }
-                    ) {
-                        Icon(
-                            Icons.Filled.CameraEnhance,
-                            contentDescription = "Background from camera"
-                        )
-                    }
                 }
-            )
+            }
         }
-    ) { paddingValues ->
-        Box(modifier = Modifier.padding(paddingValues)) {
-            imageUri?.let { uri ->
-                GlideImage(model = uri, contentDescription = "",modifier = Modifier.fillMaxSize())
-                viewModel.imageUri = uri
-                Log.d(TAG, "CropImagePage: $uri")
-                
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 30.dp), contentAlignment = Alignment.BottomCenter) {
+            Button(modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
+                .height(60.dp), enabled = isImageExist,
+                shape = RoundedCornerShape(10),
+                colors = ButtonDefaults.buttonColors(containerColor = LinkedInColor, disabledContainerColor = Color.Gray),
+                onClick = {
+                // Pass the imageUri to ViewModel or use it as needed
+                navController.navigate("WritingPage")
+            }) {
+                Text(text = "완료", color = Color.Black)
             }
         }
     }
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
-        Button(onClick = {
-            // Pass the imageUri to ViewModel or use it as needed
-            navController.navigate("WritingPage")
-        }) {
-            Text(text = "완료")
-        }
-    }
+
 }
 
 

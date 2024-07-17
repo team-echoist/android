@@ -268,9 +268,9 @@ open class CommunityViewModel @Inject constructor(
 
                 // 예외 처리
                 e.printStackTrace()
-                Log.d(TAG, "readRandomEssays: ${e.message}")
-                Log.d(TAG, "readRandomEssays: ${e.cause}")
-                Log.d(TAG, "readRandomEssays: ${e.localizedMessage}")
+                Log.e(TAG, "readRandomEssays: ${e.message}")
+                Log.e(TAG, "readRandomEssays: ${e.cause}")
+                Log.e(TAG, "readRandomEssays: ${e.localizedMessage}")
 
             }
             finally {

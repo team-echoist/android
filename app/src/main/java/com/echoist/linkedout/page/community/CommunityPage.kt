@@ -121,6 +121,7 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
                                 val isRefreshing by viewModel.isRefreshing.collectAsState()
 
                                 SwipeRefresh(
+                                    modifier = Modifier.padding(bottom = 20.dp),
                                     state = rememberSwipeRefreshState(isRefreshing = isRefreshing),
                                     onRefresh = { viewModel.refresh() }) {
                                     if (viewModel.isApifinished) {

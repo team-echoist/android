@@ -25,6 +25,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
@@ -62,6 +63,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.ViewCompat
@@ -148,12 +150,29 @@ fun WritingPage(
                             .padding(start = 20.dp, top = 80.dp),
                         color = Color.White
                     )
+                    Spacer(modifier = Modifier.height(50.dp))
                     if (viewModel.imageUri != null) {
                         Box(
+                            modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center,
-                            modifier = Modifier.padding(top = 100.dp)
                         ) {
-                            GlideImage(model = viewModel.imageUri, contentDescription = "uri")
+                            Box{
+                                GlideImage(model = viewModel.imageUri, contentDescription = "uri") //todo 위치 조절 제대로하기
+
+                                Row( //변경버튼 클릭 시 화면이동
+                                    Modifier
+                                        .offset (x = 10.dp, y = 10.dp)
+                                        .width(50.dp)
+                                        .height(27.dp)
+                                        .clickable { navController.navigate("CropImagePage") }
+                                        .background(
+                                            color = Color(0xFF616FED),
+                                            shape = RoundedCornerShape(20)
+                                        ), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+                                    Text(text = "변경", fontSize = 12.sp, color = Color.White)
+                                }
+
+                            }
                         }
                     }
 
@@ -176,7 +195,10 @@ fun WritingPage(
                             Row {
                                 LocationBox(viewModel = viewModel)
                                 Spacer(modifier = Modifier.width(2.dp))
-                                Row(Modifier.padding(horizontal = 20.dp).horizontalScroll(rememberScrollState())) {
+                                Row(
+                                    Modifier
+                                        .padding(horizontal = 20.dp)
+                                        .horizontalScroll(rememberScrollState())) {
                                     viewModel.locationList.forEach {
                                         LocationBtn(viewModel = viewModel, text = it)
                                     }
@@ -196,7 +218,10 @@ fun WritingPage(
                     //해시태그 찍는
                     if (viewModel.hashTagList.isNotEmpty() && viewModel.isTextFeatOpened.value) {
                         if (viewModel.isHashTagClicked) {
-                            Row(Modifier.horizontalScroll(rememberScrollState()).padding(horizontal = 20.dp)) {
+                            Row(
+                                Modifier
+                                    .horizontalScroll(rememberScrollState())
+                                    .padding(horizontal = 20.dp)) {
                                 viewModel.hashTagList.forEach {
                                     HashTagBtn(viewModel = viewModel, text = it)
                                     Spacer(modifier = Modifier.width(6.dp))
@@ -920,3 +945,35 @@ fun TextAlignBar() {
 
     }
 }
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Preview
+@Composable
+fun test(){
+    var imageSize by remember { mutableStateOf(IntSize.Zero) }
+
+
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        Box{
+            GlideImage(model = R.drawable.alarm_pending, contentDescription = "uri") //todo 위치 조절 제대로하기
+
+            Row(
+                Modifier
+                    .offset (x = 20.dp, y = 20.dp)
+                    .width(50.dp)
+                    .height(27.dp)
+                    .background(
+                        color = Color(0xFF616FED),
+                        shape = RoundedCornerShape(20)
+                    ), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+                Text(text = "변경", fontSize = 12.sp, color = Color.White)
+            }
+
+        }
+    }
+
+}
+

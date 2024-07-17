@@ -42,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -229,5 +230,15 @@ fun SocialLoginBox(imageResourceId : Int, socialType : String, userItem :UserInf
     }
 
 
+
+}
+@Preview
+@Composable
+fun te(){
+    LinkedOutTheme(darkTheme = true,dynamicColor = false) {
+        Scaffold {
+            Box(modifier = Modifier.padding(it))
+        }
+    }
 
 }

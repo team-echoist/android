@@ -5,9 +5,6 @@
       <entry key="InquiryInfoBox">
         <State />
       </entry>
-      <entry key="NotificationIcon">
-        <State />
-      </entry>
       <entry key="NotificationOpenLetter">
         <State />
       </entry>
@@ -21,14 +18,17 @@
               <type value="RUNNING_DEVICE_TARGET" />
               <deviceKey>
                 <Key>
-                  <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="$USER_HOME$/.android/avd/Client_Test.avd" />
+                  <type value="SERIAL_NUMBER" />
+                  <value value="127.0.0.1:6555" />
                 </Key>
               </deviceKey>
             </Target>
           </runningDeviceTargetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-07-16T07:25:45.779375Z" />
+          <timeTargetWasSelectedWithDropDown value="2024-07-17T07:22:07.076575Z" />
         </State>
+      </entry>
+      <entry key="test">
+        <State />
       </entry>
     </value>
   </component>

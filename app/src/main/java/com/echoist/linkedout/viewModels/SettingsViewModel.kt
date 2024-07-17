@@ -131,7 +131,7 @@ class SettingsViewModel @Inject constructor(
 
 
     fun getMyInfo() : UserInfo{
-        Log.d(TAG, "readMyInfo: ${exampleItems.myProfile}")
+        Log.d("example item", "readMyInfo: ${exampleItems.myProfile}")
         return exampleItems.myProfile
     }
 
@@ -139,7 +139,7 @@ class SettingsViewModel @Inject constructor(
         //이게 작동되는지가 중요
         viewModelScope.launch {
             try {
-                readMyInfo()
+                //readMyInfo()
                 val response = userApi.readBadgeList( Token.accessToken)
                 Log.d(TAG, "readSimpleBadgeList: ${response.body()!!.data.badges}")
                 response.body()?.data?.badges!!.let{badges ->

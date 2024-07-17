@@ -1,7 +1,6 @@
 package com.echoist.linkedout.ui.theme
 
 import android.os.Build
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -14,34 +13,35 @@ import androidx.compose.ui.platform.LocalContext
 private val DarkColorScheme = darkColorScheme(
     primary = LinkedInColor,
     secondary = LinkedInColor,
-    tertiary = Pink80,
-    background = Color(0xFF000000),
-
+    tertiary = Color.Black,
+    background = Color.Black, // 검정색 배경
+    surface = Color.Black, // 검정색 표면
+    onPrimary = Color.White, // 주 색상에 대한 텍스트 색상
+    onSecondary = Color.White, // 부 색상에 대한 텍스트 색상
+    onTertiary = Color.White, // 3차 색상에 대한 텍스트 색상
+    onBackground = Color.White, // 배경에 대한 텍스트 색상
+    onSurface = Color.White // 표면에 대한 텍스트 색상
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
+    primary = LinkedInColor,
+    secondary = LinkedInColor,
     tertiary = Pink40,
-    background = Color(0xFFF88080),
-
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    background = Color.White, // 흰색 배경
+    surface = Color.White, // 흰색 표면
+    onPrimary = Color.Black, // 주 색상에 대한 텍스트 색상
+    onSecondary = Color.Black, // 부 색상에 대한 텍스트 색상
+    onTertiary = Color.Black, // 3차 색상에 대한 텍스트 색상
+    onBackground = Color.Black, // 배경에 대한 텍스트 색상
+    onSurface = Color.Black // 표면에 대한 텍스트 색상
 )
+
 
 @Composable
 fun LinkedOutTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(), //이 값 대신 SharedPreferencesUtil을 사용
+    darkTheme: Boolean = true, //isSystemInDarkTheme(), //이 값 대신 SharedPreferencesUtil을 사용
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     //val context = LocalContext.current

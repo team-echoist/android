@@ -605,10 +605,9 @@ fun EssayListItem(
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .fillMaxHeight()
-                        .size(110.dp)
+                        .size(135.dp)
                         .padding(horizontal = 10.dp, vertical = 10.dp)
-                        .weight(3f) // 이미지 비율 조정
+                        //.weight(3f) // 이미지 비율 조정
                         .clip(RoundedCornerShape(10.dp)) // 둥근 모서리 적용
                 )
             }

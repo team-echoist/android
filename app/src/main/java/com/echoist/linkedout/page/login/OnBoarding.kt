@@ -135,7 +135,7 @@ fun OnBoardingPage(navController: NavController) {
                     Row(
                         Modifier
                             .height(100.dp)
-                            .padding(bottom = 10.dp), //box 안에 있어야하는거같기도?
+                            .padding(bottom = 30.dp), //box 안에 있어야하는거같기도?
                         horizontalArrangement = Arrangement.Center
                     )
                     {
@@ -169,7 +169,7 @@ fun OnBoardingPage(navController: NavController) {
                     }
                     if (pagerstate.currentPage == 3) {
                         Button(modifier = Modifier
-                            .padding(top = 33.dp)
+                            .padding(top = 13.dp, bottom = 20.dp)
                             .size(
                                 200.dp,
                                 50.dp

@@ -26,7 +26,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
-import androidx.compose.material.icons.filled.DensitySmall
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -217,12 +216,12 @@ fun CustomTopAppBar(onClick: () -> Unit,onClickNotification : ()->Unit) {
         navigationIcon = {
             Icon(
                 tint = if (isSystemInDarkTheme()) Color.White else Color.Gray,
-                imageVector = Icons.Default.DensitySmall, //todo 3줄짜리로 이미지 export필요
+                painter = painterResource(id = R.drawable.hamburber),
                 contentDescription = "Menu",
                 modifier = Modifier
                     .clickable { onClick() }
                     .padding(start = 20.dp)
-                    .size(30.dp)
+                    .size(24.dp)
             )
         },
         actions = {

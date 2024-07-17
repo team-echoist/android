@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
@@ -187,7 +188,9 @@ fun MyPage(
                         fontWeight = FontWeight.Bold,
                         text = "MY",
                         color = Color.White,
-                        modifier = Modifier.padding(start = 20.dp)
+                        modifier = Modifier
+                            .padding(start = 20.dp, top = 10.dp)
+                            .safeDrawingPadding()
                     )
                 },
                 bottomBar = { MyBottomNavigation(navController) },
@@ -550,7 +553,9 @@ fun LinkedOutBadgeItem(
 
 @Composable
 fun LinkedOutBadgeGrid(viewModel: SettingsViewModel) {
-    val badgeList = viewModel.getSimpleBadgeList()
+    val badgeList by remember {
+        mutableStateOf(viewModel.getSimpleBadgeList())
+    }
 
     LaunchedEffect(Unit) {
         delay(50)

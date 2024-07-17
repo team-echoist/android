@@ -96,7 +96,7 @@ fun LinkedOutSupportPage(
                 // 하단 버튼
 
             }
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter){
+            Box(modifier = Modifier.fillMaxSize().padding(bottom = 20.dp), contentAlignment = Alignment.BottomCenter){
                 Button(
                     shape = RoundedCornerShape(10),
                     modifier = Modifier

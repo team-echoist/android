@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -81,7 +80,7 @@ fun LastEssayItem(
         }
         .height(140.dp)) {
         //타이틀
-        Row {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -114,6 +113,8 @@ fun LastEssayItem(
                     color = color,
                     overflow = TextOverflow.Ellipsis
                 )
+                Spacer(modifier = Modifier.height(20.dp))
+
             }
 
             if (item.thumbnail != null) {
@@ -122,8 +123,7 @@ fun LastEssayItem(
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .fillMaxHeight()
-                        .size(110.dp)
+                        .size(135.dp)
                         .padding(vertical = 10.dp, horizontal = 10.dp)
                         .clip(RoundedCornerShape(10.dp)) // 둥근 모서리 적용
                 )
