@@ -98,6 +98,7 @@ fun StoryTopAppBar(navController: NavController, viewModel: MyLogViewModel) {
                 contentDescription = "",
                 Modifier
                     .size(30.dp)
+
                     .clickable {
                         navController.popBackStack()
                     },
@@ -137,7 +138,7 @@ fun StoryTitleTextField(viewModel: MyLogViewModel) {
                 focusedTextColor = Color.White,
                 unfocusedTextColor = Color.White
             ),
-            placeholder = { Text(text = "에세이 제목", fontSize = 20.sp, color = Color(0xFF5F5F5F)) }
+            placeholder = { Text(text = "스토리 제목", fontSize = 20.sp, color = Color(0xFF5F5F5F)) }
         )
     }
 }

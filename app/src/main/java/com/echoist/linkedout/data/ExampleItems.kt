@@ -50,10 +50,10 @@ class ExampleItems @Inject constructor(){
 
     var detailEssay by mutableStateOf(
         EssayApi.EssayItem(
+            id = 0,
             author = UserInfo(1,"groove"),
             content = "이 에세이는 예시입니다.123123이 에세이는 예시입니다.123123이 에세이는 예시입니다.123123이 에세이는 예시입니다.123123",
             createdDate = "2024년 04월 28일 16:47",
-            id = 1,
             linkedOutGauge = 5,
             status = "published",
             thumbnail = "http 값 있어요~",

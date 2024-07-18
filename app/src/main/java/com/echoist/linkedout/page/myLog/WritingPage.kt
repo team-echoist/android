@@ -125,6 +125,7 @@ fun WritingPage(
     var isTextAlignSelected by remember { mutableStateOf(false) }
     var isTextUnderLineSelected by remember { mutableStateOf(false) }
 
+    Log.d(TAG, "WritingPage: ${viewModel.readDetailEssay()}")
 
     LinkedOutTheme {
         Box {
@@ -151,30 +152,33 @@ fun WritingPage(
                         color = Color.White
                     )
                     Spacer(modifier = Modifier.height(50.dp))
-                    if (viewModel.imageUri != null) {
+
+               //     if (viewModel.imageUri != null) {
                         Box(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center,
                         ) {
                             Box{
-                                GlideImage(model = viewModel.imageUri, contentDescription = "uri") //todo 위치 조절 제대로하기
-
-                                Row( //변경버튼 클릭 시 화면이동
-                                    Modifier
-                                        .offset (x = 10.dp, y = 10.dp)
-                                        .width(50.dp)
-                                        .height(27.dp)
-                                        .clickable { navController.navigate("CropImagePage") }
-                                        .background(
-                                            color = Color(0xFF616FED),
-                                            shape = RoundedCornerShape(20)
-                                        ), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
-                                    Text(text = "변경", fontSize = 12.sp, color = Color.White)
+                                GlideImage(model = viewModel.imageUri ?: viewModel.imageUrl ?:  "", contentDescription = "uri") //todo 위치 조절 제대로하기
+                                if (viewModel.imageUri != null || viewModel.imageUrl !=null){
+                                    Row( //변경버튼 클릭 시 화면이동
+                                        Modifier
+                                            .offset(x = 10.dp, y = 10.dp)
+                                            .width(50.dp)
+                                            .height(27.dp)
+                                            .clickable { navController.navigate("CropImagePage") }
+                                            .background(
+                                                color = Color(0xFF616FED),
+                                                shape = RoundedCornerShape(20)
+                                            ), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+                                        Text(text = "변경", fontSize = 12.sp, color = Color.White)
+                                    }
                                 }
+
 
                             }
                         }
-                    }
+                  //  }
 
                 }
 
@@ -962,7 +966,7 @@ fun test(){
 
             Row(
                 Modifier
-                    .offset (x = 20.dp, y = 20.dp)
+                    .offset(x = 20.dp, y = 20.dp)
                     .width(50.dp)
                     .height(27.dp)
                     .background(

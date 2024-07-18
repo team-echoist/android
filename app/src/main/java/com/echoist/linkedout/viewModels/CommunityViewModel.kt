@@ -46,6 +46,9 @@ open class CommunityViewModel @Inject constructor(
     val randomList: StateFlow<List<EssayApi.EssayItem>>
     get() = _randomList.asStateFlow()
 
+    var randomEssayList by mutableStateOf(mutableStateListOf<EssayApi.EssayItem>())
+
+
     open var _isLoading = MutableStateFlow(false)
     val isLoading : StateFlow<Boolean>
         get() = _isLoading.asStateFlow()
@@ -99,6 +102,7 @@ open class CommunityViewModel @Inject constructor(
 
             _isRefreshing.emit(true)
             _isLoading.emit(true)
+            randomEssayList.clear()
             readRandomEssays()
             readFollowingEssays()
             readOneSentences("first")
@@ -167,10 +171,12 @@ open class CommunityViewModel @Inject constructor(
                 if (response.isSuccessful){
                     exampleItems.randomList = response.body()!!.data.essays.toMutableStateList()
                     _randomList.emit(response.body()!!.data.essays.toMutableStateList())
-                    Log.d(
-                        TAG,
-                        "readRandomEssays: 성공인데요${response.body()!!.data.essays.toMutableStateList()}"
-                    )
+                    //_randomList.emit(response.body()!!.data.essays.toMutableStateList())
+                    response.body()!!.data.essays.forEach{it->
+                        randomEssayList.add(it)
+                    }
+
+                    Log.d(TAG, "readRandomEssays: 성공인데요${response.body()!!.data.essays.toMutableStateList()}")
                     Log.d(TAG, "readRandomEssays: 성공입니다 아니면 예시 ${exampleItems.randomList}")
                 }
 

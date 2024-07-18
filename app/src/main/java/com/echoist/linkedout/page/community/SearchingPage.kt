@@ -127,7 +127,9 @@ fun SearchingBar(viewModel: SearchingViewModel, onClick: () -> Unit, drawerState
             imageVector =Icons.AutoMirrored.Filled.ArrowBack,
             contentDescription = "back",
             tint = Color.White,
-            modifier = Modifier.clickable {
+            modifier = Modifier.
+            size(30.dp).
+            clickable {
                 keyboardController?.hide()
                 onClick()
             }

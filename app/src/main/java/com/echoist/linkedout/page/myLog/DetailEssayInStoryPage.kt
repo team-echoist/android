@@ -114,6 +114,8 @@ fun TopAppBar(
                 contentDescription = "arrow back",
                 tint = if (isSystemInDarkTheme()) Color(0xFF727070) else Color.Gray,
                 modifier = Modifier
+                    .size(30.dp)
+
                     .padding(start = 20.dp)
                     .clickable {
                         navController.popBackStack()

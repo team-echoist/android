@@ -22,7 +22,6 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -56,6 +55,7 @@ fun StoryDetailPage(viewModel: MyLogViewModel, navController: NavController) {
             {
                 Column(Modifier.padding(it)) {
                     StoryDetailTitle(viewModel.getSelectedStory(),viewModel.getUserInfo().nickname!!)
+                    Spacer(modifier = Modifier.height(20.dp))
                     StoryDetailList(viewModel,navController)
                 }
                 if (viewModel.isModifyStoryClicked){
@@ -71,16 +71,18 @@ fun StoryDetailTopAppBar(navController: NavController, viewModel: MyLogViewModel
     TopAppBar(modifier = Modifier.padding(horizontal = 10.dp),
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
         title = {
-            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    SuggestionChip(onClick = { }, label = { Text(text = "스토리", fontSize = 10.sp) })
+
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center, modifier = Modifier
+                    .fillMaxWidth()
+                    .height(30.dp)) {
+                    Text(text = "스토리", color = LinkedInColor, fontSize = 12.sp)
                     Spacer(modifier = Modifier.width(10.dp))
                     Text(text = viewModel.getSelectedStory().name, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center, fontSize = 16.sp)
                     Spacer(modifier = Modifier.width(10.dp))
                     Text(text = "${viewModel.getSelectedStory().essaysCount}편", color =  Color(0xFF6B6B6B), fontSize = 16.sp)
 
                 }
-            }
+
         },
         actions = {Icon(imageVector = Icons.Filled.MoreVert, contentDescription = "",Modifier.clickable { isModifyClicked() })},
         navigationIcon = {
@@ -89,6 +91,7 @@ fun StoryDetailTopAppBar(navController: NavController, viewModel: MyLogViewModel
                 contentDescription = "",
                 Modifier
                     .size(30.dp)
+
                     .clickable {
                         navController.popBackStack()
                         viewModel.modifyStoryEssayItems
@@ -138,7 +141,7 @@ fun StoryDetailItem(essayItem: EssayApi.EssayItem, num : Int,isItemClicked : ()-
                 Text(text = essayItem.createdDate!!, fontSize = 12.sp, color = Color(0xFF3E415B))
             }
             if (essayItem.status == "published"){
-                Icon(painter = painterResource(id = R.drawable.option_linkedout), tint = Color(0xFF3E415B), contentDescription = "", modifier = Modifier.size(20.dp))
+                Icon(painter = painterResource(id = R.drawable.option_link), tint = Color(0xFF3E415B), contentDescription = "", modifier = Modifier.size(20.dp))
 
             }
         }
@@ -156,3 +159,4 @@ fun StoryDetailList(viewModel: MyLogViewModel,navController : NavController){
         }
     }
 }
+

@@ -176,10 +176,11 @@ fun ModifyBox(text : String, onClick : ()-> Unit){
 @Composable
 fun SettingTopAppBar(text: String,navController: NavController){
     TopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Black),
         title = {
             Text(
                 text = text,
+                fontWeight = FontWeight.Bold,
                 modifier = Modifier.fillMaxWidth(),
                 color = Color.White
             )
@@ -190,8 +191,8 @@ fun SettingTopAppBar(text: String,navController: NavController){
                 contentDescription = "arrow back",
                 modifier = Modifier
                     .clickable { navController.popBackStack() }
-                    .size(30.dp)
-                    .padding(start = 10.dp),
+                    .padding(start = 10.dp)
+                    .size(30.dp),
                 tint = Color.White
             )
 

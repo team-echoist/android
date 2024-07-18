@@ -30,10 +30,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CameraEnhance
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DensitySmall
-import androidx.compose.material.icons.filled.Image
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -409,7 +407,7 @@ fun CropImagePage(navController: NavController, viewModel: WritingViewModel) {
                     navigationIcon = {
                         Icon(
                             modifier = Modifier
-                                .size(50.dp)
+                                .size(30.dp)
                                 .clickable { navController.popBackStack() },
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Close"
@@ -436,7 +434,8 @@ fun CropImagePage(navController: NavController, viewModel: WritingViewModel) {
                             Icon(
                                 modifier = Modifier.size(50.dp),
                                 tint = Color.White,
-                                imageVector = Icons.Filled.Image,
+                                painter = painterResource(id = R.drawable.icon_gallery),
+
                                 contentDescription = "Background from gallery"
                             )
                         }
@@ -460,7 +459,7 @@ fun CropImagePage(navController: NavController, viewModel: WritingViewModel) {
                         ) {
                             Icon(
 
-                                Icons.Filled.CameraEnhance,
+                                painter = painterResource(id = R.drawable.icon_camera),
                                 modifier = Modifier.size(40.dp),
                                 tint = Color.White,
                                 contentDescription = "Background from camera"
@@ -484,6 +483,7 @@ fun CropImagePage(navController: NavController, viewModel: WritingViewModel) {
                             .offset(x = 10.dp, y = 10.dp)
                             .clickable {
                                 viewModel.imageUri = null
+                                viewModel.imageUrl = null
                                 imageUri = null
                             }
                     )

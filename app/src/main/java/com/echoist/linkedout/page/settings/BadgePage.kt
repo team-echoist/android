@@ -79,10 +79,10 @@ fun BadgePage(navController: NavController, viewModel: SettingsViewModel) {
     LinkedOutTheme {
         Scaffold(
             topBar = {
-                Column(Modifier.padding(horizontal = 20.dp)) {
+
 
                     BadgeTopAppBar(navController)
-                }
+
             },
             bottomBar = { MyBottomNavigation(navController) },
             content = {
@@ -113,9 +113,13 @@ fun BadgeTopAppBar(navController: NavController) {
         },
         navigationIcon = {
             Icon(
-                modifier = Modifier.clickable { navController.popBackStack() },
+
+                modifier = Modifier
+                    .padding(10.dp)
+                    .size(30.dp)
+                    .clickable { navController.popBackStack() },
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "back"
+                contentDescription = "back",
             )
         },
 

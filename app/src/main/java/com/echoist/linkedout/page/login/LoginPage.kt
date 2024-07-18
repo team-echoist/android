@@ -152,6 +152,7 @@ class LoginPage : ComponentActivity() {
         val myLogViewModel : MyLogViewModel by viewModels()
         val communityViewModel : CommunityViewModel by viewModels()
         val settingsViewModel : SettingsViewModel by viewModels()
+        //top,bottom 시스템 바 등의 설정
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
@@ -185,7 +186,7 @@ class LoginPage : ComponentActivity() {
                     SignUpCompletePage(homeViewModel,navController)
                 }
                 composable("HOME") {
-                    HomePage(navController,homeViewModel)
+                    HomePage(navController,homeViewModel,writingViewModel)
                 }
                 composable("DarkModeSettingPage") {
                     DarkModeSettingPage(navController)
@@ -209,7 +210,7 @@ class LoginPage : ComponentActivity() {
                     UpdateHistoryPage(navController)
                 }
                 composable("MYLOG") {
-                    MyLogPage(navController = navController,myLogViewModel)
+                    MyLogPage(navController = navController,myLogViewModel,writingViewModel)
                 }
                 composable("StoryPage") {
                     StoryPage(myLogViewModel,navController)
@@ -442,7 +443,7 @@ fun LoginPage(
 
                         tint = if (isSystemInDarkTheme()) Color.White else Color.Gray,
                         modifier = Modifier
-                            .size(50.dp)
+                            .size(30.dp)
                             .padding(16.dp)
                             .clickable { navController.popBackStack() } //뒤로가기
                     )

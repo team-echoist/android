@@ -129,6 +129,7 @@ fun StorageTopAppBar(
                 contentDescription = "",
                 Modifier
                     .size(30.dp)
+
                     .clickable { navController.popBackStack() },
                 tint = Color.White
             )

@@ -5,27 +5,14 @@
       <entry key="InquiryInfoBox">
         <State />
       </entry>
-      <entry key="NotificationOpenLetter">
+      <entry key="PrevImageSwitch">
         <State />
       </entry>
-      <entry key="StoryDetailItem">
+      <entry key="StoryChip">
         <State />
       </entry>
       <entry key="app">
-        <State>
-          <runningDeviceTargetSelectedWithDropDown>
-            <Target>
-              <type value="RUNNING_DEVICE_TARGET" />
-              <deviceKey>
-                <Key>
-                  <type value="SERIAL_NUMBER" />
-                  <value value="127.0.0.1:6555" />
-                </Key>
-              </deviceKey>
-            </Target>
-          </runningDeviceTargetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-07-17T07:22:07.076575Z" />
-        </State>
+        <State />
       </entry>
       <entry key="test">
         <State />

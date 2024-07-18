@@ -77,6 +77,8 @@ fun CommuTopAppBar(
                     contentDescription = "",
                     Modifier
                         .size(30.dp)
+
+
                         .clickable {
                             navController.popBackStack()
                             viewModel.unSubscribeClicked = false
@@ -91,6 +93,8 @@ fun CommuTopAppBar(
             Icon(imageVector = Icons.Default.Search, contentDescription = "",
                 Modifier
                     .size(30.dp)
+                    .padding(start=10.dp)
+
                     .clickable {
                         onClick()
                     })
@@ -98,7 +102,7 @@ fun CommuTopAppBar(
             Icon(
                 imageVector = Icons.Default.Bookmark,
                 contentDescription = "",
-                Modifier.size(30.dp),
+                Modifier.size(30.dp).padding(end=10.dp),
             )
             Spacer(modifier = Modifier.width(15.dp))
         }

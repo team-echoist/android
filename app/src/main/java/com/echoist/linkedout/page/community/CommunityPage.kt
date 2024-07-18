@@ -9,8 +9,11 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
@@ -121,13 +124,13 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
                                 val isRefreshing by viewModel.isRefreshing.collectAsState()
 
                                 SwipeRefresh(
-                                    modifier = Modifier.padding(bottom = 20.dp),
                                     state = rememberSwipeRefreshState(isRefreshing = isRefreshing),
                                     onRefresh = { viewModel.refresh() }) {
                                     if (viewModel.isApifinished) {
                                         Box(
                                             modifier = Modifier
-                                                .padding(top = 80.dp, bottom = 80.dp)
+                                                .padding(top = 60.dp, bottom = 80.dp)
+                                                .padding(WindowInsets.statusBars.asPaddingValues())
                                         ) {
                                             CommunityPager(
                                                 viewModel = viewModel,
@@ -154,7 +157,7 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
                                             Box(
                                                 modifier = Modifier
                                                     .fillMaxSize()
-                                                    .padding(top = 155.dp, end = 18.dp),
+                                                    .padding(top = 155.dp, end = 18.dp).padding(WindowInsets.statusBars.asPaddingValues()),
                                                 contentAlignment = Alignment.TopEnd
                                             ) {
                                                 ChoiceBox(viewModel)

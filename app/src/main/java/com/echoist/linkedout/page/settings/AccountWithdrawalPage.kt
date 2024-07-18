@@ -9,7 +9,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -112,37 +111,7 @@ fun AccountWithdrawalPage(navController : NavController) {
 
 
                     MultiSelectDeleteList(reasonList,selectedItems,onItemSelected)
-                    Spacer(modifier = Modifier.height(32.dp))
 
-//                    var pw by remember { mutableStateOf("") }
-//                    val isError by remember { mutableStateOf(false) }
-
-//                    Text(text = "현재 비밀번호", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
-//                    Spacer(modifier = Modifier.height(12.dp))
-//
-//                    CustomOutlinedTextField(
-//                        pw,
-//                        { newText ->
-//                            pw = newText
-//                        },
-//                        isError = isError,
-//                        hint = "비밀번호"
-//                    )
-//                    if (isError) {
-//                        Text(text = "* 비밀번호를 정확하게 입력해주세요.", color = Color.Red, fontSize = 12.sp)
-//                    }
-//
-//                    Spacer(modifier = Modifier.height(10.dp))
-//                    Row (verticalAlignment = Alignment.CenterVertically){
-//                        Text(text = "비밀번호를 잊으셨나요? ", fontSize = 12.sp, color = Color(0xFF5D5D5D))
-//                        Text(
-//                            text = "비밀번호 재설정",
-//                            fontSize = 12.sp,
-//                            color = Color(0xFF5D5D5D),
-//                            modifier = Modifier.clickable { navController.navigate("ResetPwPageWithEmail") },
-//                            style = TextStyle(textDecoration = TextDecoration.Underline)
-//                        )
-//                    }
                     Spacer(modifier = Modifier.height(32.dp))
 
 
@@ -199,15 +168,15 @@ fun MultiSelectDeleteList(
     selectedItem: MutableList<String>,
     onItemSelected: (String) -> Unit
 ) {
+
     Column {
         items.forEach { item ->
             val isSelected = selectedItem.contains(item)
-            val borderColor = if (isSelected) Color.Red else Color.Transparent
 
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(1.dp, borderColor, shape = RoundedCornerShape(10))
+                    .background(Color.Transparent, shape = RoundedCornerShape(4))
                     .clickable {
                         onItemSelected(item)
                     }

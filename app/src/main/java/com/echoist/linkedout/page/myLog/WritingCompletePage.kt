@@ -1,5 +1,6 @@
 package com.echoist.linkedout.page.myLog
 
+import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -64,6 +66,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.colintheshots.twain.MarkdownText
 import com.echoist.linkedout.R
+import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.components.HashTagGroup
 import com.echoist.linkedout.components.LocationGroup
 import com.echoist.linkedout.ui.theme.LinkedInColor
@@ -86,13 +89,13 @@ fun WritingCompletePage(
         bottomSheetState = bottomSheetState
     )
 
-
+    Log.d(TAG, "WritingCompletePage: ${viewModel.readDetailEssay()}")
     LinkedOutTheme {
         BottomSheetScaffold(
             sheetContainerColor = Color(0xFF191919),
             scaffoldState = scaffoldState,
             sheetContent = {
-                WritingCompletePager(viewModel = viewModel, navController = navController)
+                WritingCompletePager(viewModel.readDetailEssay(),viewModel = viewModel, navController = navController)
             },
 
             sheetPeekHeight = 56.dp
@@ -116,11 +119,12 @@ fun WritingCompletePage(
                             .padding(it)
                             .padding(bottom = 67.dp)
                     ) {
-                        if (viewModel.imageUri != null){
+
                             Box(contentAlignment = Alignment.Center) {
-                                GlideImage(model = viewModel.imageUri, contentDescription = "")
+                                GlideImage(model = viewModel.imageUri ?: viewModel.imageUrl ?:  "", contentDescription = "uri")
+
                             }
-                        }
+
                         Spacer(modifier = Modifier.height(20.dp))
                         CompleteTitle(viewModel = viewModel)
                         CompleteContents(viewModel = viewModel)
@@ -150,7 +154,9 @@ fun WritingCompletePage(
                     }
                 }
                 if (bottomSheetState.currentValue == SheetValue.Expanded || viewModel.isDeleteClicked.value){
-                    Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(0.7f)))
+                    Box(modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(0.7f)))
                 }
                 //바텀시트 올라와있으면 패딩값 추가
                 val expandDp =  if (bottomSheetState.currentValue == SheetValue.Expanded) 350.dp else 40.dp
@@ -187,6 +193,7 @@ fun CompleteAppBar(navController: NavController, viewModel: WritingViewModel) {
                 contentDescription = "arrow back",
                 tint = if (isSystemInDarkTheme()) Color(0xFF727070) else Color.Gray,
                 modifier = Modifier
+                    .size(30.dp)
 
                     .padding(start = 20.dp)
                     .clickable {
@@ -332,7 +339,7 @@ fun RingImg(viewModel: WritingViewModel) {
 }
 
 @Composable
-fun WritingCompletePager(viewModel: WritingViewModel, navController: NavController) {
+fun WritingCompletePager(essayItem: EssayApi.EssayItem,viewModel: WritingViewModel, navController: NavController) {
     val scrollState = rememberScrollState()
     val pagerstate = rememberPagerState { 2 }
     val coroutineScope = rememberCoroutineScope()
@@ -403,7 +410,7 @@ fun WritingCompletePager(viewModel: WritingViewModel, navController: NavControll
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        viewModel.hashTagList.forEach {
+                        viewModel.hashTagList.forEach { it ->
                             Text(text = "#$it", color = Color.White)
                             Spacer(modifier = Modifier.width(22.dp))
                         }
@@ -430,8 +437,8 @@ fun WritingCompletePager(viewModel: WritingViewModel, navController: NavControll
                         )
                         Button(
                             onClick = {
-                                viewModel.writeEssay(navController = navController, status = "private")
-
+                                if (viewModel.isModifyClicked) viewModel.modifyEssay(navController, status = "private")
+                                else viewModel.writeEssay(navController, status = "private")
                             },
                             modifier = Modifier
                                 .padding(bottom = 16.dp, start = 50.dp, end = 50.dp)
@@ -443,7 +450,10 @@ fun WritingCompletePager(viewModel: WritingViewModel, navController: NavControll
                         }
                         Button(
                             onClick = {
-                                viewModel.writeEssay(navController, status = "published")
+
+                                if (viewModel.isModifyClicked) viewModel.modifyEssay(navController, status = "published")
+                                else viewModel.writeEssay(navController, status = "published")
+
 
                             },
                             modifier = Modifier
@@ -457,7 +467,8 @@ fun WritingCompletePager(viewModel: WritingViewModel, navController: NavControll
                         }
                         Button(
                             onClick = {
-                                viewModel.writeEssay(navController, status = "linkedout")
+                                if (viewModel.isModifyClicked) viewModel.modifyEssay(navController, status = "linkedout")
+                                else viewModel.writeEssay(navController, status = "linkedout")
 
                             },
                             modifier = Modifier
@@ -478,10 +489,10 @@ fun WritingCompletePager(viewModel: WritingViewModel, navController: NavControll
                         contentAlignment = Alignment.CenterStart
                     ) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             tint = LinkedInColor,
                             contentDescription = "previousPage",
-                            modifier = Modifier.clickable { coroutineScope.launch {
+                            modifier = Modifier.size(30.dp).clickable { coroutineScope.launch {
                                 pagerstate.animateScrollToPage(0)
                             } }
                         )

@@ -22,6 +22,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
@@ -29,17 +30,23 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -50,7 +57,10 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.Story
+import com.echoist.linkedout.page.myLog.OptionItem
+import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.viewModels.MyLogViewModel
+import com.echoist.linkedout.viewModels.WritingViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,14 +73,19 @@ fun MyLogTopAppBar(onClickSearch : ()->Unit,nickName : String,onClickNotificatio
         },
         actions = {
             Icon(imageVector = Icons.Default.Search, contentDescription = "",
-                Modifier.size(30.dp).clickable { onClickSearch() })
+                Modifier
+                    .padding(start = 10.dp)
+                    .size(30.dp)
+                    .clickable { onClickSearch() })
             Spacer(modifier = Modifier.width(13.dp))
             Icon(
                 imageVector = Icons.Default.Notifications,
                 contentDescription = "",
-                Modifier.size(30.dp).clickable { onClickNotification() }
+                Modifier
+                    .padding(end = 10.dp)
+                    .size(30.dp)
+                    .clickable { onClickNotification() }
             )
-            Spacer(modifier = Modifier.width(15.dp))
 
         }
     )
@@ -107,7 +122,7 @@ fun EssayChips(pagerState: PagerState,viewModel: MyLogViewModel){
                 color = if (pagerState.currentPage == 1) Color.White else Color.Gray
             )
             Essaychip(
-                text = "에세이 모음 ${viewModel.storyList.size}",
+                text = "스토리 ${viewModel.storyList.size}",
                 78.dp,
                 {
                     coroutineScope.launch {
@@ -152,12 +167,16 @@ fun EssayListItem(
     item: EssayApi.EssayItem,
     pagerState: PagerState,
     viewModel: MyLogViewModel,
-    navController: NavController
+    navController: NavController,
+    writingViewModel: WritingViewModel
 ){
     val color = if (isSystemInDarkTheme()) {
         Color.White
     } else {
         Color.Black
+    }
+    var isOptionClicked by remember {
+        mutableStateOf(false)
     }
     Box(modifier = Modifier
         .fillMaxWidth()
@@ -200,10 +219,10 @@ fun EssayListItem(
                     Spacer(modifier = Modifier.width(10.dp))
                     Box(modifier = Modifier
                         .size(45.dp, 20.dp)
-                        .background(Color(0xFFFFBB36), shape = RoundedCornerShape(40.dp))
+                        .background(LinkedInColor, shape = RoundedCornerShape(40.dp))
                         , contentAlignment = Alignment.Center){
                         Text(
-                            text = "Out", fontSize = 12.sp,color=Color.Black, modifier = Modifier.padding(bottom = 1.dp)
+                            text = "Out", fontSize = 12.sp,color=Color.Black, modifier = Modifier.padding(bottom = 2.dp)
                         )
                     }
 
@@ -223,38 +242,51 @@ fun EssayListItem(
         Box(contentAlignment = Alignment.TopEnd, modifier = Modifier
             .fillMaxSize()
             .padding(end = 20.dp, top = 20.dp)) {
-            Icon(painter = painterResource(id = R.drawable.more), tint = color, contentDescription = "more", modifier = Modifier.size(30.dp))
+            Icon(painter = painterResource(id = R.drawable.more), tint = color, contentDescription = "more",
+                modifier = Modifier
+                    .size(30.dp)
+                    .clickable { isOptionClicked = !isOptionClicked }) //수정 box
         }
+
+
 
         Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier
             .fillMaxSize()
             .padding(end = 20.dp, bottom = 20.dp)) {
             Text(text = item.createdDate!!, fontSize = 10.sp, color = Color(0xFF686868))
         }
+
         Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier
             .fillMaxSize()) {
             HorizontalDivider(color = Color(0xFF686868))
+        }
+        if (isOptionClicked){
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .padding(end = 20.dp, top = 60.dp), contentAlignment = Alignment.TopEnd) {
+                ModifyOrDeleteBox(viewModel,navController, writingViewModel = writingViewModel,item)
+            }
         }
 
     }
 }
 
 @Composable
-fun EssayListPage1(viewModel: MyLogViewModel, pagerState: PagerState, navController: NavController){
+fun EssayListPage1(viewModel: MyLogViewModel, pagerState: PagerState, navController: NavController,writingViewModel: WritingViewModel){
 
         LazyColumn {
             items(viewModel.myEssayList){it->
-                EssayListItem(item = it,pagerState,viewModel,navController)
+                EssayListItem(item = it,pagerState,viewModel,navController,writingViewModel)
             }
         }
 }
 
 @Composable
-fun EssayListPage2(viewModel: MyLogViewModel, pagerState: PagerState, navController: NavController){
+fun EssayListPage2(viewModel: MyLogViewModel, pagerState: PagerState, navController: NavController,writingViewModel: WritingViewModel){
 
         LazyColumn {
             items(viewModel.publishedEssayList) {
-                EssayListItem(item = it, pagerState, viewModel, navController)
+                EssayListItem(item = it, pagerState, viewModel, navController,writingViewModel)
             }
         }
 }
@@ -272,7 +304,7 @@ fun StoryListPage(viewModel: MyLogViewModel,navController: NavController){
             shape = RoundedCornerShape(20),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF252525))
         ) {
-            Icon(painter = painterResource(id = R.drawable.text_plus), contentDescription = "add story")
+            Icon(imageVector = Icons.Default.Add, contentDescription = "add story")
         }
         Spacer(modifier = Modifier.height(20.dp))
         LazyColumn {
@@ -294,7 +326,8 @@ fun StoryItem(story: Story,viewModel: MyLogViewModel,navController: NavControlle
         .fillMaxWidth()
         .clickable {
             viewModel.setSelectStory(story)
-        navController.navigate("StoryDetailPage")}
+            navController.navigate("StoryDetailPage")
+        }
         .height(60.dp)){
         Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
             StoryCountIcon(story.essaysCount!!)
@@ -397,12 +430,48 @@ fun ModifyStoryBox(
 
 
 @Composable
-fun EssayPager(pagerState: PagerState, viewModel: MyLogViewModel, navController: NavController) {
+fun EssayPager(pagerState: PagerState, viewModel: MyLogViewModel, navController: NavController,writingViewModel: WritingViewModel) {
     HorizontalPager(state = pagerState, modifier = Modifier.padding(top = 20.dp)) { page ->
         when (page) {
-            0 -> EssayListPage1(viewModel,pagerState,navController)
-            1 -> EssayListPage2(viewModel,pagerState,navController)
+            0 -> EssayListPage1(viewModel,pagerState,navController,writingViewModel)
+            1 -> EssayListPage2(viewModel,pagerState,navController,writingViewModel)
             2 -> StoryListPage(viewModel,navController)
         }
     }
 }
+
+@Composable
+fun ModifyOrDeleteBox(viewModel: MyLogViewModel, navController: NavController,writingViewModel : WritingViewModel,essayItem: EssayApi.EssayItem) {
+
+
+            Surface(shape = RoundedCornerShape(10), modifier = Modifier.width(180.dp)) {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Spacer(modifier = Modifier.height(10.dp))
+                    OptionItem(text = "수정", Color.White,{
+                        writingViewModel.title.value = TextFieldValue(essayItem.title!!)
+                        writingViewModel.content = TextFieldValue(essayItem.content!!)
+                        writingViewModel.imageUrl = essayItem.thumbnail ?: ""
+                        writingViewModel.isModifyClicked = true
+                        writingViewModel.modifyEssayid = essayItem.id!!
+
+                        navController.navigate("WritingPage")
+
+                    },R.drawable.ftb_edit)
+                    HorizontalDivider()
+                    OptionItem(text = "삭제", Color.Red,{
+                        viewModel.deleteEssay(navController = navController,essayItem.id!!)
+                        Log.d(TAG, "ModifyOption: dd")
+                    },R.drawable.option_trash)
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                }
+            }
+        }
+
+
+
+
+

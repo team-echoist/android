@@ -289,8 +289,9 @@ fun CommunityTopAppBar(navController: NavController, viewModel: CommunityViewMod
                 contentDescription = "arrow back",
                 tint = if (isSystemInDarkTheme()) Color.White else Color.Gray,
                 modifier = Modifier
-                    .size(50.dp)
-                    .padding(start = 20.dp)
+                    .padding(start = 10.dp)
+                    .size(30.dp)
+
                     .clickable {
                         if (viewModel.detailEssayBackStack.isNotEmpty()) {
                             viewModel.detailEssayBackStack.pop()
@@ -314,7 +315,7 @@ fun CommunityTopAppBar(navController: NavController, viewModel: CommunityViewMod
                 contentDescription = "",
                 modifier = Modifier
                     .size(50.dp)
-                    .padding(end = 20.dp)
+                    .padding(end = 10.dp)
                     .clickable {
                         viewModel.isOptionClicked = !viewModel.isOptionClicked
                     },
@@ -354,7 +355,7 @@ fun ReportOption( onClickReport: () -> Unit,viewModel: CommunityViewModel) {
 
         }
     }
-}//todo bug 스토리를 만들면 가장 최근스토리에 싹 들어간다.
+}
 
 
 @OptIn(ExperimentalGlideComposeApi::class)
@@ -375,7 +376,7 @@ fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navContro
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp) //todo 없애기
+
             ) {
                 Spacer(modifier = Modifier.height(40.dp))
                 if (item.thumbnail != null) {
@@ -388,7 +389,7 @@ fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navContro
                     Spacer(modifier = Modifier.height(20.dp))
                     }
                 }
-                Row {
+                Row(modifier = Modifier.padding(horizontal = 20.dp)) {
                     Text(text = item.title!!, fontSize = viewModel.titleTextSize, modifier = Modifier)
                     Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
 
@@ -416,12 +417,12 @@ fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navContro
                 Text(
                     text = item.content!!,
                     fontSize = viewModel.contentTextSize,
-                    modifier = Modifier,
+                    modifier = Modifier.padding(horizontal = 20.dp),
                     color = Color(0xFFB4B4B4)
                 )
 
                 Spacer(modifier = Modifier.height(46.dp))
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
+                Box(modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp), contentAlignment = Alignment.BottomEnd) {
                     Column {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
                             (if (item.author !=null) item.author!!.nickname else "")?.let {
@@ -467,7 +468,7 @@ fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navContro
                 }
                 Spacer(modifier = Modifier.height(28.dp))
                 if (item.tags != null){
-                    Row {
+                    Row(modifier = Modifier.padding(horizontal = 20.dp)) {
                         repeat(item.tags!!.size){
                             SuggestionChip(
                                 onClick = { },
@@ -655,7 +656,7 @@ fun ReportTextField(hint : String,selectedColor: Color) {
             modifier = Modifier
                 .fillMaxSize()
                 .onFocusChanged { isFocused = it.isFocused }
-                .border(1.dp, color = borderColor, shape = RoundedCornerShape(10)),
+                .border(1.dp, color = borderColor, shape = RoundedCornerShape(6)),
             value = text,
             onValueChange = {
                 text = it

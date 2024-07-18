@@ -30,7 +30,6 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -48,7 +47,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.echoist.linkedout.R
 import com.echoist.linkedout.SharedPreferencesUtil
+import com.echoist.linkedout.components.ImageSwitch
 import com.echoist.linkedout.page.settings.SettingTopAppBar
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
@@ -183,7 +184,24 @@ fun EssayNotificationBox(
             }
         }
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
-            Switch(checked = isChecked, onCheckedChange = { onCheckChange(it) })
+            ImageSwitch(
+                height = 26.dp,
+                width = 50.dp,
+                outerBackgroundOnResource = R.drawable.switch_true,
+                outerBackgroundOffResource = R.drawable.switch_false,
+                circleBackgroundOnResource = R.drawable.switch_ball,
+                circleBackgroundOffResource = R.drawable.switch_ball,
+                initialValue = if (isChecked) 1 else 0, // 초기값 설정
+                onCheckedChanged = { checked ->
+                    if (checked) {
+                        Log.d("checked test", "true")
+                    } else {
+                        Log.d("checked test", "false")
+                    }
+                    onCheckChange(checked)
+                }
+            )
+            //Switch(checked = isChecked, onCheckedChange = { onCheckChange(it) })
 
         }
 
@@ -221,7 +239,23 @@ fun WritingNotificationBox(
                 .fillMaxSize()
                 .padding(top = 10.dp), contentAlignment = Alignment.TopEnd
         ) {
-            Switch(checked = isChecked, onCheckedChange = { onCheckChange(it) })
+            ImageSwitch(
+                height = 26.dp,
+                width = 50.dp,
+                outerBackgroundOnResource = R.drawable.switch_true,
+                outerBackgroundOffResource = R.drawable.switch_false,
+                circleBackgroundOnResource = R.drawable.switch_ball,
+                circleBackgroundOffResource = R.drawable.switch_ball,
+                initialValue = if (isChecked) 1 else 0, // 초기값 설정
+                onCheckedChanged = { checked ->
+                    if (checked) {
+                        Log.d("checked test", "true")
+                    } else {
+                        Log.d("checked test", "false")
+                    }
+                    onCheckChange(checked)
+                }
+            )
         }
         Box(
             modifier = Modifier

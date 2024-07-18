@@ -138,7 +138,7 @@ fun ChangePwPage(navController: NavController) {
 
                             )
                     ) {
-                        Text(text = "변경하기")
+                        Text(text = "변경하기", color = Color.Black)
                     }
                 }
 

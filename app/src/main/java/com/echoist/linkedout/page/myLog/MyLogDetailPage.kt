@@ -166,6 +166,7 @@ fun ModifyOption(viewModel: MyLogViewModel, navController: NavController,writing
                         Icon(
                             painter = painterResource(id = R.drawable.text_minus),
                             contentDescription = "minus",
+                            tint = Color.Gray,
                             modifier = Modifier
                                 .size(30.dp)
                                 .clickable { viewModel.textSizeDown() }
@@ -193,6 +194,8 @@ fun ModifyOption(viewModel: MyLogViewModel, navController: NavController,writing
                         writingViewModel.longitude = viewModel.readDetailEssay().longitude
                         writingViewModel.locationText = viewModel.readDetailEssay().location ?: ""
                         writingViewModel.imageUrl = viewModel.readDetailEssay().thumbnail ?: ""
+                        writingViewModel.isModifyClicked = true
+                        writingViewModel.modifyEssayid = viewModel.readDetailEssay().id!!
 
 
                         navController.navigate("WritingPage")
@@ -209,7 +212,7 @@ fun ModifyOption(viewModel: MyLogViewModel, navController: NavController,writing
                         },R.drawable.option_check)
                     HorizontalDivider()
                     OptionItem(text = "삭제", Color.Red,{
-                        viewModel.deleteEssay(navController = navController)
+                        viewModel.deleteEssay(navController = navController,viewModel.readDetailEssay().id ?: 0)
                         Log.d(TAG, "ModifyOption: dd")
                     },R.drawable.option_trash)
 
@@ -255,7 +258,7 @@ fun OptionItem(
                 tint = color,
                 painter = painterResource(id = iconResource),
                 contentDescription = "",
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(24.dp)
             )
         }
     }
@@ -275,7 +278,9 @@ fun DetailTopAppBar(navController: NavController, viewModel: MyLogViewModel) {
                 contentDescription = "arrow back",
                 tint = if (isSystemInDarkTheme()) Color(0xFF727070) else Color.Gray,
                 modifier = Modifier
-                    .padding(start = 20.dp)
+                    .padding(start = 10.dp)
+                    .size(30.dp)
+
                     .clickable {
                         if (viewModel.detailEssayBackStack.isNotEmpty()) {
                             viewModel.detailEssayBackStack.pop()

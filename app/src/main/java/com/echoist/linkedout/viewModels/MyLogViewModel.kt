@@ -207,10 +207,10 @@ class MyLogViewModel @Inject constructor(
             }
         }
 
-    fun deleteEssay(navController: NavController) {
+    fun deleteEssay(navController: NavController,id: Int) {
         viewModelScope.launch {
             try {
-                val response = essayApi.deleteEssay(Token.accessToken, exampleItems.detailEssay.id!!)
+                val response = essayApi.deleteEssay(Token.accessToken, id)
 
                 Log.d("writeEssayApiSuccess2", "writeEssayApiSuccess: ${response.isSuccessful}")
                 Log.d("writeEssayApiFailed", "deleteEssaytoken: ${Token.accessToken}")
@@ -407,13 +407,13 @@ class MyLogViewModel @Inject constructor(
                 exampleItems.detailEssay = response.body()!!.data.essay
                 detailEssay = exampleItems.detailEssay
                 Log.d(TAG, "readdetailEssay: 성공인데요${response.body()!!.data}")
-                Log.d(TAG, "readdetailEssay: 성공인데요${response.body()!!.data.essay.title}")
+                Log.d(TAG, "readdetailEssay: 성공인데요${exampleItems.detailEssay.id}")
 
                 if (response.body()!!.data.previous != null) {
                     exampleItems.previousEssayList = response.body()!!.data.previous!!.toMutableStateList()
                     previousEssayList = exampleItems.previousEssayList
                 }
-                Log.d(TAG, "readDetailEssay: previouse ${exampleItems.detailEssay}")
+                Log.d(TAG, "readDetailEssay ${exampleItems.detailEssay}")
 
                 Log.d(TAG, "readDetailEssay: previouse ${exampleItems.previousEssayList}")
 

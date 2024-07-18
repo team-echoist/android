@@ -154,10 +154,10 @@ fun InquiryBox(inquiry: Inquiry,viewModel: SupportViewModel){
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
                 Box(modifier = Modifier
                     .width(77.dp)
-                    .height(27.dp)
+                    .height(32.dp)
                     .background(color = Color(0xFF191919), shape = RoundedCornerShape(size = 42.dp))
                     .padding(start = 14.dp, top = 3.dp, end = 14.dp, bottom = 3.dp), contentAlignment = Alignment.Center){
-                    Text(text = processed, fontSize = 10.sp, color = textColor, textAlign = TextAlign.Center, modifier = Modifier.fillMaxSize() )
+                    Text(text = processed, fontSize = 12.sp, color = textColor, textAlign = TextAlign.Center, modifier = Modifier.fillMaxSize() )
 
                 }
             }

@@ -42,6 +42,8 @@ class WritingViewModel @Inject constructor(
 
     var storedDetailEssay by mutableStateOf(EssayApi.EssayItem()) //이 값으로 다시 writingpage로 이동시키기
 
+    var isModifyClicked by mutableStateOf(false)
+    var modifyEssayid by mutableIntStateOf(0)
 
     var myProfile by mutableStateOf(exampleItems.myProfile)
 
@@ -63,7 +65,7 @@ class WritingViewModel @Inject constructor(
     var longitude :Double? by mutableStateOf(null)
 
     var imageUri : Uri? by mutableStateOf(null)
-    var imageUrl : String by mutableStateOf("")
+    var imageUrl : String? by mutableStateOf(null)
 
     var locationText by mutableStateOf("")
     var hashTagList by mutableStateOf(mutableStateListOf<String>())
@@ -83,10 +85,15 @@ class WritingViewModel @Inject constructor(
     var isLocationClicked by mutableStateOf(false)
 
     //todo image bitmap 레트로핏으로 보내는방법
+    fun readDetailEssay() : EssayApi.EssayItem {
+        return exampleItems.detailEssay
+    }
 
 
     var isTextFeatOpened = mutableStateOf(false)
-
+    init {
+        isModifyClicked = false
+    }
 
     fun getCurrentDate(): String {
         val currentDate = LocalDate.now()
@@ -163,7 +170,7 @@ class WritingViewModel @Inject constructor(
         locationList = mutableStateListOf()
         isLocationClicked = false
         imageUri = null
-        imageUrl = ""
+        imageUrl = null
         isTextFeatOpened.value = false
         essayPrimaryId = null
     }
@@ -250,22 +257,29 @@ class WritingViewModel @Inject constructor(
                     status = status,
                     latitude = latitude,
                     longitude = longitude,
-                    location = locationText,
+                    location = locationText.ifEmpty { null },
                     tags = hashTagList
                 )
-
-
+                Log.d(TAG, "modifyEssay: $modifyEssayid")
                 val response = essayApi.modifyEssay( Token.accessToken,
-                    exampleItems.detailEssay.id!!,
+                    modifyEssayid,
                     essayData = essayData
                 )
-                accessToken = (response.headers()["authorization"].toString())
-                Token.accessToken = accessToken
+                if (response.isSuccessful){
+                     accessToken = (response.headers()["authorization"].toString())
+                    Token.accessToken = accessToken
 
-                navController.navigate("HOME") {
-                    popUpTo("HOME") {
-                        inclusive = false
+                    navController.navigate("HOME") {
+                        popUpTo("HOME") {
+                            inclusive = false
+                        }
+                        initialize()
+
                     }
+                }
+                else{
+                    Log.e("modifyEssayError", "modifyEssayError: ${response.code()}", )
+                    Log.e("modifyEssayError", "modifyEssayError: ${Token.accessToken}", )
                 }
                 if (response.code() == 202) {
                     //블랙리스트 코드 이동

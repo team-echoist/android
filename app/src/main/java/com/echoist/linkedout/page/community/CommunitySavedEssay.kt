@@ -98,22 +98,20 @@ fun SavedEssayTopAppBar(
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
         title = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "",
-                    Modifier
-                        .size(30.dp)
-                        .clickable {
-                            navController.popBackStack()
-                            onClickNavBack()
-                        },
-                )
-                Spacer(modifier = Modifier.width(8.dp))
                 Text(text = "저장한 글", fontWeight = FontWeight.SemiBold, fontSize = 24.sp)
-
-            }
         },
+        navigationIcon = {
+            Icon(
+            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+            contentDescription = "",
+            Modifier
+                .padding(start = 10.dp)
+                .size(30.dp)
+                .clickable {
+                    navController.popBackStack()
+                    onClickNavBack()
+                },
+        )},
         actions = {
             Spacer(modifier = Modifier.width(13.dp))
             Text(text = modifyText, fontSize = 16.sp, modifier = Modifier.clickable { onClickModify() })

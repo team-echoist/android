@@ -78,6 +78,7 @@ import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.HomeViewModel
+import com.echoist.linkedout.viewModels.WritingViewModel
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
@@ -91,7 +92,7 @@ import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun HomePage(navController: NavController,viewModel: HomeViewModel) {
+fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewModel : WritingViewModel) {
 
     LaunchedEffect(key1 = Unit) {
         viewModel.requestMyInfo()
@@ -125,7 +126,7 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel) {
                     },{navController.navigate("NotificationPage")})
                 },
                 bottomBar = { MyBottomNavigation(navController) },
-                floatingActionButton = { WriteFTB(navController,viewModel) },
+                floatingActionButton = { WriteFTB(navController,viewModel,writingViewModel) },
                 content = {
                     Column(modifier = Modifier.padding(it)) {
 
@@ -186,7 +187,7 @@ fun ModalBottomSheetContent(viewModel: HomeViewModel,navController: NavControlle
 }
 
 @Composable
-fun WriteFTB(navController: NavController,viewModel: HomeViewModel) {
+fun WriteFTB(navController: NavController,viewModel: HomeViewModel,writingViewModel: WritingViewModel) {
 
 
     FloatingActionButton(
@@ -195,6 +196,7 @@ fun WriteFTB(navController: NavController,viewModel: HomeViewModel) {
             navController.navigate("WritingPage")
             viewModel.initializeDetailEssay()
             viewModel.setStorageEssay(EssayApi.EssayItem())
+            writingViewModel.isModifyClicked = false
                   },
         shape = RoundedCornerShape(100.dp),
         containerColor = if (isSystemInDarkTheme()) Color.White else Color.Gray
@@ -220,7 +222,7 @@ fun CustomTopAppBar(onClick: () -> Unit,onClickNotification : ()->Unit) {
                 contentDescription = "Menu",
                 modifier = Modifier
                     .clickable { onClick() }
-                    .padding(start = 20.dp)
+                    .padding(start = 10.dp)
                     .size(24.dp)
             )
         },
@@ -230,7 +232,7 @@ fun CustomTopAppBar(onClick: () -> Unit,onClickNotification : ()->Unit) {
                 contentDescription = "Notifications",
                 modifier = Modifier
                     .clickable { onClickNotification() }
-                    .padding(end = 20.dp)
+                    .padding(end = 10.dp)
                     .size(30.dp)
             )
         },

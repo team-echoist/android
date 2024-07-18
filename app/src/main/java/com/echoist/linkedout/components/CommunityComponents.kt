@@ -54,10 +54,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -403,6 +401,7 @@ fun CommunityTopAppBar(
                 imageVector = Icons.Default.Search,
                 contentDescription = "",
                 Modifier
+                    .padding(start = 10.dp)
                     .size(30.dp)
                     .clickable { onSearchClick() },
                 tint = color
@@ -412,11 +411,11 @@ fun CommunityTopAppBar(
                 imageVector = Icons.Default.Bookmark,
                 contentDescription = "",
                 Modifier
+                    .padding(end = 10.dp)
                     .size(30.dp)
                     .clickable { onClickBookMarked() },
                 tint = color
             )
-            Spacer(modifier = Modifier.width(15.dp))
 
 
         }
@@ -644,7 +643,6 @@ fun RandomCommunityPage(viewModel: CommunityViewModel, navController: NavControl
     val randomList by viewModel.randomList.collectAsState()
 
     val listState = rememberLazyListState()
-    var limit by remember { mutableStateOf(20) }
 
 
     LaunchedEffect(listState) {
@@ -652,9 +650,8 @@ fun RandomCommunityPage(viewModel: CommunityViewModel, navController: NavControl
         snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull() }
             .collect { lastVisibleItem ->
                 // 리스트의 마지막 아이템에 도달하면
-                if (lastVisibleItem?.index == randomList.size - 1) {
-                    viewModel.readRandomEssays(limit)
-                    limit += 20
+                if (lastVisibleItem?.index == viewModel.randomEssayList.size - 1) {
+                    viewModel.readRandomEssays()
                 }
             }
     }
@@ -675,7 +672,7 @@ fun RandomCommunityPage(viewModel: CommunityViewModel, navController: NavControl
 
             }
         }
-        items(randomList) { it ->
+        items(viewModel.randomEssayList) { it ->
             EssayListItem(item = it, viewModel = viewModel, navController = navController)
         }
 

@@ -668,7 +668,7 @@ fun ModifyMyProfileBottomSheet(
                 actions = {
                     Text(text = "완료",
                         color = Color.White,
-                        modifier = Modifier.clickable {
+                        modifier = Modifier.padding(start=10.dp).clickable {
                             onClickComplete()
                             focusManager.clearFocus()
                             Log.d(TAG, "MyPage: ${viewModel.newProfile}")
@@ -680,7 +680,7 @@ fun ModifyMyProfileBottomSheet(
                     Text(
                         text = "취소",
                         color = Color(0xFF686868),
-                        modifier = Modifier.clickable {
+                        modifier = Modifier.padding(start=10.dp).clickable {
                             //새로운 프로필을 공백으로 다시 초기화
                             onClickCancel()
                             focusManager.clearFocus()
@@ -809,7 +809,7 @@ val context = LocalContext.current
                         contentDescription = "arrow back",
                         modifier = Modifier
                             .clickable { viewModel.isClickedModifyImage = false }
-                            .size(40.dp)
+                            .size(30.dp)
                             .padding(start = 10.dp),
                         tint = Color.White
                     )

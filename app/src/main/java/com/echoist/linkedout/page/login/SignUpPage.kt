@@ -127,7 +127,7 @@ fun SignUpPage(
 
                         } else Color.Gray,
                         modifier = Modifier
-
+                            .size(30.dp)
                             .padding(16.dp)
                             .clickable { navController.popBackStack() } //뒤로가기
                     )
