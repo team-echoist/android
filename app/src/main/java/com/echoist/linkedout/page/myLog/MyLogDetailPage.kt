@@ -154,13 +154,14 @@ fun ModifyOption(viewModel: MyLogViewModel, navController: NavController,writing
                 .padding(end = 23.dp),
             contentAlignment = Alignment.TopEnd
         ){
-            Surface(modifier = Modifier.size(180.dp, 305.dp), shape = RoundedCornerShape(2)) {
+            Surface(modifier = Modifier.size(180.dp, 305.dp).background(Color(0xFF0E0E0E)), shape = RoundedCornerShape(20)) {
                 Column(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize().background(Color(0xFF0E0E0E)),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Row(
+                        modifier = Modifier.background(Color(0xFF0E0E0E)),
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
                     ) {

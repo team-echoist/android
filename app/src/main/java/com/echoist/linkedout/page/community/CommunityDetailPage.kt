@@ -326,18 +326,20 @@ fun CommunityTopAppBar(navController: NavController, viewModel: CommunityViewMod
 
 @Composable
 fun ReportOption( onClickReport: () -> Unit,viewModel: CommunityViewModel) {
-    Surface(modifier = Modifier.size(180.dp, 110.dp), shape = RoundedCornerShape(2)) {
+    Surface(modifier = Modifier.size(180.dp, 110.dp).background(Color(0xFF0E0E0E)), shape = RoundedCornerShape(2)) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().background(Color(0xFF0E0E0E)),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(
+                modifier = Modifier.background(Color(0xFF0E0E0E)),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.text_minus),
+                    tint = Color.Unspecified,
                     contentDescription = "minus",
                     modifier = Modifier.clickable { viewModel.textSizeDown() }
                 )

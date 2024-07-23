@@ -23,7 +23,6 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -82,7 +81,7 @@ fun MyLogTopAppBar(onClickSearch : ()->Unit,nickName : String,onClickNotificatio
                     .clickable { onClickSearch() })
             Spacer(modifier = Modifier.width(13.dp))
             Icon(
-                imageVector = Icons.Default.Notifications,
+                painter = painterResource(id = R.drawable.icon_noti),
                 contentDescription = "",
                 Modifier
                     .padding(end = 10.dp)
@@ -469,8 +468,9 @@ fun ModifyOrDeleteBox(
 ) {
 
 
-            Surface(shape = RoundedCornerShape(10), modifier = Modifier.width(180.dp)) {
+            Surface(shape = RoundedCornerShape(20), modifier = Modifier.width(180.dp).background(Color(0xFF0E0E0E))) {
                 Column(
+                    modifier = Modifier.background(Color(0xFF0E0E0E)),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {

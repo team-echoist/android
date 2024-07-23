@@ -42,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -142,15 +143,15 @@ fun EmailBox(onClick: () -> Unit,email : String){
         .height(70.dp)){
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart){
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "이메일 주소 변경")
-                Spacer(modifier = Modifier.width(15.dp))
-                Text(text = email, fontSize = 12.sp, color = Color(0xFF5D5D5D))
+                Text(text = "이메일 주소 변경", Modifier.weight(2f))
+                Spacer(modifier = Modifier.width(5.dp))
+                Text(text = email, fontSize = 12.sp, color = Color(0xFF5D5D5D), modifier = Modifier.weight(2f), maxLines = 1,  // 한 줄로 제한
+                    overflow = TextOverflow.Ellipsis)  // 넘칠 경우 ... 표시)
+                Spacer(modifier = Modifier.width(5.dp))
+
+                Icon(modifier = Modifier.weight(0.3f).size(20.dp), imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos, contentDescription = "arrowforward")
 
             }
-        }
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
-            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos, contentDescription = "arrowforward", modifier = Modifier.size(20.dp))
-
         }
     }
 }

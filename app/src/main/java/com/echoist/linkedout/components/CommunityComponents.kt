@@ -578,7 +578,7 @@ fun EssayListItem(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     if (item.status == "linkedout"){
-                        Icon(painter = painterResource(id = R.drawable.option_linkedout), contentDescription = "linkedout icon")
+                        Icon(painter = painterResource(id = R.drawable.option_linkedout), contentDescription = "linkedout icon", modifier = Modifier.size(24.dp))
                         Spacer(modifier = Modifier.width(6.dp))
 
                     }

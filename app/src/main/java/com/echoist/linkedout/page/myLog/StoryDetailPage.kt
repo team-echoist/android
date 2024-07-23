@@ -144,7 +144,7 @@ fun StoryDetailItem(essayItem: EssayApi.EssayItem, num : Int,isItemClicked : ()-
                 Text(text = formatDateTime(essayItem.createdDate!!), fontSize = 12.sp, color = Color(0xFF3E415B))
             }
             if (essayItem.status == "published"){
-                Icon(painter = painterResource(id = R.drawable.option_link), tint = Color(0xFF3E415B), contentDescription = "", modifier = Modifier.size(20.dp))
+                Icon(painter = painterResource(id = R.drawable.option_link), tint = Color(0xFF3E415B), contentDescription = "", modifier = Modifier.size(24.dp))
 
             }
         }

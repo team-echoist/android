@@ -26,7 +26,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DrawerValue
@@ -228,7 +227,7 @@ fun CustomTopAppBar(onClick: () -> Unit,onClickNotification : ()->Unit) {
         },
         actions = {
             Icon(
-                Icons.Default.Notifications,
+                painter = painterResource(id = R.drawable.icon_noti),
                 contentDescription = "Notifications",
                 modifier = Modifier
                     .clickable { onClickNotification() }

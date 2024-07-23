@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
@@ -130,7 +131,7 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
                                         Box(
                                             modifier = Modifier
                                                 .padding(top = 60.dp, bottom = 80.dp)
-                                                .padding(WindowInsets.statusBars.asPaddingValues())
+                                                .systemBarsPadding()
                                         ) {
                                             CommunityPager(
                                                 viewModel = viewModel,

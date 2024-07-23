@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
@@ -169,7 +170,7 @@ fun OnBoardingPage(navController: NavController) {
                     }
                     if (pagerstate.currentPage == 3) {
                         Button(modifier = Modifier
-                            .padding(top = 13.dp, bottom = 20.dp)
+                            .padding(top = 13.dp, bottom = 10.dp).navigationBarsPadding()
                             .size(
                                 200.dp,
                                 50.dp
