@@ -199,7 +199,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                     },
                     modifier = Modifier
                         .horizontalScroll(state = rememberScrollState())
-                       // .fillMaxWidth()
+                        // .fillMaxWidth()
                         .drawBehind(extendedSpans)
                         .pointerInput(Unit) {
                             detectTapGestures { offsetPosition ->
@@ -437,7 +437,7 @@ fun CommunityChips(pagerState: PagerState) {
         HorizontalDivider(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 27.dp), thickness = 1.dp, color = Color(0xFF686868)
+                .padding(top = 27.dp), thickness = 1.dp, color = Color(0xFFAEAEAE)
         )
 
         Row(
@@ -471,7 +471,7 @@ fun CommunityChips(pagerState: PagerState) {
                         modifier = Modifier
                             .width(65.dp),
                         color = color,
-                        thickness = 3.dp
+                        thickness = 2.dp
                     )
                 }
 
@@ -577,6 +577,12 @@ fun EssayListItem(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
+                    if (item.status == "linkedout"){
+                        Icon(painter = painterResource(id = R.drawable.option_linkedout), contentDescription = "linkedout icon")
+                        Spacer(modifier = Modifier.width(6.dp))
+
+                    }
+
                     Text(
                         modifier = Modifier,
                         text = item.title!!,
@@ -593,6 +599,7 @@ fun EssayListItem(
                 Text(
                     text = item.content!!,
                     maxLines = 2,
+                    lineHeight = 27.2.sp,
                     color = color,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -628,7 +635,7 @@ fun EssayListItem(
             contentAlignment = Alignment.BottomEnd, modifier = Modifier
                 .fillMaxSize()
         ) {
-            HorizontalDivider(color = Color(0xFF686868))
+            HorizontalDivider(color = Color(0xFF333333))
         }
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
 

@@ -419,6 +419,7 @@ fun RecentEssayItem(item: EssayApi.EssayItem,viewModel : CommunityViewModel = hi
             Spacer(modifier = Modifier.height(10.dp))
             Text(
                 text = item.content!!,
+                lineHeight = 27.2.sp,
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis,
                 fontSize = 10.sp

@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.echoist.linkedout.data.RelatedEssay
+import com.echoist.linkedout.formatDateTime
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.MyLogViewModel
@@ -89,7 +90,7 @@ fun StoryTopAppBar(navController: NavController, viewModel: MyLogViewModel) {
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
         title = {
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                Text(text = "스토리 만들기", fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+                Text(text = "스토리 만들기", fontWeight = FontWeight.Bold, textAlign = TextAlign.Center, fontSize = 16.sp)
             }
         },
         navigationIcon = {
@@ -104,7 +105,8 @@ fun StoryTopAppBar(navController: NavController, viewModel: MyLogViewModel) {
                     },
                 tint = Color.White
             )
-        }
+        }, actions = { Box(modifier = Modifier.size(30.dp))}
+
     )
 }
 //todo 스토리 수정하기들어갔을때 리스트값이 없는데 전체 1개 표시됨.
@@ -160,7 +162,7 @@ fun EssayItem(
     ) {
         Column {
             Text(text = essayItem.title)
-            Text(text = essayItem.createdDate, fontSize = 10.sp, color = Color(0xFF727070))
+            Text(text = formatDateTime(essayItem.createdDate), fontSize = 10.sp, color = Color(0xFF727070))
         }
         IconButton(onClick = { onItemSelected(!isSelected) }) {
             Icon(
@@ -224,7 +226,7 @@ fun StoryEssayListScreen(viewModel: MyLogViewModel, navController: NavController
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(text = "전체 선택", fontSize = 12.sp)
-                        Spacer(modifier = Modifier.width(5.dp))
+                        Spacer(modifier = Modifier.width(2.dp))
                         IconButton(
                             onClick = {
                                 selectedItems = if (selectedItems.size == essayItems.size) {
@@ -298,7 +300,6 @@ fun StoryEssayListScreen(viewModel: MyLogViewModel, navController: NavController
     }
 
 }
-
 
 
 

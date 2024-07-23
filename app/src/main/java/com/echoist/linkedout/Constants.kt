@@ -1,5 +1,8 @@
 package com.echoist.linkedout
 
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
 const val MAX_TITLE_SIZE = 26
 const val MAX_CONTENT_SIZE = 20
 const val MIN_TITLE_SIZE = 16
@@ -29,3 +32,16 @@ const val PROFILE_IMAGE_11 = "https://driqat77mj5du.cloudfront.net/service/profi
 const val PROFILE_IMAGE_12 = "https://driqat77mj5du.cloudfront.net/service/profile_icon_12.png"
 
 
+fun formatDateTime(input: String): String {
+    // Define the input format
+    val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+
+    // Parse the input string to a LocalDateTime
+    val dateTime = LocalDateTime.parse(input, inputFormatter)
+
+    // Define the output format
+    val outputFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
+
+    // Format the LocalDateTime to the desired output format
+    return dateTime.format(outputFormatter)
+}

@@ -164,8 +164,8 @@ class SignUpViewModel @Inject constructor(
             val response = signUpApi.requestChangePw(Token.accessToken,userEmail)
 
             if (response.code() == 201) { //성공
-                Log.e("authApiSuccess2", "${response.headers()}")
-                Log.e("authApiSuccess2", "${response.code()}")
+                Log.d("requestChangePw api header", "${response.headers()}")
+                Log.d("requestChangePw api code", "${response.code()}")
                 //헤더에 토큰이 없다.
                 //Token.accessToken = (response.headers()["authorization"].toString())
                 isSendEmailVerifyApiFinished = true

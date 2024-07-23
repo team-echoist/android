@@ -11,6 +11,9 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -212,7 +215,10 @@ class LoginPage : ComponentActivity() {
                 composable("MYLOG") {
                     MyLogPage(navController = navController,myLogViewModel,writingViewModel)
                 }
-                composable("StoryPage") {
+                composable("StoryPage",
+                    enterTransition = { slideInVertically(initialOffsetY = { 2000 }, animationSpec = tween(durationMillis = 500) ) },
+                    exitTransition = { slideOutVertically(targetOffsetY = { 2000 }, animationSpec = tween(durationMillis = 500)) })
+                 {
                     StoryPage(myLogViewModel,navController)
                 }
                 composable("StoryDetailPage") {
@@ -276,7 +282,7 @@ class LoginPage : ComponentActivity() {
                     //settings page
                 }
                 composable("ResetPwPage",
-                    deepLinks = listOf(navDeepLink { uriPattern = "https://linkedout.com/ResetPwPage?token={token}" }),
+                    deepLinks = listOf(navDeepLink { uriPattern = "https://linkedoutapp./ResetPwPage?token={token}" }),
                     arguments = listOf(navArgument("token"){
                         type = NavType.StringType
                         defaultValue = ""
@@ -292,13 +298,17 @@ class LoginPage : ComponentActivity() {
                     BadgePage( navController,settingsViewModel)
                     //settings page
                 }
-                composable("WritingPage") {
+                composable("WritingPage",
+                    enterTransition = { slideInVertically(initialOffsetY = { 2000 }, animationSpec = tween(durationMillis = 500) ) },
+                    exitTransition = { slideOutVertically(targetOffsetY = { 2000 }, animationSpec = tween(durationMillis = 500)) })
+                {
                     WritingPage(navController, writingViewModel)
                 }
                 composable("WritingCompletePage") {
                     WritingCompletePage(navController, writingViewModel)
                 }
-                composable("TemporaryStoragePage") {
+                composable("TemporaryStoragePage")
+                 {
                     TemporaryStoragePage(navController,writingViewModel)
                 }
                 composable("CropImagePage") {

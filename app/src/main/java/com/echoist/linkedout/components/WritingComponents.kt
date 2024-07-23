@@ -247,7 +247,7 @@ fun LocationGroup(viewModel: WritingViewModel){
             ) {
                 Row(
                     modifier = Modifier
-                        .padding(start = 74.dp)
+                        .padding(start = 86.dp)
                         .width(220.dp)
                         .horizontalScroll(scrollState),
                     verticalAlignment = Alignment.CenterVertically
@@ -258,7 +258,7 @@ fun LocationGroup(viewModel: WritingViewModel){
                     }
                 }
                 Text( modifier = Modifier
-                    .padding(start = 74.dp)
+                    .padding(start = 86.dp)
                     .width(220.dp),
                     text = "${viewModel.longitude} ${viewModel.latitude}",
                     fontSize = 12.sp,
@@ -277,7 +277,6 @@ fun LocationGroup(viewModel: WritingViewModel){
                 fontSize = 16.sp,
                 text = "편집",
                 color = Color.White,
-                fontWeight = FontWeight.SemiBold,
                 modifier = Modifier
                     .padding(end = 11.5.dp)
                     .clickable {
@@ -338,7 +337,7 @@ fun HashTagGroup(viewModel: WritingViewModel){
 
             Row(
                 modifier = Modifier
-                    .padding(start = 74.dp)
+                    .padding(start = 86.dp)
                     .width(220.dp)
                     .fillMaxHeight()
                     .horizontalScroll(scrollState),
@@ -359,7 +358,6 @@ fun HashTagGroup(viewModel: WritingViewModel){
                 fontSize = 16.sp,
                 text = "편집",
                 color = Color.White,
-                fontWeight = FontWeight.SemiBold,
                 modifier = Modifier
                     .padding(end = 11.5.dp)
                     .clickable {
@@ -432,14 +430,13 @@ fun CropImagePage(navController: NavController, viewModel: WritingViewModel) {
                             }
                         ) {
                             Icon(
-                                modifier = Modifier.size(50.dp),
+                                modifier = Modifier.size(30.dp),
                                 tint = Color.White,
                                 painter = painterResource(id = R.drawable.icon_gallery),
 
                                 contentDescription = "Background from gallery"
                             )
                         }
-                        Spacer(modifier = Modifier.width(2.dp))
 
                         IconButton(
                             onClick = {
@@ -460,7 +457,7 @@ fun CropImagePage(navController: NavController, viewModel: WritingViewModel) {
                             Icon(
 
                                 painter = painterResource(id = R.drawable.icon_camera),
-                                modifier = Modifier.size(40.dp),
+                                modifier = Modifier.size(30.dp),
                                 tint = Color.White,
                                 contentDescription = "Background from camera"
                             )
@@ -500,10 +497,10 @@ fun CropImagePage(navController: NavController, viewModel: WritingViewModel) {
                         Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
                             Icon(
                                 imageVector = Icons.Default.Add,
-                                tint = LinkedInColor,
+                                tint = Color(0xFF4B4B4B),
                                 contentDescription = "image upload",
                                 modifier = Modifier
-                                    .size(55.dp)
+                                    .size(40.dp)
                                     .clickable
                                     {
                                         val cropOptions = CropImageContractOptions(
@@ -522,7 +519,7 @@ fun CropImagePage(navController: NavController, viewModel: WritingViewModel) {
 
                             )
                             Spacer(modifier = Modifier.height(10.dp))
-                            Text(text = "사진을 업로드 해주세요" , fontSize = 20.sp, color = LinkedInColor, fontWeight = FontWeight.SemiBold)
+                            Text(text = "사진을 업로드 해주세요" , fontSize = 18.sp, color = Color(0xFF4B4B4B), fontWeight = FontWeight.SemiBold)
                         }
                     }
 

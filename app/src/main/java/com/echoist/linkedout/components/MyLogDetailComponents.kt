@@ -43,6 +43,7 @@ import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.api.EssayApi
+import com.echoist.linkedout.formatDateTime
 import com.echoist.linkedout.viewModels.MyLogViewModel
 import kotlinx.coroutines.delay
 
@@ -109,6 +110,7 @@ fun LastEssayItem(
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(
                     text = item.content!!,
+                    lineHeight = 27.2.sp,
                     maxLines = 2,
                     color = color,
                     overflow = TextOverflow.Ellipsis
@@ -136,7 +138,7 @@ fun LastEssayItem(
                 .fillMaxSize()
                 .padding(start = 20.dp, bottom = 10.dp)
         ) {
-            Text(text = item.createdDate!!, fontSize = 10.sp, color = Color(0xFF686868))
+            Text(text = formatDateTime(item.createdDate!!), fontSize = 10.sp, color = Color(0xFF686868))
         }
         Box(
             contentAlignment = Alignment.BottomEnd, modifier = Modifier

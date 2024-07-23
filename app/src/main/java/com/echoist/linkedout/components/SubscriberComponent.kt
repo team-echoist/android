@@ -47,6 +47,7 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
 import com.echoist.linkedout.data.Story
 import com.echoist.linkedout.data.UserInfo
+import com.echoist.linkedout.formatDateTime
 import com.echoist.linkedout.viewModels.CommunityViewModel
 import kotlinx.coroutines.launch
 
@@ -348,7 +349,7 @@ fun ProfileStoryItem(story: Story){
                 Spacer(modifier = Modifier.width(30.dp))
                 Column(verticalArrangement = Arrangement.Center) {
                     Text(text = story.name, fontSize = 20.sp)
-                    Text(text = story.createdDate, fontSize = 10.sp, color = Color(0xFF686868))
+                    Text(text = formatDateTime(story.createdDate), fontSize = 10.sp, color = Color(0xFF686868))
                 }
             }
             

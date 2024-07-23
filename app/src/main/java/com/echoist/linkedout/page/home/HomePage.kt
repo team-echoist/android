@@ -255,7 +255,7 @@ fun MyBottomNavigation(navController: NavController) {
         BottomNavItem.Community,
         BottomNavItem.Settings
     )
-    NavigationBar(containerColor = Color.Transparent) {
+    NavigationBar(containerColor = Color.Black) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
 
@@ -291,8 +291,9 @@ fun MyProfile(item: UserInfo, onClick: () -> Unit) {
             .height(160.dp)
             .padding(20.dp)
             .clickable { onClick() }
+            , contentAlignment = Alignment.BottomCenter
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxSize()) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
                 modifier = Modifier
                     .size(80.dp)
@@ -312,7 +313,7 @@ fun MyProfile(item: UserInfo, onClick: () -> Unit) {
                 )
             }
             Spacer(modifier = Modifier.width(20.dp))
-            Column {
+            Column(Modifier.weight(7f)) {
                 Row {
                     Text(text = item.nickname!!, color = Color(0xFF616FED))
                     Text(text = " 아무개", color = Color.White)
@@ -320,8 +321,6 @@ fun MyProfile(item: UserInfo, onClick: () -> Unit) {
                 Spacer(modifier = Modifier.height(7.dp))
                 Text(text = "43일째 링크드 아웃!", color = Color(0xFF686868))
             }
-        }
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
                 contentDescription = "go",
@@ -492,7 +491,7 @@ fun LogoutBox( isCancelClicked: () ->Unit, isLogoutClicked: () -> Unit){
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter){
         Box(modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFF121212), shape = RoundedCornerShape(20))
+            .background(Color(0xFF121212), shape = RoundedCornerShape(10))
             .height(243.dp), contentAlignment = Alignment.Center){
             Column(
                 modifier = Modifier.padding(20.dp),

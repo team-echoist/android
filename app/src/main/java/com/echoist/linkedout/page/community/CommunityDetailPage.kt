@@ -82,6 +82,7 @@ import com.echoist.linkedout.R
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.components.EssayListItem
 import com.echoist.linkedout.data.UserInfo
+import com.echoist.linkedout.formatDateTime
 import com.echoist.linkedout.page.myLog.OptionItem
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
@@ -351,7 +352,7 @@ fun ReportOption( onClickReport: () -> Unit,viewModel: CommunityViewModel) {
                 )
             }
             HorizontalDivider()
-            OptionItem(text = "신고하기", Color.Red, onClick =  {onClickReport()}, R.drawable.option_report)
+            OptionItem(text = "신고하기", Color(0xFFE43446), onClick =  {onClickReport()}, R.drawable.option_report)
 
         }
     }
@@ -417,6 +418,7 @@ fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navContro
                 Text(
                     text = item.content!!,
                     fontSize = viewModel.contentTextSize,
+                    lineHeight = 27.2.sp,
                     modifier = Modifier.padding(horizontal = 20.dp),
                     color = Color(0xFFB4B4B4)
                 )
@@ -437,7 +439,7 @@ fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navContro
                         Spacer(modifier = Modifier.height(8.dp))
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
                             Text(
-                                text = item.createdDate ?: "",
+                                text = formatDateTime(item.createdDate ?: ""),
                                 fontSize = 12.sp,
                                 textAlign = TextAlign.End,
                                 color = Color(0xFF686868)

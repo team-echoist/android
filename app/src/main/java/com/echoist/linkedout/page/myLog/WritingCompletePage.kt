@@ -27,7 +27,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
@@ -46,6 +45,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -76,29 +76,33 @@ import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalGlideComposeApi::class)
 @Composable
 fun WritingCompletePage(
     navController: NavController,
     viewModel: WritingViewModel
 ) {
-    val bottomSheetState = rememberStandardBottomSheetState(initialValue = SheetValue.Expanded)
+    val bottomSheetState = rememberStandardBottomSheetState(initialValue = SheetValue.Hidden, skipHiddenState = false)
     val scrollState = rememberScrollState()
     val scaffoldState = androidx.compose.material3.rememberBottomSheetScaffoldState(
         bottomSheetState = bottomSheetState
     )
 
+    // 페이지가 로드될 때 BottomSheet를 확장 상태로 설정하기 위한 코드
+    LaunchedEffect(Unit) {
+        bottomSheetState.expand()
+    }
+
     Log.d(TAG, "WritingCompletePage: ${viewModel.readDetailEssay()}")
+
     LinkedOutTheme {
         BottomSheetScaffold(
             sheetContainerColor = Color(0xFF191919),
             scaffoldState = scaffoldState,
             sheetContent = {
-                WritingCompletePager(viewModel.readDetailEssay(),viewModel = viewModel, navController = navController)
+                WritingCompletePager(viewModel.readDetailEssay(), viewModel = viewModel, navController = navController)
             },
-
-            sheetPeekHeight = 56.dp
+            sheetPeekHeight = 46.dp
         ) {
             Scaffold(
                 modifier = Modifier
@@ -120,10 +124,9 @@ fun WritingCompletePage(
                             .padding(bottom = 67.dp)
                     ) {
 
-                            Box(contentAlignment = Alignment.Center) {
-                                GlideImage(model = viewModel.imageUri ?: viewModel.imageUrl ?:  "", contentDescription = "uri")
-
-                            }
+                        Box(contentAlignment = Alignment.Center) {
+                            GlideImage(model = viewModel.imageUri ?: viewModel.imageUrl ?: "", contentDescription = "uri")
+                        }
 
                         Spacer(modifier = Modifier.height(20.dp))
                         CompleteTitle(viewModel = viewModel)
@@ -150,7 +153,6 @@ fun WritingCompletePage(
                             Spacer(modifier = Modifier.height(10.dp))
                             HashTagGroup(viewModel = viewModel)
                         }
-
                     }
                 }
                 if (bottomSheetState.currentValue == SheetValue.Expanded || viewModel.isDeleteClicked.value){
@@ -159,7 +161,7 @@ fun WritingCompletePage(
                         .background(Color.Black.copy(0.7f)))
                 }
                 //바텀시트 올라와있으면 패딩값 추가
-                val expandDp =  if (bottomSheetState.currentValue == SheetValue.Expanded) 350.dp else 40.dp
+                val expandDp = if (bottomSheetState.currentValue == SheetValue.Expanded) 350.dp else 40.dp
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -173,13 +175,11 @@ fun WritingCompletePage(
                         WritingDeleteCard(viewModel = viewModel, navController = navController)
                     }
                 }
-
-
-
             }
         }
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -193,9 +193,8 @@ fun CompleteAppBar(navController: NavController, viewModel: WritingViewModel) {
                 contentDescription = "arrow back",
                 tint = if (isSystemInDarkTheme()) Color(0xFF727070) else Color.Gray,
                 modifier = Modifier
+                    .padding(start = 10.dp)
                     .size(30.dp)
-
-                    .padding(start = 20.dp)
                     .clickable {
                         navController.popBackStack()
                         Log.d("asdfadsf", "adsfadsf")
@@ -364,7 +363,7 @@ fun WritingCompletePager(essayItem: EssayApi.EssayItem,viewModel: WritingViewMod
             0 -> {
                 Column(
                     modifier = Modifier
-                        .padding(20.dp)
+                        .padding(start = 20.dp, end = 20.dp, bottom = 20.dp)
                         .fillMaxWidth()
                         .height(250.dp),
                     verticalArrangement = Arrangement.Center,

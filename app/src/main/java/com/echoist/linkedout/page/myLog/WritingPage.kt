@@ -153,14 +153,14 @@ fun WritingPage(
                     )
                     Spacer(modifier = Modifier.height(50.dp))
 
-               //     if (viewModel.imageUri != null) {
                         Box(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center,
                         ) {
                             Box{
-                                GlideImage(model = viewModel.imageUri ?: viewModel.imageUrl ?:  "", contentDescription = "uri") //todo 위치 조절 제대로하기
-                                if (viewModel.imageUri != null || viewModel.imageUrl !=null){
+                                GlideImage(model = viewModel.imageUri ?: viewModel.imageUrl , contentDescription = "uri") //todo 위치 조절 제대로하기
+                                Log.d(TAG, "WritingPage: ${viewModel.imageUri}, ${viewModel.imageUrl}")
+                                if (viewModel.imageUri != null || (viewModel.imageUrl != null && viewModel.imageUrl!!.startsWith("https"))){ //image url 주소가 널이 아니고 https값으로 시작해야 제대로된 Url link
                                     Row( //변경버튼 클릭 시 화면이동
                                         Modifier
                                             .offset(x = 10.dp, y = 10.dp)
@@ -178,7 +178,7 @@ fun WritingPage(
 
                             }
                         }
-                  //  }
+
 
                 }
 
@@ -327,6 +327,7 @@ fun WritingTopAppBar(
             .fillMaxWidth()
     ) {
         Row(
+
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxWidth()
@@ -334,6 +335,7 @@ fun WritingTopAppBar(
                 , verticalAlignment = Alignment.CenterVertically
         ) {
             if (isKeyboardOpen == Keyboard.Opened || viewModel.isTextFeatOpened.value) {
+
                 Icon(
                     imageVector = Icons.Default.Done,
                     contentDescription = "keyboardDown",
@@ -356,9 +358,10 @@ fun WritingTopAppBar(
                     color = Color(0xFF686868),
                     modifier = Modifier
                         .clickable {
-                            viewModel.initialize()
+
                             if (viewModel.title.value.text.isEmpty() && viewModel.content.text.isEmpty()) {
                                 navController.popBackStack()
+                                viewModel.initialize()
                             } else {
                                 viewModel.isCanCelClicked.value = true
                                 keyboardController?.hide()
@@ -372,16 +375,12 @@ fun WritingTopAppBar(
             // 텍스트 필드와 완료 버튼을 수평으로 배치
             Row(
                 modifier = Modifier
+                    .padding(4.dp)
                     .weight(1f) // 텍스트 필드와 완료 버튼을 균등하게 확장 // 오른쪽 여백 추가
             ) {
-                val xdp = animateDpAsState(
-                    targetValue = if (viewModel.titleFocusState.value) (-40).dp else 0.dp,
-                    label = ""
-                ).value
-                val ydp = animateDpAsState(
-                    targetValue = if (viewModel.titleFocusState.value) 50.dp else 0.dp,
-                    label = ""
-                ).value
+                val xdp = animateDpAsState(targetValue = if (viewModel.titleFocusState.value) (-40).dp else 0.dp, label = "").value
+                val ydp = animateDpAsState(targetValue = if (viewModel.titleFocusState.value) 50.dp else 0.dp, label = "").value
+
                 TextField(
                     modifier = Modifier
                         .offset(x = xdp, y = ydp)

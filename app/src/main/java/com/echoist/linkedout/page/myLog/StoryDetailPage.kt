@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
@@ -32,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -39,6 +41,7 @@ import com.echoist.linkedout.R
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.components.ModifyStoryBox
 import com.echoist.linkedout.data.Story
+import com.echoist.linkedout.formatDateTime
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.MyLogViewModel
@@ -75,7 +78,7 @@ fun StoryDetailTopAppBar(navController: NavController, viewModel: MyLogViewModel
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center, modifier = Modifier
                     .fillMaxWidth()
                     .height(30.dp)) {
-                    Text(text = "스토리", color = LinkedInColor, fontSize = 12.sp)
+                    StoryChip()
                     Spacer(modifier = Modifier.width(10.dp))
                     Text(text = viewModel.getSelectedStory().name, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center, fontSize = 16.sp)
                     Spacer(modifier = Modifier.width(10.dp))
@@ -138,7 +141,7 @@ fun StoryDetailItem(essayItem: EssayApi.EssayItem, num : Int,isItemClicked : ()-
                     .fillMaxSize(),verticalArrangement = Arrangement.Center) {
                 Text(text = essayItem.title!!, fontSize = 16.sp, color = LinkedInColor)
                 Spacer(modifier = Modifier.width(10.dp))
-                Text(text = essayItem.createdDate!!, fontSize = 12.sp, color = Color(0xFF3E415B))
+                Text(text = formatDateTime(essayItem.createdDate!!), fontSize = 12.sp, color = Color(0xFF3E415B))
             }
             if (essayItem.status == "published"){
                 Icon(painter = painterResource(id = R.drawable.option_link), tint = Color(0xFF3E415B), contentDescription = "", modifier = Modifier.size(20.dp))
@@ -150,13 +153,21 @@ fun StoryDetailItem(essayItem: EssayApi.EssayItem, num : Int,isItemClicked : ()-
 
 @Composable
 fun StoryDetailList(viewModel: MyLogViewModel,navController : NavController){
-    LazyColumn {
+    LazyColumn(Modifier.padding(start = 16.dp)) {
         items(viewModel.modifyStoryEssayItems){
         }
         itemsIndexed(viewModel.essayListInStroy){i,essay->
             StoryDetailItem(essay,i+1){viewModel.readDetailEssayInStory(essay.id!! ,navController,i+1)}
 
         }
+    }
+}
+
+@Preview
+@Composable
+fun StoryChip(){
+    Box(modifier = Modifier.background(LinkedInColor, shape = RoundedCornerShape(50))){
+        Text(text = "  스토리  ", color = Color.Black, fontSize = 10.sp)
     }
 }
 

@@ -41,7 +41,7 @@ fun SignUpCompletePage(homeViewModel: HomeViewModel,navController: NavController
 
     LaunchedEffect(key1 = Unit) {
         homeViewModel.requestMyInfo()
-        delay(2000)
+        delay(3000)
         navController.navigate("HOME")
     }
 

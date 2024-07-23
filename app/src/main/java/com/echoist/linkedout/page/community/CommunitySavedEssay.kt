@@ -171,6 +171,7 @@ fun SavedEssayListItem(
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(
                     text = item.content!!,
+                    lineHeight = 27.2.sp,
                     maxLines = 2,
                     color = color,
                     overflow = TextOverflow.Ellipsis

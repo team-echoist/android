@@ -131,7 +131,7 @@ class HomeViewModel @Inject constructor(
 
                     try {
                         supportApi.requestRegisterDevice(Token.accessToken, body)
-                        Log.d("FCM Token", "suc to fetch token $ssaid \n $token")
+                        Log.i("FCM Token", "ssaid 값 : $ssaid \n FCM token 값 : $token")
 
                     } catch (e: Exception) {
                         Log.e("FCM Token", "Failed to fetch token")

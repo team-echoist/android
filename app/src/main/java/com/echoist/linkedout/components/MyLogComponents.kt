@@ -48,6 +48,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -57,11 +58,13 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.Story
+import com.echoist.linkedout.formatDateTime
 import com.echoist.linkedout.page.myLog.OptionItem
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.viewModels.MyLogViewModel
 import com.echoist.linkedout.viewModels.WritingViewModel
 import kotlinx.coroutines.launch
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -102,7 +105,7 @@ fun EssayChips(pagerState: PagerState,viewModel: MyLogViewModel){
             .padding(start = 17.dp)) {
             Essaychip(
                 text = "나만의 글 ${viewModel.myEssayList.size}",
-                65.dp,
+                75.dp,
                 {
                     coroutineScope.launch {
                         pagerState.animateScrollToPage(0)
@@ -111,9 +114,10 @@ fun EssayChips(pagerState: PagerState,viewModel: MyLogViewModel){
                 },
                 color = if (pagerState.currentPage == 0) Color.White else Color.Gray
             )
+            Spacer(modifier = Modifier.width(5.dp))
             Essaychip(
                 text = "발행한 글 ${viewModel.publishedEssayList.size}",
-                65.dp,
+                75.dp,
                 {
                     coroutineScope.launch {
                         pagerState.animateScrollToPage(1)
@@ -121,9 +125,11 @@ fun EssayChips(pagerState: PagerState,viewModel: MyLogViewModel){
                 },
                 color = if (pagerState.currentPage == 1) Color.White else Color.Gray
             )
+            Spacer(modifier = Modifier.width(5.dp))
+
             Essaychip(
                 text = "스토리 ${viewModel.storyList.size}",
-                78.dp,
+                75.dp,
                 {
                     coroutineScope.launch {
                         pagerState.animateScrollToPage(2)
@@ -144,7 +150,11 @@ fun Essaychip(
     color: Color
 ){
 
-    Column(modifier = Modifier.padding(end = 12.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        modifier = Modifier.padding(end = 12.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Text(
             fontSize = 14.sp,
             text = text,
@@ -152,7 +162,7 @@ fun Essaychip(
             modifier = Modifier.clickable { clickable() } // Modifier.clickable을 마지막에 적용합니다
         )
 
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(6.dp))
         HorizontalDivider(modifier = Modifier
             .width(dividerWidth),
             color = color,
@@ -217,14 +227,7 @@ fun EssayListItem(
                     )
                 if (pagerState.currentPage == 1){
                     Spacer(modifier = Modifier.width(10.dp))
-                    Box(modifier = Modifier
-                        .size(45.dp, 20.dp)
-                        .background(LinkedInColor, shape = RoundedCornerShape(40.dp))
-                        , contentAlignment = Alignment.Center){
-                        Text(
-                            text = "Out", fontSize = 12.sp,color=Color.Black, modifier = Modifier.padding(bottom = 2.dp)
-                        )
-                    }
+                    OutBox()
 
                 }
 
@@ -233,6 +236,7 @@ fun EssayListItem(
             Spacer(modifier = Modifier.height(10.dp))
             Text(
                 text = item.content!!,
+                lineHeight = 27.2.sp,
                 maxLines = 3,
                 color = color,
                 overflow = TextOverflow.Ellipsis
@@ -253,12 +257,13 @@ fun EssayListItem(
         Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier
             .fillMaxSize()
             .padding(end = 20.dp, bottom = 20.dp)) {
-            Text(text = item.createdDate!!, fontSize = 10.sp, color = Color(0xFF686868))
+            Text(text = formatDateTime(item.createdDate!!), fontSize = 10.sp, color = Color(0xFF686868))
+
         }
 
         Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier
             .fillMaxSize()) {
-            HorizontalDivider(color = Color(0xFF686868))
+            HorizontalDivider(color = Color(0xFF333333))
         }
         if (isOptionClicked){
             Box(modifier = Modifier
@@ -291,34 +296,49 @@ fun EssayListPage2(viewModel: MyLogViewModel, pagerState: PagerState, navControl
         }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun StoryListPage(viewModel: MyLogViewModel,navController: NavController){
-    Column (Modifier.padding(horizontal = 20.dp)){
-        Button(
-            onClick = {
-                viewModel.isCreateStory = true
-                viewModel.essayIdList.clear()
-                navController.navigate("StoryPage")
-                    viewModel.storyTextFieldTitle = "" },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(20),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF252525))
+fun StoryListPage(viewModel: MyLogViewModel, navController: NavController) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        GlideImage(
+            model = R.drawable.background_logo,
+            contentDescription = "R.drawable.background_logo",
+            modifier = Modifier.matchParentSize()
+        )
+        Column(
+            Modifier
+                .padding(horizontal = 20.dp)
+                .fillMaxSize()
         ) {
-            Icon(imageVector = Icons.Default.Add, contentDescription = "add story")
-        }
-        Spacer(modifier = Modifier.height(20.dp))
-        LazyColumn {
-            items(viewModel.storyList) {
-                StoryItem(it,viewModel,navController)
-                Spacer(modifier = Modifier.height(20.dp))
-                HorizontalDivider()
-                Spacer(modifier = Modifier.height(10.dp))
-
+            Spacer(modifier = Modifier.height(20.dp))
+            Button(
+                onClick = {
+                    viewModel.isCreateStory = true
+                    viewModel.essayIdList.clear()
+                    navController.navigate("StoryPage")
+                    viewModel.storyTextFieldTitle = ""
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                shape = RoundedCornerShape(20),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF252525))
+            ) {
+                Icon(imageVector = Icons.Default.Add, contentDescription = "add story", modifier = Modifier.size(20.dp))
+            }
+            Spacer(modifier = Modifier.height(20.dp))
+            LazyColumn {
+                items(viewModel.storyList) {
+                    StoryItem(it, viewModel, navController)
+                    Spacer(modifier = Modifier.height(20.dp))
+                    HorizontalDivider()
+                    Spacer(modifier = Modifier.height(10.dp))
+                }
             }
         }
     }
-
 }
+
 
 @Composable
 fun StoryItem(story: Story,viewModel: MyLogViewModel,navController: NavController){
@@ -441,7 +461,12 @@ fun EssayPager(pagerState: PagerState, viewModel: MyLogViewModel, navController:
 }
 
 @Composable
-fun ModifyOrDeleteBox(viewModel: MyLogViewModel, navController: NavController,writingViewModel : WritingViewModel,essayItem: EssayApi.EssayItem) {
+fun ModifyOrDeleteBox(
+    viewModel: MyLogViewModel,
+    navController: NavController,
+    writingViewModel: WritingViewModel,
+    essayItem: EssayApi.EssayItem
+) {
 
 
             Surface(shape = RoundedCornerShape(10), modifier = Modifier.width(180.dp)) {
@@ -453,13 +478,13 @@ fun ModifyOrDeleteBox(viewModel: MyLogViewModel, navController: NavController,wr
                     OptionItem(text = "수정", Color.White,{
                         writingViewModel.title.value = TextFieldValue(essayItem.title!!)
                         writingViewModel.content = TextFieldValue(essayItem.content!!)
-                        writingViewModel.imageUrl = essayItem.thumbnail ?: ""
+                        writingViewModel.imageUrl = essayItem.thumbnail
                         writingViewModel.isModifyClicked = true
                         writingViewModel.modifyEssayid = essayItem.id!!
 
                         navController.navigate("WritingPage")
 
-                    },R.drawable.ftb_edit)
+                    },R.drawable.option_modify)
                     HorizontalDivider()
                     OptionItem(text = "삭제", Color.Red,{
                         viewModel.deleteEssay(navController = navController,essayItem.id!!)
@@ -473,5 +498,16 @@ fun ModifyOrDeleteBox(viewModel: MyLogViewModel, navController: NavController,wr
 
 
 
+@Preview
+@Composable
+fun OutBox(){
+    Box(modifier = Modifier
+        .background(LinkedInColor, shape = RoundedCornerShape(40.dp))
+        , contentAlignment = Alignment.Center){
+        Text(
+            text = "  OUT  ", fontSize = 12.sp,color=Color.Black
+        )
+    }
+}
 
 

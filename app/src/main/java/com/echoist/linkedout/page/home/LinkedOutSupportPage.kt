@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.data.Inquiry
+import com.echoist.linkedout.formatDateTime
 import com.echoist.linkedout.page.settings.SettingTopAppBar
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
@@ -149,7 +150,7 @@ fun InquiryBox(inquiry: Inquiry,viewModel: SupportViewModel){
             Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
                 Text(text = inquiry.title, color = Color.White)
                 Spacer(modifier = Modifier.height(6.dp))
-                Text(text = inquiry.createdDate!!,fontSize = 10.sp,color = Color(0xFF4D4D4D))
+                Text(text = formatDateTime(inquiry.createdDate!!),fontSize = 10.sp,color = Color(0xFF4D4D4D))
             }
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
                 Box(modifier = Modifier

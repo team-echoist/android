@@ -49,7 +49,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.echoist.linkedout.R
 import com.echoist.linkedout.components.CommuTopAppBar
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.home.MyBottomNavigation
@@ -176,7 +175,7 @@ fun SubscriberSimpleItem(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .border(width = 1.dp, color = Color(0xFF191919), shape = RoundedCornerShape(10)),
+                .border(width = 1.dp, color = Color(0xFF686868), shape = RoundedCornerShape(10)),
             contentAlignment = Alignment.CenterStart
         ) {
             Row(
@@ -186,7 +185,7 @@ fun SubscriberSimpleItem(
             ) {
 
                 GlideImage(
-                    model = R.drawable.bottom_nav_3,
+                    model = item.profileImage,
                     contentDescription = "profileimage",
                     modifier = Modifier.size(60.dp)
                 )

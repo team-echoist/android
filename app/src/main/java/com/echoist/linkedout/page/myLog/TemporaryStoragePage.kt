@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.echoist.linkedout.api.EssayApi
+import com.echoist.linkedout.formatDateTime
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.WritingViewModel
@@ -225,7 +226,7 @@ fun StorageEssayItem(
                 Text(text = essayItem.title!!, color = Color.White) // Added color to match the theme
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = essayItem.createdDate!!, fontSize = 10.sp,
+                    text = formatDateTime(essayItem.createdDate!!), fontSize = 10.sp,
                     lineHeight = 15.sp,
                     color = Color(0xFF727070),
                 )

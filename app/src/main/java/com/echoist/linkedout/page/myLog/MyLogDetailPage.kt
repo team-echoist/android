@@ -69,6 +69,7 @@ import com.echoist.linkedout.PUBLISHED_POPUP_URL
 import com.echoist.linkedout.R
 import com.echoist.linkedout.components.LastEssayPager
 import com.echoist.linkedout.data.Story
+import com.echoist.linkedout.formatDateTime
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.MyLogViewModel
@@ -193,14 +194,13 @@ fun ModifyOption(viewModel: MyLogViewModel, navController: NavController,writing
                         writingViewModel.latitude = viewModel.readDetailEssay().latitude
                         writingViewModel.longitude = viewModel.readDetailEssay().longitude
                         writingViewModel.locationText = viewModel.readDetailEssay().location ?: ""
-                        writingViewModel.imageUrl = viewModel.readDetailEssay().thumbnail ?: ""
+                        writingViewModel.imageUrl = viewModel.readDetailEssay().thumbnail
                         writingViewModel.isModifyClicked = true
                         writingViewModel.modifyEssayid = viewModel.readDetailEssay().id!!
 
 
                         navController.navigate("WritingPage")
-
-                                                        },R.drawable.ftb_edit)
+                                                        },R.drawable.option_modify)
                     HorizontalDivider()
                     OptionItem(text = "발행", Color.White,{viewModel.updateEssayToPublished(navController)},R.drawable.option_link)
                     HorizontalDivider()
@@ -234,6 +234,7 @@ fun OptionItem(
 ) {
     Box(
         Modifier
+            .background(Color(0xFF0E0E0E))
             .size(180.dp, 44.dp)
             .clickable { onClick() }) {
         Box(
@@ -353,7 +354,7 @@ fun DetailEssay(viewModel: MyLogViewModel) {
                         Spacer(modifier = Modifier.height(8.dp))
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
                             Text(
-                                text = essay.createdDate ?: "",
+                                text = formatDateTime(essay.createdDate ?: ""),
                                 fontSize = 12.sp,
                                 textAlign = TextAlign.End,
                                 color = Color(0xFF686868)
@@ -425,7 +426,7 @@ fun StoryModifyBox(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 10.dp)
-                .background(Color(0xFF121212), shape = RoundedCornerShape(20))
+                .background(Color(0xFF121212), shape = RoundedCornerShape(10))
                 .align(Alignment.BottomCenter)
         ) {
             Column(
@@ -635,7 +636,7 @@ fun DetailEssay2(viewModel: MyLogViewModel) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
                         Text(
-                            text = essay.createdDate ?: "",
+                            text = formatDateTime(essay.createdDate ?: ""),
                             fontSize = 12.sp,
                             textAlign = TextAlign.End,
                             color = Color(0xFF686868)
