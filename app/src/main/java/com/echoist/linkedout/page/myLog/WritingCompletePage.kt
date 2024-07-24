@@ -4,7 +4,10 @@ import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -170,7 +173,14 @@ fun WritingCompletePage(
                 ){
                     AnimatedVisibility(
                         visible = viewModel.isDeleteClicked.value,
-                        exit = fadeOut()
+                        enter = slideInVertically(
+                            initialOffsetY = { 2000 },
+                            animationSpec = tween(durationMillis = 500)
+                        ),
+                        exit = slideOutVertically(
+                            targetOffsetY = { 2000 },
+                            animationSpec = tween(durationMillis = 500)
+                        )
                     ) {
                         WritingDeleteCard(viewModel = viewModel, navController = navController)
                     }

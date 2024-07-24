@@ -4,6 +4,9 @@ import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -183,15 +186,27 @@ fun WritingPage(
                 }
 
             }
+            //취소 클릭시 배경 어둡게
+            if (viewModel.isCanCelClicked.value)
+                Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(0.7f)))
+
             Box(
                 modifier = Modifier
                     .fillMaxSize(),
                 contentAlignment = Alignment.BottomCenter
             ) { //키보드 자리에 들어갈 컴포 넣기
                 Column {
-                    AnimatedVisibility(visible = viewModel.isCanCelClicked.value) {
+                    AnimatedVisibility(visible = viewModel.isCanCelClicked.value,
+                        enter = slideInVertically(
+                            initialOffsetY = { 2000 },
+                            animationSpec = tween(durationMillis = 500)
+                        ),
+                        exit = slideOutVertically(
+                            targetOffsetY = { 2000 },
+                            animationSpec = tween(durationMillis = 500)
+                        )
+                    ) {
                         WritingCancelCard(viewModel = viewModel, navController = navController)
-
                     }
                     //장소 찍는
                     if (viewModel.longitude != null && viewModel.latitude != null && viewModel.isTextFeatOpened.value) {
@@ -527,6 +542,7 @@ fun MyDivider(viewModel: WritingViewModel) {
 
 @Composable
 fun WritingCancelCard(viewModel: WritingViewModel, navController: NavController) {
+
     Column(
         modifier = Modifier.padding(horizontal = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,

@@ -510,6 +510,7 @@ fun BadgeDescriptionBox(badgeBoxItem: BadgeBoxItem, viewModel: SettingsViewModel
 }
 
 //터치했을때 아이콘 확대축소 가능하게?
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun LinkedOutBadgeItem(
     badgeBoxItem: BadgeBoxItem,
@@ -531,7 +532,7 @@ fun LinkedOutBadgeItem(
 
     // badgeBoxItem의 level에 따라서 blur 효과를 다르게 적용
     val finalModifier = if (badgeBoxItem.level == 0) {
-        baseModifier.blur(20.dp)
+        baseModifier.blur(10.dp)
     } else {
         baseModifier
     }
@@ -541,13 +542,18 @@ fun LinkedOutBadgeItem(
         else setToSaturation(1f)
     }
 
-    Box(contentAlignment = Alignment.Center, modifier = finalModifier) {
+    Box(contentAlignment = Alignment.Center, modifier = finalModifier) { //todo 수정
+
         Image(
             modifier = Modifier.size(80.dp),
             painter = painterResource(id = badgeBoxItem.badgeResourceId),
             contentDescription = "badge_sad",
             colorFilter = ColorFilter.colorMatrix(colorMatrix)
         )
+//        GlideImage(
+//            modifier = Modifier.fillMaxSize(), contentScale = ContentScale.FillWidth,
+//            model = "https://cdn.discordapp.com/attachments/1218950730971349023/1265604412982951966/blur.png?ex=66a21d75&is=66a0cbf5&hm=8232b6c7cee7d84ff65b06d87ddcc854e43a29f408f00b16fa94504977f54ee1&",
+//            contentDescription = "")
     }
 }
 
@@ -669,23 +675,27 @@ fun ModifyMyProfileBottomSheet(
                 actions = {
                     Text(text = "완료",
                         color = Color.White,
-                        modifier = Modifier.padding(start=10.dp).clickable {
-                            onClickComplete()
-                            focusManager.clearFocus()
-                            Log.d(TAG, "MyPage: ${viewModel.newProfile}")
+                        modifier = Modifier
+                            .padding(start = 10.dp)
+                            .clickable {
+                                onClickComplete()
+                                focusManager.clearFocus()
+                                Log.d(TAG, "MyPage: ${viewModel.newProfile}")
 
-                        }
+                            }
                     )
                 },
                 navigationIcon = {
                     Text(
                         text = "취소",
                         color = Color(0xFF686868),
-                        modifier = Modifier.padding(start=10.dp).clickable {
-                            //새로운 프로필을 공백으로 다시 초기화
-                            onClickCancel()
-                            focusManager.clearFocus()
-                        }
+                        modifier = Modifier
+                            .padding(start = 10.dp)
+                            .clickable {
+                                //새로운 프로필을 공백으로 다시 초기화
+                                onClickCancel()
+                                focusManager.clearFocus()
+                            }
 
                     )
                 }
@@ -810,8 +820,9 @@ val context = LocalContext.current
                         contentDescription = "arrow back",
                         modifier = Modifier
                             .clickable { viewModel.isClickedModifyImage = false }
+                            .padding(start = 10.dp)
                             .size(30.dp)
-                            .padding(start = 10.dp),
+                            ,
                         tint = Color.White
                     )
 

@@ -6,6 +6,8 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -130,8 +132,14 @@ fun FullSubscriberPage(
                                 }
                                 AnimatedVisibility(
                                     visible = viewModel.unSubscribeClicked,
-                                    enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)),
-                                    exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
+                                    enter = slideInVertically(
+                                        initialOffsetY = { 2000 },
+                                        animationSpec = tween(durationMillis = 500)
+                                    ),
+                                    exit = slideOutVertically(
+                                        targetOffsetY = { 2000 },
+                                        animationSpec = tween(durationMillis = 500)
+                                    )
                                 ) {
                                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
                                         UnsubscribeAlert(viewModel)
