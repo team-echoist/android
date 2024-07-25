@@ -56,7 +56,6 @@ interface SignUpApi {
 
     data class ResetPwRequest(val pw : String,val token : String)
 
-
     @POST("api/auth/login")
     suspend fun login(
         @Body userAccount : UserAccount
@@ -67,11 +66,6 @@ interface SignUpApi {
         val timestamp: String,
         val path: String
     )
-
-
-
-
-
 
 
 

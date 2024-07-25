@@ -3,6 +3,7 @@ package com.echoist.linkedout.api
 import com.echoist.linkedout.data.BadgeDetailResponse
 import com.echoist.linkedout.data.BadgeSimpleResponse
 import com.echoist.linkedout.data.BasicResponse
+import com.echoist.linkedout.data.IsFirstCheckResponse
 import com.echoist.linkedout.data.UserEssayStatsResponse
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.data.UserResponse
@@ -86,6 +87,12 @@ interface UserApi {
 
     data class RequestDeactivate(val reasons : List<String>)
 
+
+    //유저 첫 회원가입인지 판별
+    @GET("api/users/check-first")
+    suspend fun requestUserFirstCheck(
+        @Header("Authorization") accessToken: String,
+    ): Response<IsFirstCheckResponse>
 
 
 

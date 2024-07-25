@@ -56,3 +56,13 @@ data class UserWithEssay(
     val essayStats: EssayStats
 )
 
+@JsonClass(generateAdapter = true)
+data class IsFirstCheckResponse(
+    val data: Boolean,
+    val path: String,
+    val success: Boolean,
+    val timestamp: String
+)
+
+
+

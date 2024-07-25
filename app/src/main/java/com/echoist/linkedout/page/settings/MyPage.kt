@@ -148,7 +148,6 @@ fun MyPage(
             sheetContainerColor = Color(0xFF111111),
             scaffoldState = scaffoldState,
             sheetContent = {
-
                 //이미지 수정시
                 AnimatedVisibility(
                     visible = viewModel.isClickedModifyImage,

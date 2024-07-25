@@ -129,6 +129,30 @@ class SocialLoginViewModel @Inject constructor(
         }
     }
 
+    private suspend fun requestIsFirstCheck(navController: NavController){
+
+            try {
+                val response = userApi.requestUserFirstCheck(Token.accessToken)
+                if (response.isSuccessful){
+                    if (response.body()!!.data) { //data 값이 true라면 첫 로그인 후 false로 값 변환해줌
+                        Log.d("첫 회원가입 여부 체크","true")
+                        navController.navigate("SignUpComplete")
+
+                        setFirstUserToExistUser()
+                    }
+                    else{ //아니라면 바로 홈화면으로 이동
+                        Log.d("첫 회원가입 여부 체크","false")
+                        navController.navigate("HOME")
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("첫 회원가입 여부 체크","에러")
+            } finally {
+            }
+
+
+    }
+
 
     fun signInWithGoogle(
         launcher: ManagedActivityResultLauncher<Intent, ActivityResult>,
@@ -200,15 +224,7 @@ class SocialLoginViewModel @Inject constructor(
                     Log.d("google_login_success", response.code().toString())
 
                     readMyInfo()
-                    if (response.code() == 205){ //최초로그인시 205 부여받음. 최초로그인 시 user update통해 isFirst값을 false로 선언
-                        navController.navigate("SignUpComplete")
-
-                        setFirstUserToExistUser()
-
-                    }
-                    else{
-                        navController.navigate("HOME")
-                    }
+                    requestIsFirstCheck(navController) // 첫 회원가입 여부 확인하고 화면이동
                 } else {
                     Log.e("google_login 서버와 api", "Failed ${response.code()}")
                 }
@@ -303,15 +319,7 @@ class SocialLoginViewModel @Inject constructor(
                     Log.d(TAG, "requestKakaoLogin: ${response.code()}")
 
                     readMyInfo()
-                    if (response.code() == 205){
-                        navController.navigate("SignUpComplete")
-
-                        setFirstUserToExistUser()
-
-                    }
-                    else{
-                        navController.navigate("HOME")
-                    }
+                    requestIsFirstCheck(navController) // 첫 회원가입 여부 확인하고 화면이동
                 } else {
                     Log.e("kakao_login 서버와 api", "Failed ${response.code()}")
                 }
@@ -432,15 +440,7 @@ class SocialLoginViewModel @Inject constructor(
 
 
                     readMyInfo()
-                    //첫 회원가입일 경우 205 나머지는 Homed
-                    if (response.code() == 205){
-                        navController.navigate("SignUpComplete")
-
-                        setFirstUserToExistUser()
-                    }
-                    else{
-                        navController.navigate("HOME")
-                    }
+                    requestIsFirstCheck(navController) // 첫 회원가입 여부 확인하고 화면이동
                 } else {
                     Log.e("naver_login 서버와 api", "Failed ${response.code()}")
                 }

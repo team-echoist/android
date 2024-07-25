@@ -24,4 +24,6 @@ interface SocialSignUpApi {
         val token : String,
         val platformId : String
     )
+
+
 }
