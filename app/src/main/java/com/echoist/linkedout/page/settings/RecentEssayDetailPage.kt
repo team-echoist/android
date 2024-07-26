@@ -49,6 +49,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.UserInfo
+import com.echoist.linkedout.formatElapsedTime
 import com.echoist.linkedout.page.community.CommunityTopAppBar
 import com.echoist.linkedout.page.community.DetailEssay
 import com.echoist.linkedout.page.community.ReportComplete
@@ -283,7 +284,7 @@ fun RecentEssayListItem(
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                     )
-                    Text(text = "   • 10 분", fontSize = 10.sp, color = Color(0xFF686868))
+                    Text(text = "   • ${formatElapsedTime(item.createdDate!!)}", fontSize = 10.sp, color = Color(0xFF686868))
 
                 }
 

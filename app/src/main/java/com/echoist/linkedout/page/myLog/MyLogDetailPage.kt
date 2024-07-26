@@ -317,7 +317,7 @@ fun DetailEssay(viewModel: MyLogViewModel) {
     val essay = viewModel.detailEssay
     Box {
         Column {
-            if (essay.thumbnail !=null){
+            if (essay.thumbnail !=null && essay.thumbnail!!.startsWith("https")){
                 Box(modifier = Modifier
                     .fillMaxWidth()
                     .height(220.dp), contentAlignment = Alignment.Center){

@@ -100,7 +100,7 @@ fun MyLogPage(navController: NavController, viewModel: MyLogViewModel,writingVie
 
 
                                         },
-                                        viewModel.myProfile.nickname!!,
+                                        viewModel.getUserInfo().nickname!!,
                                         { navController.navigate("NotificationPage") })
                                     Spacer(modifier = Modifier.height(10.dp))
 

@@ -316,32 +316,37 @@ class WritingViewModel @Inject constructor(
         return name
     }
 
-    suspend fun uploadThumbnail(uri: Uri, context: Context): String? { //서버에 이미지 업로드하고 url을 반환
+    fun uploadThumbnail(uri: Uri, context: Context) { //서버에 이미지 업로드하고 url을 반환
+        viewModelScope.launch {
+            try {
+                val file = getFileFromUri(uri, context)
+                val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+                val body = MultipartBody.Part.createFormData("image", file.name, requestFile)
 
-        try {
-            val file = getFileFromUri(uri, context)
-            val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
-            val body = MultipartBody.Part.createFormData("image", file.name, requestFile)
+                // 서버로 업로드 요청 보내기
+                val response = essayApi.uploadThumbnail(Token.accessToken, body, exampleItems.detailEssay.id)
 
-            // 서버로 업로드 요청 보내기
-            val response = essayApi.uploadThumbnail(Token.accessToken, body, exampleItems.detailEssay.id)
+                if (response.isSuccessful){
+                    imageUrl = response.body()!!.data.imageUrl
+                    Log.d(TAG, "uploadImage: $imageUrl")
+                }
+                else{
 
-            if (response.isSuccessful){
-                imageUrl = response.body()!!.data.imageUrl
-                Log.d(TAG, "uploadImage: $imageUrl")
-                return response.body()!!.data.imageUrl
-            }else
-                return  null
+                }
 
-            // 서버 응답에서 URL 추출
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Log.d(TAG, "uploadImage: ${e.message}")
 
-            return null
-        } finally {
+                // 서버 응답에서 URL 추출
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.e(TAG, "uploadImage: ${e.message}")
 
+
+            } finally {
+
+            }
         }
+
+
 
     }
 }

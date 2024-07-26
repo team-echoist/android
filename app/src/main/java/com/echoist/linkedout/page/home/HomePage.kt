@@ -7,6 +7,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -60,10 +61,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -91,6 +96,7 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 
 @OptIn(ExperimentalGlideComposeApi::class)
@@ -100,6 +106,7 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewMo
     LaunchedEffect(key1 = Unit) {
         viewModel.requestMyInfo()
         viewModel.requestUserGraphSummaryResponse()
+        viewModel.requestIsFirstCheck()
     }
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -147,14 +154,20 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewMo
                 }
             )
         }
-        var isFirstTime by remember {
-            mutableStateOf(true)
-        }
-        if (isFirstTime){
+
+        if (viewModel.isFirstUser){ // todo 첫 회원이라면
             Box(modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Black.copy(0.7f)))
-            TutorialPage{isFirstTime = false}
+            TutorialPage(
+                isCloseClicked = {
+                    viewModel.isFirstUser = false
+                viewModel.setFirstUserToExistUser()
+                                          },
+                isSkipClicked = {
+                    viewModel.isFirstUser = false
+                viewModel.setFirstUserToExistUser()
+                })
         }
     }
 }
@@ -174,6 +187,7 @@ fun ModalBottomSheetContent(viewModel: HomeViewModel,navController: NavControlle
             HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
             MyLinkedOutBar()
             LineChartExample(essayCounts = viewModel.essayCount)
+            Spacer(modifier = Modifier.height(10.dp))
             HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
             ShopDrawerItem()
             HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
@@ -350,9 +364,11 @@ fun MyProfile(item: UserInfo, onClick: () -> Unit) {
 }
 
 @Composable
-fun LineChartExample(modifier: Modifier = Modifier,essayCounts : List<Int>) {
-    val context = LocalContext.current
+fun LineChartExample(modifier: Modifier = Modifier, essayCounts: List<Int>) {
     val lineData = createLineData(essayCounts)
+    // 현재 달을 가져옴
+    val currentMonth = LocalDate.now().month.getDisplayName(java.time.format.TextStyle.SHORT, Locale.getDefault())
+
 
     AndroidView(
         modifier = modifier
@@ -362,26 +378,21 @@ fun LineChartExample(modifier: Modifier = Modifier,essayCounts : List<Int>) {
         factory = { context ->
             LineChart(context).apply {
                 data = lineData
-                this.
-                    // X축 설정
                 xAxis.position = XAxis.XAxisPosition.BOTTOM
                 xAxis.setDrawGridLines(false)
-                xAxis.textColor = android.graphics.Color.BLUE // X축 레이블 텍스트 색상 설정
-                xAxis.valueFormatter = IndexAxisValueFormatter(arrayOf("", "5월", "", "", "이번 주"))
+                xAxis.textColor = 0xFF616FED.toInt() //링크드아웃 컬러
+                xAxis.valueFormatter = IndexAxisValueFormatter(arrayOf("", currentMonth, "", "", "이번 주"))
                 xAxis.granularity = 1f
                 xAxis.labelCount = 5
                 xAxis.setDrawAxisLine(false)
 
-                // 오른쪽 Y축 비활성화
                 axisRight.isEnabled = false
-                //왼쪽 y축 비활성화
                 axisLeft.isEnabled = false
-
-                // 차트 설명 비활성화
+                setTouchEnabled(false)
                 description.isEnabled = false
 
+                legend.isEnabled = false
 
-                // 애니메이션 추가
                 animateX(1000)
             }
         },
@@ -392,7 +403,7 @@ fun LineChartExample(modifier: Modifier = Modifier,essayCounts : List<Int>) {
     )
 }
 
-fun createLineData(essayCounts : List<Int>): LineData {
+fun createLineData(essayCounts: List<Int>): LineData {
     val entries = listOf(
         Entry(0f, essayCounts[0].toFloat()),
         Entry(1f, essayCounts[1].toFloat()),
@@ -401,35 +412,23 @@ fun createLineData(essayCounts : List<Int>): LineData {
         Entry(4f, essayCounts[4].toFloat())
     )
 
-    val dataSet = LineDataSet(entries,"").apply {
+    val dataSet = LineDataSet(entries, "").apply {
         color = android.graphics.Color.BLUE
-        circleRadius = 8f
+        circleRadius = 4f // 원의 반지름 크기를 작게 설정
         valueTextColor = android.graphics.Color.BLACK
-        setCircleColor(android.graphics.Color.BLUE)
-        lineWidth = 4f
-        circleHoleColor = android.graphics.Color.BLUE
+        setCircleColor(0xFF616FED.toInt())
+        lineWidth = 2f // 선의 두께를 줄여 설정
+        circleHoleRadius = 2f // 원의 구멍 반지름 크기를 작게 설정
         setDrawCircles(true)
         setDrawValues(false)
-
         setDrawIcons(false)
+        
 
     }
-
 
     return LineData(dataSet)
 }
 
-//class YAxisValueFormatter(private val lineData: LineData) : com.github.mikephil.charting.formatter.ValueFormatter() {
-//    override fun getFormattedValue(value: Float): String {
-//        val yValues = lineData.dataSets[0].values.map { it.y }
-//        val max = yValues.maxOrNull() ?: 0f
-//        return if (value == max || value == yValues.first()) {
-//            value.toString()
-//        } else {
-//            ""
-//        }
-//    }
-//}
 
 @Composable
 fun MyLinkedOutBar(){
@@ -555,7 +554,7 @@ fun LogoutBox( isCancelClicked: () ->Unit, isLogoutClicked: () -> Unit){
 }
 
 @Composable
-fun TutorialPage(isCloseClicked: () -> Unit){
+fun TutorialPage(isCloseClicked: () -> Unit,isSkipClicked : ()->Unit){
     val pagerstate = rememberPagerState { 4 }
     val coroutineScope = rememberCoroutineScope()
 
@@ -565,7 +564,17 @@ fun TutorialPage(isCloseClicked: () -> Unit){
 
 
             1 ->
-                Tutorial_2{
+                Tutorial_2(draggedToLeft = {
+                    coroutineScope.launch {
+                        pagerstate.animateScrollToPage(0,
+                            animationSpec = tween(
+                                durationMillis = 600,
+                                easing = FastOutSlowInEasing
+                            )
+                        )
+
+                    }
+                }, isTutorial3Clicked = {
                     coroutineScope.launch {
                         pagerstate.animateScrollToPage(2,
                             animationSpec = tween(
@@ -575,10 +584,21 @@ fun TutorialPage(isCloseClicked: () -> Unit){
                         )
 
                     }
-                }
+                })
 
             2 ->
-                Tutorial_3{
+                Tutorial_3(draggedToLeft = {
+                    coroutineScope.launch {
+                        pagerstate.animateScrollToPage(1,
+                            animationSpec = tween(
+                                durationMillis = 600,
+                                easing = FastOutSlowInEasing
+                            )
+                        )
+
+                    }
+                },isCompleteClicked =
+                    {
                     coroutineScope.launch {
                         pagerstate.animateScrollToPage(3,
                             animationSpec = tween(
@@ -586,8 +606,8 @@ fun TutorialPage(isCloseClicked: () -> Unit){
                                 easing = FastOutSlowInEasing
                             ))
 
-                    }
-                }
+                    } //왼쪽드래그 -> 1페이지로이동
+                })
 
 
 
@@ -595,12 +615,22 @@ fun TutorialPage(isCloseClicked: () -> Unit){
                 Tutorial_4(){
                     isCloseClicked()
                 }
-
-
         }
-
-
-
+    }
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .padding(top = 150.dp, end = 20.dp), contentAlignment = Alignment.TopEnd){
+        Text(
+            text = "건너뛰기 >>",
+            modifier = Modifier.clickable { isSkipClicked() },
+            style = TextStyle(
+                fontSize = 14.sp,
+                lineHeight = 21.sp,
+                color = Color(0xFF929292),
+                textAlign = TextAlign.Center,
+                textDecoration = TextDecoration.Underline,
+            )
+        )
     }
 
     if (pagerstate.currentPage != 3){
@@ -665,8 +695,9 @@ fun Tutorial_1(){
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun Tutorial_2(isTutorial3Clicked : ()->Unit){
+fun Tutorial_2(isTutorial3Clicked : ()->Unit, draggedToLeft: () -> Unit){
     var isClicked by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
 
     Box{
         Box(modifier = Modifier.fillMaxSize()){
@@ -675,6 +706,21 @@ fun Tutorial_2(isTutorial3Clicked : ()->Unit){
                 contentDescription = "home_img",
                 modifier = Modifier
                     .fillMaxSize()
+                    .pointerInput(Unit) {
+                        detectHorizontalDragGestures { _, dragAmount ->
+                            // 감지된 드래그 방향과 양에 따라 동작 수행
+                            coroutineScope.launch {
+                                if (dragAmount > 0) {
+                                    // 오른쪽으로 스와이프
+                                    draggedToLeft()
+
+                                } else {
+                                    // 왼쪽으로 스와이프
+                                    isClicked = true
+                                }
+                            }
+                        }
+                    }
                     .clickable { isClicked = true },
                 contentScale = ContentScale.FillWidth
             )
@@ -706,6 +752,7 @@ fun Tutorial_2(isTutorial3Clicked : ()->Unit){
                     contentDescription = "home_img",
                     modifier = Modifier
                         .size(281.dp, 411.dp)
+
                         .clickable {
                             isClicked = true
                             isTutorial3Clicked()
@@ -722,11 +769,31 @@ fun Tutorial_2(isTutorial3Clicked : ()->Unit){
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun Tutorial_3(isCompleteClicked : () -> Unit){
+fun Tutorial_3(isCompleteClicked : () -> Unit,draggedToLeft:()->Unit){
     var isClicked by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
 
     if (!isClicked){
-        Box(modifier = Modifier.fillMaxSize().padding(bottom = 112.dp, end = 15.dp), contentAlignment = Alignment.BottomEnd){
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .pointerInput(Unit) {
+                    detectHorizontalDragGestures { _, dragAmount ->
+                        // 감지된 드래그 방향과 양에 따라 동작 수행
+                        coroutineScope.launch {
+                            if (dragAmount > 0) {
+                                // 오른쪽으로 스와이프
+                                draggedToLeft()
+                            } else {
+                                // 왼쪽으로 스와이프
+                                isClicked = true
+                            }
+                        }
+                    }
+                }
+                .padding(bottom = 112.dp, end = 15.dp),
+            contentAlignment = Alignment.BottomEnd
+        ){
             TutorialActionBtn{isClicked = true}
         }
     }

@@ -25,7 +25,6 @@ import com.echoist.linkedout.api.SignUpApi
 import com.echoist.linkedout.api.SocialSignUpApi
 import com.echoist.linkedout.api.UserApi
 import com.echoist.linkedout.data.ExampleItems
-import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.myLog.Token
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -137,8 +136,6 @@ class SocialLoginViewModel @Inject constructor(
                     if (response.body()!!.data) { //data 값이 true라면 첫 로그인 후 false로 값 변환해줌
                         Log.d("첫 회원가입 여부 체크","true")
                         navController.navigate("SignUpComplete")
-
-                        setFirstUserToExistUser()
                     }
                     else{ //아니라면 바로 홈화면으로 이동
                         Log.d("첫 회원가입 여부 체크","false")
@@ -453,16 +450,6 @@ class SocialLoginViewModel @Inject constructor(
         }
     }
 
-    private suspend fun setFirstUserToExistUser(){
-        try {
-            val isNotFirst = UserInfo(isFirst = false)
-            val response = userApi.userUpdate(Token.accessToken,isNotFirst)
-            Log.d(TAG, "setFirstUserToExistUser: ${response.code()}")
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Log.e("error","set user first to exist error ")
-        }
-    }
 }
 
 

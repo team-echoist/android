@@ -56,6 +56,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.ExampleItems
+import com.echoist.linkedout.formatElapsedTime
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
@@ -165,7 +166,7 @@ fun SavedEssayListItem(
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                     )
-                    Text(text = "   • 10 분", fontSize = 10.sp, color = Color(0xFF686868))
+                    Text(text = "   • ${formatElapsedTime(item.createdDate!!)}", fontSize = 10.sp, color = Color(0xFF686868))
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))
@@ -176,7 +177,7 @@ fun SavedEssayListItem(
                     color = color,
                     overflow = TextOverflow.Ellipsis
                 )
-                Spacer(modifier = Modifier.height(30.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
                 Text(
                         text = item.author?.nickname ?: "닉없음 아무개",
@@ -185,7 +186,7 @@ fun SavedEssayListItem(
                 )
 
             }
-            if (item.thumbnail != null) {
+            if (item.thumbnail != null && item.thumbnail!!.startsWith("https")) {
                 GlideImage(
                     model = item.thumbnail,
                     contentDescription = null,
@@ -362,7 +363,7 @@ fun SavedEssayListScreen(viewModel: CommunityViewModel, navController: NavContro
                         colors = ButtonDefaults.buttonColors(containerColor = containerColor),
                         shape = RoundedCornerShape(20)
                     ) {
-                        Text("총 ${selectedItems.size}개 삭제")
+                        Text("총 ${selectedItems.size}개 삭제", color = Color.Black)
                     }
                 }
 

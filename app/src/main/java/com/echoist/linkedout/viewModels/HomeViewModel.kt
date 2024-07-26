@@ -9,7 +9,6 @@ import android.content.Intent
 import android.provider.Settings
 import android.util.Log
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -311,6 +310,44 @@ class HomeViewModel @Inject constructor(
             } finally {
             }
         }
+
+    }
+
+    fun setFirstUserToExistUser(){
+        viewModelScope.launch {
+            try {
+                val isNotFirst = UserInfo(isFirst = false)
+                val response = userApi.userUpdate(Token.accessToken,isNotFirst)
+                Log.d(TAG, "setFirstUserToExistUser: ${response.code()}")
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.e("error","set user first to exist error ")
+            }
+        }
+
+    }
+
+    var isFirstUser by mutableStateOf(false)
+    fun requestIsFirstCheck(){
+
+        viewModelScope.launch {
+            try {
+                val response = userApi.requestUserFirstCheck(Token.accessToken)
+                if (response.isSuccessful){
+                    if (response.body()!!.data) { //data 값이 true라면 첫 로그인 후 false로 값 변환해줌
+                        isFirstUser = true
+                    }
+                    else{ //아니라면 바로 홈화면으로 이동
+                        isFirstUser = false
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("첫 회원가입 여부 체크","에러")
+            } finally {
+            }
+        }
+
+
 
     }
 }

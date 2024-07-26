@@ -34,7 +34,6 @@ class MyLogViewModel @Inject constructor(
     private val exampleItems: ExampleItems, bookMarkApi: BookMarkApi
 ) : CommunityViewModel(essayApi, exampleItems,bookMarkApi) {
 
-    var myProfile by mutableStateOf(exampleItems.myProfile)
     var storyEssayNumber: Int by mutableIntStateOf(0)
     val storyEssayTitle: String by mutableStateOf("")
 
@@ -105,6 +104,7 @@ class MyLogViewModel @Inject constructor(
 
         return relatedEssayList
     }
+
 
 
     fun readPublishEssay() { //todo 얘를 한스텝 일찍 호출해야할듯

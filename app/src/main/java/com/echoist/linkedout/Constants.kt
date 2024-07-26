@@ -1,7 +1,10 @@
 package com.echoist.linkedout
 
 import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 const val MAX_TITLE_SIZE = 26
 const val MAX_CONTENT_SIZE = 20
@@ -47,4 +50,26 @@ fun formatDateTime(input: String): String {
 
     // Format the LocalDateTime to the desired output format
     return dateTime.format(outputFormatter)
+}
+
+fun formatElapsedTime(isoDateTimeString: String): String {
+    // 작성 시간과 현재 시간 가져오기
+    val writtenTime = ZonedDateTime.parse(isoDateTimeString, DateTimeFormatter.ISO_DATE_TIME)
+    val currentTime = ZonedDateTime.now(ZoneId.of("Z"))
+
+    // 시간 차이 계산
+    val duration = ChronoUnit.SECONDS.between(writtenTime, currentTime)
+
+    // 초, 분, 시간, 일로 변환
+    val days = duration / (24 * 3600)
+    val hours = (duration % (24 * 3600)) / 3600
+    val minutes = (duration % 3600) / 60
+    val seconds = duration % 60
+
+    return when {
+        days > 0 -> "${days}일 전"
+        hours > 0 -> "${hours}시간 전"
+        minutes > 0 -> "${minutes}분 전"
+        else -> "${seconds}초 전"
+    }
 }

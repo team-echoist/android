@@ -1,6 +1,7 @@
 package com.echoist.linkedout.page.myLog
 
 import android.content.ContentValues.TAG
+import android.net.Uri
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
@@ -96,7 +97,6 @@ import com.echoist.linkedout.page.login.keyboardAsState
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.WritingViewModel
-import kotlinx.coroutines.launch
 
 object Token {
     var accessToken: String = "EMPTYTOKEN"
@@ -445,11 +445,7 @@ fun WritingTopAppBar(
                         if (viewModel.title.value.text.isNotEmpty() && viewModel.content.text.length >= viewModel.minLength)
                             navController.navigate("WritingCompletePage")
                         if (viewModel.imageUri != null) {
-                            scope.launch {
-
-                                viewModel.uploadThumbnail(viewModel.imageUri!!, context)!!
-
-                            }
+                            viewModel.uploadThumbnail(viewModel.imageUri ?: Uri.EMPTY, context)
                         } else {
                             isContentNotEmpty.value = true
                         }
