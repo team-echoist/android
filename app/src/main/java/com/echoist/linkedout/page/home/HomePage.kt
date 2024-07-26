@@ -2,10 +2,7 @@ package com.echoist.linkedout.page.home
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
@@ -19,15 +16,19 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DrawerValue
@@ -73,6 +74,7 @@ import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
+import com.echoist.linkedout.TUTORIAL_BULB
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.BottomNavItem
 import com.echoist.linkedout.data.UserInfo
@@ -97,6 +99,7 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewMo
 
     LaunchedEffect(key1 = Unit) {
         viewModel.requestMyInfo()
+        viewModel.requestUserGraphSummaryResponse()
     }
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -144,6 +147,15 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewMo
                 }
             )
         }
+        var isFirstTime by remember {
+            mutableStateOf(true)
+        }
+        if (isFirstTime){
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(0.7f)))
+            TutorialPage{isFirstTime = false}
+        }
     }
 }
 
@@ -161,7 +173,7 @@ fun ModalBottomSheetContent(viewModel: HomeViewModel,navController: NavControlle
             MyProfile(item = viewModel.getMyInfo()){navController.navigate("SETTINGS")}
             HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
             MyLinkedOutBar()
-            LineChartExample()
+            LineChartExample(essayCounts = viewModel.essayCount)
             HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
             ShopDrawerItem()
             HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
@@ -337,11 +349,10 @@ fun MyProfile(item: UserInfo, onClick: () -> Unit) {
     }
 }
 
-@Preview
 @Composable
-fun LineChartExample(modifier: Modifier = Modifier) {
+fun LineChartExample(modifier: Modifier = Modifier,essayCounts : List<Int>) {
     val context = LocalContext.current
-    val lineData = createLineData()
+    val lineData = createLineData(essayCounts)
 
     AndroidView(
         modifier = modifier
@@ -381,13 +392,13 @@ fun LineChartExample(modifier: Modifier = Modifier) {
     )
 }
 
-fun createLineData(): LineData {
+fun createLineData(essayCounts : List<Int>): LineData {
     val entries = listOf(
-        Entry(0f, 1f),
-        Entry(1f, 5f),
-        Entry(2f, 10f),
-        Entry(3f, 3f),
-        Entry(4f, 7f)
+        Entry(0f, essayCounts[0].toFloat()),
+        Entry(1f, essayCounts[1].toFloat()),
+        Entry(2f, essayCounts[2].toFloat()),
+        Entry(3f, essayCounts[3].toFloat()),
+        Entry(4f, essayCounts[4].toFloat())
     )
 
     val dataSet = LineDataSet(entries,"").apply {
@@ -541,4 +552,276 @@ fun LogoutBox( isCancelClicked: () ->Unit, isLogoutClicked: () -> Unit){
             }
         }
     }
+}
+
+@Composable
+fun TutorialPage(isCloseClicked: () -> Unit){
+    val pagerstate = rememberPagerState { 4 }
+    val coroutineScope = rememberCoroutineScope()
+
+    HorizontalPager(state = pagerstate, modifier = Modifier.fillMaxSize()) { page ->
+        when (page) {
+            0 -> Tutorial_1()
+
+
+            1 ->
+                Tutorial_2{
+                    coroutineScope.launch {
+                        pagerstate.animateScrollToPage(2,
+                            animationSpec = tween(
+                                durationMillis = 600,
+                                easing = FastOutSlowInEasing
+                            )
+                        )
+
+                    }
+                }
+
+            2 ->
+                Tutorial_3{
+                    coroutineScope.launch {
+                        pagerstate.animateScrollToPage(3,
+                            animationSpec = tween(
+                                durationMillis = 600,
+                                easing = FastOutSlowInEasing
+                            ))
+
+                    }
+                }
+
+
+
+            3 ->
+                Tutorial_4(){
+                    isCloseClicked()
+                }
+
+
+        }
+
+
+
+    }
+
+    if (pagerstate.currentPage != 3){
+        Box(
+            modifier = Modifier
+                .fillMaxSize() /* 부모 만큼 */
+                .padding(bottom = 20.dp), contentAlignment = Alignment.BottomCenter
+        ) {
+
+            Row(
+                Modifier
+                    .height(100.dp)
+                    .padding(bottom = 30.dp), //box 안에 있어야하는거같기도?
+                horizontalArrangement = Arrangement.Center
+            )
+            {
+                repeat(4) { iteration ->
+                    val color =
+                        if (pagerstate.currentPage == iteration) Color(0xFF616FED) else Color.White.copy(
+                            alpha = 0.5f
+                        )
+                    if (pagerstate.currentPage == iteration) {
+                        Box(
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .clip(CircleShape)
+                                .background(color)
+                                .size(20.dp, 10.dp)
+
+                        )
+
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .clip(CircleShape)
+                                .background(color)
+                                .size(10.dp, 10.dp)
+
+                        )
+                    }
+
+                }
+            }
+        }
+    }
+
+    }
+    
+
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Preview
+@Composable
+fun Tutorial_1(){
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .padding(horizontal = 20.dp), contentAlignment = Alignment.Center){
+        GlideImage(model = R.drawable.tutorial_bottomicons, contentDescription = "tutorial_bottomicons")
+    }
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun Tutorial_2(isTutorial3Clicked : ()->Unit){
+    var isClicked by remember { mutableStateOf(false) }
+
+    Box{
+        Box(modifier = Modifier.fillMaxSize()){
+            GlideImage(
+                model = R.drawable.tutorial_2,
+                contentDescription = "home_img",
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clickable { isClicked = true },
+                contentScale = ContentScale.FillWidth
+            )
+        }
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(start = 165.dp, bottom = 130.dp), contentAlignment = Alignment.Center){
+            GlideImage(
+                model = TUTORIAL_BULB,
+                contentDescription = "bulb_img",
+                modifier = Modifier
+                    .size(80.dp)
+                    .clickable { isClicked = true }
+            )
+
+        }
+        AnimatedVisibility(visible = isClicked,
+            enter = slideInVertically(
+                initialOffsetY = { 2000 },
+                animationSpec = tween(durationMillis = 500)
+            ),
+            exit = slideOutVertically(
+                targetOffsetY = { 2000 },
+                animationSpec = tween(durationMillis = 500)
+            )) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                GlideImage(
+                    model = R.drawable.tutorial_3,
+                    contentDescription = "home_img",
+                    modifier = Modifier
+                        .size(281.dp, 411.dp)
+                        .clickable {
+                            isClicked = true
+                            isTutorial3Clicked()
+                        }
+                )
+            }
+        }
+
+
+
+    }
+
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun Tutorial_3(isCompleteClicked : () -> Unit){
+    var isClicked by remember { mutableStateOf(false) }
+
+    if (!isClicked){
+        Box(modifier = Modifier.fillMaxSize().padding(bottom = 112.dp, end = 15.dp), contentAlignment = Alignment.BottomEnd){
+            TutorialActionBtn{isClicked = true}
+        }
+    }
+
+    AnimatedVisibility(visible = isClicked,
+        enter = slideInVertically(
+            initialOffsetY = { 2000 },
+            animationSpec = tween(durationMillis = 500)
+        ),
+        exit = slideOutVertically(
+            targetOffsetY = { 2000 },
+            animationSpec = tween(durationMillis = 500)
+        )) {
+        Box{
+            Box(modifier = Modifier.fillMaxSize()){
+                GlideImage(
+                    model = R.drawable.tutorial_4,
+                    contentDescription = "home_img",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.FillWidth
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 65.dp, end = 20.dp),
+                contentAlignment = Alignment.TopEnd
+            ){
+                Text(text = "완료", color = Color.White, modifier = Modifier.clickable {
+                    isCompleteClicked()
+
+                })
+            }
+        }
+    }
+
+}
+
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun Tutorial_4(isCloseClicked : ()->Unit){
+
+
+        Box{
+            Box(modifier = Modifier.fillMaxSize()){
+                GlideImage(
+                    model = R.drawable.tutorial_5,
+                    contentDescription = "home_img",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.FillWidth
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 45.dp, end = 20.dp)
+                    .clickable { },
+                contentAlignment = Alignment.TopEnd
+            ){
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "close",
+                    tint = Color.White,
+                    modifier = Modifier.clickable { isCloseClicked()}
+                )
+            }
+        }
+
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun TutorialActionBtn(modifier: Modifier = Modifier,isFTBClicked : ()->Unit){
+    Box(modifier){
+        FloatingActionButton(
+            modifier = Modifier.padding(end = 25.dp, bottom = 25.dp),
+            onClick = {isFTBClicked()},
+            shape = RoundedCornerShape(100.dp),
+            containerColor = if (isSystemInDarkTheme()) Color.White else Color.Gray
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ftb_edit),
+                contentDescription = "edit",
+                modifier = Modifier.size(20.dp),
+                tint = if (isSystemInDarkTheme()) Color.Black else Color.White
+            )
+        }
+        Box(Modifier.offset (x = (-10).dp,y= (-10).dp)){
+            GlideImage(
+                model = R.drawable.tutorial_circle,
+                contentDescription = "circle",
+                modifier = Modifier.size(75.dp)
+            )
+        }
+    }
+
 }

@@ -20,6 +20,7 @@ import com.squareup.moshi.JsonClass
     var platform : String? = null,
     var platformId : String? = null,
     var deactivationDate : String? = null,
+    var weeklyEssayCounts: List<WeeklyEssayCount>? = null
 
     )
 
@@ -27,7 +28,8 @@ data class EssayStats(
     var totalEssays: Int = 0,
     var publishedEssays: Int = 0,
     var linkedOutEssays: Int = 0
-)
+) {
+}
 
 data class OauthInfo(
     val googleId : String? = null
@@ -56,6 +58,7 @@ data class UserWithEssay(
     val essayStats: EssayStats
 )
 
+//첫 유저인지 체크
 @JsonClass(generateAdapter = true)
 data class IsFirstCheckResponse(
     val data: Boolean,
@@ -64,5 +67,19 @@ data class IsFirstCheckResponse(
     val timestamp: String
 )
 
+//유저 주간 링크드아웃 지수 통계 (그래프용)
 
+@JsonClass(generateAdapter = true)
+data class UserGraphSummaryResponse(
+    val data: UserInfo,
+    val path: String,
+    val success: Boolean,
+    val timestamp: String
+)
 
+@JsonClass(generateAdapter = true)
+data class WeeklyEssayCount(
+    val weekStart: String,
+    val weekEnd: String,
+    val count: Int
+)

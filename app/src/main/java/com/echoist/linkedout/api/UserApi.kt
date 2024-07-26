@@ -5,6 +5,7 @@ import com.echoist.linkedout.data.BadgeSimpleResponse
 import com.echoist.linkedout.data.BasicResponse
 import com.echoist.linkedout.data.IsFirstCheckResponse
 import com.echoist.linkedout.data.UserEssayStatsResponse
+import com.echoist.linkedout.data.UserGraphSummaryResponse
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.data.UserResponse
 import okhttp3.MultipartBody
@@ -94,6 +95,10 @@ interface UserApi {
         @Header("Authorization") accessToken: String,
     ): Response<IsFirstCheckResponse>
 
-
+    //유저 주간 링크드아웃 지수 통계 (그래프용)
+    @GET("api/users/summary")
+    suspend fun requestUserGraphSummary(
+        @Header("Authorization") accessToken: String,
+    ): Response<UserGraphSummaryResponse>
 
 }

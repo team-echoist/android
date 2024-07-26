@@ -9,6 +9,7 @@ import android.content.Intent
 import android.provider.Settings
 import android.util.Log
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -286,6 +287,28 @@ class HomeViewModel @Inject constructor(
             }
             finally {
                 isLoading = false
+            }
+        }
+
+    }
+
+    var essayCount by mutableStateOf(mutableListOf(0,0,0,0,0))
+
+    fun requestUserGraphSummaryResponse(){
+        viewModelScope.launch {
+            try {
+                val response = userApi.requestUserGraphSummary(Token.accessToken)
+                if (response.isSuccessful){
+
+                    repeat(5){
+                        essayCount[it] = response.body()!!.data.weeklyEssayCounts!![it].count
+                    }
+                    Log.d(TAG, "유저 주간 링크드아웃 지수 호출 성공 $essayCount")
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.e(TAG, "유저 주간 링크드아웃 지수: ${e.message}", )
+            } finally {
             }
         }
 

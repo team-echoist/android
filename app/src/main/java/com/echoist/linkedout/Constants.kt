@@ -31,6 +31,9 @@ const val PROFILE_IMAGE_10 = "https://driqat77mj5du.cloudfront.net/service/profi
 const val PROFILE_IMAGE_11 = "https://driqat77mj5du.cloudfront.net/service/profile_icon_11.png"
 const val PROFILE_IMAGE_12 = "https://driqat77mj5du.cloudfront.net/service/profile_icon_12.png"
 
+const val TUTORIAL_BULB = "https://driqat77mj5du.cloudfront.net/service/geulroquis_bulb.gif"
+
+
 
 fun formatDateTime(input: String): String {
     // Define the input format

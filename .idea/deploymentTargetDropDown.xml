@@ -2,13 +2,29 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="InquiryInfoBox">
+      <entry key="TutorialPage">
         <State />
       </entry>
-      <entry key="PrevImageSwitch">
+      <entry key="Tutorial_2">
         <State />
       </entry>
-      <entry key="StoryChip">
+      <entry key="Tutorial_3">
+        <State>
+          <runningDeviceTargetSelectedWithDropDown>
+            <Target>
+              <type value="RUNNING_DEVICE_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="VIRTUAL_DEVICE_PATH" />
+                  <value value="$USER_HOME$/.android/avd/Client_Test.avd" />
+                </Key>
+              </deviceKey>
+            </Target>
+          </runningDeviceTargetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2024-07-26T06:58:00.827502Z" />
+        </State>
+      </entry>
+      <entry key="Tutorial_4">
         <State />
       </entry>
       <entry key="app">
@@ -18,16 +34,16 @@
               <type value="RUNNING_DEVICE_TARGET" />
               <deviceKey>
                 <Key>
-                  <type value="SERIAL_NUMBER" />
-                  <value value="R39M30CVAGA" />
+                  <type value="VIRTUAL_DEVICE_PATH" />
+                  <value value="$USER_HOME$/.android/avd/Client_Test.avd" />
                 </Key>
               </deviceKey>
             </Target>
           </runningDeviceTargetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-07-23T15:21:00.885010Z" />
+          <timeTargetWasSelectedWithDropDown value="2024-07-24T09:41:05.543673Z" />
         </State>
       </entry>
-      <entry key="test">
+      <entry key="e">
         <State />
       </entry>
     </value>
