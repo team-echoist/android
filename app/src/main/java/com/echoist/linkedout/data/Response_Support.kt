@@ -137,3 +137,11 @@ data class Alert(
     val read: Boolean,
     val createdDate: String
 )
+data class Url(val url : String)
+data class GuleroquisResponse(
+    val data: Url,
+    val path: String,
+    val success: Boolean,
+    val timestamp: String,
+    val statusCode : Int,
+    )

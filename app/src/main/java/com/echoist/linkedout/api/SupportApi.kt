@@ -2,6 +2,7 @@ package com.echoist.linkedout.api
 
 import com.echoist.linkedout.data.AlertsResponse
 import com.echoist.linkedout.data.AllInquiriesResponse
+import com.echoist.linkedout.data.GuleroquisResponse
 import com.echoist.linkedout.data.Inquiry
 import com.echoist.linkedout.data.InquiryResponse
 import com.echoist.linkedout.data.NoticeDetailResponse
@@ -85,6 +86,11 @@ interface SupportApi {
         @Header("Authorization") accessToken: String,
         @Path("alertId") alertId : Int,
     ): Response<Unit>
+
+    @GET("api/home/guleroquis") //todo 수정
+    suspend fun readGeulroquis(
+        @Header("Authorization") accessToken: String
+    ): Response<GuleroquisResponse>
 
 
 

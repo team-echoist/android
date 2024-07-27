@@ -282,8 +282,6 @@ class SocialLoginViewModel @Inject constructor(
         } else {
             UserApiClient.instance.loginWithKakaoAccount(context, callback = callback)
         }
-
-
     }
 
     //카카오 유저 정보 획득
@@ -479,6 +477,7 @@ class SocialLoginViewModel @Inject constructor(
                 .addOnSuccessListener { authResult ->
                     // Sign-in successful!
                     authResult.additionalUserInfo
+
                     appleUserToken = authResult.credential.toString() //아마도 토큰
                     appleUserId = authResult.user!!.uid //아마도 아이디 provider id 일수도있음
 
@@ -489,6 +488,11 @@ class SocialLoginViewModel @Inject constructor(
                                 "\nPhoto URL: ${authResult.user!!.photoUrl}" +  // 회원 사진 URL
                                 "\nDisplay Name: ${authResult.user!!.displayName}" + //디스플레이 네임
                                 "\nPhoneNumber: ${authResult.user!!.phoneNumber}" //번호
+                                + //디스플레이 네임
+                                "\nProviderId: ${authResult.user!!.providerId}" // 제공자 파이어베이스
+                                + //디스플레이 네임
+                                "\nProvider: ${authResult.credential!!.provider}" + // apple.com
+                        "\nUid: ${appleUserId}"
 
                     )
 

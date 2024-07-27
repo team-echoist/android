@@ -2,27 +2,14 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+      <entry key="GeulRoquis">
+        <State />
+      </entry>
       <entry key="TutorialPage">
         <State />
       </entry>
       <entry key="Tutorial_2">
         <State />
-      </entry>
-      <entry key="Tutorial_3">
-        <State>
-          <runningDeviceTargetSelectedWithDropDown>
-            <Target>
-              <type value="RUNNING_DEVICE_TARGET" />
-              <deviceKey>
-                <Key>
-                  <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="$USER_HOME$/.android/avd/Client_Test.avd" />
-                </Key>
-              </deviceKey>
-            </Target>
-          </runningDeviceTargetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-07-26T06:58:00.827502Z" />
-        </State>
       </entry>
       <entry key="Tutorial_4">
         <State />

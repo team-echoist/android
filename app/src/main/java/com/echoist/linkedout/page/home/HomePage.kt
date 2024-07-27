@@ -2,7 +2,10 @@ package com.echoist.linkedout.page.home
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
@@ -32,11 +35,13 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationBar
@@ -47,8 +52,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -65,10 +72,14 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -83,6 +94,7 @@ import com.echoist.linkedout.TUTORIAL_BULB
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.BottomNavItem
 import com.echoist.linkedout.data.UserInfo
+import com.echoist.linkedout.getCurrentDateFormatted
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.HomeViewModel
@@ -99,7 +111,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 
-@OptIn(ExperimentalGlideComposeApi::class)
+@OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewModel : WritingViewModel) {
 
@@ -107,10 +119,24 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewMo
         viewModel.requestMyInfo()
         viewModel.requestUserGraphSummaryResponse()
         viewModel.requestIsFirstCheck()
+        viewModel.requestGuleRoquis()
     }
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+    val annotatedString = remember {
+        AnnotatedString.Builder().apply {
+            append(getCurrentDateFormatted())
+            withStyle(
+                style = SpanStyle(
+                    color = Color(0xFF686868),
+                )
+            ) {
+                append("\n\n글로키란? : 글(geul)과 크로키(croquis)의 합성어로 글을 본격적으로 쓰기 전, 주어진 상황을 묘사하거나 상상을 덧대어 빠르게 스케치 하듯이 글을 쓰는 몸풀기를 말합니다. ")
+            }
+        }.toAnnotatedString()
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -154,6 +180,42 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewMo
                 }
             )
         }
+        //터치 효과 x
+
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 165.dp, bottom = 130.dp), contentAlignment = Alignment.Center){
+                CompositionLocalProvider(LocalRippleConfiguration provides  null) {
+                GlideImage( //전구 클릭하면 글로키 On
+                    model = TUTORIAL_BULB,
+                    contentDescription = "bulb_img",
+                    modifier = Modifier
+                        .size(80.dp)
+                        .clickable { viewModel.isVisibleGeulRoquis = true }
+                )
+            }
+        }
+
+
+        AnimatedVisibility(
+            visible = viewModel.isVisibleGeulRoquis,
+            enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)),
+            exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
+        ){
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center){
+                GeulRoquis(
+                    isHoldClicked = {viewModel.isVisibleGeulRoquis = false},
+                    isAcceptClicked = {
+                        writingViewModel.content = TextFieldValue(annotatedString)
+                        writingViewModel.imageUrl = viewModel.geulRoquisUrl
+                        navController.navigate("WritingPage")
+                        viewModel.isVisibleGeulRoquis = false
+                    },viewModel.geulRoquisUrl)
+            }
+        }
+
 
         if (viewModel.isFirstUser){ // todo 첫 회원이라면
             Box(modifier = Modifier
@@ -890,5 +952,58 @@ fun TutorialActionBtn(modifier: Modifier = Modifier,isFTBClicked : ()->Unit){
             )
         }
     }
-
 }
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun GeulRoquis(isHoldClicked : ()-> Unit, isAcceptClicked : () -> Unit, imageUrl : String){
+    Box(modifier = Modifier
+        .background(color = Color(0xF2121212), shape = RoundedCornerShape(4))
+        .size(281.dp, 411.dp)){
+        GlideImage(
+            model = R.drawable.geulroquis_background,
+            contentDescription = "linkedout logo",
+            contentScale = ContentScale.Crop
+        )
+        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()) {
+            Spacer(modifier = Modifier.height(31.dp))
+            Text(text = "오늘의 글로키가 도착했어요!", color = Color.White, fontSize = 16.sp)
+            Spacer(modifier = Modifier.height(5.dp))
+            Text(text = "2024-07-24 GeulRoquis", color = Color.White, fontSize = 12.sp)
+            Spacer(modifier = Modifier.height(20.dp))
+
+            if (imageUrl.isEmpty() || imageUrl.startsWith("https")){
+                Box(
+                    modifier = Modifier.fillMaxWidth().height(260.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = LinkedInColor)
+                }
+            }
+            else{
+                GlideImage(
+                    model = imageUrl,
+                    contentDescription = "",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .height(260.dp)
+                        .fillMaxWidth()
+                )
+            }
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "보류", color = Color.White, fontSize = 16.sp, modifier = Modifier
+                    .clickable { isHoldClicked() }
+                    .weight(1f), textAlign = TextAlign.Center)
+                VerticalDivider(color = Color(0xFF292929))
+                Text(text = "수락", color = Color.White, fontSize = 16.sp,modifier = Modifier
+                    .clickable { isAcceptClicked() }
+                    .weight(1f),textAlign = TextAlign.Center)
+
+            }
+
+        }
+    }
+}
+
+

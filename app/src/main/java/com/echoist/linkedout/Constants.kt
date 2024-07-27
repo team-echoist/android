@@ -1,5 +1,6 @@
 package com.echoist.linkedout
 
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -50,6 +51,17 @@ fun formatDateTime(input: String): String {
 
     // Format the LocalDateTime to the desired output format
     return dateTime.format(outputFormatter)
+}
+
+fun getCurrentDateFormatted(): String {
+    // 현재 날짜를 가져옵니다.
+    val currentDate = LocalDate.now()
+
+    // 원하는 포맷을 정의합니다.
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+    // 포맷을 사용하여 날짜를 문자열로 변환합니다.
+    return currentDate.format(formatter)
 }
 
 fun formatElapsedTime(isoDateTimeString: String): String {

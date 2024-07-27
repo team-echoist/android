@@ -51,6 +51,8 @@ class HomeViewModel @Inject constructor(
 
     var updateHistory: SnapshotStateList<History> =  mutableStateListOf()
 
+    var isVisibleGeulRoquis by mutableStateOf(true)
+
     fun readMyProfile() : UserInfo{
         return exampleItems.myProfile
     }
@@ -161,12 +163,16 @@ class HomeViewModel @Inject constructor(
                     viewedNotification = response.body()?.data!!.viewed
                     reportNotification = response.body()?.data!!.report
                 } else {
-                    Log.d(TAG, "readUserNotification: success${response.code()}")
+                    Log.e(TAG, "readUserNotification: err${response.code()}")
+                    Log.e(TAG, "readUserNotification: err device id${DeviceId.deviceId}")
+
                 }
 
             } catch (e: Exception) {
                 e.printStackTrace()
-                Log.d(TAG, "noti get failed: ${e.message}")
+                Log.e(TAG, "readUserNotification: error ${e.message}")
+                Log.e(TAG, "readUserNotification: error device id :  ${DeviceId.deviceId}\n token : ${Token.accessToken}")
+
             }
         }
     }
@@ -346,9 +352,20 @@ class HomeViewModel @Inject constructor(
             } finally {
             }
         }
-
-
-
+    }
+    var geulRoquisUrl by mutableStateOf("")
+    fun requestGuleRoquis(){
+        viewModelScope.launch {
+            try {
+                val response = supportApi.readGeulroquis(Token.accessToken)
+                if (response.isSuccessful){
+                    geulRoquisUrl = response.body()!!.data.url
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.e("글로키 api","에러 ${e.message}")
+            }
+        }
     }
 }
 
