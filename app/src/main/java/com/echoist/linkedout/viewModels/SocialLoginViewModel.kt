@@ -1,5 +1,6 @@
 package com.echoist.linkedout.viewModels
 
+import android.app.Activity
 import android.app.Activity.RESULT_CANCELED
 import android.app.Activity.RESULT_OK
 import android.content.ContentValues.TAG
@@ -31,6 +32,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.OAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.kakao.sdk.auth.model.OAuthToken
@@ -68,6 +70,9 @@ class SocialLoginViewModel @Inject constructor(
 
     private var naverUserToken by mutableStateOf("")
     private var naverUserId by mutableStateOf("")
+
+    private var appleUserToken by mutableStateOf("")
+    private var appleUserId by mutableStateOf("")
 
 
     var userId by mutableStateOf("")
@@ -450,14 +455,80 @@ class SocialLoginViewModel @Inject constructor(
         }
     }
 
+    fun appleLoginHandle(activity : Activity,navController: NavController){
+        val provider = OAuthProvider.newBuilder("apple.com")
+        provider.setScopes(arrayOf("email", "name").toMutableList())
+        // Localize the Apple authentication screen in 한국어
+        provider.addCustomParameter("locale", "ko")
+
+        val pending = auth.pendingAuthResult
+        if (pending != null) {
+            pending.addOnSuccessListener { authResult ->
+                Log.d(TAG, "checkPending:onSuccess:$authResult")
+                authResult.credential //토큰
+
+                // Get the user profile with authResult.getUser() and
+                // authResult.getAdditionalUserInfo(), and the ID
+                // token from Apple with authResult.getCredential().
+            }.addOnFailureListener { e ->
+                Log.w(TAG, "checkPending:onFailure", e)
+            }
+        } else {
+            Log.d(TAG, "pending: null")
+            auth.startActivityForSignInWithProvider(activity, provider.build())
+                .addOnSuccessListener { authResult ->
+                    // Sign-in successful!
+                    authResult.additionalUserInfo
+                    appleUserToken = authResult.credential.toString() //아마도 토큰
+                    appleUserId = authResult.user!!.uid //아마도 아이디 provider id 일수도있음
+
+                    Log.i(
+                        "Apple_Firebase_UserInfo:", "애플 사용자 정보 요청 성공:" +
+                                "\nEmail: ${authResult.user!!.email}" +//이메일
+                                "\nUser Token: $appleUserToken" +  //회원 토큰
+                                "\nPhoto URL: ${authResult.user!!.photoUrl}" +  // 회원 사진 URL
+                                "\nDisplay Name: ${authResult.user!!.displayName}" + //디스플레이 네임
+                                "\nPhoneNumber: ${authResult.user!!.phoneNumber}" //번호
+
+                    )
+
+                    requestAppleLogin(navController = navController)
+                }
+                .addOnFailureListener { e ->
+                    Log.w(TAG, "activitySignIn:onFailure", e)
+                }
+        }
+
+
+    }
+    private fun requestAppleLogin(navController: NavController) {
+        viewModelScope.launch {
+            try {
+                val userAccount = SocialSignUpApi.UserAccount(appleUserToken, appleUserId)
+                val response = socialSignUpApi.requestAppleLogin(userAccount)
+
+                if (response.isSuccessful) {
+                    Log.d(TAG, "requestAppleLogin: 로그인 성공")
+                    Log.i("server header token(애플)", response.headers()["authorization"].toString())
+                    Token.accessToken = (response.headers()["authorization"].toString())
+                    Log.d(TAG, "requestAppleLogin: ${response.code()}")
+
+                    readMyInfo()
+                    requestIsFirstCheck(navController) // 첫 회원가입 여부 확인하고 화면이동
+                } else {
+                    Log.e("Apple_login 서버와 api", "Failed ${response.code()}")
+                }
+
+            } catch (e: Exception) {
+                // api 요청 실패
+                e.printStackTrace()
+                Log.e("Apple login failed", "Failed: ${e.message}")
+            }
+        }
+    }
+
 }
 
-
-
-
-
-
-//로그인 성공시 일단 간단한 토스트메세지 띄움
 @Composable
 fun LoginSuccessDialog(successMsg: String, dialogState: MutableState<Boolean>) {
     AlertDialog(

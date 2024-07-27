@@ -1,5 +1,6 @@
 package com.echoist.linkedout.page.login
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.Rect
 import android.os.Bundle
@@ -371,8 +372,6 @@ fun KakaoLoginBtn(navController: NavController, viewModel: SocialLoginViewModel)
 @Composable
 fun NaverLoginBtn(navController: NavController, viewModel: SocialLoginViewModel) {
     val context = LocalContext.current
-    Log.d("naverviewmodel", viewModel.toString())
-
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -403,7 +402,7 @@ fun NaverLoginBtn(navController: NavController, viewModel: SocialLoginViewModel)
 fun AppleLoginBtn(navController: NavController, viewModel: SocialLoginViewModel) {
 
     val context = LocalContext.current
-    Log.d("appleviewmodel", viewModel.toString())
+    val activity = context as Activity
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Icon(
@@ -411,7 +410,7 @@ fun AppleLoginBtn(navController: NavController, viewModel: SocialLoginViewModel)
             contentDescription = "naver Login btn",
             modifier = Modifier
                 .size(40.dp)
-                .clickable {/* todo 애플로그인 로직 구현필요 */ },
+                .clickable {viewModel.appleLoginHandle(activity,navController) },
             tint = Color.Unspecified
         )
 

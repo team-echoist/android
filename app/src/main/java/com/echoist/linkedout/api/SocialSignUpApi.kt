@@ -20,6 +20,11 @@ interface SocialSignUpApi {
         @Body userAccount : UserAccount
     ): Response<Unit>
 
+    @POST("api/auth/apple/mobile")
+    suspend fun requestAppleLogin(
+        @Body userAccount : UserAccount
+    ): Response<Unit>
+
     data class UserAccount(
         val token : String,
         val platformId : String
