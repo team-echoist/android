@@ -467,7 +467,7 @@ class SocialLoginViewModel @Inject constructor(
                 val credential = authResult.credential as OAuthCredential //토큰
 
 
-                appleUserToken = credential.accessToken!! //아마도 토큰
+                appleUserToken = credential.idToken!! //아마도 토큰
                 appleUserId = authResult.user!!.uid //고유 아이디
 
                 Log.i(
@@ -482,7 +482,7 @@ class SocialLoginViewModel @Inject constructor(
                             "\nUid: $appleUserId"+
                             "\nProviderData: ${authResult.user!!.providerData}"+
                             "\nsecret : $${credential.secret}"+
-                            "\nid토큰 굉장히 긴것. : $${credential.idToken}"
+                            "\nid 토큰 굉장히 긴것. : $${credential.idToken}"
 
                 )
                 requestAppleLogin(navController = navController)
@@ -499,7 +499,7 @@ class SocialLoginViewModel @Inject constructor(
 
                     val credential = authResult.credential as OAuthCredential //토큰
 
-                    appleUserToken = credential.accessToken!! //아마도 토큰
+                    appleUserToken = credential.idToken!! //아마도 토큰
                     appleUserId = authResult.user!!.uid //고유 아이디
 
                     Log.i(

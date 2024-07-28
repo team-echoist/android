@@ -78,7 +78,7 @@ interface EssayApi{
     suspend fun readOneSentences(
         @Header("Authorization") accessToken: String,
         @Query("type") type : String,
-        @Query("limit") limit: Int = 20, //이 값은 기본 10 수정가능
+        @Query("limit") limit: Int = 30, //이 값은 기본 10 수정가능
     ): Response<EssayListResponse>
 
     @GET("api/essays/{essayId}")

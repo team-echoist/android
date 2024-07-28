@@ -96,7 +96,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
 
 
     //한줄추천 받아온 리스트값이 비어있으면 안보여줌
-    if (oneSentenceList.isNotEmpty()){
+    if (oneSentenceList.isNotEmpty() && oneSentenceList.size>5){
 
         val annotatedString = remember(viewModel.sentenceInfo, oneSentenceList) {
             buildAnnotatedString {
@@ -109,7 +109,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                             fontSize = 14.sp,
                         )
                     ) {
-                        append("${oneSentenceList[0].content}      ")
+                        append("${  oneSentenceList[0].content}      ")
                         Log.d(TAG, "RandomSentences: ${oneSentenceList[0].content}")
 
                     }
@@ -169,7 +169,293 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                 }
             }
         }
+
+        val annotatedString2 = remember(viewModel.sentenceInfo, oneSentenceList) {
+            buildAnnotatedString {
+                withStyle(style = ParagraphStyle(lineHeight = 40.sp)) { // 원하는 줄 간격 설정
+                    pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence1")
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.Black,
+                            background = Color.White,
+                            fontSize = 14.sp,
+                        )
+                    ) {
+                        append("${  oneSentenceList[5].content}      ")
+                        Log.d(TAG, "RandomSentences: ${oneSentenceList[0].content}")
+
+                    }
+                    pop()
+
+                    pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence2")
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.White,
+                            background = Color.Black,
+                            fontSize = 14.sp,
+                        )
+                    ) {
+                        append("${oneSentenceList[6].content}       ")
+
+                    }
+                    pop()
+
+                    pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence3")
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.Black,
+                            background = Color.White,
+                            fontSize = 14.sp,
+                        )
+                    ) {
+                        append("${oneSentenceList[7].content}      ")
+
+                    }
+                    pop()
+
+                    pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence4")
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.White,
+                            background = Color.Black,
+                            fontSize = 14.sp,
+                        )
+                    ) {
+                        append("${oneSentenceList[8].content}       ")
+
+                    }
+                    pop()
+
+                    pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence4")
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.Black,
+                            background = Color.White,
+                            fontSize = 14.sp,
+                        )
+                    ) {
+                        append(" ${oneSentenceList[9].content} ")
+
+                    }
+                    pop()
+                }
+            }
+        }
         Log.d(TAG, "RandomSentences: ${annotatedString.text}")
+
+        val annotatedString3 = remember(viewModel.sentenceInfo, oneSentenceList) {
+            buildAnnotatedString {
+                withStyle(style = ParagraphStyle(lineHeight = 40.sp)) { // 원하는 줄 간격 설정
+                    pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence1")
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.White,
+                            background = Color.Black,
+                            fontSize = 14.sp,
+                        )
+                    ) {
+                        append("${  oneSentenceList[10].content}      ")
+                        Log.d(TAG, "RandomSentences: ${oneSentenceList[0].content}")
+
+                    }
+                    pop()
+
+                    pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence2")
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.Black,
+                            background = Color.White,
+                            fontSize = 14.sp,
+                        )
+                    ) {
+                        append("${oneSentenceList[11].content}       ")
+
+                    }
+                    pop()
+
+                    pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence3")
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.White,
+                            background = Color.Black,
+                            fontSize = 14.sp,
+                        )
+                    ) {
+                        append("${oneSentenceList[12].content}      ")
+
+                    }
+                    pop()
+
+                    pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence4")
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.Black,
+                            background = Color.White,
+                            fontSize = 14.sp,
+                        )
+                    ) {
+                        append("${oneSentenceList[13].content}       ")
+
+                    }
+                    pop()
+
+                    pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence4")
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.White,
+                            background = Color.Black,
+                            fontSize = 14.sp,
+                        )
+                    ) {
+                        append(" ${oneSentenceList[14].content} ")
+
+                    }
+                    pop()
+                }
+            }
+        }
+        val annotatedString4 = remember(viewModel.sentenceInfo, oneSentenceList) {
+            buildAnnotatedString {
+                withStyle(style = ParagraphStyle(lineHeight = 40.sp)) { // 원하는 줄 간격 설정
+                    pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence1")
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.Black,
+                            background = Color.White,
+                            fontSize = 14.sp,
+                        )
+                    ) {
+                        append("${  oneSentenceList[15].content}      ")
+                        Log.d(TAG, "RandomSentences: ${oneSentenceList[0].content}")
+
+                    }
+                    pop()
+
+                    pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence2")
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.White,
+                            background = Color.Black,
+                            fontSize = 14.sp,
+                        )
+                    ) {
+                        append("${oneSentenceList[16].content}       ")
+
+                    }
+                    pop()
+
+                    pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence3")
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.Black,
+                            background = Color.White,
+                            fontSize = 14.sp,
+                        )
+                    ) {
+                        append("${oneSentenceList[17].content}      ")
+
+                    }
+                    pop()
+
+                    pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence4")
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.White,
+                            background = Color.Black,
+                            fontSize = 14.sp,
+                        )
+                    ) {
+                        append("${oneSentenceList[18].content}       ")
+
+                    }
+                    pop()
+
+                    pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence4")
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.Black,
+                            background = Color.White,
+                            fontSize = 14.sp,
+                        )
+                    ) {
+                        append(" ${oneSentenceList[19].content} ")
+
+                    }
+                    pop()
+                }
+            }
+        }
+        val annotatedString5 = remember(viewModel.sentenceInfo, oneSentenceList) {
+            buildAnnotatedString {
+                withStyle(style = ParagraphStyle(lineHeight = 40.sp)) { // 원하는 줄 간격 설정
+                    pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence1")
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.White,
+                            background = Color.Black,
+                            fontSize = 14.sp,
+                        )
+                    ) {
+                        append("${  oneSentenceList[20].content}      ")
+                        Log.d(TAG, "RandomSentences: ${oneSentenceList[0].content}")
+
+                    }
+                    pop()
+
+                    pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence2")
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.Black,
+                            background = Color.White,
+                            fontSize = 14.sp,
+                        )
+                    ) {
+                        append("${oneSentenceList[21].content}       ")
+
+                    }
+                    pop()
+
+                    pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence3")
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.White,
+                            background = Color.Black,
+                            fontSize = 14.sp,
+                        )
+                    ) {
+                        append("${oneSentenceList[22].content}      ")
+
+                    }
+                    pop()
+
+                    pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence4")
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.Black,
+                            background = Color.White,
+                            fontSize = 14.sp,
+                        )
+                    ) {
+                        append("${oneSentenceList[23].content}       ")
+
+                    }
+                    pop()
+
+                    pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence4")
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.White,
+                            background = Color.Black,
+                            fontSize = 14.sp,
+                        )
+                    ) {
+                        append(" ${oneSentenceList[24].content} ")
+
+                    }
+                    pop()
+                }
+            }
+        }
 
 
 
@@ -186,13 +472,62 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                 )
             )
         }
+        val extendedSpans2 = remember {
+            ExtendedSpans(
+                RoundedCornerSpanPainter(
+                    cornerRadius = 20.sp,
+                    topMargin = 0.sp,
+                    bottomMargin = 0.sp,
+                    padding = RoundedCornerSpanPainter.TextPaddingValues(
+                        horizontal = 14.sp,
+                        vertical = 0.sp
+                    )
+                )
+            )
+        }
+        val extendedSpans3 = remember {
+            ExtendedSpans(
+                RoundedCornerSpanPainter(
+                    cornerRadius = 20.sp,
+                    topMargin = 0.sp,
+                    bottomMargin = 0.sp,
+                    padding = RoundedCornerSpanPainter.TextPaddingValues(
+                        horizontal = 14.sp,
+                        vertical = 0.sp
+                    )
+                )
+            )
+        }
+
+        val extendedSpans4 = remember {
+            ExtendedSpans(
+                RoundedCornerSpanPainter(
+                    cornerRadius = 20.sp,
+                    topMargin = 0.sp,
+                    bottomMargin = 0.sp,
+                    padding = RoundedCornerSpanPainter.TextPaddingValues(
+                        horizontal = 14.sp,
+                        vertical = 0.sp
+                    )
+                )
+            )
+        }
+        val extendedSpans5 = remember {
+            ExtendedSpans(
+                RoundedCornerSpanPainter(
+                    cornerRadius = 20.sp,
+                    topMargin = 0.sp,
+                    bottomMargin = 0.sp,
+                    padding = RoundedCornerSpanPainter.TextPaddingValues(
+                        horizontal = 14.sp,
+                        vertical = 0.sp
+                    )
+                )
+            )
+        }
 
         Column {
-            Box(
-                modifier = Modifier
-                    .padding(start = 10.dp, end = 6.dp), contentAlignment = Alignment.Center
 
-            ) {
                 var layoutResult: TextLayoutResult? = remember { null }
                 Text(
                     text = remember(annotatedString) {
@@ -250,13 +585,239 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                     }
                 )
 
+            var layoutResult2: TextLayoutResult? = remember { null }
+            Text(
+                text = remember(annotatedString2) {
+                    extendedSpans.extend(annotatedString2)
+                },
+                modifier = Modifier
+                    .horizontalScroll(state = rememberScrollState())
+                    // .fillMaxWidth()
+                    .drawBehind(extendedSpans2)
+                    .pointerInput(Unit) {
+                        detectTapGestures { offsetPosition ->
+                            layoutResult2?.let {
+                                val position = it.getOffsetForPosition(offsetPosition)
+                                annotatedString2
+                                    .getStringAnnotations(
+                                        tag = "SentenceTag",
+                                        start = position,
+                                        end = position
+                                    )
+                                    .firstOrNull()
+                                    ?.let { annotation ->
+                                        when (annotation.item) {
+                                            "Sentence1" -> viewModel.readDetailEssay(
+                                                oneSentenceList[5].id!!,
+                                                navController = navController
+                                            )
 
+                                            "Sentence2" -> viewModel.readDetailEssay(
+                                                oneSentenceList[6].id!!,
+                                                navController = navController
+                                            )
+
+                                            "Sentence3" -> viewModel.readDetailEssay(
+                                                oneSentenceList[7].id!!,
+                                                navController = navController
+                                            )
+
+                                            "Sentence4" -> viewModel.readDetailEssay(
+                                                oneSentenceList[8].id!!,
+                                                navController = navController
+                                            )
+
+                                            "Sentence5" -> viewModel.readDetailEssay(
+                                                oneSentenceList[9].id!!,
+                                                navController = navController
+                                            )
+                                        }
+                                    }
+                            }
+                        }
+                    },
+                onTextLayout = {
+                    layoutResult2 = it
+                    extendedSpans2.onTextLayout(it)
+                }
+            )
+            var layoutResult3: TextLayoutResult? = remember { null }
+            Text(
+                text = remember(annotatedString3) {
+                    extendedSpans3.extend(annotatedString3)
+                },
+                modifier = Modifier
+                    .horizontalScroll(state = rememberScrollState())
+                    // .fillMaxWidth()
+                    .drawBehind(extendedSpans3)
+                    .pointerInput(Unit) {
+                        detectTapGestures { offsetPosition ->
+                            layoutResult3?.let {
+                                val position = it.getOffsetForPosition(offsetPosition)
+                                annotatedString3
+                                    .getStringAnnotations(
+                                        tag = "SentenceTag",
+                                        start = position,
+                                        end = position
+                                    )
+                                    .firstOrNull()
+                                    ?.let { annotation ->
+                                        when (annotation.item) {
+                                            "Sentence1" -> viewModel.readDetailEssay(
+                                                oneSentenceList[10].id!!,
+                                                navController = navController
+                                            )
+
+                                            "Sentence2" -> viewModel.readDetailEssay(
+                                                oneSentenceList[11].id!!,
+                                                navController = navController
+                                            )
+
+                                            "Sentence3" -> viewModel.readDetailEssay(
+                                                oneSentenceList[12].id!!,
+                                                navController = navController
+                                            )
+
+                                            "Sentence4" -> viewModel.readDetailEssay(
+                                                oneSentenceList[13].id!!,
+                                                navController = navController
+                                            )
+
+                                            "Sentence5" -> viewModel.readDetailEssay(
+                                                oneSentenceList[14].id!!,
+                                                navController = navController
+                                            )
+                                        }
+                                    }
+                            }
+                        }
+                    },
+                onTextLayout = {
+                    layoutResult3 = it
+                    extendedSpans3.onTextLayout(it)
+                }
+            )
+
+            var layoutResult4: TextLayoutResult? = remember { null }
+            Text(
+                text = remember(annotatedString4) {
+                    extendedSpans4.extend(annotatedString4)
+                },
+                modifier = Modifier
+                    .horizontalScroll(state = rememberScrollState())
+                    // .fillMaxWidth()
+                    .drawBehind(extendedSpans4)
+                    .pointerInput(Unit) {
+                        detectTapGestures { offsetPosition ->
+                            layoutResult4?.let {
+                                val position = it.getOffsetForPosition(offsetPosition)
+                                annotatedString4
+                                    .getStringAnnotations(
+                                        tag = "SentenceTag",
+                                        start = position,
+                                        end = position
+                                    )
+                                    .firstOrNull()
+                                    ?.let { annotation ->
+                                        when (annotation.item) {
+                                            "Sentence1" -> viewModel.readDetailEssay(
+                                                oneSentenceList[15].id!!,
+                                                navController = navController
+                                            )
+
+                                            "Sentence2" -> viewModel.readDetailEssay(
+                                                oneSentenceList[16].id!!,
+                                                navController = navController
+                                            )
+
+                                            "Sentence3" -> viewModel.readDetailEssay(
+                                                oneSentenceList[17].id!!,
+                                                navController = navController
+                                            )
+
+                                            "Sentence4" -> viewModel.readDetailEssay(
+                                                oneSentenceList[18].id!!,
+                                                navController = navController
+                                            )
+
+                                            "Sentence5" -> viewModel.readDetailEssay(
+                                                oneSentenceList[19].id!!,
+                                                navController = navController
+                                            )
+                                        }
+                                    }
+                            }
+                        }
+                    },
+                onTextLayout = {
+                    layoutResult4 = it
+                    extendedSpans4.onTextLayout(it)
+                }
+
+            )
+
+            var layoutResult5: TextLayoutResult? = remember { null }
+            Text(
+                text = remember(annotatedString5) {
+                    extendedSpans5.extend(annotatedString5)
+                },
+                modifier = Modifier
+                    .horizontalScroll(state = rememberScrollState())
+                    // .fillMaxWidth()
+                    .drawBehind(extendedSpans5)
+                    .pointerInput(Unit) {
+                        detectTapGestures { offsetPosition ->
+                            layoutResult5?.let {
+                                val position = it.getOffsetForPosition(offsetPosition)
+                                annotatedString5
+                                    .getStringAnnotations(
+                                        tag = "SentenceTag",
+                                        start = position,
+                                        end = position
+                                    )
+                                    .firstOrNull()
+                                    ?.let { annotation ->
+                                        when (annotation.item) {
+                                            "Sentence1" -> viewModel.readDetailEssay(
+                                                oneSentenceList[20].id!!,
+                                                navController = navController
+                                            )
+
+                                            "Sentence2" -> viewModel.readDetailEssay(
+                                                oneSentenceList[21].id!!,
+                                                navController = navController
+                                            )
+
+                                            "Sentence3" -> viewModel.readDetailEssay(
+                                                oneSentenceList[22].id!!,
+                                                navController = navController
+                                            )
+
+                                            "Sentence4" -> viewModel.readDetailEssay(
+                                                oneSentenceList[23].id!!,
+                                                navController = navController
+                                            )
+
+                                            "Sentence5" -> viewModel.readDetailEssay(
+                                                oneSentenceList[24].id!!,
+                                                navController = navController
+                                            )
+                                        }
+                                    }
+                            }
+                        }
+                    },
+                onTextLayout = {
+                    layoutResult5 = it
+                    extendedSpans5.onTextLayout(it)
+                }
+            )
             }
         }
     }
 
 
-}
+
 @Composable
 fun ChoiceBox(viewModel: CommunityViewModel) {
     val color = Color.Black

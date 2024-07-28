@@ -237,6 +237,8 @@ open class CommunityViewModel @Inject constructor(
                     response.body()!!.data.essays.toMutableStateList()
                 else exampleItems.lastSentences = response.body()!!.data.essays.toMutableStateList()
 
+                Log.d(TAG, "첫문장 request api: 첫문장 개수${response.body()!!.data.essays.size} \n 마지막문장 ${exampleItems.lastSentences}")
+
                 _firstSentences.emit(exampleItems.firstSentences)
                 _lastSentences.emit(exampleItems.lastSentences)
 
