@@ -37,6 +37,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.components.ModifyStoryBox
@@ -68,19 +70,24 @@ fun StoryDetailPage(viewModel: MyLogViewModel, navController: NavController) {
         }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalGlideComposeApi::class)
 @Composable
 fun StoryDetailTopAppBar(navController: NavController, viewModel: MyLogViewModel,isModifyClicked : ()->Unit) {
     TopAppBar(modifier = Modifier.padding(horizontal = 10.dp),
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
         title = {
 
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center, modifier = Modifier
-                    .fillMaxWidth()
-                    .height(30.dp)) {
-                    StoryChip()
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(30.dp)
+                ) {
+                    //StoryChip()
+                    GlideImage(model = R.drawable.storychip_icon, contentDescription = "", modifier = Modifier.padding(top = 1.dp).size(45.dp,18.dp))
                     Spacer(modifier = Modifier.width(10.dp))
-                    Text(text = viewModel.getSelectedStory().name, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center, fontSize = 16.sp)
+                    Text(text = viewModel.getSelectedStory().name, fontWeight = FontWeight.Normal, textAlign = TextAlign.Center, fontSize = 16.sp)
                     Spacer(modifier = Modifier.width(10.dp))
                     Text(text = "${viewModel.getSelectedStory().essaysCount}편", color =  Color(0xFF6B6B6B), fontSize = 16.sp)
 
@@ -133,7 +140,7 @@ fun StoryDetailItem(essayItem: EssayApi.EssayItem, num : Int,isItemClicked : ()-
         .clickable { isItemClicked() }
         .height(91.dp)){
         Row(Modifier.padding(horizontal = 20.dp), verticalAlignment = Alignment.CenterVertically) {
-            Text(text = "$num")
+            Text(text = "$num", color = LinkedInColor)
             Spacer(modifier = Modifier.width(40.dp))
             Column(
                 Modifier
@@ -166,8 +173,19 @@ fun StoryDetailList(viewModel: MyLogViewModel,navController : NavController){
 @Preview
 @Composable
 fun StoryChip(){
-    Box(modifier = Modifier.background(LinkedInColor, shape = RoundedCornerShape(50))){
-        Text(text = "  스토리  ", color = Color.Black, fontSize = 10.sp)
-    }
+
+        Text(
+            text = "   스토리   ",
+            color = Color.Black,
+            textAlign = TextAlign.Center,
+            fontSize = 10.sp,
+            modifier = Modifier
+                .height(18.dp)
+                .padding(bottom = 5.dp)
+                .background(
+                    LinkedInColor, shape = RoundedCornerShape(50)
+                )
+        )
+
 }
 

@@ -219,6 +219,7 @@ fun EssayListItem(
             .fillMaxSize()
             .padding(top = 20.dp, start = 20.dp, end = 20.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
+
                 Text(
                     text = item.title!!,
                     color = color,
@@ -226,8 +227,15 @@ fun EssayListItem(
 
                     )
                 if (pagerState.currentPage == 1){
-                    Spacer(modifier = Modifier.width(10.dp))
-                    OutBox()
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Icon(
+                        painter = painterResource(id = R.drawable.option_link),
+                        tint = Color.White,
+                        contentDescription = "",
+                        modifier = Modifier.size(28.dp).padding(top = 1.5.dp)
+                    )
+
 
                 }
 
@@ -471,7 +479,9 @@ fun ModifyOrDeleteBox(
 ) {
 
 
-            Surface(shape = RoundedCornerShape(20), modifier = Modifier.width(180.dp).background(Color(0xFF0E0E0E))) {
+            Surface(shape = RoundedCornerShape(20), modifier = Modifier
+                .width(180.dp)
+                .background(Color(0xFF0E0E0E))) {
                 Column(
                     modifier = Modifier.background(Color(0xFF0E0E0E)),
                     verticalArrangement = Arrangement.Center,
@@ -508,9 +518,17 @@ fun OutBox(){
         .background(LinkedInColor, shape = RoundedCornerShape(40.dp))
         , contentAlignment = Alignment.Center){
         Text(
-            text = "  OUT  ", fontSize = 12.sp,color=Color.Black
+            text = "    OUT    ", fontSize = 10.sp,color=Color.Black
         )
     }
-}
+}//todo out chip 이미지로
+
+@Preview
+@Composable
+fun OutBox2(){
+
+    Text(
+        text = "    OUT    ", fontSize = 10.sp,color= LinkedInColor
+    )}
 
 

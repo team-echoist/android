@@ -489,7 +489,7 @@ fun ContentTextField(viewModel: WritingViewModel) {
             },
             placeholder = {
                 Text(
-                    text = "10자 이상 내용을 입력하세요",
+                    text = viewModel.hint,
                     color = Color(0xFF686868)
                 )
             },

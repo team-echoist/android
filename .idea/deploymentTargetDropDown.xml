@@ -5,13 +5,26 @@
       <entry key="GeulRoquis">
         <State />
       </entry>
+      <entry key="OutBox2">
+        <State>
+          <runningDeviceTargetSelectedWithDropDown>
+            <Target>
+              <type value="RUNNING_DEVICE_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="VIRTUAL_DEVICE_PATH" />
+                  <value value="$USER_HOME$/.android/avd/Client_Test.avd" />
+                </Key>
+              </deviceKey>
+            </Target>
+          </runningDeviceTargetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2024-07-28T09:49:25.535225Z" />
+        </State>
+      </entry>
       <entry key="TutorialPage">
         <State />
       </entry>
       <entry key="Tutorial_2">
-        <State />
-      </entry>
-      <entry key="Tutorial_4">
         <State />
       </entry>
       <entry key="app">

@@ -32,6 +32,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.OAuthCredential
 import com.google.firebase.auth.OAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -460,26 +461,46 @@ class SocialLoginViewModel @Inject constructor(
         provider.addCustomParameter("locale", "ko")
 
         val pending = auth.pendingAuthResult
-        if (pending != null) {
+        if (pending != null) { //로그인한 정보가 있다면
             pending.addOnSuccessListener { authResult ->
                 Log.d(TAG, "checkPending:onSuccess:$authResult")
-                authResult.credential //토큰
+                val credential = authResult.credential as OAuthCredential //토큰
 
-                // Get the user profile with authResult.getUser() and
-                // authResult.getAdditionalUserInfo(), and the ID
-                // token from Apple with authResult.getCredential().
+
+                appleUserToken = credential.accessToken!! //아마도 토큰
+                appleUserId = authResult.user!!.uid //고유 아이디
+
+                Log.i(
+                    "Apple_Firebase_UserInfo:", "애플 사용자 정보 요청 성공:" +
+                            "\nEmail: ${authResult.user!!.email}" +//이메일
+                            "\nUser Token: $appleUserToken" +  //회원 토큰
+                            "\nPhoto URL: ${authResult.user!!.photoUrl}" +  // 회원 사진 URL
+                            "\nDisplay Name: ${authResult.user!!.displayName}" + //디스플레이 네임
+                            "\nPhoneNumber: ${authResult.user!!.phoneNumber}" +//번호
+                            "\nProviderId: ${authResult.user!!.providerId}" +// 제공자 파이어베이스
+                            "\nProvider: ${authResult.credential!!.provider}" + // apple.com
+                            "\nUid: $appleUserId"+
+                            "\nProviderData: ${authResult.user!!.providerData}"+
+                            "\nsecret : $${credential.secret}"+
+                            "\nid토큰 굉장히 긴것. : $${credential.idToken}"
+
+                )
+                requestAppleLogin(navController = navController)
+
             }.addOnFailureListener { e ->
                 Log.w(TAG, "checkPending:onFailure", e)
             }
-        } else {
+        } else { //처음로그인 이라면
             Log.d(TAG, "pending: null")
             auth.startActivityForSignInWithProvider(activity, provider.build())
                 .addOnSuccessListener { authResult ->
                     // Sign-in successful!
                     authResult.additionalUserInfo
 
-                    appleUserToken = authResult.credential.toString() //아마도 토큰
-                    appleUserId = authResult.user!!.uid //아마도 아이디 provider id 일수도있음
+                    val credential = authResult.credential as OAuthCredential //토큰
+
+                    appleUserToken = credential.accessToken!! //아마도 토큰
+                    appleUserId = authResult.user!!.uid //고유 아이디
 
                     Log.i(
                         "Apple_Firebase_UserInfo:", "애플 사용자 정보 요청 성공:" +
@@ -487,12 +508,13 @@ class SocialLoginViewModel @Inject constructor(
                                 "\nUser Token: $appleUserToken" +  //회원 토큰
                                 "\nPhoto URL: ${authResult.user!!.photoUrl}" +  // 회원 사진 URL
                                 "\nDisplay Name: ${authResult.user!!.displayName}" + //디스플레이 네임
-                                "\nPhoneNumber: ${authResult.user!!.phoneNumber}" //번호
-                                + //디스플레이 네임
-                                "\nProviderId: ${authResult.user!!.providerId}" // 제공자 파이어베이스
-                                + //디스플레이 네임
+                                "\nPhoneNumber: ${authResult.user!!.phoneNumber}" +//번호
+                                "\nProviderId: ${authResult.user!!.providerId}" +// 제공자 파이어베이스
                                 "\nProvider: ${authResult.credential!!.provider}" + // apple.com
-                        "\nUid: ${appleUserId}"
+                                "\nUid: $appleUserId"+
+                                "\nProviderData: ${authResult.user!!.providerData}"+
+                                "\nsecret : $${credential.secret}"+
+                                "\nid토큰 굉장히 긴것. : $${credential.idToken}"
 
                     )
 

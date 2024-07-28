@@ -58,6 +58,7 @@ class WritingViewModel @Inject constructor(
     //ftb 를 통해 들어가면 storedDetailEssay를 null값으로 만들면됨
     var title = mutableStateOf(TextFieldValue(""))
     var content by mutableStateOf(TextFieldValue(""))
+    var hint by mutableStateOf("10자 이상의 내용을 입력해 주세요")
     var ringTouchedTime by mutableIntStateOf(5)
     var essayPrimaryId : Int? by mutableStateOf(null)
 
@@ -173,6 +174,7 @@ class WritingViewModel @Inject constructor(
         imageUrl = null
         isTextFeatOpened.value = false
         essayPrimaryId = null
+        hint = "10자 이상의 내용을 입력해 주세요"
     }
 
 

@@ -72,14 +72,11 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -124,19 +121,6 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewMo
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-
-    val annotatedString = remember {
-        AnnotatedString.Builder().apply {
-            append(getCurrentDateFormatted())
-            withStyle(
-                style = SpanStyle(
-                    color = Color(0xFF686868),
-                )
-            ) {
-                append("\n\n글로키란? : 글(geul)과 크로키(croquis)의 합성어로 글을 본격적으로 쓰기 전, 주어진 상황을 묘사하거나 상상을 덧대어 빠르게 스케치 하듯이 글을 쓰는 몸풀기를 말합니다. ")
-            }
-        }.toAnnotatedString()
-    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -208,7 +192,8 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewMo
                 GeulRoquis(
                     isHoldClicked = {viewModel.isVisibleGeulRoquis = false},
                     isAcceptClicked = {
-                        writingViewModel.content = TextFieldValue(annotatedString)
+                        writingViewModel.title.value = TextFieldValue("${getCurrentDateFormatted()} GeulRoquis")
+                        writingViewModel.hint = ("글로키란? : 글(geul)과 크로키(croquis)의 합성어로 글을 본격적으로 쓰기 전, 주어진 상황을 묘사하거나 상상을 덧대어 빠르게 스케치 하듯이 글을 쓰는 몸풀기를 말합니다. ")
                         writingViewModel.imageUrl = viewModel.geulRoquisUrl
                         navController.navigate("WritingPage")
                         viewModel.isVisibleGeulRoquis = false
@@ -475,7 +460,7 @@ fun createLineData(essayCounts: List<Int>): LineData {
     )
 
     val dataSet = LineDataSet(entries, "").apply {
-        color = android.graphics.Color.BLUE
+        color = 0xFF616FED.toInt()
         circleRadius = 4f // 원의 반지름 크기를 작게 설정
         valueTextColor = android.graphics.Color.BLACK
         setCircleColor(0xFF616FED.toInt())

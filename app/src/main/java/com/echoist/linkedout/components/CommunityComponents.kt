@@ -105,7 +105,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                     withStyle(
                         style = SpanStyle(
                             color = Color.White,
-                            //background = Color.Black,
+                            background = Color.Black,
                             fontSize = 14.sp,
                         )
                     ) {
@@ -119,7 +119,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                     withStyle(
                         style = SpanStyle(
                             color = Color.Black,
-                            //background = Color.White,
+                            background = Color.White,
                             fontSize = 14.sp,
                         )
                     ) {
@@ -132,7 +132,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                     withStyle(
                         style = SpanStyle(
                             color = Color.White,
-                            //background = Color.Black,
+                            background = Color.Black,
                             fontSize = 14.sp,
                         )
                     ) {
@@ -145,7 +145,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                     withStyle(
                         style = SpanStyle(
                             color = Color.Black,
-                            //background = Color.White,
+                            background = Color.White,
                             fontSize = 14.sp,
                         )
                     ) {
@@ -158,7 +158,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                     withStyle(
                         style = SpanStyle(
                             color = Color.White,
-                            //background = Color.Black,
+                            background = Color.Black,
                             fontSize = 14.sp,
                         )
                     ) {
