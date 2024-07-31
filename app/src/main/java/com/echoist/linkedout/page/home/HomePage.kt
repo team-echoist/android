@@ -664,20 +664,25 @@ fun TutorialPage(isCloseClicked: () -> Unit,isSkipClicked : ()->Unit){
                 }
         }
     }
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .padding(top = 150.dp, end = 20.dp), contentAlignment = Alignment.TopEnd){
-        Text(
-            text = "건너뛰기 >>",
-            modifier = Modifier.clickable { isSkipClicked() },
-            style = TextStyle(
-                fontSize = 14.sp,
-                lineHeight = 21.sp,
-                color = Color(0xFF929292),
-                textAlign = TextAlign.Center,
-                textDecoration = TextDecoration.Underline,
+    if (pagerstate.currentPage != 3) {
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 150.dp, end = 20.dp), contentAlignment = Alignment.TopEnd
+        ) {
+            Text(
+                text = "건너뛰기 >>",
+                modifier = Modifier.clickable { isSkipClicked() },
+                style = TextStyle(
+                    fontSize = 14.sp,
+                    lineHeight = 21.sp,
+                    color = Color(0xFF929292),
+                    textAlign = TextAlign.Center,
+                    textDecoration = TextDecoration.Underline,
+                )
             )
-        )
+        }
     }
 
     if (pagerstate.currentPage != 3){

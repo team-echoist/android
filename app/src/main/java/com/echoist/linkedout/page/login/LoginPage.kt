@@ -92,6 +92,10 @@ import com.echoist.linkedout.page.home.NotificationPage
 import com.echoist.linkedout.page.home.NotificationSettingPage
 import com.echoist.linkedout.page.home.SupportPage
 import com.echoist.linkedout.page.home.UpdateHistoryPage
+import com.echoist.linkedout.page.home.legal_Notice.FontCopyRight
+import com.echoist.linkedout.page.home.legal_Notice.LocationPolicyPage
+import com.echoist.linkedout.page.home.legal_Notice.PrivacyPolicyPage
+import com.echoist.linkedout.page.home.legal_Notice.TermsAndConditionsPage
 import com.echoist.linkedout.page.myLog.CompletedEssayPage
 import com.echoist.linkedout.page.myLog.DetailEssayInStoryPage
 import com.echoist.linkedout.page.myLog.MyLogDetailPage
@@ -315,6 +319,18 @@ class LoginPage : ComponentActivity() {
                 }
                 composable("CropImagePage") {
                     CropImagePage(navController,writingViewModel)
+                }
+                composable("TermsAndConditionsPage") {
+                    TermsAndConditionsPage(navController)
+                }
+                composable("PrivacyPolicyPage") {
+                    PrivacyPolicyPage(navController)
+                }
+                composable("LocationPolicyPage") {
+                    LocationPolicyPage(navController)
+                }
+                composable("FontCopyRight") {
+                    FontCopyRight(navController)
                 }
             }
 

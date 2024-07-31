@@ -5,6 +5,9 @@
       <entry key="GeulRoquis">
         <State />
       </entry>
+      <entry key="Legal_Notice">
+        <State />
+      </entry>
       <entry key="OutBox2">
         <State>
           <runningDeviceTargetSelectedWithDropDown>
@@ -24,24 +27,8 @@
       <entry key="TutorialPage">
         <State />
       </entry>
-      <entry key="Tutorial_2">
-        <State />
-      </entry>
       <entry key="app">
-        <State>
-          <runningDeviceTargetSelectedWithDropDown>
-            <Target>
-              <type value="RUNNING_DEVICE_TARGET" />
-              <deviceKey>
-                <Key>
-                  <type value="SERIAL_NUMBER" />
-                  <value value="R39M30CVAGA" />
-                </Key>
-              </deviceKey>
-            </Target>
-          </runningDeviceTargetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-07-28T14:32:55.577345Z" />
-        </State>
+        <State />
       </entry>
       <entry key="e">
         <State />

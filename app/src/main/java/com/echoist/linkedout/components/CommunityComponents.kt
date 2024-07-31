@@ -532,7 +532,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                 Text(
                     text = remember(annotatedString) {
                         extendedSpans.extend(annotatedString)
-                    },
+                    },fontSize = 14.sp,
                     modifier = Modifier
                         .horizontalScroll(state = rememberScrollState())
                         // .fillMaxWidth()
@@ -589,7 +589,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
             Text(
                 text = remember(annotatedString2) {
                     extendedSpans.extend(annotatedString2)
-                },
+                },fontSize = 14.sp,
                 modifier = Modifier
                     .horizontalScroll(state = rememberScrollState())
                     // .fillMaxWidth()
@@ -645,7 +645,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
             Text(
                 text = remember(annotatedString3) {
                     extendedSpans3.extend(annotatedString3)
-                },
+                },fontSize = 14.sp,
                 modifier = Modifier
                     .horizontalScroll(state = rememberScrollState())
                     // .fillMaxWidth()
@@ -702,7 +702,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
             Text(
                 text = remember(annotatedString4) {
                     extendedSpans4.extend(annotatedString4)
-                },
+                },fontSize = 14.sp,
                 modifier = Modifier
                     .horizontalScroll(state = rememberScrollState())
                     // .fillMaxWidth()
@@ -760,7 +760,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
             Text(
                 text = remember(annotatedString5) {
                     extendedSpans5.extend(annotatedString5)
-                },
+                }, fontSize = 14.sp,
                 modifier = Modifier
                     .horizontalScroll(state = rememberScrollState())
                     // .fillMaxWidth()

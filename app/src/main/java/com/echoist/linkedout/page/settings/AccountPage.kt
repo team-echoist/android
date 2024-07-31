@@ -1,11 +1,7 @@
 package com.echoist.linkedout.page.settings
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
@@ -172,7 +168,7 @@ fun ModifyBox(text : String, onClick : ()-> Unit){
         .clickable { onClick() }
         .height(70.dp)){
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart){
-            Text(text = text)
+            Text(text = text, fontSize = 16.sp)
         }
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
             Icon(imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos, contentDescription = "arrowforward", modifier = Modifier.size(20.dp))
