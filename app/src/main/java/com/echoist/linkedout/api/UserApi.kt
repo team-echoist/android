@@ -48,7 +48,7 @@ interface UserApi {
         @Header("Authorization") accessToken: String
     ): UserResponse
 
-    @GET("api/users/{userId}")
+    @GET("api/users/profile/{userId}")
     suspend fun readMyInfoDetail(
         @Header("Authorization") accessToken: String,
         @Path("userId") userId : Int

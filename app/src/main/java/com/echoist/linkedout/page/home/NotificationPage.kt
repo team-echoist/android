@@ -97,9 +97,13 @@ fun NotificationPage(navController: NavController, viewModel: SupportViewModel =
                         alerts.forEach { alert ->
                             NotificationItem(viewModel.readMyProfile().nickname ?: "",alert) {
                                 viewModel.readAlert(alert.id)
-                                if (alert.type == "linkedout"){ //todo linkedout 말고 고객지원도 추가할것
-                                    isAlertClicked = true
-                                    clickedAlert = alert
+
+                                when(alert.type){
+                                    "published" -> viewModel.readDetailEssay(alert.essay.id ?: 0,navController)
+                                    else -> { //링크드아웃, 고객지원 모두 오픈테러
+                                        isAlertClicked = true
+                                        clickedAlert = alert
+                                    }
                                 }
 
                             }
@@ -208,6 +212,7 @@ fun NotificationIcon(alert: Alert) {
 
 @Composable
 fun NotificationItem(nickName : String,alert: Alert, isAlertClicked: () -> Unit) {
+
     val annotatedString = remember {
         AnnotatedString.Builder().apply {
             append("다른 아무개가 $nickName 아무개님의 ")

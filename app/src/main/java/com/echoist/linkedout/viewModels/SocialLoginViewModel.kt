@@ -141,7 +141,7 @@ class SocialLoginViewModel @Inject constructor(
                 if (response.isSuccessful){
                     if (response.body()!!.data) { //data 값이 true라면 첫 로그인 후 false로 값 변환해줌
                         Log.d("첫 회원가입 여부 체크","true")
-                        navController.navigate("SignUpComplete")
+                        navController.navigate("AgreeOfProvisionsPage")
                     }
                     else{ //아니라면 바로 홈화면으로 이동
                         Log.d("첫 회원가입 여부 체크","false")

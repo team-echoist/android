@@ -202,6 +202,7 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewMo
         }
 
 
+
         if (viewModel.isFirstUser){ // todo 첫 회원이라면
             Box(modifier = Modifier
                 .fillMaxSize()
@@ -239,7 +240,7 @@ fun ModalBottomSheetContent(viewModel: HomeViewModel,navController: NavControlle
             ShopDrawerItem()
             HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
             MyDrawableItem("화면 설정") {navController.navigate("DarkModeSettingPage")}
-            MyDrawableItem("알림 설정") {navController.navigate("notificationSettingPage")}
+            MyDrawableItem("환경 설정") {navController.navigate("notificationSettingPage")}
             MyDrawableItem("고객지원") {navController.navigate("SupportPage")}
             MyDrawableItem("업데이트 기록") {navController.navigate("UpdateHistoryPage")}
 

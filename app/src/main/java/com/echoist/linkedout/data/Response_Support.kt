@@ -1,5 +1,6 @@
 package com.echoist.linkedout.data
 
+import com.echoist.linkedout.api.EssayApi
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
@@ -64,7 +65,8 @@ data class Inquiry(
 
 data class NotificationSettings(
     val viewed: Boolean,
-    val report : Boolean
+    val report : Boolean,
+    val marketing : Boolean
 )
 
 @JsonClass(generateAdapter = true)
@@ -135,7 +137,8 @@ data class Alert(
     val body: String? = null,
     val type: String,
     val read: Boolean,
-    val createdDate: String
+    val createdDate: String,
+    val essay : EssayApi.EssayItem
 )
 data class Url(val url : String)
 data class GuleroquisResponse(

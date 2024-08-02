@@ -46,6 +46,10 @@ class HomeViewModel @Inject constructor(
 
     var viewedNotification by mutableStateOf(false)
     var reportNotification by mutableStateOf(false)
+    var marketingNotification by mutableStateOf(false)
+    var locationNotification by mutableStateOf(false)
+
+
 
     var isLoading by mutableStateOf(false)
 
@@ -78,6 +82,7 @@ class HomeViewModel @Inject constructor(
             Log.d(TAG, "readMyInfo: suc3")
 
             exampleItems.myProfile.essayStats = responseDetail.data.essayStats
+            locationNotification = exampleItems.myProfile.locationConsent!!
             Log.d(TAG, "readMyInfo: suc4")
             Log.d(TAG, "readMyInfo: ${exampleItems.myProfile}")
             Log.i("header token_current", " ${Token.accessToken}")
@@ -151,8 +156,8 @@ class HomeViewModel @Inject constructor(
     }
 
     //사용자 알림설정 get
+    var isApifinished by mutableStateOf(false)
     fun readUserNotification() {
-
         viewModelScope.launch {
             try {
                 val response = supportApi.readUserNotification(Token.accessToken, DeviceId.deviceId)
@@ -162,6 +167,8 @@ class HomeViewModel @Inject constructor(
                     Log.d(TAG, "readUserNotification: success${response.body()?.data!!}")
                     viewedNotification = response.body()?.data!!.viewed
                     reportNotification = response.body()?.data!!.report
+                    marketingNotification = response.body()?.data!!.marketing
+                    requestMyInfo()
                 } else {
                     Log.e(TAG, "readUserNotification: err${response.code()}")
                     Log.e(TAG, "readUserNotification: err device id${DeviceId.deviceId}")
@@ -174,16 +181,28 @@ class HomeViewModel @Inject constructor(
                 Log.e(TAG, "readUserNotification: error device id :  ${DeviceId.deviceId}\n token : ${Token.accessToken}")
 
             }
+            finally {
+                isApifinished = true
+            }
         }
     }
 
     //사용자 알림설정 update
-    fun updateUserNotification(navController: NavController) {
-        val body = NotificationSettings(viewedNotification, reportNotification)
+    fun updateUserNotification(navController: NavController,locationAgreement : Boolean) {
+        val body = NotificationSettings(viewedNotification, reportNotification,marketingNotification)
         viewModelScope.launch {
             try {
                 supportApi.updateUserNotification(Token.accessToken, DeviceId.deviceId, body)
                 Log.d(TAG, "updateUserNotification success: $body")
+
+                    val userInfo = UserInfo(locationConsent = locationAgreement)
+                    val response = userApi.userUpdate(Token.accessToken,userInfo)
+                    Log.d(TAG, "위치서비스 동의 저장 성공: ${response.code()}")
+                    Log.d(TAG, "위치서비스 동의 저장 성공: $locationNotification")
+
+
+
+
                 navController.navigate("HOME")
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -324,7 +343,7 @@ class HomeViewModel @Inject constructor(
             try {
                 val isNotFirst = UserInfo(isFirst = false)
                 val response = userApi.userUpdate(Token.accessToken,isNotFirst)
-                Log.d(TAG, "setFirstUserToExistUser: ${response.code()}")
+                Log.d(TAG, "setFirstUserToExistUser: ${response.code()} ${isNotFirst.isFirst}")
             } catch (e: Exception) {
                 e.printStackTrace()
                 Log.e("error","set user first to exist error ")
@@ -334,22 +353,25 @@ class HomeViewModel @Inject constructor(
     }
 
     var isFirstUser by mutableStateOf(false)
+    var isCheckFinished by mutableStateOf(false)
     fun requestIsFirstCheck(){
 
         viewModelScope.launch {
             try {
                 val response = userApi.requestUserFirstCheck(Token.accessToken)
                 if (response.isSuccessful){
-                    if (response.body()!!.data) { //data 값이 true라면 첫 로그인 후 false로 값 변환해줌
-                        isFirstUser = true
+                    isFirstUser = if (response.body()!!.data) { //data 값이 true라면 첫 로그인 후 false로 값 변환해줌
+                        true
+
+                    } else{ //아니라면 바로 홈화면으로 이동
+                        false
                     }
-                    else{ //아니라면 바로 홈화면으로 이동
-                        isFirstUser = false
-                    }
+                    Log.d(TAG, "첫 유저 여부: ${response.body()!!.data}")
                 }
             } catch (e: Exception) {
                 Log.e("첫 회원가입 여부 체크","에러")
             } finally {
+                isCheckFinished = true
             }
         }
     }

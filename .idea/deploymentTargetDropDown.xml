@@ -5,9 +5,6 @@
       <entry key="GeulRoquis">
         <State />
       </entry>
-      <entry key="Legal_Notice">
-        <State />
-      </entry>
       <entry key="OutBox2">
         <State>
           <runningDeviceTargetSelectedWithDropDown>
@@ -24,13 +21,16 @@
           <timeTargetWasSelectedWithDropDown value="2024-07-28T09:49:25.535225Z" />
         </State>
       </entry>
-      <entry key="TutorialPage">
+      <entry key="PrevSignUpPage">
+        <State />
+      </entry>
+      <entry key="WebViewExa2mple">
+        <State />
+      </entry>
+      <entry key="WebViewExample">
         <State />
       </entry>
       <entry key="app">
-        <State />
-      </entry>
-      <entry key="e">
         <State />
       </entry>
     </value>

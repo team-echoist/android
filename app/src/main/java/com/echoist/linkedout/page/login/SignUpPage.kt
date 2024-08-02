@@ -1,6 +1,5 @@
 package com.echoist.linkedout.page.login
 
-import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
@@ -53,26 +52,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.echoist.linkedout.R
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.SignUpViewModel
 import kotlinx.coroutines.delay
-
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview
-
-@Composable
-fun PrevSignUpPage() {
-    val viewModel : SignUpViewModel = viewModel()
-    SignUpPage(navController = rememberNavController(), viewModel = viewModel)
-}
 
 @Composable
 fun SignUpPage(
@@ -127,8 +114,8 @@ fun SignUpPage(
 
                         } else Color.Gray,
                         modifier = Modifier
-                            .size(30.dp)
                             .padding(16.dp)
+                            .size(30.dp)
                             .clickable { navController.popBackStack() } //뒤로가기
                     )
                     Spacer(modifier = Modifier.height(30.dp))
@@ -147,77 +134,27 @@ fun SignUpPage(
                     )
                     EmailTextField(viewModel)
                     PwTextField(viewModel)
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.Default.Done,
-                            contentDescription = "check",
-                            modifier = Modifier
-                                .padding(start = 16.dp)
-                                .size(25.dp)
-                                .clickable {
-                                    viewModel.agreement_service =
-                                        !viewModel.agreement_service
-                                    viewModel.agreement_collection =
-                                        !viewModel.agreement_collection
-                                    viewModel.agreement_teen =
-                                        !viewModel.agreement_teen
-                                    viewModel.agreement_marketing =
-                                        !viewModel.agreement_marketing
-                                },
-                            tint = if (viewModel.agreement_service &&
-                                viewModel.agreement_collection &&
-                                viewModel.agreement_teen &&
-                                viewModel.agreement_marketing
-                            )
-                                Color.White
-                            else Color(0xFF919191)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = "전체 동의")
-                    }
-                    AgreementText(
-                        text = "(필수)  서비스  이용약관  동의",
-                        {
-                            viewModel.agreement_service =
-                                !viewModel.agreement_service
-                        }, if (viewModel.agreement_service) Color.White else Color(0xFF919191)
-                    )
-                    AgreementText(
-                        text = "(필수)  개인정보  수집  및  이용  동의",
-                        {
-                            viewModel.agreement_collection =
-                                !viewModel.agreement_collection
-                        }, if (viewModel.agreement_collection) Color.White else Color(0xFF919191)
-                    )
-                    AgreementText(
-                        text = "(필수)   만  14세  이상입니다",
-                        { viewModel.agreement_teen = !viewModel.agreement_teen },
-                        if (viewModel.agreement_teen) Color.White else Color(0xFF919191)
-                    )
-                    AgreementText(
-                        text = "(선택)   마케팅  정보  수신  동의",
-                        {
-                            viewModel.agreement_marketing =
-                                !viewModel.agreement_marketing
-                        }, if (viewModel.agreement_marketing) Color.White else Color(0xFF919191)
-                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(text = "*비밀번호는 영문, 특수문자, 숫자 포함 8~12자를 조합해 주세요.", fontSize = 10.5.sp, color = LinkedInColor, modifier = Modifier.padding(start = 30.dp))
+
 
                     Button(
-                        shape = RoundedCornerShape(16.dp),
+                        shape = RoundedCornerShape(10.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFE4A89E),
+                            containerColor = LinkedInColor,
                             disabledContainerColor = Color(0xFF868686)
                         ),
-                        enabled = viewModel.agreement_service && viewModel.agreement_collection && viewModel.agreement_teen && !viewModel.userEmailError,
+                        enabled = !viewModel.userEmailError && viewModel.userPw.isNotEmpty(),
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(100.dp)
-                            .padding(start = 20.dp, end = 20.dp, top = 43.dp),
+                            .padding(start = 20.dp, end = 20.dp, top = 50.dp),
                         onClick = {
+                            keyboardController?.hide()
                             viewModel.getUserEmailCheck(viewModel.userEmail,navController)
                         }
                     ) {
-                        Text(text = "회원가입")
+                        Text(text = "인증 메일 보내기", color = Color.Black)
                     }
 
                 }
@@ -233,7 +170,11 @@ fun SignUpPage(
                         Box(modifier = Modifier
                             .fillMaxSize()
                             .padding(bottom = 20.dp), contentAlignment = Alignment.BottomCenter){
-                            SendSignUpFinishedAlert({viewModel.isSignUpApiFinished = false},"이메일 주소로 인증 메일이 발송됐습니다.","링크를 클릭해 회원가입을 완료해주세요 !!")
+                            SendSignUpFinishedAlert(
+                                { viewModel.isSignUpApiFinished = false },
+                                "이메일 주소로 인증 메일이 발송됐습니다.",
+                                "링크를 클릭해 회원가입을 완료해주세요 !!"
+                            )
 
                         }
                     }
@@ -251,7 +192,11 @@ fun SignUpPage(
                         Box(modifier = Modifier
                             .fillMaxSize()
                             .padding(bottom = 20.dp), contentAlignment = Alignment.BottomCenter){
-                            SendSignUpFinishedAlert({viewModel.isErr = false},"에러가 발생했습니다.","사용중인 이메일이거나 뭔가오류임")
+                            SendSignUpFinishedAlert(
+                                { viewModel.isErr = false },
+                                "에러가 발생했습니다.",
+                                "사용중인 이메일이거나 비밀번호 조합 오류입니다."
+                            )
 
                         }
                     }
@@ -357,7 +302,7 @@ fun PwTextField(viewModel: SignUpViewModel) {
         shape = RoundedCornerShape(8.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp, bottom = 55.dp)
+            .padding(start = 16.dp, end = 16.dp)
     )
 }
 

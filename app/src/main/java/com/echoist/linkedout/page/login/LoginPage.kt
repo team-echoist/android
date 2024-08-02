@@ -178,6 +178,9 @@ class LoginPage : ComponentActivity() {
                 composable("SIGNUP") {
                     SignUpPage(navController, signUpViewModel)
                 }
+                composable("AgreeOfProvisionsPage") {
+                    AgreeOfProvisionsPage(navController, signUpViewModel)
+                }
                 composable("SignUpComplete",
                     deepLinks = listOf(navDeepLink { uriPattern = "https://linkedout.com/SignUpComplete?token={token}" }),
                     arguments = listOf(navArgument("token"){

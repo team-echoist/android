@@ -10,9 +10,12 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.echoist.linkedout.DeviceId
 import com.echoist.linkedout.api.SignUpApi
+import com.echoist.linkedout.api.SupportApi
 import com.echoist.linkedout.api.UserApi
 import com.echoist.linkedout.data.ExampleItems
+import com.echoist.linkedout.data.NotificationSettings
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.myLog.Token
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,7 +26,8 @@ import javax.inject.Inject
 class SignUpViewModel @Inject constructor(
     private val signUpApi : SignUpApi,
     private val userApi: UserApi,
-    private val exampleItems: ExampleItems
+    private val exampleItems: ExampleItems,
+    private val supportApi: SupportApi
 ) : ViewModel() {
 
     var userEmail by mutableStateOf("")
@@ -34,6 +38,8 @@ class SignUpViewModel @Inject constructor(
     var agreement_collection by mutableStateOf(false)
     var agreement_teen by mutableStateOf(false)
     var agreement_marketing by mutableStateOf(false)
+    var agreement_location by mutableStateOf(false)
+    var agreement_serviceAlert by mutableStateOf(false)
 
     var isLoading by mutableStateOf(false)
     var isErr by mutableStateOf(false)
@@ -225,6 +231,39 @@ class SignUpViewModel @Inject constructor(
                 Log.e("authApiFailed2", "Failed : ${response.headers()}")
                 Log.e("authApiFailed2", "${response.code()}")
             }
-
-        }
     }
+
+    fun setAgreementOfSignUp(
+        locationAgreement: Boolean,
+        marketingAgreement: Boolean,
+        serviceAlertAgreement: Boolean,
+        navController: NavController
+    ){
+        val option = when {
+            marketingAgreement -> NotificationSettings(serviceAlertAgreement, serviceAlertAgreement, true)
+            else -> NotificationSettings(viewed = true, report = true, marketing = false)
+        }
+
+        viewModelScope.launch {
+                try {
+                    if (locationAgreement){ //사용자의 위치서비스 동의
+                        val userInfo = UserInfo(locationConsent = true)
+                        val response = userApi.userUpdate(Token.accessToken,userInfo)
+                        Log.d(TAG, "위치서비스 동의 저장 성공: ${response.code()}")
+                    }
+                    //사용자의 마케팅 동의
+                    if (marketingAgreement || serviceAlertAgreement){ //사용자가 마케팅이나 서비스 알림 동의
+                        val response = supportApi.updateUserNotification(Token.accessToken,DeviceId.deviceId,option)
+                        Log.d(TAG, "마케팅 동의 저장 성공: ${response.code()}")
+                    }
+                    navController.navigate("SignUpComplete")
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    Log.e("이용정보 동의 저장실패","${e.printStackTrace()}")
+                }
+            }
+
+
+    }
+}

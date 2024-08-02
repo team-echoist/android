@@ -22,7 +22,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -69,7 +71,6 @@ fun NotificationSettingPage(navController: NavController,homeViewModel: HomeView
     var writingRemindNotification by remember { mutableStateOf(SharedPreferencesUtil.getWritingRemindNotification(context)) }
 
 
-
     LinkedOutTheme {
             Scaffold(
                 topBar = {
@@ -86,7 +87,7 @@ fun NotificationSettingPage(navController: NavController,homeViewModel: HomeView
                             .fillMaxWidth()
                             .height(61.dp), shape = RoundedCornerShape(20),
                             onClick = {
-                                homeViewModel.updateUserNotification(navController)
+                                homeViewModel.updateUserNotification(navController,homeViewModel.locationNotification)
                                 SharedPreferencesUtil.saveWritingRemindNotification(context,writingRemindNotification) //글쓰기 시간 알림 설정 저장
                                 if (writingRemindNotification){
                                     //homeViewModel.setAlarmAfter10(context) //테스트용 1초후알람
@@ -99,54 +100,96 @@ fun NotificationSettingPage(navController: NavController,homeViewModel: HomeView
                             Text(text = "저장", color = Color.Black)
                         }
                     }
+                    if (homeViewModel.isApifinished){
+                        Column(
+                            Modifier
+                                .padding(it)
+                                .verticalScroll(rememberScrollState())) {
 
-                    Column(Modifier.padding(it)) {
+                            Text(
+                                text = "글 조회 알림",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier.padding(horizontal = 20.dp)
+                            )
+                            Spacer(modifier = Modifier.height(20.dp))
 
-                        Text(
-                            text = "글 조회 알림",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.padding(horizontal = 20.dp)
-                        )
-                        Spacer(modifier = Modifier.height(20.dp))
-
-                        EssayNotificationBox(
-                            "글 ",
-                            "조회 알림",
-                            homeViewModel.viewedNotification
-                        ) { it -> homeViewModel.viewedNotification = it
-                            Log.d(TAG, "NotificationPage: $it")
-                        }
-
-                        EssayNotificationBox(
-                            "신고 결과",
-                            "알림",
-                            homeViewModel.reportNotification
-                        ) { it -> homeViewModel.reportNotification = it
-                            Log.d(TAG, "NotificationPage: $it")
-                        }
-
-                        Spacer(modifier = Modifier.height(20.dp))
-
-                        Text(
-                            text = "글쓰기 알림",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.padding(horizontal = 20.dp)
-                        )
-                        Spacer(modifier = Modifier.height(20.dp))
-
-
-                        WritingNotificationBox(
-                            writingRemindNotification,
-                            { it -> writingRemindNotification = it
+                            EssayNotificationBox(
+                                "글 ",
+                                "조회 알림",
+                                homeViewModel.viewedNotification
+                            ) { it -> homeViewModel.viewedNotification = it
                                 Log.d(TAG, "NotificationPage: $it")
-                            },
-                            { isClickedTimeSelection = true },
-                            hour, min, period
-                        )
+                            }
 
+                            EssayNotificationBox(
+                                "신고 결과",
+                                "알림",
+                                homeViewModel.reportNotification
+                            ) { it -> homeViewModel.reportNotification = it
+                                Log.d(TAG, "NotificationPage: $it")
+                            }
+
+                            Spacer(modifier = Modifier.height(20.dp))
+
+                            Text(
+                                text = "글쓰기 알림",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier.padding(horizontal = 20.dp)
+                            )
+                            Spacer(modifier = Modifier.height(20.dp))
+
+
+                            WritingNotificationBox(
+                                writingRemindNotification,
+                                { it -> writingRemindNotification = it
+                                    Log.d(TAG, "NotificationPage: $it")
+                                },
+                                { isClickedTimeSelection = true },
+                                hour, min, period
+                            )
+                            Spacer(modifier = Modifier.height(20.dp))
+
+                            Text(
+                                text = "그 외 알림",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier.padding(horizontal = 20.dp)
+                            )
+                            Spacer(modifier = Modifier.height(20.dp))
+
+                            EssayNotificationBox(
+                                "이벤트 혜택 ",
+                                "정보 알림",
+                                homeViewModel.marketingNotification
+                            ) { it -> homeViewModel.marketingNotification = it
+                                Log.d(TAG, "NotificationPage: $it")
+                            }
+                            Spacer(modifier = Modifier.height(20.dp))
+
+                            Text(
+                                text = "위치 서비스 설정",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier.padding(horizontal = 20.dp)
+                            )
+                            Spacer(modifier = Modifier.height(20.dp))
+
+                            EssayNotificationBox(
+                                "위치 기반 서비스 ",
+                                "동의",
+                                homeViewModel.locationNotification
+                            ) { it -> homeViewModel.locationNotification = it
+                                Log.d(TAG, "NotificationPage: $it")
+                            }
+                            Spacer(modifier = Modifier.height(20.dp))
+
+
+                        }
                     }
+
+
 
                     AnimatedVisibility(
                         visible = isClickedTimeSelection,
