@@ -17,16 +17,14 @@ import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Part
-import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface UserApi {
 
-    @GET("api/users/{userId}")
-    suspend fun readUserInfo(
+    @GET("api/users/profile/my") // 에세이통계 까지 조회
+    suspend fun getMyInfo(
         @Header("Authorization") accessToken: String,
-        @Path("essayId") essayId: Int = 0
-    ): Response<BadgeSimpleResponse>
+    ): UserEssayStatsResponse
     @GET("api/badges")
     suspend fun readBadgeList(
         @Header("Authorization") accessToken: String
@@ -47,12 +45,6 @@ interface UserApi {
     suspend fun readMyInfo(
         @Header("Authorization") accessToken: String
     ): UserResponse
-
-    @GET("api/users/profile/{userId}")
-    suspend fun readMyInfoDetail(
-        @Header("Authorization") accessToken: String,
-        @Path("userId") userId : Int
-    ): UserEssayStatsResponse
 
     @PUT("api/users")
     suspend fun userUpdate(

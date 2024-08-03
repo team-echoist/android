@@ -236,7 +236,6 @@ fun SavedEssayListItem(
 @SuppressLint("MutableCollectionMutableState")
 @Composable
 fun SavedEssayListScreen(viewModel: CommunityViewModel, navController: NavController) {
-    val essayItems = viewModel.bookMarkEssayList
 
         var selectedItems by remember { mutableStateOf<Set<EssayApi.EssayItem>>(emptySet()) }
 
@@ -250,7 +249,7 @@ fun SavedEssayListScreen(viewModel: CommunityViewModel, navController: NavContro
                         fontWeight = FontWeight.Bold
                     )
                 ) {
-                    append("${essayItems.size} ")
+                    append("${viewModel.bookMarkEssayList.size} ")
                 }
                 append("개")
             }.toAnnotatedString()
@@ -280,23 +279,23 @@ fun SavedEssayListScreen(viewModel: CommunityViewModel, navController: NavContro
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
 
-                            val textColor = if (selectedItems.size != essayItems.size) Color(0xFF727070) else Color.White
+                            val textColor = if (selectedItems.size != viewModel.bookMarkEssayList.size) Color(0xFF727070) else Color.White
 
                             Text(text = "전체 선택", fontSize = 12.sp, color = textColor)
                             Spacer(modifier = Modifier.width(5.dp))
                             IconButton(
                                 modifier = Modifier.size(20.dp),
                                 onClick = {
-                                    selectedItems = if (selectedItems.size == essayItems.size) {
+                                    selectedItems = if (selectedItems.size == viewModel.bookMarkEssayList.size) {
                                         emptySet()
                                     } else {
-                                        essayItems.toSet()
+                                        viewModel.bookMarkEssayList.toSet()
                                     }
                                 }
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.CheckCircle,
-                                    tint = if (selectedItems.size == essayItems.size) LinkedInColor else Color(
+                                    tint = if (selectedItems.size == viewModel.bookMarkEssayList.size) LinkedInColor else Color(
                                         0xFF252525
                                     ),
                                     contentDescription = null
@@ -309,9 +308,9 @@ fun SavedEssayListScreen(viewModel: CommunityViewModel, navController: NavContro
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            if (essayItems.isNotEmpty()){
+            if (viewModel.bookMarkEssayList.isNotEmpty()){
                 LazyColumn(modifier = Modifier.weight(1f)) {
-                    items(essayItems) { item ->
+                    items(viewModel.bookMarkEssayList) { item ->
                         val isSelected = item in selectedItems
                         SavedEssayListItem(
                             item = item,

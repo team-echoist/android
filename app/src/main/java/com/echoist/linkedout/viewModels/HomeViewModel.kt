@@ -52,6 +52,7 @@ class HomeViewModel @Inject constructor(
 
 
     var isLoading by mutableStateOf(false)
+    var isFirstUser by mutableStateOf(false)
 
     var updateHistory: SnapshotStateList<History> =  mutableStateListOf()
 
@@ -70,29 +71,22 @@ class HomeViewModel @Inject constructor(
 
     suspend fun requestMyInfo(){
         try {
-            //유저 아이디 찾아내기 용
-            val response = userApi.readMyInfo(Token.accessToken)
-            Log.d(TAG, "readMyInfo: suc1")
 
-            exampleItems.myProfile = response.data
-            Log.d(TAG, "readMyInfo: ")
+            val response = userApi.getMyInfo(Token.accessToken)
+            Log.d("헤더 토큰", Token.accessToken)
+            exampleItems.myProfile = response.data.user
+            exampleItems.myProfile.essayStats = response.data.essayStats
+            Log.i(TAG, "readMyInfo: ${exampleItems.myProfile}")
+            locationNotification = exampleItems.myProfile.locationConsent ?: false
 
-            //유저 디테일 정보 get
-            val responseDetail = userApi.readMyInfoDetail(Token.accessToken,response.data.id!!)
-            Log.d(TAG, "readMyInfo: suc3")
-
-            exampleItems.myProfile.essayStats = responseDetail.data.essayStats
-            locationNotification = exampleItems.myProfile.locationConsent!!
-            Log.d(TAG, "readMyInfo: suc4")
-            Log.d(TAG, "readMyInfo: ${exampleItems.myProfile}")
-            Log.i("header token_current", " ${Token.accessToken}")
-
-
+            //첫유저인지 판별
+            isFirstUser = response.data.user.isFirst == true
 
         }catch (e: Exception){
-            Log.e(TAG, "readMyInfo: error err")
+            Log.d(TAG, "readMyInfo: error err")
             e.printStackTrace()
-            Log.e(TAG, e.message.toString())
+            Log.d(TAG, e.message.toString())
+            Log.d(TAG, e.cause.toString())
 
 
         }
@@ -168,6 +162,7 @@ class HomeViewModel @Inject constructor(
                     viewedNotification = response.body()?.data!!.viewed
                     reportNotification = response.body()?.data!!.report
                     marketingNotification = response.body()?.data!!.marketing
+
                     requestMyInfo()
                 } else {
                     Log.e(TAG, "readUserNotification: err${response.code()}")
@@ -352,7 +347,6 @@ class HomeViewModel @Inject constructor(
 
     }
 
-    var isFirstUser by mutableStateOf(false)
     var isCheckFinished by mutableStateOf(false)
     fun requestIsFirstCheck(){
 

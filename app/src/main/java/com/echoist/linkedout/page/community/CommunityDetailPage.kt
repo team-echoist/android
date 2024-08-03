@@ -326,7 +326,7 @@ fun CommunityTopAppBar(navController: NavController, viewModel: CommunityViewMod
 
 @Composable
 fun ReportOption( onClickReport: () -> Unit,viewModel: CommunityViewModel) {
-    Surface(modifier = Modifier.size(180.dp, 110.dp).background(Color(0xFF0E0E0E)), shape = RoundedCornerShape(2)) {
+    Surface(modifier = Modifier.size(180.dp, 110.dp), shape = RoundedCornerShape(2)) {
         Column(
             modifier = Modifier.fillMaxSize().background(Color(0xFF0E0E0E)),
             verticalArrangement = Arrangement.Center,

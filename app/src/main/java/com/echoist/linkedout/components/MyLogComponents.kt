@@ -48,7 +48,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -60,7 +59,6 @@ import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.Story
 import com.echoist.linkedout.formatDateTime
 import com.echoist.linkedout.page.myLog.OptionItem
-import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.viewModels.MyLogViewModel
 import com.echoist.linkedout.viewModels.WritingViewModel
 import kotlinx.coroutines.launch
@@ -478,10 +476,8 @@ fun ModifyOrDeleteBox(
     essayItem: EssayApi.EssayItem
 ) {
 
-
-            Surface(shape = RoundedCornerShape(20), modifier = Modifier
-                .width(180.dp)
-                .background(Color(0xFF0E0E0E))) {
+    Surface(shape = RoundedCornerShape(10), modifier = Modifier
+                .width(180.dp)) {
                 Column(
                     modifier = Modifier.background(Color(0xFF0E0E0E)),
                     verticalArrangement = Arrangement.Center,
@@ -504,31 +500,8 @@ fun ModifyOrDeleteBox(
                         Log.d(TAG, "ModifyOption: dd")
                     },R.drawable.option_trash)
                     Spacer(modifier = Modifier.height(10.dp))
-
                 }
             }
-        }
-
-
-
-@Preview
-@Composable
-fun OutBox(){
-    Box(modifier = Modifier
-        .background(LinkedInColor, shape = RoundedCornerShape(40.dp))
-        , contentAlignment = Alignment.Center){
-        Text(
-            text = "    OUT    ", fontSize = 10.sp,color=Color.Black
-        )
-    }
-}//todo out chip 이미지로
-
-@Preview
-@Composable
-fun OutBox2(){
-
-    Text(
-        text = "    OUT    ", fontSize = 10.sp,color= LinkedInColor
-    )}
+}
 
 

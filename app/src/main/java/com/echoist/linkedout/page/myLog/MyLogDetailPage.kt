@@ -78,7 +78,11 @@ import kotlinx.coroutines.delay
 
 
 @Composable
-fun MyLogDetailPage(navController: NavController, viewModel: MyLogViewModel,writingViewModel: WritingViewModel) {
+fun MyLogDetailPage(
+    navController: NavController,
+    viewModel: MyLogViewModel,
+    writingViewModel: WritingViewModel
+) {
     val scrollState = rememberScrollState()
 
 
@@ -115,7 +119,7 @@ fun MyLogDetailPage(navController: NavController, viewModel: MyLogViewModel,writ
                         )
                     ) {
 
-                        ModifyOption(viewModel, navController = navController,writingViewModel)
+                        ModifyOption(viewModel, navController = navController, writingViewModel)
 
                     }
 
@@ -128,16 +132,20 @@ fun MyLogDetailPage(navController: NavController, viewModel: MyLogViewModel,writ
 }
 
 @Composable
-fun ModifyOption(viewModel: MyLogViewModel, navController: NavController,writingViewModel : WritingViewModel) {
+fun ModifyOption(
+    viewModel: MyLogViewModel,
+    navController: NavController,
+    writingViewModel: WritingViewModel
+) {
 
     var isStoryClicked by remember { mutableStateOf(false) }
 
-    if (isStoryClicked){
+    if (isStoryClicked) {
         StoryModifyBox({
             isStoryClicked = false
             viewModel.isActionClicked = false
             viewModel.deleteEssayInStory(navController)
-        },{
+        }, {
             isStoryClicked = false
             viewModel.isActionClicked = false
             viewModel.modifyEssayInStory(navController)
@@ -145,18 +153,21 @@ fun ModifyOption(viewModel: MyLogViewModel, navController: NavController,writing
             {
                 viewModel.isActionClicked = false
                 isStoryClicked = false
-            },viewModel)
+            }, viewModel
+        )
     }
-    if (!isStoryClicked){
+    if (!isStoryClicked) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(end = 23.dp),
             contentAlignment = Alignment.TopEnd
-        ){
-            Surface(modifier = Modifier.size(180.dp, 305.dp).background(Color(0xFF0E0E0E)), shape = RoundedCornerShape(20)) {
+        ) {
+            Surface(modifier = Modifier.size(180.dp, 305.dp), shape = RoundedCornerShape(10)) {
                 Column(
-                    modifier = Modifier.fillMaxSize().background(Color(0xFF0E0E0E)),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color(0xFF0E0E0E)),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -188,10 +199,13 @@ fun ModifyOption(viewModel: MyLogViewModel, navController: NavController,writing
                     }
                     Spacer(modifier = Modifier.height(12.dp))
                     HorizontalDivider()
-                    OptionItem(text = "수정", Color.White,{
-                        writingViewModel.title.value = TextFieldValue(viewModel.readDetailEssay().title!!)
-                        writingViewModel.content = TextFieldValue(viewModel.readDetailEssay().content!!)
-                        writingViewModel.hashTagList = viewModel.readDetailEssay().tags!!.map { it.name }.toMutableStateList()
+                    OptionItem(text = "수정", Color.White, {
+                        writingViewModel.title.value =
+                            TextFieldValue(viewModel.readDetailEssay().title!!)
+                        writingViewModel.content =
+                            TextFieldValue(viewModel.readDetailEssay().content!!)
+                        writingViewModel.hashTagList =
+                            viewModel.readDetailEssay().tags!!.map { it.name }.toMutableStateList()
                         writingViewModel.latitude = viewModel.readDetailEssay().latitude
                         writingViewModel.longitude = viewModel.readDetailEssay().longitude
                         writingViewModel.locationText = viewModel.readDetailEssay().location ?: ""
@@ -201,27 +215,40 @@ fun ModifyOption(viewModel: MyLogViewModel, navController: NavController,writing
 
 
                         navController.navigate("WritingPage")
-                                                        },R.drawable.option_modify)
+                    }, R.drawable.option_modify)
                     HorizontalDivider()
-                    OptionItem(text = "발행", Color.White,{viewModel.updateEssayToPublished(navController)},R.drawable.option_link)
+                    OptionItem(
+                        text = "발행",
+                        Color.White,
+                        { viewModel.updateEssayToPublished(navController) },
+                        R.drawable.option_link
+                    )
                     HorizontalDivider()
-                    OptionItem(text = "Linked-out", Color.White,{viewModel.updateEssayToLinkedOut(navController)},R.drawable.option_linkedout)
+                    OptionItem(
+                        text = "Linked-out",
+                        Color.White,
+                        { viewModel.updateEssayToLinkedOut(navController) },
+                        R.drawable.option_linkedout
+                    )
                     HorizontalDivider()
                     OptionItem(text = "스토리 선택", Color(0xFF616FED),
                         {
                             isStoryClicked = true
-                        },R.drawable.option_check)
+                        }, R.drawable.option_check
+                    )
                     HorizontalDivider()
-                    OptionItem(text = "삭제", Color.Red,{
-                        viewModel.deleteEssay(navController = navController,viewModel.readDetailEssay().id ?: 0)
+                    OptionItem(text = "삭제", Color.Red, {
+                        viewModel.deleteEssay(
+                            navController = navController,
+                            viewModel.readDetailEssay().id ?: 0
+                        )
                         Log.d(TAG, "ModifyOption: dd")
-                    },R.drawable.option_trash)
+                    }, R.drawable.option_trash)
 
                 }
             }
         }
     }
-
 
 
 }
@@ -231,11 +258,11 @@ fun OptionItem(
     text: String,
     color: Color,
     onClick: () -> Unit,
-    iconResource : Int
+    iconResource: Int
 ) {
     Box(
         Modifier
-            .background(Color(0xFF0E0E0E))
+            .background(Color(0xFF0E0E0E), shape = RoundedCornerShape(20))
             .size(180.dp, 44.dp)
             .clickable { onClick() }) {
         Box(
@@ -317,18 +344,26 @@ fun DetailEssay(viewModel: MyLogViewModel) {
     val essay = viewModel.detailEssay
     Box {
         Column {
-            if (essay.thumbnail !=null && essay.thumbnail!!.startsWith("https")){
-                Box(modifier = Modifier
-                    .fillMaxWidth()
-                    .height(220.dp), contentAlignment = Alignment.Center){
-                    GlideImage(model = essay.thumbnail, contentDescription = "essay Thumbnail", contentScale = ContentScale.FillHeight)
+            if (essay.thumbnail != null && essay.thumbnail!!.startsWith("https")) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(220.dp), contentAlignment = Alignment.Center
+                ) {
+                    GlideImage(
+                        model = essay.thumbnail,
+                        contentDescription = "essay Thumbnail",
+                        contentScale = ContentScale.FillHeight
+                    )
 
                 }
             }
 
-            Column(modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+            ) {
                 Spacer(modifier = Modifier.height(20.dp))
 
                 Text(text = essay.title!!, fontSize = viewModel.titleTextSize, modifier = Modifier)
@@ -342,8 +377,11 @@ fun DetailEssay(viewModel: MyLogViewModel) {
                 Spacer(modifier = Modifier.height(46.dp))
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
                     Column {
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
-                            (if (essay.author !=null) essay.author!!.nickname else "")?.let {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.CenterEnd
+                        ) {
+                            (if (essay.author != null) essay.author!!.nickname else "")?.let {
                                 Text(
                                     text = it,
                                     fontSize = 12.sp,
@@ -353,7 +391,10 @@ fun DetailEssay(viewModel: MyLogViewModel) {
                             }
                         }
                         Spacer(modifier = Modifier.height(8.dp))
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.CenterEnd
+                        ) {
                             Text(
                                 text = formatDateTime(essay.createdDate ?: ""),
                                 fontSize = 12.sp,
@@ -362,8 +403,11 @@ fun DetailEssay(viewModel: MyLogViewModel) {
                             )
                         }
                         Spacer(modifier = Modifier.height(8.dp))
-                        if (essay.linkedOutGauge != null){
-                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
+                        if (essay.linkedOutGauge != null) {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.CenterEnd
+                            ) {
                                 Row {
                                     repeat(essay.linkedOutGauge!!) {
                                         Image(
@@ -385,15 +429,15 @@ fun DetailEssay(viewModel: MyLogViewModel) {
                     }
                 }
                 Spacer(modifier = Modifier.height(28.dp))
-                if (essay.tags != null){
+                if (essay.tags != null) {
                     Row {
-                        repeat(essay.tags!!.size){
+                        repeat(essay.tags!!.size) {
                             SuggestionChip(
                                 onClick = { },
                                 label = { Text(essay.tags!![it].name) },
                                 shape = RoundedCornerShape(50)
                             )
-                            if (it != essay.tags!!.size-1) Spacer(modifier = Modifier.width(10.dp))
+                            if (it != essay.tags!!.size - 1) Spacer(modifier = Modifier.width(10.dp))
                         }
                     }
                 }
@@ -411,7 +455,7 @@ fun DetailEssay(viewModel: MyLogViewModel) {
 fun StoryModifyBox(
     isDeleteClicked: () -> Unit,
     isModifyClicked: () -> Unit,
-    isBackgroundClicked : ()->Unit,
+    isBackgroundClicked: () -> Unit,
     viewModel: MyLogViewModel
 ) {
 
@@ -442,7 +486,7 @@ fun StoryModifyBox(
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(bottom = 20.dp)
                 )
-                SingleSelectableList(items,viewModel)
+                SingleSelectableList(items, viewModel)
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -457,7 +501,11 @@ fun StoryModifyBox(
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF868686)),
                         shape = RoundedCornerShape(20)
                     ) {
-                        Text(text = "스토리에서 삭제", color = Color.Black, fontWeight = FontWeight.SemiBold)
+                        Text(
+                            text = "스토리에서 삭제",
+                            color = Color.Black,
+                            fontWeight = FontWeight.SemiBold
+                        )
                     }
 
                     Button(
@@ -478,7 +526,7 @@ fun StoryModifyBox(
 }
 
 @Composable
-fun SingleSelectableList(items: List<Story>,viewModel: MyLogViewModel) {
+fun SingleSelectableList(items: List<Story>, viewModel: MyLogViewModel) {
     // 선택된 항목을 추적하기 위한 상태 변수
     var selectedItem by remember { mutableStateOf(viewModel.findStoryInEssay()) }
 
@@ -505,9 +553,13 @@ fun SingleSelectableList(items: List<Story>,viewModel: MyLogViewModel) {
                     .padding(16.dp)
             ) {
 
-                    Text(text = item.name)
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
-                    if (isSelected) Icon(painter = painterResource(id = R.drawable.option_check), tint = LinkedInColor, contentDescription = "")
+                Text(text = item.name)
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
+                    if (isSelected) Icon(
+                        painter = painterResource(id = R.drawable.option_check),
+                        tint = LinkedInColor,
+                        contentDescription = ""
+                    )
                 }
 
             }
@@ -517,7 +569,11 @@ fun SingleSelectableList(items: List<Story>,viewModel: MyLogViewModel) {
 
 
 @Composable
-fun CompletedEssayPage(navController: NavController, viewModel: MyLogViewModel,writingViewModel: WritingViewModel) {
+fun CompletedEssayPage(
+    navController: NavController,
+    viewModel: MyLogViewModel,
+    writingViewModel: WritingViewModel
+) {
     var hasCalledApi by remember { mutableStateOf(false) }
     LaunchedEffect(key1 = Unit) {
         if (!hasCalledApi) {
@@ -531,7 +587,7 @@ fun CompletedEssayPage(navController: NavController, viewModel: MyLogViewModel,w
 
     val scrollState = rememberScrollState()
 
-    if (hasCalledApi){
+    if (hasCalledApi) {
         LinkedOutTheme {
             Scaffold(
                 topBar = {
@@ -565,14 +621,20 @@ fun CompletedEssayPage(navController: NavController, viewModel: MyLogViewModel,w
                             )
                         ) {
 
-                            ModifyOption(viewModel, navController = navController, writingViewModel = writingViewModel)
+                            ModifyOption(
+                                viewModel,
+                                navController = navController,
+                                writingViewModel = writingViewModel
+                            )
 
                         }
-                        val text = when(viewModel.readDetailEssay().status){
+                        val text = when (viewModel.readDetailEssay().status) {
                             "private" -> "저장"
-                            "published" ->"발행"
+                            "published" -> "발행"
                             "linkedout" -> "링크드아웃"
-                            else -> {"검토중"}
+                            else -> {
+                                "검토중"
+                            }
                         }
                         WriteCompleteBox(type = text)
 
@@ -581,13 +643,13 @@ fun CompletedEssayPage(navController: NavController, viewModel: MyLogViewModel,w
                 }
             )
         }
+    } else {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black)
+        )
     }
-    else{
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black))
-    }
-
 
 
 }
@@ -602,7 +664,7 @@ fun DetailEssay2(viewModel: MyLogViewModel) {
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp)
         ) {
-            if (essay.thumbnail !=null){
+            if (essay.thumbnail != null) {
                 Column {
                     GlideImage(
                         model = essay.thumbnail, contentDescription = "", modifier = Modifier
@@ -625,7 +687,7 @@ fun DetailEssay2(viewModel: MyLogViewModel) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
                 Column {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
-                        (if (essay.author !=null) essay.author!!.nickname else "")?.let {
+                        (if (essay.author != null) essay.author!!.nickname else "")?.let {
                             Text(
                                 text = it,
                                 fontSize = 12.sp,
@@ -644,8 +706,11 @@ fun DetailEssay2(viewModel: MyLogViewModel) {
                         )
                     }
                     Spacer(modifier = Modifier.height(8.dp))
-                    if (essay.linkedOutGauge != null){
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
+                    if (essay.linkedOutGauge != null) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.CenterEnd
+                        ) {
                             Row {
                                 repeat(essay.linkedOutGauge!!) {
                                     Image(
@@ -667,15 +732,15 @@ fun DetailEssay2(viewModel: MyLogViewModel) {
                 }
             }
             Spacer(modifier = Modifier.height(28.dp))
-            if (essay.tags != null){
+            if (essay.tags != null) {
                 Row {
-                    repeat(essay.tags!!.size){
+                    repeat(essay.tags!!.size) {
                         SuggestionChip(
                             onClick = { },
                             label = { Text(essay.tags!![it].name) },
                             shape = RoundedCornerShape(50)
                         )
-                        if (it != essay.tags!!.size-1) Spacer(modifier = Modifier.width(10.dp))
+                        if (it != essay.tags!!.size - 1) Spacer(modifier = Modifier.width(10.dp))
                     }
                 }
             }
@@ -689,46 +754,66 @@ fun DetailEssay2(viewModel: MyLogViewModel) {
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun WriteCompleteBox(type : String){
+fun WriteCompleteBox(type: String) {
     var isVisible by remember {
         mutableStateOf(true)
     }
-    val text = when(type){
+    val text = when (type) {
         "저장" -> "아무개님의 새 글이\n" +
                 "'나만의 글'에 저장됐어요!"
+
         "발행" -> "아무개님의 새 글이\n" +
                 "숨바꼭질을 시작했어요!"
+
         "링크드아웃" -> "아무개님의 새 글이\n숨바꼭질을 시작했어요!"
         "검토중" -> "아무개님의 새 글을\n꼼꼼하게 검토중이에요"
-        else -> {""}
+        else -> {
+            ""
+        }
     }
 
-    val imageUrl = when(type){
+    val imageUrl = when (type) {
         "저장" -> PRIVATE_POPUP_URL
         "발행" -> PUBLISHED_POPUP_URL
         "링크드아웃" -> LINKEDOUT_POPUP_URL
         "검토중" -> INSPECT_POPUP_URL
-        else -> {""}
+        else -> {
+            ""
+        }
     }
 
-    if (isVisible){
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black.copy(0.7f))){
+    if (isVisible) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(0.7f))
+        ) {
 
         }
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-            Box(modifier = Modifier.size(300.dp,286.dp)){
-                GlideImage(model = R.drawable.box_complete, contentDescription = "completeBox", modifier = Modifier.fillMaxSize())
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Box(modifier = Modifier.size(300.dp, 286.dp)) {
+                GlideImage(
+                    model = R.drawable.box_complete,
+                    contentDescription = "completeBox",
+                    modifier = Modifier.fillMaxSize()
+                )
                 Row(
                     Modifier
                         .padding(horizontal = 20.dp)
                         .padding(bottom = 50.dp)
-                        .fillMaxSize(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
-                    GlideImage(model = imageUrl, contentDescription = "", modifier = Modifier
-                        .weight(2f)
-                        .height(210.dp))
-                    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(4f)) {
+                        .fillMaxSize(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    GlideImage(
+                        model = imageUrl, contentDescription = "", modifier = Modifier
+                            .weight(2f)
+                            .height(210.dp)
+                    )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.weight(4f)
+                    ) {
                         Row {
                             Text(text = "$type ", color = LinkedInColor, fontSize = 24.sp)
                             Text(text = "완료", fontSize = 24.sp, color = Color.White)
@@ -738,19 +823,22 @@ fun WriteCompleteBox(type : String){
 
                     }
                 }
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter){
-                    Button(onClick = {
-                        isVisible = false
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
+                    Button(
+                        onClick = {
+                            isVisible = false
 
-                    },
+                        },
                         Modifier
                             .fillMaxWidth()
-                            .padding(start = 20.dp, end = 20.dp, bottom = 20.dp), shape = RoundedCornerShape(20), colors = ButtonDefaults.buttonColors(containerColor = LinkedInColor)) {
+                            .padding(start = 20.dp, end = 20.dp, bottom = 20.dp),
+                        shape = RoundedCornerShape(20),
+                        colors = ButtonDefaults.buttonColors(containerColor = LinkedInColor)
+                    ) {
                         Text(text = "닫기")
                     }
                 }
             }
-
 
 
         }

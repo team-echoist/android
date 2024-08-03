@@ -115,8 +115,8 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewMo
     LaunchedEffect(key1 = Unit) {
         viewModel.requestMyInfo()
         viewModel.requestUserGraphSummaryResponse()
-        viewModel.requestIsFirstCheck()
         viewModel.requestGuleRoquis()
+
     }
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -396,7 +396,7 @@ fun MyProfile(item: UserInfo, onClick: () -> Unit) {
             Spacer(modifier = Modifier.width(20.dp))
             Column(Modifier.weight(7f)) {
                 Row {
-                    Text(text = item.nickname!!, color = Color(0xFF616FED))
+                    Text(text = item.nickname ?: "", color = Color(0xFF616FED))
                     Text(text = " 아무개", color = Color.White)
                 }
                 Spacer(modifier = Modifier.height(7.dp))

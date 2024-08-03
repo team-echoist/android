@@ -21,7 +21,7 @@ import com.squareup.moshi.JsonClass
     var platformId : String? = null,
     var deactivationDate : String? = null,
     var weeklyEssayCounts: List<WeeklyEssayCount>? = null,
-        var locationConsent: Boolean? = null
+    var locationConsent: Boolean? = null
 
     )
 

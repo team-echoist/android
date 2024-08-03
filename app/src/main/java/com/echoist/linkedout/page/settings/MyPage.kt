@@ -594,7 +594,7 @@ fun LinkedOutBadgeGrid(viewModel: SettingsViewModel) {
 fun ModifyNickNameTextField( viewModel: SettingsViewModel) {
 
     var text by remember {
-        mutableStateOf(viewModel.getMyInfo().nickname!!)
+        mutableStateOf(viewModel.getMyInfo().nickname ?: "에러")
     }
     //수정 안했을때 기본 닉네임 설정. 원래 닉네임으로.
     viewModel.newProfile.nickname = text

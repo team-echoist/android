@@ -79,21 +79,27 @@ class SocialLoginViewModel @Inject constructor(
     var userId by mutableStateOf("")
     var userPw by mutableStateOf("")
 
-    private suspend fun readMyInfo(){
+    private suspend fun readMyInfo(navController: NavController){
         try {
-            val response = userApi.readMyInfo(Token.accessToken)
+
+            val response = userApi.getMyInfo(Token.accessToken)
             Log.d(TAG, "readMyInfo: suc1")
+            Log.d("헤더 토큰", Token.accessToken)
+            Log.i("본인 유저 정보 + 에세이", "readMyInfo: ${response.data.user}")
+            exampleItems.myProfile = response.data.user
+            exampleItems.myProfile.essayStats = response.data.essayStats
+            Log.i("본인 유저 정보 + 에세이", "readMyInfo: ${exampleItems.myProfile}")
 
-            exampleItems.myProfile = response.data
-            Log.d(TAG, "readMyInfo: suc2")
 
-            val responseDetail = userApi.readMyInfoDetail(Token.accessToken,response.data.id!!)
-            Log.d(TAG, "readMyInfo: suc3")
+            if (response.data.user.isFirst == true){
+                Log.d("첫 회원가입 여부 체크","true")
+                navController.navigate("AgreeOfProvisionsPage")
+            }
 
-            exampleItems.myProfile.essayStats = responseDetail.data.essayStats
-            Log.d(TAG, "readMyInfo: suc4")
-            Log.i(TAG, "readMyInfo: ${exampleItems.myProfile}")
-            Log.i("header token_current", " ${Token.accessToken}")
+            else { //아니라면 바로 홈화면으로 이동
+                Log.d("첫 회원가입 여부 체크", "false")
+                navController.navigate("HOME")
+            }
 
 
         }catch (e: Exception){
@@ -134,27 +140,6 @@ class SocialLoginViewModel @Inject constructor(
         }
     }
 
-    private suspend fun requestIsFirstCheck(navController: NavController){
-
-            try {
-                val response = userApi.requestUserFirstCheck(Token.accessToken)
-                if (response.isSuccessful){
-                    if (response.body()!!.data) { //data 값이 true라면 첫 로그인 후 false로 값 변환해줌
-                        Log.d("첫 회원가입 여부 체크","true")
-                        navController.navigate("AgreeOfProvisionsPage")
-                    }
-                    else{ //아니라면 바로 홈화면으로 이동
-                        Log.d("첫 회원가입 여부 체크","false")
-                        navController.navigate("HOME")
-                    }
-                }
-            } catch (e: Exception) {
-                Log.e("첫 회원가입 여부 체크","에러")
-            } finally {
-            }
-
-
-    }
 
 
     fun signInWithGoogle(
@@ -226,9 +211,8 @@ class SocialLoginViewModel @Inject constructor(
                     Log.i("server header token(구글)", Token.accessToken)
                     Log.d("google_login_success", response.code().toString())
 
-                    readMyInfo()
-                    requestIsFirstCheck(navController) // 첫 회원가입 여부 확인하고 화면이동
-                } else {
+                    readMyInfo(navController)// 첫 회원가입 여부 확인하고 화면이동
+                } else { //409는 중복. 502는 아예 서버 팅
                     Log.e("google_login 서버와 api", "Failed ${response.code()}")
                 }
 
@@ -319,8 +303,8 @@ class SocialLoginViewModel @Inject constructor(
                     Token.accessToken = (response.headers()["authorization"].toString())
                     Log.d(TAG, "requestKakaoLogin: ${response.code()}")
 
-                    readMyInfo()
-                    requestIsFirstCheck(navController) // 첫 회원가입 여부 확인하고 화면이동
+                    readMyInfo(navController)// 첫 회원가입 여부 확인하고 화면이동
+
                 } else {
                     Log.e("kakao_login 서버와 api", "Failed ${response.code()}")
                 }
@@ -440,8 +424,8 @@ class SocialLoginViewModel @Inject constructor(
                     Log.d(TAG, "requestNaverLogin: ${response.code()}")
 
 
-                    readMyInfo()
-                    requestIsFirstCheck(navController) // 첫 회원가입 여부 확인하고 화면이동
+                    readMyInfo(navController)// 첫 회원가입 여부 확인하고 화면이동
+
                 } else {
                     Log.e("naver_login 서버와 api", "Failed ${response.code()}")
                 }
@@ -539,8 +523,8 @@ class SocialLoginViewModel @Inject constructor(
                     Token.accessToken = (response.headers()["authorization"].toString())
                     Log.d(TAG, "requestAppleLogin: ${response.code()}")
 
-                    readMyInfo()
-                    requestIsFirstCheck(navController) // 첫 회원가입 여부 확인하고 화면이동
+                    readMyInfo(navController)// 첫 회원가입 여부 확인하고 화면이동
+
                 } else {
                     Log.e("Apple_login 서버와 api", "Failed ${response.code()}")
                 }

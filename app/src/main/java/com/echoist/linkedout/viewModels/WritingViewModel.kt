@@ -48,6 +48,7 @@ class WritingViewModel @Inject constructor(
     var myProfile by mutableStateOf(exampleItems.myProfile)
 
     var accessToken by mutableStateOf("")
+    var isStored by mutableStateOf(false)
 
     val maxLength = 4000
     val minLength = 10

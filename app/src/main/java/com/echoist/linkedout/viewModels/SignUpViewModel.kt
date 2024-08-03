@@ -1,6 +1,5 @@
 package com.echoist.linkedout.viewModels
 
-import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.util.Log
 import android.util.Patterns
@@ -53,11 +52,12 @@ class SignUpViewModel @Inject constructor(
 
     private suspend fun readMyInfo(){
         try {
-            val response = userApi.readMyInfo(Token.accessToken)
-            exampleItems.myProfile = response.data
+            val response = userApi.getMyInfo(Token.accessToken)
+            exampleItems.myProfile = response.data.user
+            exampleItems.myProfile.essayStats = response.data.essayStats
 
         }catch (_: Exception){
-            Log.d(ContentValues.TAG, "readMyInfo: error err")
+            Log.d(TAG, "readMyInfo: error err")
         }
     }
 
@@ -249,21 +249,28 @@ class SignUpViewModel @Inject constructor(
                     if (locationAgreement){ //사용자의 위치서비스 동의
                         val userInfo = UserInfo(locationConsent = true)
                         val response = userApi.userUpdate(Token.accessToken,userInfo)
-                        Log.d(TAG, "위치서비스 동의 저장 성공: ${response.code()}")
+
+                        if (response.isSuccessful) Log.d(TAG, "위치서비스 동의 저장 성공: ${response.code()}")
+                        else Log.e(TAG, "위치서비스 동의 저장 실패: ${response.code()}")
+
                     }
                     //사용자의 마케팅 동의
                     if (marketingAgreement || serviceAlertAgreement){ //사용자가 마케팅이나 서비스 알림 동의
                         val response = supportApi.updateUserNotification(Token.accessToken,DeviceId.deviceId,option)
-                        Log.d(TAG, "마케팅 동의 저장 성공: ${response.code()}")
-                    }
-                    navController.navigate("SignUpComplete")
+                        if (response.isSuccessful){
+                            Log.d(TAG, "마케팅 동의 저장 성공: ${response.code()}")
+                            navController.navigate("SignUpComplete")
+                        }
 
+                        else {
+                            Log.e(TAG, "마케팅 동의 저장 실패: ${response.code()}")
+                            Log.e(TAG, "마케팅 동의 저장 실패: ${response.errorBody()}")
+                        }
+                    }
                 } catch (e: Exception) {
                     e.printStackTrace()
                     Log.e("이용정보 동의 저장실패","${e.printStackTrace()}")
                 }
             }
-
-
     }
 }

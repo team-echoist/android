@@ -103,30 +103,27 @@ class SettingsViewModel @Inject constructor(
         return exampleItems.recentViewedEssayList
     }
 
-    private suspend fun readMyInfo(){
-        try {
-            val response = userApi.readMyInfo(Token.accessToken)
-            Log.d(TAG, "readMyInfo: suc1")
+    suspend fun requestMyInfo(){
+        viewModelScope.launch {
+            try {
 
-            exampleItems.myProfile = response.data
-            Log.d(TAG, "readMyInfo: suc2")
-
-            val responseDetail = userApi.readMyInfoDetail(Token.accessToken,response.data.id!!)
-            Log.d(TAG, "readMyInfo: suc3")
-
-            exampleItems.myProfile.essayStats = responseDetail.data.essayStats
-            Log.d(TAG, "readMyInfo: suc4")
-            Log.d(TAG, "readMyInfo: ${exampleItems.myProfile}")
+                val response = userApi.getMyInfo(Token.accessToken)
+                Log.d(TAG, "readMyInfo: suc1")
+                exampleItems.myProfile = response.data.user
+                exampleItems.myProfile.essayStats = response.data.essayStats
+                Log.i(TAG, "readMyInfo: ${exampleItems.myProfile}")
 
 
-        }catch (e: Exception){
-            Log.d(TAG, "readMyInfo: error err")
-            e.printStackTrace()
-            Log.d(TAG, e.message.toString())
-            Log.d(TAG, e.cause.toString())
+            }catch (e: Exception){
+                Log.d(TAG, "readMyInfo: error err")
+                e.printStackTrace()
+                Log.d(TAG, e.message.toString())
+                Log.d(TAG, e.cause.toString())
 
 
+            }
         }
+
     }
 
 

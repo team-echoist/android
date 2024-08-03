@@ -4,8 +4,12 @@ import android.content.ContentValues.TAG
 import android.net.Uri
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
@@ -20,6 +24,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -61,7 +66,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
@@ -97,6 +101,7 @@ import com.echoist.linkedout.page.login.keyboardAsState
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.WritingViewModel
+import kotlinx.coroutines.delay
 
 object Token {
     var accessToken: String = "EMPTYTOKEN"
@@ -129,6 +134,13 @@ fun WritingPage(
     var isTextUnderLineSelected by remember { mutableStateOf(false) }
 
     Log.d(TAG, "WritingPage: ${viewModel.readDetailEssay()}")
+
+    LaunchedEffect(key1 = viewModel.isStored) {
+        if (viewModel.isStored){
+            delay(2000)
+            viewModel.isStored = false
+        }
+    }
 
     LinkedOutTheme {
         Box {
@@ -188,7 +200,9 @@ fun WritingPage(
             }
             //취소 클릭시 배경 어둡게
             if (viewModel.isCanCelClicked.value)
-                Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(0.7f)))
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(0.7f)))
 
             Box(
                 modifier = Modifier
@@ -316,6 +330,27 @@ fun WritingPage(
                 }
                 }
             }
+        AnimatedVisibility(
+            visible = viewModel.isStored,
+            enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)),
+            exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
+        ){
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 20.dp)
+                    .navigationBarsPadding(),
+                contentAlignment = Alignment.BottomCenter
+            ){
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp)
+                    .background(Color(0xFF212121), shape = RoundedCornerShape(20)), contentAlignment = Alignment.Center){
+                    Text(text = "임시 저장이 완료되었습니다.", color = Color.White, fontSize = 16.sp)
+                }
+            }
+        }
+        
         }
     }
 
@@ -649,17 +684,17 @@ fun KeyboardLocationFunc(viewModel: WritingViewModel, navController: NavControll
     val requestPermissionsUtil = RequestPermissionsUtil(LocalContext.current, viewModel)
 
     val funcItems = listOf(
-        FuncItemData("인용구", R.drawable.keyboard_quote) {},
-        FuncItemData("구분선", R.drawable.keyboard_divider) {
-            val cursorPosition = viewModel.content.selection.start
-            val newText = viewModel.content.text.substring(0, cursorPosition) +
-                    "\n---\n" +
-                    viewModel.content.text.substring(cursorPosition)
-            viewModel.content = TextFieldValue(
-                text = newText,
-                selection = TextRange(cursorPosition + 5)
-            )
-        },
+//        FuncItemData("인용구", R.drawable.keyboard_quote) {},
+//        FuncItemData("구분선", R.drawable.keyboard_divider) {
+//            val cursorPosition = viewModel.content.selection.start
+//            val newText = viewModel.content.text.substring(0, cursorPosition) +
+//                    "\n---\n" +
+//                    viewModel.content.text.substring(cursorPosition)
+//            viewModel.content = TextFieldValue(
+//                text = newText,
+//                selection = TextRange(cursorPosition + 5)
+//            )
+//        },
         FuncItemData("위치", R.drawable.keyboard_location) {
             viewModel.isHashTagClicked = false
             viewModel.isLocationClicked = !viewModel.isLocationClicked
@@ -671,15 +706,16 @@ fun KeyboardLocationFunc(viewModel: WritingViewModel, navController: NavControll
                 Log.d("MainActivity", "위치 권한 거부")
             }
         },
-        FuncItemData("쓰다 만 글", R.drawable.keyboard_storage) { navController.navigate("TemporaryStoragePage") },
         FuncItemData("감정 해시태그", R.drawable.keyboard_hashtag) {
             viewModel.isLocationClicked = false
             viewModel.isHashTagClicked = !viewModel.isHashTagClicked
             Log.d("tagtag", "tag")
         },
-        FuncItemData("맞춤법 검사", R.drawable.keyboard_spelling) {},
+        FuncItemData("쓰다 만 글", R.drawable.keyboard_storage) { navController.navigate("TemporaryStoragePage") },
+
+        //FuncItemData("맞춤법 검사", R.drawable.keyboard_spelling) {},
         FuncItemData("이미지", R.drawable.keyboard_img) { navController.navigate("CropImagePage") },
-        FuncItemData("이미지", R.drawable.pw_eye) {},
+        //FuncItemData("이미지", R.drawable.pw_eye) {},
     )
 
     val density = LocalDensity.current
@@ -709,8 +745,9 @@ fun KeyboardLocationFunc(viewModel: WritingViewModel, navController: NavControll
             .background(Color(0xFF313131))
             .fillMaxWidth()
             .height(keyboardHeightDp.value)  // Use the remembered dp value
-            .padding(horizontal = 16.dp),
-        contentAlignment = Alignment.Center
+            .padding(horizontal = 16.dp)
+            .padding(top = 40.dp),
+        //contentAlignment = Alignment.Center
     ) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(4),
@@ -849,6 +886,9 @@ fun TextEditBar(
 
                             )
                         )
+                        
+                        keyboardController!!.hide()
+                        viewModel.isStored = true
                     })
                     Spacer(modifier = Modifier.width(15.dp))
                     VerticalDivider(
