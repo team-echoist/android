@@ -30,6 +30,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.echoist.linkedout.TYPE_COMMUNITY
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
@@ -79,7 +80,7 @@ fun RecentEssayListItemNoTime(
         .fillMaxWidth()
         .background(Color.Black)
         .clickable {
-            viewModel.readDetailRecentEssay(item.id!!, navController)
+            viewModel.readDetailRecentEssay(item.id!!, navController,TYPE_COMMUNITY)
             //navigate
         }
         .height(140.dp)) {

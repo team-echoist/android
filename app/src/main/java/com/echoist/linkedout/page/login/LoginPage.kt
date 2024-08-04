@@ -121,7 +121,6 @@ import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
 import com.echoist.linkedout.viewModels.HomeViewModel
-import com.echoist.linkedout.viewModels.LoginSuccessDialog
 import com.echoist.linkedout.viewModels.MyLogViewModel
 import com.echoist.linkedout.viewModels.SettingsViewModel
 import com.echoist.linkedout.viewModels.SignUpViewModel
@@ -182,7 +181,7 @@ class LoginPage : ComponentActivity() {
                     AgreeOfProvisionsPage(navController, signUpViewModel)
                 }
                 composable("SignUpComplete",
-                    deepLinks = listOf(navDeepLink { uriPattern = "https://linkedout.com/SignUpComplete?token={token}" }),
+                    deepLinks = listOf(navDeepLink { uriPattern = "https://linkedoutapp.com/SignUpComplete?token={token}" }),
                     arguments = listOf(navArgument("token"){
                         type = NavType.StringType
                         defaultValue = ""
@@ -274,7 +273,7 @@ class LoginPage : ComponentActivity() {
                     //settings page
                 }
                 composable("AccountPage",
-                    deepLinks = listOf(navDeepLink { uriPattern = "https://linkedout.com/AccountPage" })) {
+                    deepLinks = listOf(navDeepLink { uriPattern = "https://linkedoutapp.com/AccountPage" })) {
                     AccountPage(navController)
                     //settings page
                 }
@@ -291,7 +290,7 @@ class LoginPage : ComponentActivity() {
                     //settings page
                 }
                 composable("ResetPwPage",
-                    deepLinks = listOf(navDeepLink { uriPattern = "https://linkedoutapp./ResetPwPage?token={token}" }),
+                    deepLinks = listOf(navDeepLink { uriPattern = "https://linkedoutapp.com/ResetPwPage?token={token}" }),
                     arguments = listOf(navArgument("token"){
                         type = NavType.StringType
                         defaultValue = ""
@@ -360,9 +359,6 @@ fun GoogleLoginBtn(navController: NavController, viewModel: SocialLoginViewModel
         tint = Color.Unspecified
     )
 
-    if (viewModel.googleLoginstate.value) {
-        LoginSuccessDialog("google 로그인성공", viewModel.googleLoginstate)
-    }
 }
 
 @Composable
@@ -381,9 +377,6 @@ fun KakaoLoginBtn(navController: NavController, viewModel: SocialLoginViewModel)
         )
 
 
-    }
-    if (viewModel.kakaoLoginstate.value) {
-        LoginSuccessDialog("kakao 로그인성공", viewModel.kakaoLoginstate)
     }
 
 }
@@ -411,9 +404,6 @@ fun NaverLoginBtn(navController: NavController, viewModel: SocialLoginViewModel)
 
 
     }
-    if (viewModel.naverLoginstate.value) {
-        LoginSuccessDialog("naver 로그인성공", viewModel.naverLoginstate)
-    }
 
 }
 
@@ -434,9 +424,6 @@ fun AppleLoginBtn(navController: NavController, viewModel: SocialLoginViewModel)
         )
 
 
-    }
-    if (viewModel.naverLoginstate.value) {
-        LoginSuccessDialog("apple 로그인성공", viewModel.naverLoginstate)
     }
 
 }

@@ -10,9 +10,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.echoist.linkedout.TYPE_PROFILE
 import com.echoist.linkedout.api.BookMarkApi
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.api.StoryApi
+import com.echoist.linkedout.api.SupportApi
 import com.echoist.linkedout.api.toWritingEssayItem
 import com.echoist.linkedout.data.BadgeBoxItem
 import com.echoist.linkedout.data.ExampleItems
@@ -30,6 +32,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MyLogViewModel @Inject constructor(
     private val storyApi: StoryApi,
+    private val supportApi : SupportApi,
     private val essayApi: EssayApi,
     private val exampleItems: ExampleItems, bookMarkApi: BookMarkApi
 ) : CommunityViewModel(essayApi, exampleItems,bookMarkApi) {
@@ -58,6 +61,25 @@ class MyLogViewModel @Inject constructor(
     var modifyStoryEssayItems by mutableStateOf<List<RelatedEssay>>(emptyList())
     var essayListInStroy by mutableStateOf<List<EssayApi.EssayItem>>(emptyList())
 
+    init {
+        readMyEssay()
+        readPublishEssay()
+        readMyStory()
+    }
+    override fun refresh(){
+        viewModelScope.launch {
+
+            _isRefreshing.emit(true)
+            _isLoading.emit(true)
+            myEssayList.clear()
+            publishedEssayList.clear()
+            readMyEssay()
+            readPublishEssay()
+            _isRefreshing.emit(false)
+            _isLoading.emit(false)
+
+        }
+    }
 
     fun getUserInfo() : UserInfo{
         return exampleItems.myProfile
@@ -107,31 +129,36 @@ class MyLogViewModel @Inject constructor(
 
 
 
-    fun readPublishEssay() { //todo 얘를 한스텝 일찍 호출해야할듯
+    fun readPublishEssay() {
         Log.d(TAG, "detail : ${detailEssay.title}")
         Log.d(TAG, "detail: ${exampleItems.detailEssay.title}")
-
-        myEssayList.clear()
-        publishedEssayList.clear()
+        // publishedEssayList.clear()
 
         viewModelScope.launch {
+            _isLoading.emit(true)
+
             try {
-                val response =
-                    essayApi.readMyEssay(accessToken = Token.accessToken, published = true)
+                val response = essayApi.readMyEssay(accessToken = Token.accessToken, published = true)
                 Log.d("essaylist data", response.body()!!.path + response.body()!!.data)
 
                 if (response.isSuccessful) {
                     Token.accessToken = (response.headers()["authorization"].toString())
 
-
-                    response.body()!!.data.essays.forEach {
-                        publishedEssayList.add(it)
+                    response.body()!!.data.essays.forEach { essay ->
+                        // publishedEssayList에 이미 해당 essay가 존재하는지 확인
+                        if (publishedEssayList.none { it.id == essay.id }) {
+                            publishedEssayList.add(essay)
+                            Log.d("TAG", "Added to publishedEssayList: ${essay.title}")
+                        } else {
+                            Log.d("TAG", "Duplicate essay skipped: ${essay.title}")
+                        }
                     }
+
+                    // 확인을 위해 리스트를 출력
                     publishedEssayList.forEach {
                         Log.d("TAG", "readPublishedEssay: ${it.title}")
-                        if (it.story !=null)
-                        Log.d("TAG", "readPublishedEssay: ${it.story!!.name}")
-
+                        if (it.story != null)
+                            Log.d("TAG", "readPublishedEssay: ${it.story!!.name}")
                     }
 
                 }
@@ -140,15 +167,20 @@ class MyLogViewModel @Inject constructor(
                 Log.d("exception", e.localizedMessage?.toString() + Token.accessToken)
                 Log.d("exception", e.message.toString() + Token.accessToken)
             }
+            finally {
+                _isLoading.emit(false)
+
+            }
         }
     }
 
+ //todo 마지막 index로 가면 무한로딩걸림
     fun readMyEssay() {
-        myEssayList.clear()
-        publishedEssayList.clear()
-
+        //myEssayList.clear()
 
         viewModelScope.launch {
+            _isLoading.emit(true)
+
             try {
                 val response = essayApi.readMyEssay(accessToken = Token.accessToken, published = false)
                 Log.d("essaylist data", response.body()!!.path + response.body()!!.data)
@@ -157,9 +189,15 @@ class MyLogViewModel @Inject constructor(
                     Log.d("TAG", "readMyEssay: ${response.body()!!.data.essays}")
                     Token.accessToken = (response.headers()["authorization"].toString())
 
-                    response.body()!!.data.essays.forEach {
-                        myEssayList.add(it)
 
+                    response.body()!!.data.essays.forEach { essay ->
+                        // publishedEssayList에 이미 해당 essay가 존재하는지 확인
+                        if (myEssayList.none { it.id == essay.id }) {
+                            myEssayList.add(essay)
+                            Log.d("TAG", "Added to publishedEssayList: ${essay.title}")
+                        } else {
+                            Log.d("TAG", "Duplicate essay skipped: ${essay.title}")
+                        }
                     }
                 }
                 myEssayList.forEach {
@@ -172,6 +210,9 @@ class MyLogViewModel @Inject constructor(
                 e.printStackTrace()
                 Log.d("exception", (e.localizedMessage?.toString() ?: "") + Token.accessToken)
                 Log.d("exception", e.message.toString() + Token.accessToken)
+            }
+            finally {
+                _isLoading.emit(false)
             }
         }
     }
@@ -400,17 +441,18 @@ class MyLogViewModel @Inject constructor(
         }
     }
 
-    override fun readDetailEssay(id: Int, navController: NavController) {
+    override fun readDetailEssay(id: Int, navController: NavController,type: String) {
         viewModelScope.launch {
             try {
-                val response = essayApi.readDetailEssay(Token.accessToken,id)
+                val response = essayApi.readDetailEssay(Token.accessToken,id,type = type , )
                 exampleItems.detailEssay = response.body()!!.data.essay
                 detailEssay = exampleItems.detailEssay
                 Log.d(TAG, "readdetailEssay: 성공인데요${response.body()!!.data}")
                 Log.d(TAG, "readdetailEssay: 성공인데요${exampleItems.detailEssay.id}")
 
-                if (response.body()!!.data.previous != null) {
-                    exampleItems.previousEssayList = response.body()!!.data.previous!!.toMutableStateList()
+                if (response.body()!!.data.anotherEssays != null) {
+                    exampleItems.previousEssayList = response.body()!!.data.anotherEssays!!.essays.toMutableStateList()
+
                     previousEssayList = exampleItems.previousEssayList
                 }
                 Log.d(TAG, "readDetailEssay ${exampleItems.detailEssay}")
@@ -434,7 +476,7 @@ class MyLogViewModel @Inject constructor(
     fun readDetailEssayInStory(id: Int, navController: NavController,number : Int) {
         viewModelScope.launch {
             try {
-                val response = essayApi.readDetailEssay(Token.accessToken,id)
+                val response = essayApi.readDetailEssay(Token.accessToken,id, TYPE_PROFILE)
                 exampleItems.detailEssay = response.body()!!.data.essay
                 detailEssay = exampleItems.detailEssay
                 Log.d(TAG, "readdetailEssay: 성공인데요${response.body()!!.data}")
@@ -511,6 +553,23 @@ class MyLogViewModel @Inject constructor(
                 Log.e("writeEssayApiError", "An error occurred: ${e.message}")
             }
 
+        }
+    }
+
+    var isExistUnreadAlerts by mutableStateOf(false)
+    fun requestUnreadAlerts(){
+
+        viewModelScope.launch {
+            try {
+                val response = supportApi.readUnreadAlerts(Token.accessToken)
+                if (response.isSuccessful){
+                    isExistUnreadAlerts =
+                        response.body()!!.data
+                    Log.d(TAG, "안읽은 알림 여부: ${response.body()!!.data}")
+                }
+            } catch (e: Exception) {
+                Log.e("안읽은 알림 여부","에러")
+            }
         }
     }
 }

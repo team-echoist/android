@@ -2,7 +2,6 @@ package com.echoist.linkedout.viewModels
 
 import android.app.AlarmManager
 import android.app.PendingIntent
-import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
@@ -108,7 +107,7 @@ class HomeViewModel @Inject constructor(
     private fun getFCMToken(callback: (String?) -> Unit) {
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (!task.isSuccessful) {
-                Log.w(ContentValues.TAG, "Fetching FCM registration token failed", task.exception)
+                Log.w(TAG, "Fetching FCM registration token failed", task.exception)
                 callback(null) // 작업 실패 시 null 반환
                 return@addOnCompleteListener
             }
@@ -348,22 +347,19 @@ class HomeViewModel @Inject constructor(
     }
 
     var isCheckFinished by mutableStateOf(false)
-    fun requestIsFirstCheck(){
+    var isExistUnreadAlerts by mutableStateOf(false)
+    fun requestUnreadAlerts(){
 
         viewModelScope.launch {
             try {
-                val response = userApi.requestUserFirstCheck(Token.accessToken)
+                val response = supportApi.readUnreadAlerts(Token.accessToken)
                 if (response.isSuccessful){
-                    isFirstUser = if (response.body()!!.data) { //data 값이 true라면 첫 로그인 후 false로 값 변환해줌
-                        true
-
-                    } else{ //아니라면 바로 홈화면으로 이동
-                        false
-                    }
-                    Log.d(TAG, "첫 유저 여부: ${response.body()!!.data}")
+                    isExistUnreadAlerts =
+                        response.body()!!.data
+                    Log.d(TAG, "안읽은 알림 여부: ${response.body()!!.data}")
                 }
             } catch (e: Exception) {
-                Log.e("첫 회원가입 여부 체크","에러")
+                Log.e("안읽은 알림 여부","에러")
             } finally {
                 isCheckFinished = true
             }

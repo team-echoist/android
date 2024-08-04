@@ -99,6 +99,7 @@ import com.echoist.linkedout.PROFILE_IMAGE_10
 import com.echoist.linkedout.PROFILE_IMAGE_11
 import com.echoist.linkedout.PROFILE_IMAGE_12
 import com.echoist.linkedout.R
+import com.echoist.linkedout.TYPE_COMMUNITY
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.BadgeBoxItem
 import com.echoist.linkedout.data.EssayStats
@@ -206,12 +207,15 @@ fun MyPage(
                                 bottomSheetState.expand()
                             }
                         }
-                        SettingBar("링크드아웃 배지") { viewModel.readDetailBadgeList(navController) }
-                        LinkedOutBadgeGrid(viewModel)
-                        SettingBar("최근 본 글") {navController.navigate("RecentViewedEssayPage")}
-                        RecentEssayList(itemList = viewModel.getRecentViewedEssayList(),navController)
-                        MembershipSettingBar("멤버십 관리"){}
-                        SettingBar("계정 관리") {navController.navigate("AccountPage")}
+                        if (viewModel.isApiFinished){
+                            SettingBar("링크드아웃 배지") { viewModel.readDetailBadgeList(navController) }
+                            LinkedOutBadgeGrid(viewModel)
+                            SettingBar("최근 본 글") {navController.navigate("RecentViewedEssayPage")}
+                            RecentEssayList(itemList = viewModel.getRecentViewedEssayList(),navController)
+                            MembershipSettingBar("멤버십 관리"){}
+                            SettingBar("계정 관리") {navController.navigate("AccountPage")}
+                        }
+
 
 
                     }
@@ -411,7 +415,7 @@ fun RecentEssayItem(item: EssayApi.EssayItem,viewModel : CommunityViewModel = hi
     Box(modifier = Modifier
         .size(150.dp, 120.dp)
         .clickable { /* 에세이로 이동 */
-            viewModel.readDetailRecentEssay(item.id!!, navController)
+            viewModel.readDetailRecentEssay(item.id!!, navController,TYPE_COMMUNITY)
         }) {
         Column {
             Text(text = item.title!!)

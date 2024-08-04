@@ -81,7 +81,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.colintheshots.twain.MarkdownText
 import com.echoist.linkedout.R
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.components.BlankWarningAlert
@@ -159,13 +158,13 @@ fun WritingPage(
 
 
                     ContentTextField(viewModel = viewModel)
-                    MarkdownText(
-                        markdown = viewModel.content.text,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 20.dp, top = 80.dp),
-                        color = Color.White
-                    )
+//                    MarkdownText(
+//                        markdown = viewModel.content.text,
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .padding(start = 20.dp, top = 80.dp),
+//                        color = Color.White
+//                    )
                     Spacer(modifier = Modifier.height(50.dp))
 
                         Box(
@@ -220,7 +219,7 @@ fun WritingPage(
                             animationSpec = tween(durationMillis = 500)
                         )
                     ) {
-                        WritingCancelCard(viewModel = viewModel, navController = navController)
+                        WritingCancelCard(viewModel = viewModel, navController = navController){viewModel.isStored = true}
                     }
                     //장소 찍는
                     if (viewModel.longitude != null && viewModel.latitude != null && viewModel.isTextFeatOpened.value) {
@@ -479,10 +478,11 @@ fun WritingTopAppBar(
                     .clickable {
                         if (viewModel.title.value.text.isNotEmpty() && viewModel.content.text.length >= viewModel.minLength)
                             navController.navigate("WritingCompletePage")
+                        else {
+                            isContentNotEmpty.value = true
+                        }
                         if (viewModel.imageUri != null) {
                             viewModel.uploadThumbnail(viewModel.imageUri ?: Uri.EMPTY, context)
-                        } else {
-                            isContentNotEmpty.value = true
                         }
                     }
 
@@ -539,12 +539,12 @@ fun ContentTextField(viewModel: WritingViewModel) {
         )
         Spacer(modifier = Modifier.height(20.dp))
 
-        Text(
-            text = "${viewModel.content.text.length} / ${viewModel.maxLength}",
-            color = Color.Gray,
-            textAlign = TextAlign.End,
-            modifier = Modifier.fillMaxWidth()
-        )
+//        Text(
+//            text = "${viewModel.content.text.length} / ${viewModel.maxLength}",
+//            color = Color.Gray,
+//            textAlign = TextAlign.End,
+//            modifier = Modifier.fillMaxWidth()
+//        )
     }
 
 
@@ -572,10 +572,10 @@ fun MyDivider(viewModel: WritingViewModel) {
 }
 
 @Composable
-fun WritingCancelCard(viewModel: WritingViewModel, navController: NavController) {
+fun WritingCancelCard(viewModel: WritingViewModel, navController: NavController,isStoreClicked : ()->Unit) {
 
     Column(
-        modifier = Modifier.padding(horizontal = 20.dp),
+        modifier = Modifier.padding(horizontal = 20.dp).navigationBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -619,7 +619,7 @@ fun WritingCancelCard(viewModel: WritingViewModel, navController: NavController)
                     modifier = Modifier
                         .padding(top = 20.dp, bottom = 20.dp)
                         .clickable {
-
+                            isStoreClicked()
                             val tagList = mutableListOf<EssayApi.Tag>()
 
                             viewModel.hashTagList.forEach {

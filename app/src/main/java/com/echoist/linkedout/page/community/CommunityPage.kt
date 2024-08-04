@@ -9,6 +9,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -125,6 +126,7 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
                                 val isRefreshing by viewModel.isRefreshing.collectAsState()
 
                                 SwipeRefresh(
+                                    indicatorPadding = PaddingValues(top = 70.dp),
                                     state = rememberSwipeRefreshState(isRefreshing = isRefreshing),
                                     onRefresh = { viewModel.refresh() }) {
                                     if (viewModel.isApifinished) {

@@ -39,8 +39,8 @@
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+
             </intent-filter>
 
 
@@ -81,7 +81,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data android:scheme="https" />
-                <data android:host="linkedout.com" />
+                <data android:host="linkedoutapp.com" />
             </intent-filter>
         </activity>
 

@@ -1,6 +1,5 @@
 package com.echoist.linkedout.viewModels
 
-import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -12,6 +11,7 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.echoist.linkedout.TYPE_COMMUNITY
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.api.SupportApi
 import com.echoist.linkedout.data.Alert
@@ -85,17 +85,18 @@ class SupportViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 isLoading = true
-                val response = essayApi.readDetailEssay(Token.accessToken,id)
+                val response = essayApi.readDetailEssay(Token.accessToken, id,TYPE_COMMUNITY)
                 exampleItems.detailEssay = response.body()!!.data.essay
-                Log.d(ContentValues.TAG, "readdetailEssay: 성공인데요${response.body()!!.data}")
-                Log.d(ContentValues.TAG, "readdetailEssay: 성공인데요${response.body()!!.data.essay.title}")
+                Log.d(TAG, "readdetailEssay: 성공인데요${response.body()!!.data}")
+                Log.d(TAG, "readdetailEssay: 성공인데요${response.body()!!.data.essay.title}")
 
-                if (response.body()!!.data.previous != null) {
-                    exampleItems.previousEssayList = response.body()!!.data.previous!!.toMutableStateList()
+                if (response.body()!!.data.anotherEssays != null) {
+                    exampleItems.previousEssayList = response.body()!!.data.anotherEssays!!.essays.toMutableStateList()
+
                 }
-                Log.d(ContentValues.TAG, "readDetailEssay: previouse ${exampleItems.detailEssay}")
+                Log.d(TAG, "readDetailEssay: previouse ${exampleItems.detailEssay}")
 
-                Log.d(ContentValues.TAG, "readDetailEssay: previouse ${exampleItems.previousEssayList}")
+                Log.d(TAG, "readDetailEssay: anotherEssays ${exampleItems.previousEssayList}")
                 navController.navigate("CommunityDetailPage")
 
                 // API 호출 결과 처리 (예: response 데이터 사용)
@@ -103,9 +104,9 @@ class SupportViewModel @Inject constructor(
 
                 // 예외 처리
                 e.printStackTrace()
-                Log.d(ContentValues.TAG, "readRandomEssays: ${e.message}")
-                Log.d(ContentValues.TAG, "readRandomEssays: ${e.cause}")
-                Log.d(ContentValues.TAG, "readRandomEssays: ${e.localizedMessage}")
+                Log.d(TAG, "readRandomEssays: ${e.message}")
+                Log.d(TAG, "readRandomEssays: ${e.cause}")
+                Log.d(TAG, "readRandomEssays: ${e.localizedMessage}")
 
             }
             finally {

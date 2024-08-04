@@ -116,6 +116,7 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewMo
         viewModel.requestMyInfo()
         viewModel.requestUserGraphSummaryResponse()
         viewModel.requestGuleRoquis()
+        viewModel.requestUnreadAlerts()
 
     }
 
@@ -144,7 +145,7 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewMo
                                 if (isClosed) open() else close()
                             }
                         }
-                    },{navController.navigate("NotificationPage")})
+                    },{navController.navigate("NotificationPage")},viewModel.isExistUnreadAlerts)
                 },
                 bottomBar = { MyBottomNavigation(navController) },
                 floatingActionButton = { WriteFTB(navController,viewModel,writingViewModel) },
@@ -293,7 +294,8 @@ fun WriteFTB(navController: NavController,viewModel: HomeViewModel,writingViewMo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CustomTopAppBar(onClick: () -> Unit,onClickNotification : ()->Unit) {
+fun CustomTopAppBar(onClick: () -> Unit,onClickNotification : ()->Unit,isExistUnreadAlerts : Boolean) {
+    val img = if (isExistUnreadAlerts) R.drawable.icon_noti_on else R.drawable.icon_noti_off
     TopAppBar(
         title = { }, colors = TopAppBarDefaults.topAppBarColors(Color.Transparent),
         navigationIcon = {
@@ -309,8 +311,9 @@ fun CustomTopAppBar(onClick: () -> Unit,onClickNotification : ()->Unit) {
         },
         actions = {
             Icon(
-                painter = painterResource(id = R.drawable.icon_noti),
+                painter = painterResource(id = img),
                 contentDescription = "Notifications",
+                tint = Color.White,
                 modifier = Modifier
                     .clickable { onClickNotification() }
                     .padding(end = 10.dp)

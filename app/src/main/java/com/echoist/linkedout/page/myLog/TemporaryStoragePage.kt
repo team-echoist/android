@@ -44,7 +44,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.echoist.linkedout.api.EssayApi
-import com.echoist.linkedout.formatDateTime
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.WritingViewModel
@@ -226,7 +225,7 @@ fun StorageEssayItem(
                 Text(text = essayItem.title!!, color = Color.White) // Added color to match the theme
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = formatDateTime(essayItem.createdDate!!), fontSize = 10.sp,
+                    text = essayItem.createdDate!!, fontSize = 10.sp,
                     lineHeight = 15.sp,
                     color = Color(0xFF727070),
                 )
@@ -294,7 +293,7 @@ fun DeleteBtn(count: Int, onDeleteClicked: () -> Unit, btnColor: Color) {
         onClick = { onDeleteClicked() },
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp)
+            .padding(horizontal = 20.dp).padding(bottom = 20.dp)
             .height(61.dp),
         shape = RoundedCornerShape(20),
         colors = ButtonDefaults.buttonColors(containerColor = btnColor)

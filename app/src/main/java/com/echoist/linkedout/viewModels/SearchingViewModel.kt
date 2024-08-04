@@ -28,7 +28,7 @@ class SearchingViewModel @Inject constructor(
         viewModelScope.launch {
 
             try {
-                val response = essayApi.readSearchingEssays(Token.accessToken,keyword)
+                val response = essayApi.readSearchingEssays(Token.accessToken,keyword, limit = 30)
                 searchingEssayList = response.data.essays.toMutableStateList()
                 Log.d(ContentValues.TAG, "SearchingBar: $searchingText")
 
@@ -36,7 +36,6 @@ class SearchingViewModel @Inject constructor(
             } catch (e: Exception) {
                 e.printStackTrace()
                 TODO("Not yet implemented")
-            } finally {
             }
 
         }

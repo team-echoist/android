@@ -5,6 +5,7 @@ import com.echoist.linkedout.data.AllInquiriesResponse
 import com.echoist.linkedout.data.GuleroquisResponse
 import com.echoist.linkedout.data.Inquiry
 import com.echoist.linkedout.data.InquiryResponse
+import com.echoist.linkedout.data.IsFirstCheckResponse
 import com.echoist.linkedout.data.NoticeDetailResponse
 import com.echoist.linkedout.data.NoticeResponse
 import com.echoist.linkedout.data.NotificationResponse
@@ -87,7 +88,12 @@ interface SupportApi {
         @Path("alertId") alertId : Int,
     ): Response<Unit>
 
-    @GET("api/home/guleroquis") //todo 수정
+    @GET("api/alerts/unread")
+    suspend fun readUnreadAlerts(
+        @Header("Authorization") accessToken: String,
+    ): Response<IsFirstCheckResponse>
+
+    @GET("api/home/geulroquis") //todo 수정
     suspend fun readGeulroquis(
         @Header("Authorization") accessToken: String
     ): Response<GuleroquisResponse>

@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -55,12 +56,14 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.echoist.linkedout.R
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.SignUpViewModel
 import kotlinx.coroutines.delay
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun SignUpPage(
     navController: NavController,
@@ -87,6 +90,7 @@ fun SignUpPage(
         }
     }
 
+
     LinkedOutTheme {
         Scaffold(
             modifier = Modifier.pointerInput(Unit) { //배경 터치 시 키보드 숨김
@@ -100,64 +104,69 @@ fun SignUpPage(
                         CircularProgressIndicator(color = LinkedInColor)
                     }
                 }
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(it)
-                ) {
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "arrowback",
-                        tint = if (isSystemInDarkTheme()) {
-                            Color.White
 
-                        } else Color.Gray,
+                Box{
+
+                    Column(
                         modifier = Modifier
-                            .padding(16.dp)
-                            .size(30.dp)
-                            .clickable { navController.popBackStack() } //뒤로가기
-                    )
-                    Spacer(modifier = Modifier.height(30.dp))
-                    Text(
-                        text = "이메일로 가입하기",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(start = 16.dp),
-                        color = if (isSystemInDarkTheme()) Color.White else Color.Gray
-                    )
-                    Text(
-                        text = "회원 서비스 이용을 위해 회원가입을 해주세요.",
-                        fontSize = 16.sp,
-                        modifier = Modifier.padding(start = 16.dp, bottom = 32.dp),
-                        color = if (isSystemInDarkTheme()) Color(0xFF919191) else Color.Gray
-                    )
-                    EmailTextField(viewModel)
-                    PwTextField(viewModel)
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(text = "*비밀번호는 영문, 특수문자, 숫자 포함 8~12자를 조합해 주세요.", fontSize = 10.5.sp, color = LinkedInColor, modifier = Modifier.padding(start = 30.dp))
-
-
-                    Button(
-                        shape = RoundedCornerShape(10.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = LinkedInColor,
-                            disabledContainerColor = Color(0xFF868686)
-                        ),
-                        enabled = !viewModel.userEmailError && viewModel.userPw.isNotEmpty(),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(100.dp)
-                            .padding(start = 20.dp, end = 20.dp, top = 50.dp),
-                        onClick = {
-                            keyboardController?.hide()
-                            viewModel.getUserEmailCheck(viewModel.userEmail,navController)
-                        }
+                            .fillMaxSize()
+                            .padding(it)
                     ) {
-                        Text(text = "인증 메일 보내기", color = Color.Black)
-                    }
+                        Spacer(modifier = Modifier.height(20.dp))
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "arrowback",
+                            tint = if (isSystemInDarkTheme()) {
+                                Color.White
 
+                            } else Color.Gray,
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .size(30.dp)
+                                .clickable { navController.popBackStack() } //뒤로가기
+                        )
+                        Spacer(modifier = Modifier.height(30.dp))
+                        Text(
+                            text = "이메일로 가입하기",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(start = 16.dp),
+                            color = if (isSystemInDarkTheme()) Color.White else Color.Gray
+                        )
+                        Text(
+                            text = "회원 서비스 이용을 위해 회원가입을 해주세요.",
+                            fontSize = 16.sp,
+                            modifier = Modifier.padding(start = 16.dp, bottom = 32.dp),
+                            color = if (isSystemInDarkTheme()) Color(0xFF919191) else Color.Gray
+                        )
+                        EmailTextField(viewModel)
+                        PwTextField(viewModel)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(text = "*비밀번호는 영문(대소문자), 특수문자, 숫자 포함 8~12자를 조합해 주세요.", fontSize = 10.5.sp, color = LinkedInColor, modifier = Modifier.padding(horizontal = 30.dp))
+
+
+                        Button(
+                            shape = RoundedCornerShape(10.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = LinkedInColor,
+                                disabledContainerColor = Color(0xFF868686)
+                            ),
+                            enabled = !viewModel.userEmailError && viewModel.userPw.isNotEmpty(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(100.dp)
+                                .padding(start = 20.dp, end = 20.dp, top = 50.dp),
+                            onClick = {
+                                keyboardController?.hide()
+                                viewModel.getUserEmailCheck(viewModel.userEmail,navController)
+                            }
+                        ) {
+                            Text(text = "인증 메일 보내기", color = Color.Black)
+                        }
+
+                    }
                 }
+
                 AnimatedVisibility(
                     visible = viewModel.isSignUpApiFinished ,
                     enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)),
@@ -191,7 +200,7 @@ fun SignUpPage(
                         .clickable(enabled = false) { }){
                         Box(modifier = Modifier
                             .fillMaxSize()
-                            .padding(bottom = 20.dp), contentAlignment = Alignment.BottomCenter){
+                            .padding(bottom = 20.dp).navigationBarsPadding(), contentAlignment = Alignment.BottomCenter){
                             SendSignUpFinishedAlert(
                                 { viewModel.isErr = false },
                                 "에러가 발생했습니다.",
@@ -310,7 +319,7 @@ fun PwTextField(viewModel: SignUpViewModel) {
 fun AgreementText(text: String, clickable: () -> Unit, color: Color) {
 
 
-    Spacer(modifier = Modifier.height(10.dp))
+    Spacer(modifier = Modifier.height(18.dp))
     Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
             imageVector = Icons.Default.Done,

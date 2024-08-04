@@ -29,6 +29,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
@@ -443,19 +444,23 @@ fun WritingCompletePager(essayItem: EssayApi.EssayItem,viewModel: WritingViewMod
                             modifier = Modifier.padding(bottom = 25.dp),
                             color = Color.White
                         )
-                        Button(
-                            onClick = {
-                                if (viewModel.isModifyClicked) viewModel.modifyEssay(navController, status = "private")
-                                else viewModel.writeEssay(navController, status = "private")
-                            },
-                            modifier = Modifier
-                                .padding(bottom = 16.dp, start = 50.dp, end = 50.dp)
-                                .fillMaxWidth()
-                                .height(44.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = LinkedInColor)
-                        ) {
-                            Text(text = "저장", color = Color.White)
+                        Box{
+                            Button(
+                                onClick = {
+                                    if (viewModel.isModifyClicked) viewModel.modifyEssay(navController, status = "private")
+                                    else viewModel.writeEssay(navController, status = "private")
+                                },
+                                modifier = Modifier
+                                    .padding(bottom = 16.dp, start = 50.dp, end = 50.dp)
+                                    .fillMaxWidth()
+                                    .height(44.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = LinkedInColor)
+                            ) {
+                                Text(text = "저장", color = Color.White)
+                            }
                         }
+
+
                         Button(
                             onClick = {
 
@@ -497,12 +502,16 @@ fun WritingCompletePager(essayItem: EssayApi.EssayItem,viewModel: WritingViewMod
                         contentAlignment = Alignment.CenterStart
                     ) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
                             tint = LinkedInColor,
                             contentDescription = "previousPage",
-                            modifier = Modifier.size(30.dp).clickable { coroutineScope.launch {
-                                pagerstate.animateScrollToPage(0)
-                            } }
+                            modifier = Modifier
+                                .size(30.dp)
+                                .clickable {
+                                    coroutineScope.launch {
+                                        pagerstate.animateScrollToPage(0)
+                                    }
+                                }
                         )
                     }
                 }

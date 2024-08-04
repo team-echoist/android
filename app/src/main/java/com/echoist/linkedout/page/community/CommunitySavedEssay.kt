@@ -54,6 +54,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.echoist.linkedout.TYPE_COMMUNITY
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.formatElapsedTime
@@ -177,7 +178,7 @@ fun SavedEssayListItem(
                     color = color,
                     overflow = TextOverflow.Ellipsis
                 )
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
                         text = item.author?.nickname ?: "닉없음 아무개",
@@ -198,7 +199,7 @@ fun SavedEssayListItem(
                 )
             }
 
-            val checkColor = if (isSelected) LinkedInColor else Color(0xFF252525)
+            val checkColor = if (isSelected) LinkedInColor else Color(0xFF585858)
 
             if (viewModel.isSavedEssaysModifyClicked) {
 
@@ -324,7 +325,9 @@ fun SavedEssayListScreen(viewModel: CommunityViewModel, navController: NavContro
                             },
                             onClickItem = {
                                 if (!viewModel.isSavedEssaysModifyClicked) {
-                                    viewModel.readDetailEssay(item.id!!, navController)
+                                    viewModel.readDetailEssay(item.id!!, navController,
+                                        TYPE_COMMUNITY
+                                    )
 
                                     val exampleItems = ExampleItems()
                                     Log.d(ContentValues.TAG, "CommunityDetailPage: ${exampleItems.detailEssay.title}")

@@ -84,7 +84,8 @@ interface EssayApi{
     @GET("api/essays/{essayId}")
     suspend fun readDetailEssay(
         @Header("Authorization") accessToken: String,
-        @Path("essayId") essayId: Int = 0
+        @Path("essayId") essayId: Int = 0,
+        @Query("type") type : String,
     ): Response<DetailEssayResponse>
 
     @GET("api/essays/recent")

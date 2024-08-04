@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -47,6 +48,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.echoist.linkedout.TYPE_COMMUNITY
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.formatElapsedTime
@@ -205,7 +207,7 @@ fun RecentEssayDetailPage(navController: NavController, viewModel: CommunityView
                         }
                     }
                     Box(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier.fillMaxSize().navigationBarsPadding(),
                         contentAlignment = Alignment.BottomCenter
                     ) {
                         LaunchedEffect(isClicked) {
@@ -228,7 +230,7 @@ fun RecentEssayDetailPage(navController: NavController, viewModel: CommunityView
                                 )
                             )
                         ) {
-                            SequenceBottomBar(viewModel.readDetailEssay(),viewModel)
+                            SequenceBottomBar(viewModel.readDetailEssay(),viewModel,navController)
                         }
                     }
                     if (viewModel.isReportClicked)
@@ -260,7 +262,7 @@ fun RecentEssayListItem(
         .fillMaxWidth()
         .background(Color.Black)
         .clickable {
-            viewModel.readDetailRecentEssay(item.id!!, navController)
+            viewModel.readDetailRecentEssay(item.id!!, navController, TYPE_COMMUNITY)
             //navigate
         }
         .height(140.dp)) {

@@ -1,9 +1,11 @@
 package com.echoist.linkedout.page.settings
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -72,17 +74,25 @@ fun AccountPage(navController: NavController, viewModel: SettingsViewModel = hil
                 ) {
                     Spacer(modifier = Modifier.height(42.dp))
 
-                    Text(text = "로그인 정보", fontSize = 18.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(horizontal = 20.dp))
+                    Text(
+                        text = "로그인 정보",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.padding(horizontal = 20.dp)
+                    )
                     Spacer(modifier = Modifier.height(10.dp))
 
-                    EmailBox ({ navController.navigate("ChangeEmailPage") },viewModel.getMyInfo().email ?: "noEmail")
-                    ModifyBox("비밀번호 변경") {navController.navigate("ChangePwPage")}
+                    EmailBox(
+                        { navController.navigate("ChangeEmailPage") },
+                        viewModel.getMyInfo().email ?: "noEmail"
+                    )
+                    ModifyBox("비밀번호 변경") { navController.navigate("ChangePwPage") }
 
 
 
-                    ModifyBox("로그아웃") {isLogoutClicked = true}
+                    ModifyBox("로그아웃") { isLogoutClicked = true }
                     Spacer(modifier = Modifier.height(20.dp))
-                    ModifyBox("탈퇴하기") {navController.navigate("AccountWithdrawalPage")}
+                    ModifyBox("탈퇴하기") { navController.navigate("AccountWithdrawalPage") }
                     Spacer(modifier = Modifier.height(37.dp))
                     //Text(text = "소셜", fontSize = 18.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(horizontal = 20.dp))
 //                    Spacer(modifier = Modifier.height(31.dp))
@@ -97,42 +107,50 @@ fun AccountPage(navController: NavController, viewModel: SettingsViewModel = hil
                     Spacer(modifier = Modifier.height(10.dp))
 
 
-
-
                 }
 
                 AnimatedVisibility(
                     visible = isLogoutClicked,
-                    enter = slideInVertically(
-                        initialOffsetY = { 2000 },
-                        animationSpec = tween(durationMillis = 500)
+                    enter = fadeIn(
+                        animationSpec = tween(
+                            durationMillis = 500,
+                            easing = FastOutSlowInEasing
+                        )
                     ),
-                    exit = slideOutVertically(
-                        targetOffsetY = { 2000 },
-                        animationSpec = tween(durationMillis = 500)
+                    exit = fadeOut(
+                        animationSpec = tween(
+                            durationMillis = 500,
+                            easing = LinearEasing
+                        )
                     )
-                ){
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Black.copy(0.7f)),
-                    contentAlignment = Alignment.BottomCenter
-                ){
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(bottom = 10.dp)
+                            .background(Color.Black.copy(0.7f)),
+                        contentAlignment = Alignment.BottomCenter
+                    ) {
 
                         LogoutBox(
                             isCancelClicked = { isLogoutClicked = false },
                             isLogoutClicked = {
                                 isLogoutClicked = false
-                                navController.popBackStack("LoginPage", true) //home 까지 삭제 inclusive - 포함
+                                navController.popBackStack(
+                                    "LoginPage",
+                                    true
+                                ) //home 까지 삭제 inclusive - 포함
                                 navController.navigate("LoginPage")
                             }
-                        ) //todo 수정필요
+                        )
                     }
                 }
-
-
-
             }
+
+
+
+
+
         )
     }
 }

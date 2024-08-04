@@ -19,15 +19,15 @@ data class Essays(
 )
 
 data class DetailEssayResponse(
-    val data: EssaysWithPrevious,
+    val data: EssaysWithRandom,
     val path: String,
     val success: Boolean,
     val timestamp: String)
-
-data class EssaysWithPrevious(
+data class EssaysWithRandom(
     val essay: EssayApi.EssayItem,
-    val previous: List<EssayApi.EssayItem>? = null,
+    val anotherEssays: AnotherEssays?,
 )
+data class AnotherEssays(val essays: List<EssayApi.EssayItem>)
 
 @JsonClass(generateAdapter = true)
 data class BasicResponse(

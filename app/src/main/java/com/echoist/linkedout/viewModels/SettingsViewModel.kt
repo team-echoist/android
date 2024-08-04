@@ -244,7 +244,9 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    var isApiFinished by mutableStateOf(false)
     fun readRecentEssays(){
+        isApiFinished = false
         viewModelScope.launch {
             isLoading = true
 
@@ -254,7 +256,7 @@ class SettingsViewModel @Inject constructor(
                 if (response.isSuccessful){
                     Token.accessToken = (response.headers()["authorization"].toString())
                     exampleItems.recentViewedEssayList = response.body()!!.data.essays.toMutableStateList()
-
+                    isApiFinished = true
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

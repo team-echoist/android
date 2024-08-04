@@ -15,6 +15,7 @@ import com.echoist.linkedout.MAX_CONTENT_SIZE
 import com.echoist.linkedout.MAX_TITLE_SIZE
 import com.echoist.linkedout.MIN_CONTENT_SIZE
 import com.echoist.linkedout.MIN_TITLE_SIZE
+import com.echoist.linkedout.TYPE_COMMUNITY
 import com.echoist.linkedout.api.BookMarkApi
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.ExampleItems
@@ -38,8 +39,8 @@ open class CommunityViewModel @Inject constructor(
     private val bookMarkApi: BookMarkApi
 ) : ViewModel() {
 
-    private val _isRefreshing = MutableStateFlow(false)
-    val isRefreshing: StateFlow<Boolean>
+    val _isRefreshing = MutableStateFlow(false)
+    open val isRefreshing: StateFlow<Boolean>
         get() = _isRefreshing.asStateFlow()
 
     private val _randomList = MutableStateFlow<List<EssayApi.EssayItem>>(emptyList())
@@ -97,7 +98,7 @@ open class CommunityViewModel @Inject constructor(
         readOneSentences("first")
         readOneSentences("last")
     }
-    fun refresh(){
+    open fun refresh(){
         viewModelScope.launch {
 
             _isRefreshing.emit(true)
@@ -252,20 +253,20 @@ open class CommunityViewModel @Inject constructor(
         }
     }
 
-    open fun readDetailEssay(id: Int, navController: NavController) {
+    open fun readDetailEssay(id: Int, navController: NavController,type: String = TYPE_COMMUNITY) {
         viewModelScope.launch {
             try {
                 _isLoading.emit(true)
-                val response = essayApi.readDetailEssay(Token.accessToken,id)
+
+                val response = essayApi.readDetailEssay(Token.accessToken, id,type = type, )
+                Log.d("상세 조회 성공", "readDetailEssay: 성공 ${response.body()!!}")
                 exampleItems.detailEssay = response.body()!!.data.essay
                 detailEssay = exampleItems.detailEssay
-                Log.d(TAG, "readdetailEssay: 성공인데요${response.body()!!.data}")
+                Log.d("상세 조회 성공", "readdetailEssay: 성공인데요${response.body()!!.data}")
                 Log.d(TAG, "readdetailEssay: 성공인데요${response.body()!!.data.essay.title}")
 
-                if (response.body()!!.data.previous != null) {
-                    exampleItems.previousEssayList = response.body()!!.data.previous!!.toMutableStateList()
-                    previousEssayList = exampleItems.previousEssayList
-                }
+                exampleItems.previousEssayList = response.body()!!.data.anotherEssays!!.essays.toMutableStateList()
+                previousEssayList = exampleItems.previousEssayList
                 Log.d(TAG, "readDetailEssay: previouse ${exampleItems.detailEssay}")
 
                 Log.d(TAG, "readDetailEssay: previouse ${exampleItems.previousEssayList}")
@@ -288,10 +289,10 @@ open class CommunityViewModel @Inject constructor(
             }
         }
     }
-    fun readDetailRecentEssay(id: Int, navController: NavController) {
+    fun readDetailRecentEssay(id: Int, navController: NavController,type: String) {
         viewModelScope.launch {
             try {
-                val response = essayApi.readDetailEssay(Token.accessToken,id)
+                val response = essayApi.readDetailEssay(Token.accessToken,id,type)
                 exampleItems.detailEssay = response.body()!!.data.essay
 
                 Log.d(TAG, "readdetailEssay: 성공인데요${response.body()!!.data}")

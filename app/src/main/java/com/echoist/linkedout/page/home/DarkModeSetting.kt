@@ -65,7 +65,7 @@ fun DarkModeSettingPage(navController: NavController){
                                 .padding(end = 140.dp)
                         ) {
                             GlideImage(model = R.drawable.mode_light, contentDescription = "modeImg")
-                            Spacer(modifier = Modifier.height(42.dp))
+                            Spacer(modifier = Modifier.height(46.dp))
                             Spacer(modifier = Modifier.height(10.dp))
                             Text(text = "라이트 모드", fontSize = 16.sp)
                         }

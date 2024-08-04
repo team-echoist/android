@@ -81,9 +81,9 @@ fun LinkedOutSupportPage(
                 )
                 Spacer(modifier = Modifier.height(20.dp))
 
-                // LazyColumn을 담은 Box로 수정
 
-                    LazyColumn(
+
+                LazyColumn(
                         modifier = Modifier.height(400.dp),
                     ) {
                         items(inquiryList) { inquiry ->
@@ -92,10 +92,18 @@ fun LinkedOutSupportPage(
                     }
 
 
-                Spacer(modifier = Modifier.height(20.dp)) // 상단 내용과 하단 버튼 사이의 간격
 
+
+
+                Spacer(modifier = Modifier.height(20.dp)) // 상단 내용과 하단 버튼 사이의 간격
                 // 하단 버튼
 
+            }
+            // LazyColumn을 담은 Box로 수정
+            if (inquiryList.isEmpty()){
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                    Text(text = "문의 내역이 없습니다.",color = Color(0xFF888888), fontSize = 16.sp)
+                }
             }
             Box(modifier = Modifier.fillMaxSize().padding(bottom = 20.dp), contentAlignment = Alignment.BottomCenter){
                 Button(

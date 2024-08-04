@@ -20,6 +20,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -53,11 +55,15 @@ fun MyLogPage(navController: NavController, viewModel: MyLogViewModel,writingVie
 
     val pagerstate = rememberPagerState { 3 }
     val hasCalledApi = remember { mutableStateOf(false) }
+    val isLoading by viewModel.isLoading.collectAsState()
 
     if (!hasCalledApi.value) {
+        viewModel.myEssayList.clear()
+        viewModel.publishedEssayList.clear()
         viewModel.readMyEssay()
         viewModel.readPublishEssay()
         viewModel.readMyStory()
+        viewModel.requestUnreadAlerts()
 
         hasCalledApi.value = true
     }
@@ -101,7 +107,8 @@ fun MyLogPage(navController: NavController, viewModel: MyLogViewModel,writingVie
 
                                         },
                                         viewModel.getUserInfo().nickname!!,
-                                        { navController.navigate("NotificationPage") })
+                                        { navController.navigate("NotificationPage") },
+                                        viewModel.isExistUnreadAlerts)
                                     Spacer(modifier = Modifier.height(10.dp))
 
                                     EssayChips(pagerstate, viewModel)
@@ -121,6 +128,14 @@ fun MyLogPage(navController: NavController, viewModel: MyLogViewModel,writingVie
                                 }
                             }
                         )
+//                        if (isLoading) {
+//                            Box(
+//                                modifier = Modifier.fillMaxSize(),
+//                                contentAlignment = Alignment.Center
+//                            ) {
+//                                CircularProgressIndicator(color = LinkedInColor)
+//                            }
+//                        }
 
                         AnimatedVisibility(
                             visible = viewModel.isModifyStoryClicked,

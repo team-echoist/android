@@ -6,7 +6,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,9 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
@@ -42,6 +39,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.echoist.linkedout.TYPE_PROFILE
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.formatDateTime
 import com.echoist.linkedout.viewModels.MyLogViewModel
@@ -72,12 +70,11 @@ fun LastEssayItem(
     Box(modifier = Modifier
         .fillMaxWidth()
         .clickable {
-            if (item.id != viewModel.detailEssay.id) {
-                viewModel.detailEssay = item
-                navController.navigate("MyLogDetailPage")
+
+                viewModel.readDetailEssay(item.id!!,navController, TYPE_PROFILE)
                 viewModel.detailEssayBackStack.push(item)
                 Log.d(TAG, "pushpush: ${viewModel.detailEssayBackStack}")
-            }
+
         }
         .height(140.dp)) {
         //타이틀
@@ -165,13 +162,14 @@ fun LastEssayPager(viewModel: MyLogViewModel, navController: NavController){
 
     val pageCount = if (viewModel.detailEssay.status == "published") viewModel.publishedEssayList.size/4 +1 else viewModel.myEssayList.size/4 +1
     val pagerstate = rememberPagerState { pageCount }
-    val lastEssayList = when (viewModel.readDetailEssay().status){
-        "published" -> viewModel.publishedEssayList
-        "private" -> viewModel.myEssayList
-        else -> { //todo 검토중에 대해선 다시 체크해봐야한다.
-            emptyList<EssayApi.EssayItem>()
-        }
-    }
+    val lastEssayList = viewModel.previousEssayList
+//        when (viewModel.readDetailEssay().status){
+//        "published" -> viewModel.previousEssayList
+//        "private" -> viewModel.previousEssayList
+//        else -> { //todo 검토중에 대해선 다시 체크해봐야한다.
+//            emptyList<EssayApi.EssayItem>()
+//        }
+//    }
 
 
     Column {
@@ -197,70 +195,82 @@ fun LastEssayPager(viewModel: MyLogViewModel, navController: NavController){
         }
         //이전 글이 존재한다면
         else{
-            HorizontalPager(state = pagerstate) { page ->
-                val startIndex = page * 4
-                val endIndex = minOf(
-                    startIndex + 4,
-                    lastEssayList.size
-                )
-                val pageItems = if (endIndex <= lastEssayList.size) {
-                    lastEssayList.subList(startIndex, endIndex)
-                } else {
-                    lastEssayList.subList(startIndex, lastEssayList.size)
-                }
-
-                Column {
-                    pageItems.forEach { essay ->
-                        LastEssayItem(
-                            item = essay,
-                            viewModel = viewModel,
-                            navController = navController
-                        )
-                    }
+            Column {
+                viewModel.previousEssayList.forEach {
+                    LastEssayItem(
+                        item = it,
+                        viewModel = viewModel,
+                        navController = navController
+                    )
                 }
             }
-            Spacer(modifier = Modifier.height(20.dp))
-            Box(
-                modifier = Modifier
-                    .fillMaxSize() /* 부모 만큼 */
-                    .padding(bottom = 60.dp), contentAlignment = Alignment.BottomCenter
-            ) {
 
-                Row(
-                    Modifier
-                        .padding(bottom = 10.dp), //box 안에 있어야하는거같기도?
-                    horizontalArrangement = Arrangement.Center
-                )
-                {
-                    repeat(pageCount) { iteration ->
-                        val color =
-                            if (pagerstate.currentPage == iteration) Color(0xFFE4A89E) else Color.White.copy(
-                                alpha = 0.5f
-                            )
-                        if (pagerstate.currentPage == iteration) {
-                            Box(
-                                modifier = Modifier
-                                    .padding(4.dp)
-                                    .clip(CircleShape)
-                                    .background(color)
-                                    .size(10.dp, 10.dp)
+        //4개씩 글을 나누어 이전글을 보여주는 형식
 
-                            )
-
-                        } else {
-                            Box(
-                                modifier = Modifier
-                                    .padding(4.dp)
-                                    .clip(CircleShape)
-                                    .background(color)
-                                    .size(10.dp, 10.dp)
-
-                            )
-                        }
-
-                    }
-                }
-            }
+//            HorizontalPager(state = pagerstate) { page ->
+//                val startIndex = page * 4
+//                val endIndex = minOf(
+//                    startIndex + 4,
+//                    lastEssayList.size
+//                )
+//                val pageItems = if (endIndex <= lastEssayList.size) {
+//                    lastEssayList.subList(startIndex, endIndex)
+//                } else {
+//                    lastEssayList.subList(startIndex, lastEssayList.size)
+//                }
+//
+//                Column {
+//                    pageItems.forEach { essay ->
+//                        LastEssayItem(
+//                            item = essay,
+//                            viewModel = viewModel,
+//                            navController = navController
+//                        )
+//                    }
+//                }
+//            }
+//            Spacer(modifier = Modifier.height(20.dp))
+//            Box(
+//                modifier = Modifier
+//                    .fillMaxSize() /* 부모 만큼 */
+//                    .padding(bottom = 60.dp), contentAlignment = Alignment.BottomCenter
+//            ) {
+//
+//                Row(
+//                    Modifier
+//                        .padding(bottom = 10.dp), //box 안에 있어야하는거같기도?
+//                    horizontalArrangement = Arrangement.Center
+//                )
+//                {
+//                    repeat(pageCount) { iteration ->
+//                        val color =
+//                            if (pagerstate.currentPage == iteration) Color(0xFFE4A89E) else Color.White.copy(
+//                                alpha = 0.5f
+//                            )
+//                        if (pagerstate.currentPage == iteration) {
+//                            Box(
+//                                modifier = Modifier
+//                                    .padding(4.dp)
+//                                    .clip(CircleShape)
+//                                    .background(color)
+//                                    .size(10.dp, 10.dp)
+//
+//                            )
+//
+//                        } else {
+//                            Box(
+//                                modifier = Modifier
+//                                    .padding(4.dp)
+//                                    .clip(CircleShape)
+//                                    .background(color)
+//                                    .size(10.dp, 10.dp)
+//
+//                            )
+//                        }
+//
+//                    }
+//                }
+//            }
         }
 
 

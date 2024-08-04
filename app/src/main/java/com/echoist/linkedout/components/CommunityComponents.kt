@@ -80,6 +80,7 @@ import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
+import com.echoist.linkedout.TYPE_COMMUNITY
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.formatElapsedTime
@@ -109,7 +110,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                             fontSize = 14.sp,
                         )
                     ) {
-                        append("${  oneSentenceList[0].content}      ")
+                        append("    ${oneSentenceList[0].content}      ")
                         Log.d(TAG, "RandomSentences: ${oneSentenceList[0].content}")
 
                     }
@@ -181,7 +182,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                             fontSize = 14.sp,
                         )
                     ) {
-                        append("${  oneSentenceList[5].content}      ")
+                        append("    ${oneSentenceList[5].content}      ")
                         Log.d(TAG, "RandomSentences: ${oneSentenceList[0].content}")
 
                     }
@@ -254,7 +255,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                             fontSize = 14.sp,
                         )
                     ) {
-                        append("${  oneSentenceList[10].content}      ")
+                        append("    ${oneSentenceList[10].content}      ")
                         Log.d(TAG, "RandomSentences: ${oneSentenceList[0].content}")
 
                     }
@@ -325,7 +326,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                             fontSize = 14.sp,
                         )
                     ) {
-                        append("${  oneSentenceList[15].content}      ")
+                        append("    ${oneSentenceList[15].content}      ")
                         Log.d(TAG, "RandomSentences: ${oneSentenceList[0].content}")
 
                     }
@@ -396,7 +397,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                             fontSize = 14.sp,
                         )
                     ) {
-                        append("${  oneSentenceList[20].content}      ")
+                        append("    ${oneSentenceList[20].content}      ")
                         Log.d(TAG, "RandomSentences: ${oneSentenceList[0].content}")
 
                     }
@@ -1122,7 +1123,8 @@ fun EssayListItem(
         .background(Color.Black)
         .clickable {
             Log.d(TAG, "EssayListItem: ${item.id}")
-            viewModel.readDetailEssay(item.id!!, navController)
+            viewModel.readDetailEssay(item.id!!, navController, TYPE_COMMUNITY)
+            viewModel.detailEssayBackStack.push(item)
             //navigate
         }
         .height(140.dp)) {
@@ -1209,7 +1211,6 @@ fun EssayListItem(
 
 @Composable
 fun RandomCommunityPage(viewModel: CommunityViewModel, navController: NavController) {
-    val randomList by viewModel.randomList.collectAsState()
 
     val listState = rememberLazyListState()
 

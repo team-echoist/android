@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,11 +36,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -55,6 +58,7 @@ import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
+import com.echoist.linkedout.TYPE_PROFILE
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.Story
 import com.echoist.linkedout.formatDateTime
@@ -66,7 +70,9 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyLogTopAppBar(onClickSearch : ()->Unit,nickName : String,onClickNotification : ()->Unit){
+fun MyLogTopAppBar(onClickSearch : ()->Unit,nickName : String,onClickNotification : ()->Unit,isExistUnreadAlerts : Boolean){
+    val img = if (isExistUnreadAlerts) R.drawable.icon_noti_on else R.drawable.icon_noti_off
+
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
         title = {
@@ -80,7 +86,7 @@ fun MyLogTopAppBar(onClickSearch : ()->Unit,nickName : String,onClickNotificatio
                     .clickable { onClickSearch() })
             Spacer(modifier = Modifier.width(13.dp))
             Icon(
-                painter = painterResource(id = R.drawable.icon_noti),
+                painter = painterResource(id = img),
                 contentDescription = "",
                 Modifier
                     .padding(end = 10.dp)
@@ -189,7 +195,7 @@ fun EssayListItem(
     Box(modifier = Modifier
         .fillMaxWidth()
         .clickable {
-            viewModel.readDetailEssay(item.id!!, navController)
+            viewModel.readDetailEssay(item.id!!, navController, TYPE_PROFILE)
             viewModel.detailEssayBackStack.push(item)
             Log.d(TAG, "pushpush: ${viewModel.detailEssayBackStack}")
         }
@@ -284,8 +290,20 @@ fun EssayListItem(
 
 @Composable
 fun EssayListPage1(viewModel: MyLogViewModel, pagerState: PagerState, navController: NavController,writingViewModel: WritingViewModel){
+    val listState = rememberLazyListState()
 
-        LazyColumn {
+
+    LaunchedEffect(listState) {
+        snapshotFlow {
+            listState.layoutInfo.visibleItemsInfo
+        }.collect { visibleItemsInfo ->
+            val lastVisibleItem = visibleItemsInfo.lastOrNull()
+            if (lastVisibleItem?.index == viewModel.myEssayList.size - 1) {
+                viewModel.readMyEssay()
+            }
+        }
+    }
+        LazyColumn(state = listState) {
             items(viewModel.myEssayList){it->
                 EssayListItem(item = it,pagerState,viewModel,navController,writingViewModel)
             }
@@ -294,8 +312,19 @@ fun EssayListPage1(viewModel: MyLogViewModel, pagerState: PagerState, navControl
 
 @Composable
 fun EssayListPage2(viewModel: MyLogViewModel, pagerState: PagerState, navController: NavController,writingViewModel: WritingViewModel){
+    val listState = rememberLazyListState()
 
-        LazyColumn {
+    LaunchedEffect(listState) {
+        // 스크롤 상태를 감지하는 LaunchedEffect
+        snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull() }
+            .collect { lastVisibleItem ->
+                // 리스트의 마지막 아이템에 도달하면
+                if (lastVisibleItem?.index == viewModel.publishedEssayList.size - 1) {
+                    viewModel.readPublishEssay()
+                }
+            }
+    }
+        LazyColumn(state = listState) {
             items(viewModel.publishedEssayList) {
                 EssayListItem(item = it, pagerState, viewModel, navController,writingViewModel)
             }

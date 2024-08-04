@@ -298,7 +298,7 @@ fun BadgeLevelUpSuccess(viewModel: SettingsViewModel,badgeBoxItem: BadgeBoxItemW
 @Composable
 fun ExpProgressBar(progress: Float, max: Int) {
     val progressBarWidth = 170.dp // 프로그레스 바의 너비
-    val progressBarHeight = 20.dp // 프로그레스 바의 높이
+    val progressBarHeight = 24.dp // 프로그레스 바의 높이
 
     Box(
         modifier = Modifier

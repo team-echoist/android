@@ -21,12 +21,15 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowLeft
@@ -44,7 +47,6 @@ import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SuggestionChip
-import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -79,6 +81,7 @@ import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
+import com.echoist.linkedout.TYPE_COMMUNITY
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.components.EssayListItem
 import com.echoist.linkedout.data.UserInfo
@@ -94,6 +97,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewModel) {
+
 
     val scope = rememberCoroutineScope()
 
@@ -112,6 +116,7 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
         if (viewModel.isReportClicked) {
             bottomSheetState.partialExpand()
         }
+        viewModel.isOptionClicked = false
     }
     LinkedOutTheme {
         BottomSheetScaffold(
@@ -195,7 +200,7 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
                                     }
                                 }
                                 //todo 다른 랜덤 에세이 목록 띄워주기
-                                items(items = viewModel.getFilteredRandomEssayList()) { it -> //랜덤리스트 말고 수정할것. 그사람의 리스트로
+                                items(items = viewModel.previousEssayList) { it -> //랜덤리스트 말고 수정할것. 그사람의 리스트로
                                     EssayListItem(
                                         item = it,
                                         viewModel = viewModel,
@@ -235,7 +240,9 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
                         }
                     }
                     Box(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .navigationBarsPadding(),
                         contentAlignment = Alignment.BottomCenter
                     ) {
                         LaunchedEffect(isClicked) {
@@ -258,7 +265,7 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
                                 )
                             )
                         ) {
-                            SequenceBottomBar(viewModel.readDetailEssay(),viewModel)
+                            SequenceBottomBar(viewModel.readDetailEssay(),viewModel,navController)
                         }
                     }
                     if (viewModel.isReportClicked)
@@ -326,9 +333,11 @@ fun CommunityTopAppBar(navController: NavController, viewModel: CommunityViewMod
 
 @Composable
 fun ReportOption( onClickReport: () -> Unit,viewModel: CommunityViewModel) {
-    Surface(modifier = Modifier.size(180.dp, 110.dp), shape = RoundedCornerShape(2)) {
+    Surface(modifier = Modifier.size(180.dp, 110.dp), shape = RoundedCornerShape(10)) {
         Column(
-            modifier = Modifier.fillMaxSize().background(Color(0xFF0E0E0E)),
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFF0E0E0E)),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -426,7 +435,9 @@ fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navContro
                 )
 
                 Spacer(modifier = Modifier.height(46.dp))
-                Box(modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp), contentAlignment = Alignment.BottomEnd) {
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 20.dp), contentAlignment = Alignment.BottomEnd) {
                     Column {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
                             (if (item.author !=null) item.author!!.nickname else "")?.let {
@@ -490,7 +501,7 @@ fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navContro
 }
 
 @Composable
-fun SequenceBottomBar(item: EssayApi.EssayItem,viewModel: CommunityViewModel){
+fun SequenceBottomBar(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navController: NavController){
 
     var isEssayBookMarked by remember { mutableStateOf(item.isBookmarked) }
     val iconImg = if (isEssayBookMarked) Icons.Default.Bookmark else Icons.Default.BookmarkBorder
@@ -519,8 +530,34 @@ fun SequenceBottomBar(item: EssayApi.EssayItem,viewModel: CommunityViewModel){
         }
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
             Row {
-                Icon(imageVector = Icons.AutoMirrored.Filled.ArrowLeft, contentDescription = "bookMark",Modifier.size(50.dp))
-                Icon(imageVector = Icons.AutoMirrored.Filled.ArrowRight, contentDescription = "bookMark",Modifier.size(50.dp))
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowLeft,
+                    contentDescription = "bookMark",
+                    Modifier
+                        .size(50.dp)
+                        .clickable {
+                            viewModel.detailEssayBackStack.push(item)
+                            viewModel.readDetailEssay(
+                                viewModel.previousEssayList[0].id!!,
+                                navController = navController,
+                                TYPE_COMMUNITY
+                            )
+                        }
+                )
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowRight,
+                    contentDescription = "bookMark",
+                    Modifier
+                        .size(50.dp)
+                        .clickable {
+                            viewModel.detailEssayBackStack.push(item)
+                            viewModel.readDetailEssay(
+                                viewModel.previousEssayList[0].id!!,
+                                navController = navController,
+                                TYPE_COMMUNITY
+                            )
+                        }
+                )
 
 
             }
@@ -565,7 +602,8 @@ fun ReportMenuBottomSheet(viewModel: CommunityViewModel) {
                           viewModel.reportEssay(viewModel.detailEssay.id!!,selectedItem)},
                 modifier = Modifier
                     .fillMaxWidth() // TODO: report API 연동 필요
-                    .height(61.dp),
+                    .height(61.dp)
+                    .padding(bottom = 10.dp),
                 shape = RoundedCornerShape(20)
             ) {
                 Text(text = "신고하기", color = Color.Black)
@@ -620,7 +658,7 @@ fun SingleSelectReportList(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(1.dp, borderColor, shape = RoundedCornerShape(10))
+                    .border(1.dp, borderColor, shape = RoundedCornerShape(8))
                     .clickable {
                         onItemSelected(if (selectedItem == item) "" else item)
                     }
@@ -713,6 +751,7 @@ fun ReportComplete(isCompleteClicked : ()->Unit){
     Box(modifier = Modifier
         .height(715.dp)
         .fillMaxSize()
+        .verticalScroll(rememberScrollState())
         .padding(top = 55.dp)) {
         Column(Modifier.padding(horizontal = 20.dp)) {
             Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -729,12 +768,13 @@ fun ReportComplete(isCompleteClicked : ()->Unit){
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "검토 대기", fontSize = 16.sp, color = Color.White)
                 Spacer(modifier = Modifier.width(10.dp))
-                SuggestionChip(
-                    modifier = Modifier.height(15.dp),
-                    onClick = { Log.d("Suggestion chip", "hello world") },
-                    label = { Text("진행중", fontSize = 10.sp, color = Color.Black, fontWeight = FontWeight.Bold) },
-                    colors = SuggestionChipDefaults.suggestionChipColors(containerColor = Color(0xFFFFBB36)),
-                )
+                GlideImage(model = R.drawable.chip_ongoing, contentDescription = "onGoingChip")
+//                SuggestionChip(
+//                    modifier = Modifier.height(15.dp),
+//                    onClick = { Log.d("Suggestion chip", "hello world") },
+//                    label = { Text("진행중", fontSize = 10.sp, color = Color.Black, fontWeight = FontWeight.Bold) },
+//                    colors = SuggestionChipDefaults.suggestionChipColors(containerColor = Color(0xFFFFBB36)),
+//                )
 
             }
             Text(text = "링크드아웃 팀에서는 수상한 글을 꼼꼼하게 심문해 규정을 어긴 글을 최대한 빠르게 체포하고 있어요.", color = Color(0xFF6B6B6B), fontSize = 14.sp)
