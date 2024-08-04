@@ -11,7 +11,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -194,45 +193,51 @@ fun WritingCompletePage(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CompleteAppBar(navController: NavController, viewModel: WritingViewModel) {
-    TopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
-        title = { },
-        navigationIcon = {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "arrow back",
-                tint = if (isSystemInDarkTheme()) Color(0xFF727070) else Color.Gray,
-                modifier = Modifier
-                    .padding(start = 10.dp)
-                    .size(30.dp)
-                    .clickable {
-                        navController.popBackStack()
-                        Log.d("asdfadsf", "adsfadsf")
-                    } //뒤로가기
-            )
-        },
-        actions = {
-            Text(
-                text = "삭제",
-                color = Color.Red,
-                modifier = Modifier
-                    .padding(end = 20.dp)
-                    .clickable {
-                        viewModel.isDeleteClicked.value = true
-                    },
-                fontSize = 16.sp
-            )
-        })
+    LinkedOutTheme {
+        TopAppBar(
+            colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
+            title = { },
+            navigationIcon = {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "arrow back",
+                    tint = Color(0xFF727070),
+                    modifier = Modifier
+                        .padding(start = 10.dp)
+                        .size(30.dp)
+                        .clickable {
+                            navController.popBackStack()
+                            Log.d("asdfadsf", "adsfadsf")
+                        } //뒤로가기
+                )
+            },
+            actions = {
+                Text(
+                    text = "삭제",
+                    color = Color.Red,
+                    modifier = Modifier
+                        .padding(end = 20.dp)
+                        .clickable {
+                            viewModel.isDeleteClicked.value = true
+                        },
+                    fontSize = 16.sp
+                )
+            })
+    }
+
 }
 
 @Composable
 fun CompleteTitle(viewModel: WritingViewModel) {
-    Text(
-        text = viewModel.title.value.text,
-        fontSize = 20.sp,
-        color = Color.White,
-        modifier = Modifier.padding(start = 25.dp, bottom = 20.dp)
-    )
+    LinkedOutTheme {
+        Text(
+            text = viewModel.title.value.text,
+            fontSize = 20.sp,
+            color = Color.White,
+            modifier = Modifier.padding(start = 25.dp, bottom = 20.dp)
+        )
+    }
+
 }
 
 @Composable
@@ -247,36 +252,42 @@ fun CompleteContents(viewModel: WritingViewModel) {
 
 @Composable
 fun CompleteNickName(nickName : String) {
-    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.BottomEnd) {
-        Text(
-            text = nickName,
-            fontSize = 12.sp,
-            color = Color(0xFF686868),
-            modifier = Modifier.padding(end = 25.dp, bottom = 8.dp)
-        )
+    LinkedOutTheme {
+        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.BottomEnd) {
+            Text(
+                text = nickName,
+                fontSize = 12.sp,
+                color = Color(0xFF686868),
+                modifier = Modifier.padding(end = 25.dp, bottom = 8.dp)
+            )
+        }
     }
+
 }
 
 @Composable
 fun CompleteDate(viewModel: WritingViewModel) {
 
-    val currentDateTime = LocalDateTime.now()
-    val formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm")
-    val formattedDateTime = currentDateTime.format(formatter)
+    LinkedOutTheme {
+        val currentDateTime = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm")
+        val formattedDateTime = currentDateTime.format(formatter)
 
-    viewModel.date.value = formattedDateTime
+        viewModel.date.value = formattedDateTime
 
-    Box(
-        modifier = Modifier.fillMaxWidth(),
-        contentAlignment = Alignment.BottomEnd
-    ) {
-        Text(
-            text = formattedDateTime,
-            fontSize = 12.sp,
-            color = Color(0xFF686868),
-            modifier = Modifier.padding(end = 25.dp)
-        )
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.BottomEnd
+        ) {
+            Text(
+                text = formattedDateTime,
+                fontSize = 12.sp,
+                color = Color(0xFF686868),
+                modifier = Modifier.padding(end = 25.dp)
+            )
+        }
     }
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -368,232 +379,236 @@ fun WritingCompletePager(essayItem: EssayApi.EssayItem,viewModel: WritingViewMod
         }.toAnnotatedString()
     }
 
-    HorizontalPager(state = pagerstate) {
-        when (it) {
-            0 -> {
-                Column(
-                    modifier = Modifier
-                        .padding(start = 20.dp, end = 20.dp, bottom = 20.dp)
-                        .fillMaxWidth()
-                        .height(250.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-
-                    Text(text = annotatedString, textAlign = TextAlign.Center, color = Color.White, fontSize = 16.sp)
-                    Spacer(modifier = Modifier.height(28.dp))
-
-                    Box {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-
-                            GroupRingImg(viewModel = viewModel)
-                            Spacer(modifier = Modifier.height(22.dp))
-                            SingleRing(viewModel = viewModel)
-
-                        }
-                        Box(
-                            modifier = Modifier.matchParentSize(),
-                            contentAlignment = Alignment.CenterEnd
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
-                                tint = LinkedInColor,
-                                contentDescription = "nextpage",
-                                modifier = Modifier.clickable { coroutineScope.launch {
-                                    pagerstate.animateScrollToPage(1)
-                                } }
-                            )
-                        }
-
-                    }
-
-                    Spacer(modifier = Modifier.height(51.dp))
-                    Row(
+    LinkedOutTheme {
+        HorizontalPager(state = pagerstate) {
+            when (it) {
+                0 -> {
+                    Column(
                         modifier = Modifier
+                            .padding(start = 20.dp, end = 20.dp, bottom = 20.dp)
                             .fillMaxWidth()
-                            .horizontalScroll(scrollState),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically,
+                            .height(250.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        viewModel.hashTagList.forEach { it ->
-                            Text(text = "#$it", color = Color.White)
-                            Spacer(modifier = Modifier.width(22.dp))
+
+                        Text(text = annotatedString, textAlign = TextAlign.Center, color = Color.White, fontSize = 16.sp)
+                        Spacer(modifier = Modifier.height(28.dp))
+
+                        Box {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+
+                                GroupRingImg(viewModel = viewModel)
+                                Spacer(modifier = Modifier.height(22.dp))
+                                SingleRing(viewModel = viewModel)
+
+                            }
+                            Box(
+                                modifier = Modifier.matchParentSize(),
+                                contentAlignment = Alignment.CenterEnd
+                            ) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                                    tint = LinkedInColor,
+                                    contentDescription = "nextpage",
+                                    modifier = Modifier.clickable { coroutineScope.launch {
+                                        pagerstate.animateScrollToPage(1)
+                                    } }
+                                )
+                            }
+
                         }
+
+                        Spacer(modifier = Modifier.height(51.dp))
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .horizontalScroll(scrollState),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            viewModel.hashTagList.forEach { it ->
+                                Text(text = "#$it", color = Color.White)
+                                Spacer(modifier = Modifier.width(22.dp))
+                            }
+                        }
+
                     }
 
                 }
 
-            }
+                1 -> {
+                    Box {
+                        Column(
+                            modifier = Modifier
+                                .padding(20.dp)
+                                .fillMaxWidth()
+                                .height(279.dp),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "이 글을 어떻게 할까요?",
+                                modifier = Modifier.padding(bottom = 25.dp),
+                                color = Color.White
+                            )
+                            Box{
+                                Button(
+                                    onClick = {
+                                        if (viewModel.isModifyClicked) viewModel.modifyEssay(navController, status = "private")
+                                        else viewModel.writeEssay(navController, status = "private")
+                                    },
+                                    modifier = Modifier
+                                        .padding(bottom = 16.dp, start = 50.dp, end = 50.dp)
+                                        .fillMaxWidth()
+                                        .height(44.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = LinkedInColor)
+                                ) {
+                                    Text(text = "저장", color = Color.White)
+                                }
+                            }
 
-            1 -> {
-                Box {
-                    Column(
-                        modifier = Modifier
-                            .padding(20.dp)
-                            .fillMaxWidth()
-                            .height(279.dp),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = "이 글을 어떻게 할까요?",
-                            modifier = Modifier.padding(bottom = 25.dp),
-                            color = Color.White
-                        )
-                        Box{
+
                             Button(
                                 onClick = {
-                                    if (viewModel.isModifyClicked) viewModel.modifyEssay(navController, status = "private")
-                                    else viewModel.writeEssay(navController, status = "private")
+
+                                    if (viewModel.isModifyClicked) viewModel.modifyEssay(navController, status = "published")
+                                    else viewModel.writeEssay(navController, status = "published")
+
+
                                 },
                                 modifier = Modifier
                                     .padding(bottom = 16.dp, start = 50.dp, end = 50.dp)
                                     .fillMaxWidth()
                                     .height(44.dp),
                                 colors = ButtonDefaults.buttonColors(containerColor = LinkedInColor)
+
                             ) {
-                                Text(text = "저장", color = Color.White)
+                                Text(text = "발행", color = Color.White)
                             }
+                            Button(
+                                onClick = {
+                                    if (viewModel.isModifyClicked) viewModel.modifyEssay(navController, status = "linkedout")
+                                    else viewModel.writeEssay(navController, status = "linkedout")
+
+                                },
+                                modifier = Modifier
+                                    .padding(bottom = 30.dp, start = 50.dp, end = 50.dp)
+                                    .fillMaxWidth()
+                                    .height(44.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = LinkedInColor)
+
+                            ) {
+                                Text(text = "linked-out", color = Color.White)
+                            }
+
                         }
-
-
-                        Button(
-                            onClick = {
-
-                                if (viewModel.isModifyClicked) viewModel.modifyEssay(navController, status = "published")
-                                else viewModel.writeEssay(navController, status = "published")
-
-
-                            },
+                        Box(
                             modifier = Modifier
-                                .padding(bottom = 16.dp, start = 50.dp, end = 50.dp)
-                                .fillMaxWidth()
-                                .height(44.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = LinkedInColor)
-
+                                .matchParentSize()
+                                .padding(start = 20.dp),
+                            contentAlignment = Alignment.CenterStart
                         ) {
-                            Text(text = "발행", color = Color.White)
-                        }
-                        Button(
-                            onClick = {
-                                if (viewModel.isModifyClicked) viewModel.modifyEssay(navController, status = "linkedout")
-                                else viewModel.writeEssay(navController, status = "linkedout")
-
-                            },
-                            modifier = Modifier
-                                .padding(bottom = 30.dp, start = 50.dp, end = 50.dp)
-                                .fillMaxWidth()
-                                .height(44.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = LinkedInColor)
-
-                        ) {
-                            Text(text = "linked-out", color = Color.White)
-                        }
-
-                    }
-                    Box(
-                        modifier = Modifier
-                            .matchParentSize()
-                            .padding(start = 20.dp),
-                        contentAlignment = Alignment.CenterStart
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
-                            tint = LinkedInColor,
-                            contentDescription = "previousPage",
-                            modifier = Modifier
-                                .size(30.dp)
-                                .clickable {
-                                    coroutineScope.launch {
-                                        pagerstate.animateScrollToPage(0)
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
+                                tint = LinkedInColor,
+                                contentDescription = "previousPage",
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .clickable {
+                                        coroutineScope.launch {
+                                            pagerstate.animateScrollToPage(0)
+                                        }
                                     }
-                                }
-                        )
+                            )
+                        }
                     }
                 }
-
-
             }
         }
     }
+
 }
 
 @Composable
 fun WritingDeleteCard(viewModel: WritingViewModel, navController: NavController) {
 
     if (viewModel.isDeleteClicked.value) {
-        Column(
-            modifier = Modifier.padding(horizontal = 20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF191919))
+        LinkedOutTheme {
+            Column(
+                modifier = Modifier.padding(horizontal = 20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF191919))
                 ) {
-                    Text(
-                        fontSize = 14.sp,
-                        modifier = Modifier.padding(top = 18.dp, bottom = 18.dp),
-                        text = "삭제된 글은 복구할 수 없습니다. 삭제하시겠습니까?",
-                        textAlign = TextAlign.Center,
-                        color = Color.White
-                    )
-                    HorizontalDivider(
-                        modifier = Modifier.fillMaxWidth(),
-                        thickness = 1.dp,
-                        color = Color(0xFF202020)
-                    )
-                    Text(
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            fontSize = 14.sp,
+                            modifier = Modifier.padding(top = 18.dp, bottom = 18.dp),
+                            text = "삭제된 글은 복구할 수 없습니다. 삭제하시겠습니까?",
+                            textAlign = TextAlign.Center,
+                            color = Color.White
+                        )
+                        HorizontalDivider(
+                            modifier = Modifier.fillMaxWidth(),
+                            thickness = 1.dp,
+                            color = Color(0xFF202020)
+                        )
+                        Text(
+                            modifier = Modifier
+                                .padding(top = 20.dp, bottom = 20.dp)
+                                .clickable {
+                                    navController.popBackStack(
+                                        "OnBoarding",
+                                        false
+                                    ) //onboarding까지 전부 삭제.
+                                    navController.navigate("HOME")
+                                    viewModel.initialize()
+                                },
+                            fontSize = 16.sp,
+                            text = "삭제하기",
+                            textAlign = TextAlign.Center,
+                            color = Color.Red
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                Card(
+                    modifier = Modifier.clickable { viewModel.isDeleteClicked.value = false },
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF191919))
+                ) {
+                    Column(
                         modifier = Modifier
-                            .padding(top = 20.dp, bottom = 20.dp)
-                            .clickable {
-                                navController.popBackStack(
-                                    "OnBoarding",
-                                    false
-                                ) //onboarding까지 전부 삭제.
-                                navController.navigate("HOME")
-                                viewModel.initialize()
-                            },
-                        fontSize = 16.sp,
-                        text = "삭제하기",
-                        textAlign = TextAlign.Center,
-                        color = Color.Red
-                    )
+                            .padding(vertical = 20.dp)
+                            .fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            fontSize = 16.sp,
+                            text = "취소",
+
+                            textAlign = TextAlign.Center,
+                            color = Color.White
+                        )
+
+                    }
                 }
+                Spacer(modifier = Modifier.height(35.dp))
+
             }
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            Card(
-                modifier = Modifier.clickable { viewModel.isDeleteClicked.value = false },
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF191919))
-            ) {
-                Column(
-                    modifier = Modifier
-                        .padding(vertical = 20.dp)
-                        .fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        fontSize = 16.sp,
-                        text = "취소",
-
-                        textAlign = TextAlign.Center,
-                        color = Color.White
-                    )
-
-                }
-            }
-            Spacer(modifier = Modifier.height(35.dp))
-
         }
+
     }
 }
 

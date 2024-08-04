@@ -1,5 +1,6 @@
 package com.echoist.linkedout.page.home
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
@@ -198,7 +199,7 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewMo
                         writingViewModel.imageUrl = viewModel.geulRoquisUrl
                         navController.navigate("WritingPage")
                         viewModel.isVisibleGeulRoquis = false
-                    },viewModel.geulRoquisUrl)
+                    },viewModel)
             }
         }
 
@@ -262,9 +263,13 @@ fun ModalBottomSheetContent(viewModel: HomeViewModel,navController: NavControlle
         )
     ){
         LogoutBox(
-            isCancelClicked = { isLogoutClicked = false },
-            isLogoutClicked = { isLogoutClicked = false }
-        ) //todo 수정필요
+            isCancelClicked = { isLogoutClicked = false
+                              navController.navigate("LoginPage")
+                              navController.popBackStack("LoginPage",false)},
+            isLogoutClicked = { isLogoutClicked = false
+                navController.navigate("LoginPage")
+                navController.popBackStack("LoginPage",false)}
+        )
     }
 }
 
@@ -287,7 +292,7 @@ fun WriteFTB(navController: NavController,viewModel: HomeViewModel,writingViewMo
             painter = painterResource(id = R.drawable.ftb_edit),
             contentDescription = "edit",
             modifier = Modifier.size(20.dp),
-            tint = if (isSystemInDarkTheme()) Color.Black else Color.White
+            tint = Color.Black
         )
     }
 }
@@ -300,7 +305,7 @@ fun CustomTopAppBar(onClick: () -> Unit,onClickNotification : ()->Unit,isExistUn
         title = { }, colors = TopAppBarDefaults.topAppBarColors(Color.Transparent),
         navigationIcon = {
             Icon(
-                tint = if (isSystemInDarkTheme()) Color.White else Color.Gray,
+                tint = Color.White,
                 painter = painterResource(id = R.drawable.hamburber),
                 contentDescription = "Menu",
                 modifier = Modifier
@@ -369,49 +374,52 @@ fun MyBottomNavigation(navController: NavController) {
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun MyProfile(item: UserInfo, onClick: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(160.dp)
-            .padding(20.dp)
-            .clickable { onClick() }
+    LinkedOutTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(160.dp)
+                .padding(20.dp)
+                .clickable { onClick() }
             , contentAlignment = Alignment.BottomCenter
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                modifier = Modifier
-                    .size(80.dp)
-                    .clip(CircleShape)
-            ) {
-                GlideImage(
-                    model = item.profileImage,
-                    contentDescription = "profileImage",
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .graphicsLayer {
-                            // 이미지를 원 중앙에 정렬
-                            clip = true
-                            shape = CircleShape
-                        },
-                    contentScale = ContentScale.Crop // 이미지를 자르고 원에 맞게 보여줍니다.
+                        .size(80.dp)
+                        .clip(CircleShape)
+                ) {
+                    GlideImage(
+                        model = item.profileImage,
+                        contentDescription = "profileImage",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .graphicsLayer {
+                                // 이미지를 원 중앙에 정렬
+                                clip = true
+                                shape = CircleShape
+                            },
+                        contentScale = ContentScale.Crop // 이미지를 자르고 원에 맞게 보여줍니다.
+                    )
+                }
+                Spacer(modifier = Modifier.width(20.dp))
+                Column(Modifier.weight(7f)) {
+                    Row {
+                        Text(text = item.nickname ?: "", color = Color(0xFF616FED))
+                        Text(text = " 아무개", color = Color.White)
+                    }
+                    Spacer(modifier = Modifier.height(7.dp))
+                    Text(text = "43일째 링크드 아웃!", color = Color(0xFF686868))
+                }
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                    contentDescription = "go",
+                    tint = Color(0xFF686868)
                 )
             }
-            Spacer(modifier = Modifier.width(20.dp))
-            Column(Modifier.weight(7f)) {
-                Row {
-                    Text(text = item.nickname ?: "", color = Color(0xFF616FED))
-                    Text(text = " 아무개", color = Color.White)
-                }
-                Spacer(modifier = Modifier.height(7.dp))
-                Text(text = "43일째 링크드 아웃!", color = Color(0xFF686868))
-            }
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
-                contentDescription = "go",
-                tint = Color(0xFF686868)
-            )
         }
     }
+
 }
 
 @Composable
@@ -486,255 +494,271 @@ fun MyLinkedOutBar(){
     val currentDate = LocalDate.now()
     val formattedDate = currentDate.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"))
 
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 20.dp)
-        .height(60.dp)){
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart){
-            Text(text = "주간 링크드아웃 지수", fontSize = 10.sp, color = Color.White)
-        }
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
-            Text(text = "$formattedDate 현재", fontSize = 10.sp, color = Color(0xFF686868))
+    LinkedOutTheme {
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp)
+            .height(60.dp)){
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart){
+                Text(text = "주간 링크드아웃 지수", fontSize = 10.sp, color = Color.White)
+            }
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
+                Text(text = "$formattedDate 현재", fontSize = 10.sp, color = Color(0xFF686868))
+            }
         }
     }
+
     
 }
 
 @Composable
 fun MyDrawableItem(text : String , onClick: () -> Unit) {
-    NavigationDrawerItem(
-        modifier = Modifier.height(70.dp),
-        label = {
-            Text(text = text, color = Color(0xFF797979), fontWeight = FontWeight.SemiBold)
-        },
-        selected = false,
-        onClick = { onClick() },
-    )
+    LinkedOutTheme {
+        NavigationDrawerItem(
+            modifier = Modifier.height(70.dp),
+            label = {
+                Text(text = text, color = Color(0xFF797979), fontWeight = FontWeight.SemiBold)
+            },
+            selected = false,
+            onClick = { onClick() },
+        )
+    }
+
 }
 
 @Preview
 @Composable
 fun ShopDrawerItem() {
-    NavigationDrawerItem(
-        modifier = Modifier.height(80.dp),
-        label = {
-            Text(text = "상점", color = Color.White, fontWeight = FontWeight.SemiBold)
-        },
-        selected = false,
-        onClick = { },
-        badge = {
-            Box(modifier = Modifier
-                .size(60.dp, 24.dp)
-                .background(Color(0xFF191919), shape = RoundedCornerShape(40)), contentAlignment = Alignment.Center){
-                Text(text = "  준비중  ", fontWeight = FontWeight.SemiBold, color = LinkedInColor, fontSize = 12.sp )
+    LinkedOutTheme {
+        NavigationDrawerItem(
+            modifier = Modifier.height(80.dp),
+            label = {
+                Text(text = "상점", color = Color.White, fontWeight = FontWeight.SemiBold)
+            },
+            selected = false,
+            onClick = { },
+            badge = {
+                Box(modifier = Modifier
+                    .size(60.dp, 24.dp)
+                    .background(Color(0xFF191919), shape = RoundedCornerShape(40)), contentAlignment = Alignment.Center){
+                    Text(text = "  준비중  ", fontWeight = FontWeight.SemiBold, color = LinkedInColor, fontSize = 12.sp )
 
+                }
             }
-        }
 
-    )
+        )
+    }
+
 }
 
 @Composable
 fun LogoutBtn( isLogoutClicked :()-> Unit){
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .padding(bottom = 70.dp, end = 20.dp), contentAlignment = Alignment.BottomEnd){
-        Box(
-            modifier = Modifier
-                .size(80.dp, 36.dp)
-                .background(Color(0xFF191919), shape = RoundedCornerShape(20))
-                .clickable { isLogoutClicked() },
-            contentAlignment = Alignment.Center
-        ){
-            Text(text = "로그아웃", fontSize = 12.sp, color = Color(0xFF606060))
+    LinkedOutTheme {
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 70.dp, end = 20.dp), contentAlignment = Alignment.BottomEnd){
+            Box(
+                modifier = Modifier
+                    .size(80.dp, 36.dp)
+                    .background(Color(0xFF191919), shape = RoundedCornerShape(20))
+                    .clickable { isLogoutClicked() },
+                contentAlignment = Alignment.Center
+            ){
+                Text(text = "로그아웃", fontSize = 12.sp, color = Color(0xFF606060))
+            }
         }
     }
+
 }
 
 @Composable
 fun LogoutBox( isCancelClicked: () ->Unit, isLogoutClicked: () -> Unit){
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .background(Color.Black.copy(0.4f)))
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter){
+    LinkedOutTheme {
         Box(modifier = Modifier
-            .fillMaxWidth()
-            .background(Color(0xFF121212), shape = RoundedCornerShape(10))
-            .height(243.dp), contentAlignment = Alignment.Center){
-            Column(
-                modifier = Modifier.padding(20.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(text = "로그아웃하시겠습니까?", color = Color.White, fontWeight = FontWeight.SemiBold)
-                Spacer(modifier = Modifier.height(48.dp))
-                Row {
-                    Button(
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(
-                                0xFF868686
-                            )
-                        ),
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(61.dp),
-                        onClick = { isCancelClicked() },
-                        shape = RoundedCornerShape(20)
-                    ) {
-                        Text(text = "취소", color = Color.Black,fontWeight = FontWeight.SemiBold)
+            .fillMaxSize()
+            .padding(bottom = 10.dp)
+            .background(Color.Black.copy(0.4f)))
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter){
+            Box(modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(0xFF121212), shape = RoundedCornerShape(10))
+                .height(243.dp), contentAlignment = Alignment.Center){
+                Column(
+                    modifier = Modifier.padding(20.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = "로그아웃하시겠습니까?", color = Color.White, fontWeight = FontWeight.SemiBold)
+                    Spacer(modifier = Modifier.height(48.dp))
+                    Row {
+                        Button(
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(
+                                    0xFF868686
+                                )
+                            ),
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(61.dp),
+                            onClick = { isCancelClicked() },
+                            shape = RoundedCornerShape(20)
+                        ) {
+                            Text(text = "취소", color = Color.Black,fontWeight = FontWeight.SemiBold)
 
-                    }
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Button(
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF616FED)),
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(61.dp),
-                        onClick = { isLogoutClicked()
-                                  /*TODO*/ },
-                        shape = RoundedCornerShape(20)
-                    ) {
-                        Text(text = "로그아웃", color = Color.Black, fontWeight = FontWeight.SemiBold)
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Button(
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF616FED)),
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(61.dp),
+                            onClick = { isLogoutClicked()
+                                /*TODO*/ },
+                            shape = RoundedCornerShape(20)
+                        ) {
+                            Text(text = "로그아웃", color = Color.Black, fontWeight = FontWeight.SemiBold)
 
+                        }
                     }
+
                 }
-
             }
         }
     }
+
 }
 
 @Composable
 fun TutorialPage(isCloseClicked: () -> Unit,isSkipClicked : ()->Unit){
     val pagerstate = rememberPagerState { 4 }
     val coroutineScope = rememberCoroutineScope()
+    LinkedOutTheme {
+        HorizontalPager(state = pagerstate, modifier = Modifier.fillMaxSize()) { page ->
+            when (page) {
+                0 -> Tutorial_1()
 
-    HorizontalPager(state = pagerstate, modifier = Modifier.fillMaxSize()) { page ->
-        when (page) {
-            0 -> Tutorial_1()
 
-
-            1 ->
-                Tutorial_2(draggedToLeft = {
-                    coroutineScope.launch {
-                        pagerstate.animateScrollToPage(0,
-                            animationSpec = tween(
-                                durationMillis = 600,
-                                easing = FastOutSlowInEasing
+                1 ->
+                    Tutorial_2(draggedToLeft = {
+                        coroutineScope.launch {
+                            pagerstate.animateScrollToPage(0,
+                                animationSpec = tween(
+                                    durationMillis = 600,
+                                    easing = FastOutSlowInEasing
+                                )
                             )
-                        )
 
-                    }
-                }, isTutorial3Clicked = {
-                    coroutineScope.launch {
-                        pagerstate.animateScrollToPage(2,
-                            animationSpec = tween(
-                                durationMillis = 600,
-                                easing = FastOutSlowInEasing
+                        }
+                    }, isTutorial3Clicked = {
+                        coroutineScope.launch {
+                            pagerstate.animateScrollToPage(2,
+                                animationSpec = tween(
+                                    durationMillis = 600,
+                                    easing = FastOutSlowInEasing
+                                )
                             )
-                        )
 
-                    }
-                })
+                        }
+                    })
 
-            2 ->
-                Tutorial_3(draggedToLeft = {
-                    coroutineScope.launch {
-                        pagerstate.animateScrollToPage(1,
-                            animationSpec = tween(
-                                durationMillis = 600,
-                                easing = FastOutSlowInEasing
+                2 ->
+                    Tutorial_3(draggedToLeft = {
+                        coroutineScope.launch {
+                            pagerstate.animateScrollToPage(1,
+                                animationSpec = tween(
+                                    durationMillis = 600,
+                                    easing = FastOutSlowInEasing
+                                )
                             )
-                        )
 
-                    }
-                },isCompleteClicked =
+                        }
+                    },isCompleteClicked =
                     {
-                    coroutineScope.launch {
-                        pagerstate.animateScrollToPage(3,
-                            animationSpec = tween(
-                                durationMillis = 600,
-                                easing = FastOutSlowInEasing
-                            ))
+                        coroutineScope.launch {
+                            pagerstate.animateScrollToPage(3,
+                                animationSpec = tween(
+                                    durationMillis = 600,
+                                    easing = FastOutSlowInEasing
+                                ))
 
-                    } //왼쪽드래그 -> 1페이지로이동
-                })
+                        } //왼쪽드래그 -> 1페이지로이동
+                    })
 
 
 
-            3 ->
-                Tutorial_4(){
-                    isCloseClicked()
-                }
-        }
-    }
-    if (pagerstate.currentPage != 3) {
-
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 150.dp, end = 20.dp), contentAlignment = Alignment.TopEnd
-        ) {
-            Text(
-                text = "건너뛰기 >>",
-                modifier = Modifier.clickable { isSkipClicked() },
-                style = TextStyle(
-                    fontSize = 14.sp,
-                    lineHeight = 21.sp,
-                    color = Color(0xFF929292),
-                    textAlign = TextAlign.Center,
-                    textDecoration = TextDecoration.Underline,
-                )
-            )
-        }
-    }
-
-    if (pagerstate.currentPage != 3){
-        Box(
-            modifier = Modifier
-                .fillMaxSize() /* 부모 만큼 */
-                .padding(bottom = 20.dp), contentAlignment = Alignment.BottomCenter
-        ) {
-
-            Row(
-                Modifier
-                    .height(100.dp)
-                    .padding(bottom = 30.dp), //box 안에 있어야하는거같기도?
-                horizontalArrangement = Arrangement.Center
-            )
-            {
-                repeat(4) { iteration ->
-                    val color =
-                        if (pagerstate.currentPage == iteration) Color(0xFF616FED) else Color.White.copy(
-                            alpha = 0.5f
-                        )
-                    if (pagerstate.currentPage == iteration) {
-                        Box(
-                            modifier = Modifier
-                                .padding(4.dp)
-                                .clip(CircleShape)
-                                .background(color)
-                                .size(20.dp, 10.dp)
-
-                        )
-
-                    } else {
-                        Box(
-                            modifier = Modifier
-                                .padding(4.dp)
-                                .clip(CircleShape)
-                                .background(color)
-                                .size(10.dp, 10.dp)
-
-                        )
+                3 ->
+                    Tutorial_4(){
+                        isCloseClicked()
                     }
+            }
+        }
+        if (pagerstate.currentPage != 3) {
 
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 150.dp, end = 20.dp), contentAlignment = Alignment.TopEnd
+            ) {
+                Text(
+                    text = "건너뛰기 >>",
+                    modifier = Modifier.clickable { isSkipClicked() },
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        lineHeight = 21.sp,
+                        color = Color(0xFF929292),
+                        textAlign = TextAlign.Center,
+                        textDecoration = TextDecoration.Underline,
+                    )
+                )
+            }
+        }
+
+        if (pagerstate.currentPage != 3){
+            Box(
+                modifier = Modifier
+                    .fillMaxSize() /* 부모 만큼 */
+                    .padding(bottom = 20.dp), contentAlignment = Alignment.BottomCenter
+            ) {
+
+                Row(
+                    Modifier
+                        .height(100.dp)
+                        .padding(bottom = 30.dp), //box 안에 있어야하는거같기도?
+                    horizontalArrangement = Arrangement.Center
+                )
+                {
+                    repeat(4) { iteration ->
+                        val color =
+                            if (pagerstate.currentPage == iteration) Color(0xFF616FED) else Color.White.copy(
+                                alpha = 0.5f
+                            )
+                        if (pagerstate.currentPage == iteration) {
+                            Box(
+                                modifier = Modifier
+                                    .padding(4.dp)
+                                    .clip(CircleShape)
+                                    .background(color)
+                                    .size(20.dp, 10.dp)
+
+                            )
+
+                        } else {
+                            Box(
+                                modifier = Modifier
+                                    .padding(4.dp)
+                                    .clip(CircleShape)
+                                    .background(color)
+                                    .size(10.dp, 10.dp)
+
+                            )
+                        }
+
+                    }
                 }
             }
         }
     }
-
-    }
+}
     
 
 
@@ -828,63 +852,66 @@ fun Tutorial_2(isTutorial3Clicked : ()->Unit, draggedToLeft: () -> Unit){
 fun Tutorial_3(isCompleteClicked : () -> Unit,draggedToLeft:()->Unit){
     var isClicked by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
-
-    if (!isClicked){
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .pointerInput(Unit) {
-                    detectHorizontalDragGestures { _, dragAmount ->
-                        // 감지된 드래그 방향과 양에 따라 동작 수행
-                        coroutineScope.launch {
-                            if (dragAmount > 0) {
-                                // 오른쪽으로 스와이프
-                                draggedToLeft()
-                            } else {
-                                // 왼쪽으로 스와이프
-                                isClicked = true
-                            }
-                        }
-                    }
-                }
-                .padding(bottom = 112.dp, end = 15.dp),
-            contentAlignment = Alignment.BottomEnd
-        ){
-            TutorialActionBtn{isClicked = true}
-        }
-    }
-
-    AnimatedVisibility(visible = isClicked,
-        enter = slideInVertically(
-            initialOffsetY = { 2000 },
-            animationSpec = tween(durationMillis = 500)
-        ),
-        exit = slideOutVertically(
-            targetOffsetY = { 2000 },
-            animationSpec = tween(durationMillis = 500)
-        )) {
-        Box{
-            Box(modifier = Modifier.fillMaxSize()){
-                GlideImage(
-                    model = R.drawable.tutorial_4,
-                    contentDescription = "home_img",
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.FillWidth
-                )
-            }
+    LinkedOutTheme {
+        if (!isClicked){
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = 65.dp, end = 20.dp),
-                contentAlignment = Alignment.TopEnd
+                    .pointerInput(Unit) {
+                        detectHorizontalDragGestures { _, dragAmount ->
+                            // 감지된 드래그 방향과 양에 따라 동작 수행
+                            coroutineScope.launch {
+                                if (dragAmount > 0) {
+                                    // 오른쪽으로 스와이프
+                                    draggedToLeft()
+                                } else {
+                                    // 왼쪽으로 스와이프
+                                    isClicked = true
+                                }
+                            }
+                        }
+                    }
+                    .padding(bottom = 112.dp, end = 15.dp),
+                contentAlignment = Alignment.BottomEnd
             ){
-                Text(text = "완료", color = Color.White, modifier = Modifier.clickable {
-                    isCompleteClicked()
+                TutorialActionBtn{isClicked = true}
+            }
+        }
 
-                })
+        AnimatedVisibility(visible = isClicked,
+            enter = slideInVertically(
+                initialOffsetY = { 2000 },
+                animationSpec = tween(durationMillis = 500)
+            ),
+            exit = slideOutVertically(
+                targetOffsetY = { 2000 },
+                animationSpec = tween(durationMillis = 500)
+            )) {
+            Box{
+                Box(modifier = Modifier.fillMaxSize()){
+                    GlideImage(
+                        model = R.drawable.tutorial_4,
+                        contentDescription = "home_img",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.FillWidth
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 65.dp, end = 20.dp),
+                    contentAlignment = Alignment.TopEnd
+                ){
+                    Text(text = "완료", color = Color.White, modifier = Modifier.clickable {
+                        isCompleteClicked()
+
+                    })
+                }
             }
         }
     }
+
+
 
 }
 
@@ -892,8 +919,7 @@ fun Tutorial_3(isCompleteClicked : () -> Unit,draggedToLeft:()->Unit){
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun Tutorial_4(isCloseClicked : ()->Unit){
-
-
+    LinkedOutTheme {
         Box{
             Box(modifier = Modifier.fillMaxSize()){
                 GlideImage(
@@ -918,6 +944,8 @@ fun Tutorial_4(isCloseClicked : ()->Unit){
                 )
             }
         }
+    }
+
 
 }
 
@@ -935,7 +963,7 @@ fun TutorialActionBtn(modifier: Modifier = Modifier,isFTBClicked : ()->Unit){
                 painter = painterResource(id = R.drawable.ftb_edit),
                 contentDescription = "edit",
                 modifier = Modifier.size(20.dp),
-                tint = if (isSystemInDarkTheme()) Color.Black else Color.White
+                tint = Color.Black
             )
         }
         Box(Modifier.offset (x = (-10).dp,y= (-10).dp)){
@@ -950,54 +978,60 @@ fun TutorialActionBtn(modifier: Modifier = Modifier,isFTBClicked : ()->Unit){
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun GeulRoquis(isHoldClicked : ()-> Unit, isAcceptClicked : () -> Unit, imageUrl : String){
-    Box(modifier = Modifier
-        .background(color = Color(0xF2121212), shape = RoundedCornerShape(4))
-        .size(281.dp, 411.dp)){
-        GlideImage(
-            model = R.drawable.geulroquis_background,
-            contentDescription = "linkedout logo",
-            contentScale = ContentScale.Crop
-        )
-        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()) {
-            Spacer(modifier = Modifier.height(31.dp))
-            Text(text = "오늘의 글로키가 도착했어요!", color = Color.White, fontSize = 16.sp)
-            Spacer(modifier = Modifier.height(5.dp))
-            Text(text = "2024-07-24 GeulRoquis", color = Color.White, fontSize = 12.sp)
-            Spacer(modifier = Modifier.height(20.dp))
+fun GeulRoquis(isHoldClicked : ()-> Unit, isAcceptClicked : () -> Unit, viewModel: HomeViewModel){
+    LinkedOutTheme {
+        Box(modifier = Modifier
+            .background(color = Color(0xF2121212), shape = RoundedCornerShape(4))
+            .size(281.dp, 411.dp)){
+            GlideImage(
+                model = R.drawable.geulroquis_background,
+                contentDescription = "linkedout logo",
+                contentScale = ContentScale.Crop
+            )
+            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()) {
+                Spacer(modifier = Modifier.height(31.dp))
+                Text(text = "오늘의 글로키가 도착했어요!", color = Color.White, fontSize = 16.sp)
+                Spacer(modifier = Modifier.height(5.dp))
+                Text(text = "2024-07-24 GeulRoquis", color = Color.White, fontSize = 12.sp)
+                Spacer(modifier = Modifier.height(20.dp))
 
-            if (imageUrl.isEmpty() || imageUrl.startsWith("https")){
-                Box(
-                    modifier = Modifier.fillMaxWidth().height(260.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(color = LinkedInColor)
+                Log.d("글로키 링크", viewModel.geulRoquisUrl)
+                if (viewModel.geulRoquisUrl.isEmpty() || !viewModel.geulRoquisUrl.startsWith("https")){
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(260.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(color = LinkedInColor)
+                    }
                 }
-            }
-            else{
-                GlideImage(
-                    model = imageUrl,
-                    contentDescription = "",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .height(260.dp)
-                        .fillMaxWidth()
-                )
-            }
+                else{
+                    GlideImage(
+                        model = viewModel.geulRoquisUrl,
+                        contentDescription = "",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .height(260.dp)
+                            .fillMaxWidth()
+                    )
+                }
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "보류", color = Color.White, fontSize = 16.sp, modifier = Modifier
-                    .clickable { isHoldClicked() }
-                    .weight(1f), textAlign = TextAlign.Center)
-                VerticalDivider(color = Color(0xFF292929))
-                Text(text = "수락", color = Color.White, fontSize = 16.sp,modifier = Modifier
-                    .clickable { isAcceptClicked() }
-                    .weight(1f),textAlign = TextAlign.Center)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "보류", color = Color.White, fontSize = 16.sp, modifier = Modifier
+                        .clickable { isHoldClicked() }
+                        .weight(1f), textAlign = TextAlign.Center)
+                    VerticalDivider(color = Color(0xFF292929))
+                    Text(text = "수락", color = Color.White, fontSize = 16.sp,modifier = Modifier
+                        .clickable { isAcceptClicked() }
+                        .weight(1f),textAlign = TextAlign.Center)
+
+                }
 
             }
-
         }
     }
+
 }
 
 

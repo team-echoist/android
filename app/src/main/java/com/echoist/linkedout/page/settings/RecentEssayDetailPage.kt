@@ -8,7 +8,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -253,11 +252,8 @@ fun RecentEssayListItem(
     viewModel: CommunityViewModel,
     navController: NavController
 ) {
-    val color = if (isSystemInDarkTheme()) {
+    val color =
         Color.White
-    } else {
-        Color.Black
-    }
     Box(modifier = Modifier
         .fillMaxWidth()
         .background(Color.Black)

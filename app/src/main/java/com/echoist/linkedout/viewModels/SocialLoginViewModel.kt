@@ -200,10 +200,7 @@ class SocialLoginViewModel @Inject constructor(
     private fun requestGoogleLogin(navController: NavController) {
         viewModelScope.launch {
             try {
-                val userAccount = SocialSignUpApi.UserAccount(
-                    googleUserToken,
-                    googleUserId
-                )
+                val userAccount = SocialSignUpApi.UserAccount(googleUserToken)
                 val response = socialSignUpApi.requestGoogleLogin(userAccount)
 
                 if (response.isSuccessful) {
@@ -295,7 +292,7 @@ class SocialLoginViewModel @Inject constructor(
     private fun requestKakaoLogin(navController: NavController) {
         viewModelScope.launch {
             try {
-                val userAccount = SocialSignUpApi.UserAccount(kakaoUserToken, kakaoUserId)
+                val userAccount = SocialSignUpApi.UserAccount(kakaoUserToken)
                 val response = socialSignUpApi.requestKakaoLogin(userAccount)
 
                 if (response.isSuccessful) {
@@ -414,7 +411,7 @@ class SocialLoginViewModel @Inject constructor(
     private fun requestNaverLogin(navController: NavController) {
         viewModelScope.launch {
             try {
-                val userAccount = SocialSignUpApi.UserAccount(naverUserToken, naverUserId)
+                val userAccount = SocialSignUpApi.UserAccount(naverUserToken)
                 val response = socialSignUpApi.requestNaverLogin(userAccount)
 
                 if (response.isSuccessful) {
@@ -514,7 +511,7 @@ class SocialLoginViewModel @Inject constructor(
     private fun requestAppleLogin(navController: NavController) {
         viewModelScope.launch {
             try {
-                val userAccount = SocialSignUpApi.UserAccount(appleUserToken, appleUserId)
+                val userAccount = SocialSignUpApi.UserAccount(appleUserToken)
                 val response = socialSignUpApi.requestAppleLogin(userAccount)
 
                 if (response.isSuccessful) {

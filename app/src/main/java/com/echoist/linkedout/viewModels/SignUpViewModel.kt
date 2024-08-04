@@ -245,6 +245,7 @@ class SignUpViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
+            Log.d("약관 동의 저장시작", "1")
                 try {
                     if (locationAgreement){ //사용자의 위치서비스 동의
                         val userInfo = UserInfo(locationConsent = true)
@@ -252,10 +253,11 @@ class SignUpViewModel @Inject constructor(
 
                         if (response.isSuccessful) Log.d(TAG, "위치서비스 동의 저장 성공: ${response.code()}")
                         else Log.e(TAG, "위치서비스 동의 저장 실패: ${response.code()}")
+                        Log.d("약관 동의 저장시작", "2")
 
                     }
                     //사용자의 마케팅 동의
-                    if (marketingAgreement || serviceAlertAgreement){ //사용자가 마케팅이나 서비스 알림 동의
+
                         val response = supportApi.updateUserNotification(Token.accessToken,DeviceId.deviceId,option)
                         if (response.isSuccessful){
                             Log.d(TAG, "마케팅 동의 저장 성공: ${response.code()}")
@@ -266,7 +268,7 @@ class SignUpViewModel @Inject constructor(
                             Log.e(TAG, "마케팅 동의 저장 실패: ${response.code()}")
                             Log.e(TAG, "마케팅 동의 저장 실패: ${response.errorBody()}")
                         }
-                    }
+
                 } catch (e: Exception) {
                     e.printStackTrace()
                     Log.e("이용정보 동의 저장실패","${e.printStackTrace()}")

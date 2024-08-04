@@ -72,7 +72,7 @@ class WritingViewModel @Inject constructor(
     var locationText by mutableStateOf("")
     var hashTagList by mutableStateOf(mutableStateListOf<String>())
 
-    val storageEssaysList = exampleItems.exampleEmptyEssayList
+    val storageEssaysList = mutableStateListOf<EssayApi.EssayItem>()
 
 
     var date = mutableStateOf("")

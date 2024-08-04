@@ -12,7 +12,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -295,7 +294,7 @@ fun CommunityTopAppBar(navController: NavController, viewModel: CommunityViewMod
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "arrow back",
-                tint = if (isSystemInDarkTheme()) Color.White else Color.Gray,
+                tint = Color.White,
                 modifier = Modifier
                     .padding(start = 10.dp)
                     .size(30.dp)
@@ -713,7 +712,7 @@ fun ReportTextField(hint : String,selectedColor: Color) {
                 focusedContainerColor = Color.Transparent,
                 unfocusedContainerColor = Color.Transparent,
                 errorTextColor = Color.Red,
-                errorContainerColor = if (isSystemInDarkTheme()) Color(0xFF252525) else Color.Black,
+                errorContainerColor = Color(0xFF252525),
                 errorIndicatorColor = Color.Transparent
             ),
         )

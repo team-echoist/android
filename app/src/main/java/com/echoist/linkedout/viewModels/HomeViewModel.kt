@@ -366,16 +366,23 @@ class HomeViewModel @Inject constructor(
         }
     }
     var geulRoquisUrl by mutableStateOf("")
+    var isApiFinished by mutableStateOf(false)
     fun requestGuleRoquis(){
         viewModelScope.launch {
             try {
                 val response = supportApi.readGeulroquis(Token.accessToken)
                 if (response.isSuccessful){
+                    Log.d("글로키 api", "성공: ${response.body()!!.data.url}")
                     geulRoquisUrl = response.body()!!.data.url
+                    Log.d("글로키 api", "성공: $geulRoquisUrl")
+
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
                 Log.e("글로키 api","에러 ${e.message}")
+            }
+            finally {
+                isApifinished = true
             }
         }
     }

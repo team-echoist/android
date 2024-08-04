@@ -18,7 +18,6 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -419,7 +418,7 @@ fun AppleLoginBtn(navController: NavController, viewModel: SocialLoginViewModel)
             contentDescription = "naver Login btn",
             modifier = Modifier
                 .size(40.dp)
-                .clickable {viewModel.appleLoginHandle(activity,navController) },
+                .clickable { viewModel.appleLoginHandle(activity, navController) },
             tint = Color.Unspecified
         )
 
@@ -457,7 +456,7 @@ fun LoginPage(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "arrowback",
 
-                        tint = if (isSystemInDarkTheme()) Color.White else Color.Gray,
+                        tint = Color.White,
                         modifier = Modifier
                             .size(30.dp)
                             .padding(16.dp)
@@ -469,14 +468,14 @@ fun LoginPage(
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.padding(start = 16.dp),
-                        color = if (isSystemInDarkTheme()) Color.White else Color.Gray
+                        color = Color.White,
                     )
                     Text(
                         text = "링크드아웃에 오신 것을 환영합니다",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.padding(start = 16.dp, bottom = 32.dp),
-                        color = if (isSystemInDarkTheme()) Color.White else Color.Gray
+                        color = Color.White,
                     )
                     IdTextField(viewModel)
                     PwTextField(viewModel)
@@ -514,7 +513,7 @@ fun LoginPage(
                     ) {
                         HorizontalDivider(
                             thickness = 1.dp,
-                            color = if (isSystemInDarkTheme()) Color.White else Color.Gray,
+                            color = Color.White,
                             modifier = Modifier
                                 .weight(1f)
                                 .padding(12.dp)
@@ -522,13 +521,13 @@ fun LoginPage(
                         Spacer(modifier = Modifier.width(12.dp)) // 공간을 만듭니다
                         Text(
                             text = "간편 회원가입/로그인",
-                            color = if (isSystemInDarkTheme()) Color.White else Color.Gray,
+                            color = Color.White,
                             fontSize = 12.sp
                         )
                         Spacer(modifier = Modifier.width(12.dp)) // 공간을 만듭니다
                         HorizontalDivider(
                             thickness = 1.dp,
-                            color = if (isSystemInDarkTheme()) Color.White else Color.Gray,
+                            color = Color.White,
                             modifier = Modifier
                                 .weight(1f)
                                 .padding(12.dp)
@@ -546,7 +545,9 @@ fun LoginPage(
 @Composable
 fun SocialLoginBar(navController: NavController, viewModel: SocialLoginViewModel) {
     Row(
-        modifier = Modifier.fillMaxWidth().navigationBarsPadding(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .navigationBarsPadding(),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -573,7 +574,7 @@ fun IdTextField(viewModel: SocialLoginViewModel) {
         label = {
             Text(
                 "이메일 주소 또는 아이디",
-                color = if (isSystemInDarkTheme()) Color(0xFF919191) else Color.Gray,
+                color = Color(0xFF919191),
                 fontSize = 14.sp
             )
         }, // 힌트를 라벨로 설정합니다.
@@ -582,8 +583,8 @@ fun IdTextField(viewModel: SocialLoginViewModel) {
             unfocusedIndicatorColor = Color.Transparent,
             focusedTextColor = Color.White,
             unfocusedTextColor = Color.White,
-            focusedContainerColor = if (isSystemInDarkTheme()) Color(0xFF252525) else Color.Black,
-            unfocusedContainerColor = if (isSystemInDarkTheme()) Color(0xFF252525) else Color.Black
+            focusedContainerColor = Color(0xFF252525),
+            unfocusedContainerColor = Color(0xFF252525)
 
 
         ),
@@ -598,41 +599,44 @@ fun IdTextField(viewModel: SocialLoginViewModel) {
 fun PwTextField(viewModel: SocialLoginViewModel) {
     var text by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+    LinkedOutTheme {
+        TextField(
+            value = text,
+            onValueChange = { new ->
+                text = new
+                viewModel.userPw = text
+            },
+            label = { Text("비밀번호", color = Color(0xFF919191), fontSize = 14.sp) }, // 힌트를 라벨로 설정합니다.
+            colors = TextFieldDefaults.colors(
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedTextColor = Color.White,
+                unfocusedTextColor = Color.White,
+                focusedContainerColor = Color(0xFF252525),
+                unfocusedContainerColor = Color(0xFF252525)
 
-    TextField(
-        value = text,
-        onValueChange = { new ->
-            text = new
-            viewModel.userPw = text
-        },
-        label = { Text("비밀번호", color = Color(0xFF919191), fontSize = 14.sp) }, // 힌트를 라벨로 설정합니다.
-        colors = TextFieldDefaults.colors(
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            focusedTextColor = Color.White,
-            unfocusedTextColor = Color.White,
-            focusedContainerColor = if (isSystemInDarkTheme()) Color(0xFF252525) else Color.Black,
-            unfocusedContainerColor = if (isSystemInDarkTheme()) Color(0xFF252525) else Color.Black
+
+            ),
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            trailingIcon = { // 비밀번호 표시 여부입니다.
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    Icon(
+                        modifier = Modifier.size(24.dp),
+                        painter = painterResource(id = if (passwordVisible) R.drawable.pw_eye else R.drawable.pw_eye_off),
+                        contentDescription = "pw_eye"
+                    )
+
+                }
+            },
+            shape = RoundedCornerShape(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp, bottom = 13.dp)
+        )
+    }
 
 
-        ),
-        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-        trailingIcon = { // 비밀번호 표시 여부입니다.
-            IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                Icon(
-                    modifier = Modifier.size(24.dp),
-                    painter = painterResource(id = if (passwordVisible) R.drawable.pw_eye else R.drawable.pw_eye_off),
-                    contentDescription = "pw_eye"
-                )
-
-            }
-        },
-        shape = RoundedCornerShape(8.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp, bottom = 13.dp)
-    )
 }
 
 @Composable
@@ -643,24 +647,27 @@ fun LoginBtn(
     val interactionSource = remember { MutableInteractionSource() }
     // val isPressed by interactionSource.collectIsPressedAsState()
     val error = viewModel.userId.isEmpty() || viewModel.userPw.isEmpty()
-    
-    Button(
-        shape = RoundedCornerShape(10.dp),
-        enabled = !error,
-        onClick = {
-            viewModel.login(navController)
-        },
-        colors = ButtonDefaults.buttonColors(
-            containerColor = if (error) Color.Gray else LinkedInColor
-        ),
-        interactionSource = interactionSource,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(55.dp)
-            .padding(start = 16.dp, end = 16.dp)
-    ) {
-        Text(text = "로그인")
+
+    LinkedOutTheme {
+        Button(
+            shape = RoundedCornerShape(10.dp),
+            enabled = !error,
+            onClick = {
+                viewModel.login(navController)
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = if (error) Color.Gray else LinkedInColor
+            ),
+            interactionSource = interactionSource,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(55.dp)
+                .padding(start = 16.dp, end = 16.dp)
+        ) {
+            Text(text = "로그인")
+        }
     }
+
 }
 
 @Composable
@@ -668,16 +675,19 @@ fun UnderlineText(
     text: String,
     onClick: () -> Unit
 ) {
-    Text(
-        text = text,
-        fontSize = 12.sp,
-        style = TextStyle(textDecoration = TextDecoration.Underline),
-        color = if (isSystemInDarkTheme()) Color(0xFF919191) else Color.Black,
-        modifier = Modifier
-            .padding(end = 25.dp)
-            .clickable { onClick() }
+    LinkedOutTheme {
+        Text(
+            text = text,
+            fontSize = 12.sp,
+            style = TextStyle(textDecoration = TextDecoration.Underline),
+            color = Color(0xFF919191),
+            modifier = Modifier
+                .padding(end = 25.dp)
+                .clickable { onClick() }
 
-    )
+        )
+    }
+
 }
 
 enum class Keyboard {

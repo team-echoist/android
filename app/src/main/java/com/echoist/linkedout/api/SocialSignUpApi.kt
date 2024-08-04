@@ -26,8 +26,7 @@ interface SocialSignUpApi {
     ): Response<Unit>
 
     data class UserAccount(
-        val token : String,
-        val platformId : String
+        val token : String
     )
 
 

@@ -95,7 +95,10 @@ fun OnBoardingPage(navController: NavController) {
                             contentAlignment = Alignment.Center
                         ) {
                             //VideoPlayer(resId = R.raw.onboarding5)
+
                             GlideImage(model = R.drawable.splash_final, contentDescription = "", modifier = Modifier.fillMaxSize())
+
+
 
                         }
                     }
@@ -170,7 +173,8 @@ fun OnBoardingPage(navController: NavController) {
                     }
                     if (pagerstate.currentPage == 3) {
                         Button(modifier = Modifier
-                            .padding(top = 13.dp, bottom = 10.dp).navigationBarsPadding()
+                            .padding(top = 13.dp, bottom = 10.dp)
+                            .navigationBarsPadding()
                             .size(
                                 200.dp,
                                 50.dp
@@ -201,26 +205,29 @@ fun OnBoardingPager(
     subText: String,
     resId: Int
 ) {
-    Box(modifier = Modifier.fillMaxSize()){
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+    LinkedOutTheme {
+        Box(modifier = Modifier.fillMaxSize()){
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
 //            VideoPlayer(resId)
-            GlideImage(model = resId, contentDescription = "", modifier = Modifier.fillMaxSize())
-        }
+                GlideImage(model = resId, contentDescription = "", modifier = Modifier.fillMaxSize())
+            }
 
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Spacer(modifier = Modifier.height(282.dp))
-            // 비디오 플레이어가 준비되었을 때만 VideoPlayer를 그립니다.
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Spacer(modifier = Modifier.height(282.dp))
+                // 비디오 플레이어가 준비되었을 때만 VideoPlayer를 그립니다.
 
 
-            Text(text = mainText, color = Color.White, textAlign = TextAlign.Center, fontSize = 20.sp)
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(text = subText, color = Color(0xFF686868), textAlign = TextAlign.Center)
+                Text(text = mainText, color = Color.White, textAlign = TextAlign.Center, fontSize = 20.sp)
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(text = subText, color = Color(0xFF686868), textAlign = TextAlign.Center)
+            }
         }
     }
+
 
 }
 

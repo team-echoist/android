@@ -41,7 +41,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.TYPE_PROFILE
 import com.echoist.linkedout.api.EssayApi
-import com.echoist.linkedout.formatDateTime
+import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.MyLogViewModel
 import kotlinx.coroutines.delay
 
@@ -62,38 +62,35 @@ fun LastEssayItem(
     viewModel: MyLogViewModel,
     navController: NavController
 ) {
-    val color = if (isSystemInDarkTheme()) {
-        Color.White
-    } else {
-        Color.Black
-    }
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .clickable {
+    val color = Color.White
+    LinkedOutTheme {
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
 
-                viewModel.readDetailEssay(item.id!!,navController, TYPE_PROFILE)
+                viewModel.readDetailEssay(item.id!!, navController, TYPE_PROFILE)
                 viewModel.detailEssayBackStack.push(item)
                 Log.d(TAG, "pushpush: ${viewModel.detailEssayBackStack}")
 
-        }
-        .height(140.dp)) {
-        //타이틀
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 20.dp, start = 20.dp, end = 20.dp)
-                    .weight(7f) // Column 비율 조정
-            ) {
-                Row {
-                    Text(
-                        modifier = Modifier.fillMaxWidth(0.7f),
-                        text = item.title!!,
-                        color = color,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                        fontSize = 20.sp,
-                    )
+            }
+            .height(140.dp)) {
+            //타이틀
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 20.dp, start = 20.dp, end = 20.dp)
+                        .weight(7f) // Column 비율 조정
+                ) {
+                    Row {
+                        Text(
+                            modifier = Modifier.fillMaxWidth(0.7f),
+                            text = item.title!!,
+                            color = color,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                            fontSize = 20.sp,
+                        )
 //                    if (item.id == viewModel.detailEssay.id){
 //                        Spacer(modifier = Modifier.width(10.dp))
 //                        Surface(shape = RoundedCornerShape(60), color = Color.Magenta) {
@@ -101,50 +98,52 @@ fun LastEssayItem(
 //                        }
 //                    } todo 이전 글 파싱하는방법 찾아야할듯? 아이디를 기준으로 앞에걸 자른다던지
 
+                    }
+
+
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Text(
+                        text = item.content!!,
+                        lineHeight = 27.2.sp,
+                        maxLines = 2,
+                        color = color,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Spacer(modifier = Modifier.height(20.dp))
+
                 }
 
-
-                Spacer(modifier = Modifier.height(10.dp))
-                Text(
-                    text = item.content!!,
-                    lineHeight = 27.2.sp,
-                    maxLines = 2,
-                    color = color,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Spacer(modifier = Modifier.height(20.dp))
-
+                if (item.thumbnail != null) {
+                    GlideImage(
+                        model = item.thumbnail,
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(135.dp)
+                            .padding(vertical = 10.dp, horizontal = 10.dp)
+                            .clip(RoundedCornerShape(10.dp)) // 둥근 모서리 적용
+                    )
+                }
             }
 
-            if (item.thumbnail != null) {
-                GlideImage(
-                    model = item.thumbnail,
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .size(135.dp)
-                        .padding(vertical = 10.dp, horizontal = 10.dp)
-                        .clip(RoundedCornerShape(10.dp)) // 둥근 모서리 적용
-                )
+
+            Box(
+                contentAlignment = Alignment.BottomStart, modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = 20.dp, bottom = 10.dp)
+            ) {
+                Text(text = item.createdDate!!, fontSize = 10.sp, color = Color(0xFF686868))
             }
-        }
+            Box(
+                contentAlignment = Alignment.BottomEnd, modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                HorizontalDivider(color = Color(0xFF686868))
+            }
 
-
-        Box(
-            contentAlignment = Alignment.BottomStart, modifier = Modifier
-                .fillMaxSize()
-                .padding(start = 20.dp, bottom = 10.dp)
-        ) {
-            Text(text = formatDateTime(item.createdDate!!), fontSize = 10.sp, color = Color(0xFF686868))
         }
-        Box(
-            contentAlignment = Alignment.BottomEnd, modifier = Modifier
-                .fillMaxSize()
-        ) {
-            HorizontalDivider(color = Color(0xFF686868))
-        }
-
     }
+
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -190,7 +189,7 @@ fun LastEssayPager(viewModel: MyLogViewModel, navController: NavController){
             Box(modifier = Modifier
                 .fillMaxWidth()
                 .height(140.dp), contentAlignment = Alignment.Center){
-                Text(text = "아직 글이 없습니다.", color = Color(0xFF424242), fontSize = 16.sp)
+                Text(text = "글이 존재하지 않습니다.", color = Color(0xFF424242), fontSize = 16.sp)
             }
         }
         //이전 글이 존재한다면

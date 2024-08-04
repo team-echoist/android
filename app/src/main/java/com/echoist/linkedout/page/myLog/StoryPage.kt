@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -275,27 +276,29 @@ fun StoryEssayListScreen(viewModel: MyLogViewModel, navController: NavController
             val containerColor =
                 if (viewModel.storyTextFieldTitle.isNotEmpty()) LinkedInColor else Color(0xFF868686)
             //에세이 스토리 추가버튼
-            Button(
-                onClick = {
-                    if (viewModel.storyTextFieldTitle.isNotEmpty()) {
-                        if (viewModel.isCreateStory){ //스토리 생성
-                            viewModel.createStory(navController)
+            Box(modifier = Modifier.navigationBarsPadding()){
+                Button(
+                    onClick = {
+                        if (viewModel.storyTextFieldTitle.isNotEmpty()) {
+                            if (viewModel.isCreateStory){ //스토리 생성
+                                viewModel.createStory(navController)
+                            }
+                            else{ // 스토리 수정
+                                viewModel.modifyStory(navController)
+                            }
                         }
-                        else{ // 스토리 수정
-                            viewModel.modifyStory(navController)
-                        }
-                    }
-                },
-                modifier = Modifier
-
-                    .height(90.dp)
-                    .fillMaxWidth()
-                    .padding(20.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = containerColor),
-                shape = RoundedCornerShape(20)
-            ) {
-                Text("총 ${selectedItems.size}개의 글 모으기",color = Color.Black)
+                    },
+                    modifier = Modifier
+                        .height(60.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = containerColor),
+                    shape = RoundedCornerShape(20)
+                ) {
+                    Text("총 ${selectedItems.size}개의 글 모으기",color = Color.Black)
+                }
             }
+
         }
     }
 

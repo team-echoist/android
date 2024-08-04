@@ -4,7 +4,6 @@ import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -63,6 +62,7 @@ import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.Story
 import com.echoist.linkedout.formatDateTime
 import com.echoist.linkedout.page.myLog.OptionItem
+import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.MyLogViewModel
 import com.echoist.linkedout.viewModels.WritingViewModel
 import kotlinx.coroutines.launch
@@ -73,77 +73,83 @@ import kotlinx.coroutines.launch
 fun MyLogTopAppBar(onClickSearch : ()->Unit,nickName : String,onClickNotification : ()->Unit,isExistUnreadAlerts : Boolean){
     val img = if (isExistUnreadAlerts) R.drawable.icon_noti_on else R.drawable.icon_noti_off
 
-    TopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
-        title = {
-            Text(text = "$nickName 님", fontWeight = FontWeight.Bold)
-        },
-        actions = {
-            Icon(imageVector = Icons.Default.Search, contentDescription = "",
-                Modifier
-                    .padding(start = 10.dp)
-                    .size(30.dp)
-                    .clickable { onClickSearch() })
-            Spacer(modifier = Modifier.width(13.dp))
-            Icon(
-                painter = painterResource(id = img),
-                contentDescription = "",
-                Modifier
-                    .padding(end = 10.dp)
-                    .size(30.dp)
-                    .clickable { onClickNotification() }
-            )
+    LinkedOutTheme {
+        TopAppBar(
+            colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
+            title = {
+                Text(text = "$nickName 님", fontWeight = FontWeight.Bold)
+            },
+            actions = {
+                Icon(imageVector = Icons.Default.Search, contentDescription = "",
+                    Modifier
+                        .padding(start = 10.dp)
+                        .size(30.dp)
+                        .clickable { onClickSearch() })
+                Spacer(modifier = Modifier.width(13.dp))
+                Icon(
+                    painter = painterResource(id = img),
+                    contentDescription = "",
+                    Modifier
+                        .padding(end = 10.dp)
+                        .size(30.dp)
+                        .clickable { onClickNotification() }
+                )
 
-        }
-    )
+            }
+        )
+    }
+
 }
 @Composable
 fun EssayChips(pagerState: PagerState,viewModel: MyLogViewModel){
     val coroutineScope = rememberCoroutineScope()
 
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .height(26.dp)){
-        Row(modifier = Modifier
+    LinkedOutTheme {
+        Box(modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 17.dp)) {
-            Essaychip(
-                text = "나만의 글 ${viewModel.myEssayList.size}",
-                75.dp,
-                {
-                    coroutineScope.launch {
-                        pagerState.animateScrollToPage(0)
+            .height(26.dp)){
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 17.dp)) {
+                Essaychip(
+                    text = "나만의 글 ${viewModel.myEssayList.size}",
+                    75.dp,
+                    {
+                        coroutineScope.launch {
+                            pagerState.animateScrollToPage(0)
 
-                    }
-                },
-                color = if (pagerState.currentPage == 0) Color.White else Color.Gray
-            )
-            Spacer(modifier = Modifier.width(5.dp))
-            Essaychip(
-                text = "발행한 글 ${viewModel.publishedEssayList.size}",
-                75.dp,
-                {
-                    coroutineScope.launch {
-                        pagerState.animateScrollToPage(1)
-                    }
-                },
-                color = if (pagerState.currentPage == 1) Color.White else Color.Gray
-            )
-            Spacer(modifier = Modifier.width(5.dp))
+                        }
+                    },
+                    color = if (pagerState.currentPage == 0) Color.White else Color.Gray
+                )
+                Spacer(modifier = Modifier.width(5.dp))
+                Essaychip(
+                    text = "발행한 글 ${viewModel.publishedEssayList.size}",
+                    75.dp,
+                    {
+                        coroutineScope.launch {
+                            pagerState.animateScrollToPage(1)
+                        }
+                    },
+                    color = if (pagerState.currentPage == 1) Color.White else Color.Gray
+                )
+                Spacer(modifier = Modifier.width(5.dp))
 
-            Essaychip(
-                text = "스토리 ${viewModel.storyList.size}",
-                75.dp,
-                {
-                    coroutineScope.launch {
-                        pagerState.animateScrollToPage(2)
-                    }
-                },
-                color = if (pagerState.currentPage == 2) Color.White else Color.Gray
-            )
+                Essaychip(
+                    text = "스토리 ${viewModel.storyList.size}",
+                    75.dp,
+                    {
+                        coroutineScope.launch {
+                            pagerState.animateScrollToPage(2)
+                        }
+                    },
+                    color = if (pagerState.currentPage == 2) Color.White else Color.Gray
+                )
 
+            }
         }
     }
+
 }
 
 @Composable
@@ -154,24 +160,27 @@ fun Essaychip(
     color: Color
 ){
 
-    Column(
-        modifier = Modifier.padding(end = 12.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            fontSize = 14.sp,
-            text = text,
-            color = color, // 색상을 먼저 적용합니다
-            modifier = Modifier.clickable { clickable() } // Modifier.clickable을 마지막에 적용합니다
-        )
+    LinkedOutTheme {
+        Column(
+            modifier = Modifier.padding(end = 12.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                fontSize = 14.sp,
+                text = text,
+                color = color, // 색상을 먼저 적용합니다
+                modifier = Modifier.clickable { clickable() } // Modifier.clickable을 마지막에 적용합니다
+            )
 
-        Spacer(modifier = Modifier.height(6.dp))
-        HorizontalDivider(modifier = Modifier
-            .width(dividerWidth),
-            color = color,
-            thickness = 2.dp)
+            Spacer(modifier = Modifier.height(6.dp))
+            HorizontalDivider(modifier = Modifier
+                .width(dividerWidth),
+                color = color,
+                thickness = 2.dp)
+        }
     }
+
 }
 
 
@@ -184,108 +193,109 @@ fun EssayListItem(
     navController: NavController,
     writingViewModel: WritingViewModel
 ){
-    val color = if (isSystemInDarkTheme()) {
-        Color.White
-    } else {
-        Color.Black
-    }
+    val color = Color.White
     var isOptionClicked by remember {
         mutableStateOf(false)
     }
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .clickable {
-            viewModel.readDetailEssay(item.id!!, navController, TYPE_PROFILE)
-            viewModel.detailEssayBackStack.push(item)
-            Log.d(TAG, "pushpush: ${viewModel.detailEssayBackStack}")
-        }
-        .height(180.dp)){
-        if (item.thumbnail != null){
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-
-                GlideImage(
-                    model = item.thumbnail,
-                    contentScale = ContentScale.Crop,
-                    contentDescription = "",
-                )
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Black.copy(alpha = 0.7f))
-                )
+    LinkedOutTheme {
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                viewModel.readDetailEssay(item.id!!, navController, TYPE_PROFILE)
+                viewModel.detailEssayBackStack.push(item)
+                Log.d(TAG, "pushpush: ${viewModel.detailEssayBackStack}")
             }
-        }
-        //타이틀
-        Column(modifier = Modifier
-            .fillMaxSize()
-            .padding(top = 20.dp, start = 20.dp, end = 20.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            .height(180.dp)){
+            if (item.thumbnail != null){
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
 
-                Text(
-                    text = item.title!!,
-                    color = color,
-                    fontSize = 20.sp,
-
-                    )
-                if (pagerState.currentPage == 1){
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    Icon(
-                        painter = painterResource(id = R.drawable.option_link),
-                        tint = Color.White,
+                    GlideImage(
+                        model = item.thumbnail,
+                        contentScale = ContentScale.Crop,
                         contentDescription = "",
-                        modifier = Modifier.size(28.dp).padding(top = 1.5.dp)
                     )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black.copy(alpha = 0.7f))
+                    )
+                }
+            }
+            //타이틀
+            Column(modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 20.dp, start = 20.dp, end = 20.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
 
+                    Text(
+                        text = item.title!!,
+                        color = color,
+                        fontSize = 20.sp,
+
+                        )
+                    if (pagerState.currentPage == 1){
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        Icon(
+                            painter = painterResource(id = R.drawable.option_link),
+                            tint = Color.White,
+                            contentDescription = "",
+                            modifier = Modifier
+                                .size(28.dp)
+                                .padding(top = 1.5.dp)
+                        )
+
+
+                    }
 
                 }
 
+                Spacer(modifier = Modifier.height(10.dp))
+                Text(
+                    text = item.content!!,
+                    lineHeight = 27.2.sp,
+                    maxLines = 3,
+                    color = color,
+                    overflow = TextOverflow.Ellipsis
+                )
+
             }
-
-            Spacer(modifier = Modifier.height(10.dp))
-            Text(
-                text = item.content!!,
-                lineHeight = 27.2.sp,
-                maxLines = 3,
-                color = color,
-                overflow = TextOverflow.Ellipsis
-            )
-
-        }
-        Box(contentAlignment = Alignment.TopEnd, modifier = Modifier
-            .fillMaxSize()
-            .padding(end = 20.dp, top = 20.dp)) {
-            Icon(painter = painterResource(id = R.drawable.more), tint = color, contentDescription = "more",
-                modifier = Modifier
-                    .size(30.dp)
-                    .clickable { isOptionClicked = !isOptionClicked }) //수정 box
-        }
-
-
-
-        Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier
-            .fillMaxSize()
-            .padding(end = 20.dp, bottom = 20.dp)) {
-            Text(text = formatDateTime(item.createdDate!!), fontSize = 10.sp, color = Color(0xFF686868))
-
-        }
-
-        Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier
-            .fillMaxSize()) {
-            HorizontalDivider(color = Color(0xFF333333))
-        }
-        if (isOptionClicked){
-            Box(modifier = Modifier
+            Box(contentAlignment = Alignment.TopEnd, modifier = Modifier
                 .fillMaxSize()
-                .padding(end = 20.dp, top = 60.dp), contentAlignment = Alignment.TopEnd) {
-                ModifyOrDeleteBox(viewModel,navController, writingViewModel = writingViewModel,item)
+                .padding(end = 20.dp, top = 20.dp)) {
+                Icon(painter = painterResource(id = R.drawable.more), tint = color, contentDescription = "more",
+                    modifier = Modifier
+                        .size(30.dp)
+                        .clickable { isOptionClicked = !isOptionClicked }) //수정 box
             }
-        }
 
+
+
+            Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier
+                .fillMaxSize()
+                .padding(end = 20.dp, bottom = 20.dp)) {
+                Text(text = formatDateTime(item.createdDate!!), fontSize = 10.sp, color = Color(0xFF686868))
+
+            }
+
+            Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier
+                .fillMaxSize()) {
+                HorizontalDivider(color = Color(0xFF333333))
+            }
+            if (isOptionClicked){
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .padding(end = 20.dp, top = 60.dp), contentAlignment = Alignment.TopEnd) {
+                    ModifyOrDeleteBox(viewModel,navController, writingViewModel = writingViewModel,item)
+                }
+            }
+
+        }
     }
+
 }
 
 @Composable
@@ -377,35 +387,38 @@ fun StoryListPage(viewModel: MyLogViewModel, navController: NavController) {
 
 @Composable
 fun StoryItem(story: Story,viewModel: MyLogViewModel,navController: NavController){
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .clickable {
-            viewModel.setSelectStory(story)
-            navController.navigate("StoryDetailPage")
-        }
-        .height(60.dp)){
-        Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
-            StoryCountIcon(story.essaysCount!!)
-            Spacer(modifier = Modifier.width(30.dp))
-            Text(text = story.name, fontSize = 20.sp)
-        }
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
-            Icon(
-                painter = painterResource(id = R.drawable.more),
-                contentDescription = "more",
-                modifier = Modifier
-                    .clickable {
-                        viewModel.isModifyStoryClicked = true
-                        viewModel.isCreateStory = false
-                        viewModel.setSelectStory(story)
-                        Log.d(TAG, "StoryItem: ${viewModel.getSelectedStory().name}")
-                        Log.d(TAG, "StoryItem: ${viewModel.getSelectedStory().name}")
+    LinkedOutTheme {
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                viewModel.setSelectStory(story)
+                navController.navigate("StoryDetailPage")
+            }
+            .height(60.dp)){
+            Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
+                StoryCountIcon(story.essaysCount!!)
+                Spacer(modifier = Modifier.width(30.dp))
+                Text(text = story.name, fontSize = 20.sp)
+            }
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
+                Icon(
+                    painter = painterResource(id = R.drawable.more),
+                    contentDescription = "more",
+                    modifier = Modifier
+                        .clickable {
+                            viewModel.isModifyStoryClicked = true
+                            viewModel.isCreateStory = false
+                            viewModel.setSelectStory(story)
+                            Log.d(TAG, "StoryItem: ${viewModel.getSelectedStory().name}")
+                            Log.d(TAG, "StoryItem: ${viewModel.getSelectedStory().name}")
 
-                    }
-                    .size(30.dp)
-            )
+                        }
+                        .size(30.dp)
+                )
+            }
         }
     }
+
 }
 
 @Composable
@@ -413,48 +426,49 @@ fun ModifyStoryBox(
     viewModel: MyLogViewModel,
     navController: NavController
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .navigationBarsPadding()
-            .padding(bottom = 20.dp)
-            .background(Color.Black.copy(alpha = 0.5f))
-            .clickable {
-                viewModel.isModifyStoryClicked = false
-            },
-        contentAlignment = Alignment.BottomCenter
-    ) {
-        Column(
+    LinkedOutTheme {
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(220.dp)
-                .padding(horizontal = 20.dp)
-                , verticalArrangement = Arrangement.Center
+                .fillMaxSize()
+                .navigationBarsPadding()
+                .padding(bottom = 20.dp)
+                .background(Color.Black.copy(alpha = 0.5f))
+                .clickable {
+                    viewModel.isModifyStoryClicked = false
+                },
+            contentAlignment = Alignment.BottomCenter
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(140.dp)
-                    .background(Color(0xFF1E1E1E), shape = RoundedCornerShape(20.dp)),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .height(220.dp)
+                    .padding(horizontal = 20.dp)
+                , verticalArrangement = Arrangement.Center
             ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(140.dp)
+                        .background(Color(0xFF1E1E1E), shape = RoundedCornerShape(20.dp)),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
 
-                Text(
-                    text = "스토리 편집",
-                    color = Color.White,
-                    fontSize = 16.sp,
-                    modifier = Modifier.clickable {
-                        viewModel.isModifyStoryClicked = false
-                        viewModel.isCreateStory = false //createstory false면 modify로 취급
-                        navController.navigate("StoryPage")
+                    Text(
+                        text = "스토리 편집",
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        modifier = Modifier.clickable {
+                            viewModel.isModifyStoryClicked = false
+                            viewModel.isCreateStory = false //createstory false면 modify로 취급
+                            navController.navigate("StoryPage")
 
-                    }
-                )
-                Spacer(modifier = Modifier.height(20.dp))
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(20.dp))
 
-                HorizontalDivider(color = Color(0xFF202020))
-                Spacer(modifier = Modifier.height(20.dp))
+                    HorizontalDivider(color = Color(0xFF202020))
+                    Spacer(modifier = Modifier.height(20.dp))
 
                     Text(
                         text = "스토리 삭제",
@@ -466,22 +480,24 @@ fun ModifyStoryBox(
                         }
                     )
 
-            }
-            Spacer(modifier = Modifier.height(10.dp))
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(65.dp)
-                    .background(Color(0xFF1E1E1E), shape = RoundedCornerShape(20.dp))
-                    .clickable {
-                        viewModel.isModifyStoryClicked = false
-                    },
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = "취소", color = Color.White, fontSize = 16.sp)
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(65.dp)
+                        .background(Color(0xFF1E1E1E), shape = RoundedCornerShape(20.dp))
+                        .clickable {
+                            viewModel.isModifyStoryClicked = false
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = "취소", color = Color.White, fontSize = 16.sp)
+                }
             }
         }
     }
+
 }
 
 

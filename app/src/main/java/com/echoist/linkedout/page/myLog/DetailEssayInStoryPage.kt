@@ -7,7 +7,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -112,7 +111,7 @@ fun TopAppBar(
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "arrow back",
-                tint = if (isSystemInDarkTheme()) Color(0xFF727070) else Color.Gray,
+                tint = Color(0xFF727070),
                 modifier = Modifier
                     .padding(start = 20.dp)
                     .size(30.dp)

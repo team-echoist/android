@@ -9,7 +9,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -116,10 +115,8 @@ fun SignUpPage(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "arrowback",
-                            tint = if (isSystemInDarkTheme()) {
-                                Color.White
-
-                            } else Color.Gray,
+                            tint = Color.White
+,
                             modifier = Modifier
                                 .padding(16.dp)
                                 .size(30.dp)
@@ -131,13 +128,13 @@ fun SignUpPage(
                             fontSize = 20.sp,
                             fontWeight = FontWeight.SemiBold,
                             modifier = Modifier.padding(start = 16.dp),
-                            color = if (isSystemInDarkTheme()) Color.White else Color.Gray
+                            color = Color.White
                         )
                         Text(
                             text = "회원 서비스 이용을 위해 회원가입을 해주세요.",
                             fontSize = 16.sp,
                             modifier = Modifier.padding(start = 16.dp, bottom = 32.dp),
-                            color = if (isSystemInDarkTheme()) Color(0xFF919191) else Color.Gray
+                            color = Color(0xFF919191)
                         )
                         EmailTextField(viewModel)
                         PwTextField(viewModel)
@@ -200,7 +197,8 @@ fun SignUpPage(
                         .clickable(enabled = false) { }){
                         Box(modifier = Modifier
                             .fillMaxSize()
-                            .padding(bottom = 20.dp).navigationBarsPadding(), contentAlignment = Alignment.BottomCenter){
+                            .padding(bottom = 20.dp)
+                            .navigationBarsPadding(), contentAlignment = Alignment.BottomCenter){
                             SendSignUpFinishedAlert(
                                 { viewModel.isErr = false },
                                 "에러가 발생했습니다.",
@@ -222,53 +220,56 @@ fun SignUpPage(
 fun EmailTextField(viewModel: SignUpViewModel) {
     var errorText by remember { mutableStateOf("") }
 
-    Column {
-        TextField(
-            value = viewModel.userEmail,
-            isError = viewModel.userEmailError,
-            onValueChange = { new ->
-                viewModel.userEmail = new
-                if (new.isNotEmpty() && viewModel.isEmailValid(viewModel.userEmail)) {
-                    viewModel.userEmailError = false
-                    errorText = ""
-                } else {
-                    viewModel.userEmailError = true
-                    errorText = "올바르지 않은 이메일 형식입니다."
-                }
-            },
-            label = {
-                Text(
-                    "이메일 주소 또는 아이디",
-                    color = if (isSystemInDarkTheme()) Color(0xFF919191) else Color.Gray,
-                    fontSize = 14.sp
-                )
-            }, // 힌트를 라벨로 설정합니다.
-            colors = TextFieldDefaults.colors(
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                focusedTextColor = Color.White,
-                unfocusedTextColor = Color.White,
-                focusedContainerColor = if (isSystemInDarkTheme()) Color(0xFF252525) else Color.Black,
-                unfocusedContainerColor = if (isSystemInDarkTheme()) Color(0xFF252525) else Color.Black,
-                errorTextColor = Color.Red,
-                errorContainerColor = if (isSystemInDarkTheme()) Color(0xFF252525) else Color.Black,
-                errorIndicatorColor = Color.Transparent
-            ),
-            shape = RoundedCornerShape(8.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, bottom = 14.dp)
-        )
-        if (viewModel.userEmailError) {
-            if (errorText.isNotEmpty())
-                Text(
-                    text = errorText,
-                    fontSize = 12.sp,
-                    color = Color.Red,
-                    modifier = Modifier.padding(start = 16.dp, bottom = 14.dp)
-                )
+    LinkedOutTheme {
+        Column {
+            TextField(
+                value = viewModel.userEmail,
+                isError = viewModel.userEmailError,
+                onValueChange = { new ->
+                    viewModel.userEmail = new
+                    if (new.isNotEmpty() && viewModel.isEmailValid(viewModel.userEmail)) {
+                        viewModel.userEmailError = false
+                        errorText = ""
+                    } else {
+                        viewModel.userEmailError = true
+                        errorText = "올바르지 않은 이메일 형식입니다."
+                    }
+                },
+                label = {
+                    Text(
+                        "이메일 주소 또는 아이디",
+                        color = Color(0xFF919191),
+                        fontSize = 14.sp
+                    )
+                }, // 힌트를 라벨로 설정합니다.
+                colors = TextFieldDefaults.colors(
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    focusedContainerColor = Color(0xFF252525),
+                    unfocusedContainerColor = Color(0xFF252525),
+                    errorTextColor = Color.Red,
+                    errorContainerColor = Color(0xFF252525),
+                    errorIndicatorColor = Color.Transparent
+                ),
+                shape = RoundedCornerShape(8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, bottom = 14.dp)
+            )
+            if (viewModel.userEmailError) {
+                if (errorText.isNotEmpty())
+                    Text(
+                        text = errorText,
+                        fontSize = 12.sp,
+                        color = Color.Red,
+                        modifier = Modifier.padding(start = 16.dp, bottom = 14.dp)
+                    )
+            }
         }
     }
+
 
 }
 
@@ -276,49 +277,52 @@ fun EmailTextField(viewModel: SignUpViewModel) {
 fun PwTextField(viewModel: SignUpViewModel) {
     var passwordVisible by remember { mutableStateOf(false) }
 
-    TextField(
-        value = viewModel.userPw,
-        onValueChange = { new ->
-            if (new.length <= 20)
-                viewModel.userPw = new
-        },
-        label = { Text("비밀번호", color = Color(0xFF919191), fontSize = 14.sp) }, // 힌트를 라벨로 설정합니다.
-        colors = TextFieldDefaults.colors(
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            focusedTextColor = Color.White,
-            unfocusedTextColor = Color.White,
-            focusedContainerColor = if (isSystemInDarkTheme()) Color(0xFF252525) else Color.Black,
-            unfocusedContainerColor = if (isSystemInDarkTheme()) Color(0xFF252525) else Color.Black,
-            errorTextColor = Color.Red,
-            errorContainerColor = if (isSystemInDarkTheme()) Color(0xFF252525) else Color.Black,
-            errorIndicatorColor = Color.Transparent
-        ),
-        maxLines = 1, // 한 줄에만 입력할 수 있도록 설정
+    LinkedOutTheme {
+        TextField(
+            value = viewModel.userPw,
+            onValueChange = { new ->
+                if (new.length <= 20)
+                    viewModel.userPw = new
+            },
+            label = { Text("비밀번호", color = Color(0xFF919191), fontSize = 14.sp) }, // 힌트를 라벨로 설정합니다.
+            colors = TextFieldDefaults.colors(
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedTextColor = Color.White,
+                unfocusedTextColor = Color.White,
+                focusedContainerColor = Color(0xFF252525),
+                unfocusedContainerColor = Color(0xFF252525),
+                errorTextColor = Color.Red,
+                errorContainerColor = Color(0xFF252525),
+                errorIndicatorColor = Color.Transparent
+            ),
+            maxLines = 1, // 한 줄에만 입력할 수 있도록 설정
 
-        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-        trailingIcon = { // 비밀번호 표시 여부입니다.
-            IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                Icon(
-                    modifier = Modifier.size(24.dp),
-                    painter = painterResource(id = if (passwordVisible) R.drawable.pw_eye else R.drawable.pw_eye_off),
-                    contentDescription = "pw_eye"
-                )
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            trailingIcon = { // 비밀번호 표시 여부입니다.
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    Icon(
+                        modifier = Modifier.size(24.dp),
+                        painter = painterResource(id = if (passwordVisible) R.drawable.pw_eye else R.drawable.pw_eye_off),
+                        contentDescription = "pw_eye"
+                    )
 
-            }
-        },
-        shape = RoundedCornerShape(8.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp)
-    )
+                }
+            },
+            shape = RoundedCornerShape(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp)
+        )
+    }
+
 }
 
 @Composable
 fun AgreementText(text: String, clickable: () -> Unit, color: Color) {
 
-
+LinkedOutTheme {
     Spacer(modifier = Modifier.height(18.dp))
     Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
@@ -336,28 +340,33 @@ fun AgreementText(text: String, clickable: () -> Unit, color: Color) {
     }
 }
 
+}
+
 @Composable
 fun SendSignUpFinishedAlert(isClicked : ()->Unit,text1 : String, text2 : String){
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .height(81.dp)
-        .padding(horizontal = 20.dp)
-        .background(Color(0xFF212121), shape = RoundedCornerShape(20))){
+    LinkedOutTheme {
         Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(start = 15.dp), contentAlignment = Alignment.CenterStart){
-            Column {
-                Text(text = text1, fontSize = 14.sp)
-                Text(text = text2, color = LinkedInColor, fontSize = 14.sp)
+            .fillMaxWidth()
+            .height(81.dp)
+            .padding(horizontal = 20.dp)
+            .background(Color(0xFF212121), shape = RoundedCornerShape(20))){
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 15.dp), contentAlignment = Alignment.CenterStart){
+                Column {
+                    Text(text = text1, fontSize = 14.sp)
+                    Text(text = text2, color = LinkedInColor, fontSize = 14.sp)
 
+                }
             }
-        }
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(end = 15.dp), contentAlignment = Alignment.CenterEnd){
-            Icon(imageVector = Icons.Default.Close, contentDescription = "close", modifier = Modifier.clickable { isClicked() })
-        }
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .padding(end = 15.dp), contentAlignment = Alignment.CenterEnd){
+                Icon(imageVector = Icons.Default.Close, contentDescription = "close", modifier = Modifier.clickable { isClicked() })
+            }
 
 
+        }
     }
+
 }

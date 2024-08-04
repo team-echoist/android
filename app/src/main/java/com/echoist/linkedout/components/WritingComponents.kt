@@ -10,7 +10,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -77,15 +76,18 @@ class FuncItemData(val text : String, var icon: Int, var clickable: () -> Unit )
 
 @Composable
 fun BlankWarningAlert(dialogState: MutableState<Boolean>){
-    AlertDialog(
-        onDismissRequest = { dialogState.value = false },
-        confirmButton = {
-            Button(onClick = { dialogState.value = false }) {
-                Text(text = "확인")
-            }
-        },
-        text = { Text(text = "제목, 또는 내용이 10자 이하면 완료 할 수 없습니다.") },
-    )
+    LinkedOutTheme {
+        AlertDialog(
+            onDismissRequest = { dialogState.value = false },
+            confirmButton = {
+                Button(onClick = { dialogState.value = false }) {
+                    Text(text = "확인")
+                }
+            },
+            text = { Text(text = "제목, 또는 내용이 10자 이하면 완료 할 수 없습니다.") },
+        )
+    }
+
 }
 
 
@@ -100,7 +102,7 @@ fun prevItem(){
 }
 @Composable
 fun FuncItem(text : String, icon: Int, clickable: () -> Unit){
-    val color =  if (isSystemInDarkTheme()) Color.White else Color.Black
+    val color = Color.White
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -110,7 +112,7 @@ fun FuncItem(text : String, icon: Int, clickable: () -> Unit){
             painter = painterResource(id = icon),
             text,
             Modifier
-                .size(26.dp)
+                .size(30.dp)
                 .clickable {
                     clickable()
                     Log.d("tagtag", "tag22")
@@ -150,8 +152,8 @@ fun LocationTextField(viewModel: WritingViewModel){
                 unfocusedIndicatorColor = Color.Transparent,
                 focusedTextColor = Color.White,
                 unfocusedTextColor = Color.White,
-                focusedContainerColor = if (isSystemInDarkTheme()) Color.Transparent else Color.Black,
-                unfocusedContainerColor = if (isSystemInDarkTheme()) Color.Transparent else Color.Black
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent
 
 
             ),
@@ -208,8 +210,8 @@ fun HashTagTextField(viewModel: WritingViewModel) {
             unfocusedIndicatorColor = Color.Transparent,
             focusedTextColor = Color.White,
             unfocusedTextColor = Color.White,
-            focusedContainerColor = if (isSystemInDarkTheme()) Color.Transparent else Color.Black,
-            unfocusedContainerColor = if (isSystemInDarkTheme()) Color.Transparent else Color.Black
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent,
         ),
         onValueChange = {//태그개수 4개 제한
             if (it.isNotEmpty() && (it.last() == ' ' || it.last() == '\n')) {
@@ -552,8 +554,8 @@ fun CropImagePage(navController: NavController, viewModel: WritingViewModel) {
 //임시저장 개수 아이콘
 @Composable
 fun StoryCountIcon(count : Int){
-    val color = if (isSystemInDarkTheme()) Color.White else Color.Black
-    val circleColor = if (isSystemInDarkTheme()) Color.Black else Color.White
+    val color = Color.White
+    val circleColor = Color.White
 
     Box(modifier = Modifier.size(36.dp)){
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomStart){

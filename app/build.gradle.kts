@@ -204,6 +204,9 @@ dependencies {
 
     kapt ("org.xerial:sqlite-jdbc:3.34.0")
 
+    //splashscreen api
+    implementation ("androidx.core:core-splashscreen:1.0.0-rc01")
+
 
 }
 

@@ -133,7 +133,7 @@ fun SavedEssayListItem(
     onClickItem: () -> Unit,
     viewModel: CommunityViewModel
 ) {
-    val color = if (isSystemInDarkTheme()) Color.White else Color.Black
+    val color = Color.White
 
     Box(
         modifier = Modifier

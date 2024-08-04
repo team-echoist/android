@@ -21,13 +21,16 @@
 
 <!--        ....-->
         <item name="android:windowSplashScreenBackground" tools:targetApi="S">@drawable/splash</item>
+        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="S">@drawable/pw_eye</item>
 <!--        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="S">@drawable/splash</item>-->
 <!--        <item name="android:windowSplashScreenIconBackgroundColor" tools:targetApi="S">@color/white</item>-->
     </style>
 
-    <style name="starting" parent="Theme.SplashScreen"
-
-        />
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/purple_200</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/pw_eye</item>
+        <item name="postSplashScreenTheme">@style/Theme.Material3.Light.NoActionBar</item>
+    </style>
 
 
 </resources>

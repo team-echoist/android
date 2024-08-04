@@ -264,7 +264,7 @@ fun WritingNotificationBox(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFF0E0E0E))
+            .background(Color(0xFF0E0E0E), shape = RoundedCornerShape(6))
             .height(120.dp)
             .padding(horizontal = 20.dp)
     ) {

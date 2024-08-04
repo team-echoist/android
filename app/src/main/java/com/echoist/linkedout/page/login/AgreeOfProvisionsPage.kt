@@ -1,7 +1,6 @@
 package com.echoist.linkedout.page.login
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -67,10 +66,8 @@ fun AgreeOfProvisionsPage(navController: NavController, viewModel: SignUpViewMod
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "arrowback",
-                        tint = if (isSystemInDarkTheme()) {
-                            Color.White
-
-                        } else Color.Gray,
+                        tint =
+                            Color.White,
                         modifier = Modifier
                             .padding(16.dp)
                             .size(30.dp)
@@ -82,7 +79,7 @@ fun AgreeOfProvisionsPage(navController: NavController, viewModel: SignUpViewMod
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.padding(start = 16.dp),
-                        color = if (isSystemInDarkTheme()) Color.White else Color.Gray
+                        color = Color.White
                     )
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(

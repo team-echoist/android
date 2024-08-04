@@ -126,7 +126,7 @@ fun WritingPage(
 
     val isKeyBoardOpened by keyboardAsState()
     val scrollState = rememberScrollState()
-    val background = if (isSystemInDarkTheme()) Color.Black else Color.White
+    val background = Color.Black
 
     var isTextSettingSelected by remember { mutableStateOf(false) }
     var isTextAlignSelected by remember { mutableStateOf(false) }
@@ -370,133 +370,136 @@ fun WritingTopAppBar(
     var isContentNotEmpty = remember { mutableStateOf(false) }
 
 
-    Column(
-        modifier = Modifier
-            .systemBarsPadding()
-            .fillMaxWidth()
-    ) {
-        Row(
-
-            horizontalArrangement = Arrangement.Center,
+    LinkedOutTheme {
+        Column(
             modifier = Modifier
+                .systemBarsPadding()
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp)
-                , verticalAlignment = Alignment.CenterVertically
         ) {
-            if (isKeyboardOpen == Keyboard.Opened || viewModel.isTextFeatOpened.value) {
-
-                Icon(
-                    imageVector = Icons.Default.Done,
-                    contentDescription = "keyboardDown",
-                    modifier = Modifier
-                        .clickable {
-                            focusManager.clearFocus()
-                            viewModel.titleFocusState.value = false
-                            viewModel.isTextFeatOpened.value = false
-                            viewModel.isHashTagClicked = false
-                            viewModel.isLocationClicked = false
-                            keyboardController?.hide()
-                            focusState.value = false
-
-                        },
-                    tint = Color.White
-                )
-            } else {
-                Text(
-                    text = "취소",
-                    color = Color(0xFF686868),
-                    modifier = Modifier
-                        .clickable {
-
-                            if (viewModel.title.value.text.isEmpty() && viewModel.content.text.isEmpty()) {
-                                navController.popBackStack()
-                                viewModel.initialize()
-                            } else {
-                                viewModel.isCanCelClicked.value = true
-                                keyboardController?.hide()
-                            }
-
-                        },
-                    fontSize = 16.sp
-                )
-            }
-
-            // 텍스트 필드와 완료 버튼을 수평으로 배치
             Row(
+
+                horizontalArrangement = Arrangement.Center,
                 modifier = Modifier
-                    .padding(4.dp)
-                    .weight(1f) // 텍스트 필드와 완료 버튼을 균등하게 확장 // 오른쪽 여백 추가
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+                , verticalAlignment = Alignment.CenterVertically
             ) {
-                val xdp = animateDpAsState(targetValue = if (viewModel.titleFocusState.value) (-40).dp else 0.dp, label = "").value
-                val ydp = animateDpAsState(targetValue = if (viewModel.titleFocusState.value) 50.dp else 0.dp, label = "").value
+                if (isKeyboardOpen == Keyboard.Opened || viewModel.isTextFeatOpened.value) {
 
-                TextField(
+                    Icon(
+                        imageVector = Icons.Default.Done,
+                        contentDescription = "keyboardDown",
+                        modifier = Modifier
+                            .clickable {
+                                focusManager.clearFocus()
+                                viewModel.titleFocusState.value = false
+                                viewModel.isTextFeatOpened.value = false
+                                viewModel.isHashTagClicked = false
+                                viewModel.isLocationClicked = false
+                                keyboardController?.hide()
+                                focusState.value = false
+
+                            },
+                        tint = Color.White
+                    )
+                } else {
+                    Text(
+                        text = "취소",
+                        color = Color(0xFF686868),
+                        modifier = Modifier
+                            .clickable {
+
+                                if (viewModel.title.value.text.isEmpty() && viewModel.content.text.isEmpty()) {
+                                    navController.popBackStack()
+                                    viewModel.initialize()
+                                } else {
+                                    viewModel.isCanCelClicked.value = true
+                                    keyboardController?.hide()
+                                }
+
+                            },
+                        fontSize = 16.sp
+                    )
+                }
+
+                // 텍스트 필드와 완료 버튼을 수평으로 배치
+                Row(
                     modifier = Modifier
-                        .offset(x = xdp, y = ydp)
-                        .focusRequester(focusRequester = focusRequester)
-                        .onFocusChanged {
-                            viewModel.titleFocusState.value = it.isFocused
-                        },
+                        .padding(4.dp)
+                        .weight(1f) // 텍스트 필드와 완료 버튼을 균등하게 확장 // 오른쪽 여백 추가
+                ) {
+                    val xdp = animateDpAsState(targetValue = if (viewModel.titleFocusState.value) (-40).dp else 0.dp, label = "").value
+                    val ydp = animateDpAsState(targetValue = if (viewModel.titleFocusState.value) 50.dp else 0.dp, label = "").value
 
-                    placeholder = {
-                        Box(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentAlignment = if (viewModel.titleFocusState.value) Alignment.CenterStart else Alignment.Center
-                        ) {
-                            Text(
-                                text = "제목을 입력하세요",
-                                textAlign = if (focusState.value) TextAlign.Start else TextAlign.Center,
-                                color = Color(0xFF686868)
-                            )
+                    TextField(
+                        modifier = Modifier
+                            .offset(x = xdp, y = ydp)
+                            .focusRequester(focusRequester = focusRequester)
+                            .onFocusChanged {
+                                viewModel.titleFocusState.value = it.isFocused
+                            },
+
+                        placeholder = {
+                            Box(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentAlignment = if (viewModel.titleFocusState.value) Alignment.CenterStart else Alignment.Center
+                            ) {
+                                Text(
+                                    text = "제목을 입력하세요",
+                                    textAlign = if (focusState.value) TextAlign.Start else TextAlign.Center,
+                                    color = Color(0xFF686868)
+                                )
+                            }
+                        },
+                        value = viewModel.title.value,
+                        onValueChange = { viewModel.title.value = it },
+                        textStyle = TextStyle(
+                            textAlign = if (viewModel.titleFocusState.value) TextAlign.Start else TextAlign.Center,
+                            fontSize = if (viewModel.titleFocusState.value) 20.sp else 16.sp
+                        ),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White
+                        ),
+                        maxLines = 2
+                    )
+                }
+                val context = LocalContext.current
+                val scope = rememberCoroutineScope()
+                // 완료 버튼을 오른쪽에 배치
+                Text(
+                    color = Color.White,
+                    text = "완료",
+                    fontSize = 16.sp,
+                    modifier = Modifier
+                        .clickable {
+                            if (viewModel.title.value.text.isNotEmpty() && viewModel.content.text.length >= viewModel.minLength)
+                                navController.navigate("WritingCompletePage")
+                            else {
+                                isContentNotEmpty.value = true
+                            }
+                            if (viewModel.imageUri != null) {
+                                viewModel.uploadThumbnail(viewModel.imageUri ?: Uri.EMPTY, context)
+                            }
                         }
-                    },
-                    value = viewModel.title.value,
-                    onValueChange = { viewModel.title.value = it },
-                    textStyle = TextStyle(
-                        textAlign = if (viewModel.titleFocusState.value) TextAlign.Start else TextAlign.Center,
-                        fontSize = if (viewModel.titleFocusState.value) 20.sp else 16.sp
-                    ),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White
-                    ),
-                    maxLines = 2
+
                 )
             }
-            val context = LocalContext.current
-            val scope = rememberCoroutineScope()
-            // 완료 버튼을 오른쪽에 배치
-            Text(
-                color = Color.White,
-                text = "완료",
-                fontSize = 16.sp,
-                modifier = Modifier
-                    .clickable {
-                        if (viewModel.title.value.text.isNotEmpty() && viewModel.content.text.length >= viewModel.minLength)
-                            navController.navigate("WritingCompletePage")
-                        else {
-                            isContentNotEmpty.value = true
-                        }
-                        if (viewModel.imageUri != null) {
-                            viewModel.uploadThumbnail(viewModel.imageUri ?: Uri.EMPTY, context)
-                        }
-                    }
+            MyDivider(viewModel)
 
-            )
         }
-        MyDivider(viewModel)
-
-    }
-    //컨텐츠가 비어있다면 경고
-    if (isContentNotEmpty.value) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            BlankWarningAlert(isContentNotEmpty)
+        //컨텐츠가 비어있다면 경고
+        if (isContentNotEmpty.value) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                BlankWarningAlert(isContentNotEmpty)
+            }
         }
     }
+
 
 }
 
@@ -509,35 +512,36 @@ fun ContentTextField(viewModel: WritingViewModel) {
         label = ""
     ).value
 
-    Column {
-        TextField(
+    LinkedOutTheme {
+        Column {
+            TextField(
 
-            modifier = Modifier
-                .offset(x = 0.dp, y = ydp)
-                .onFocusChanged { focusState.value = it.isFocused }
-                .fillMaxWidth()
-                .padding(5.dp),
-            value = viewModel.content,
-            onValueChange = {
-                if (viewModel.maxLength >= it.text.length)
-                    viewModel.content = it
-            },
-            placeholder = {
-                Text(
-                    text = viewModel.hint,
-                    color = Color(0xFF686868)
+                modifier = Modifier
+                    .offset(x = 0.dp, y = ydp)
+                    .onFocusChanged { focusState.value = it.isFocused }
+                    .fillMaxWidth()
+                    .padding(5.dp),
+                value = viewModel.content,
+                onValueChange = {
+                    if (viewModel.maxLength >= it.text.length)
+                        viewModel.content = it
+                },
+                placeholder = {
+                    Text(
+                        text = viewModel.hint,
+                        color = Color(0xFF686868)
+                    )
+                },
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White
                 )
-            },
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color.Transparent,
-                unfocusedContainerColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                focusedTextColor = Color.White,
-                unfocusedTextColor = Color.White
             )
-        )
-        Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
 //        Text(
 //            text = "${viewModel.content.text.length} / ${viewModel.maxLength}",
@@ -545,7 +549,9 @@ fun ContentTextField(viewModel: WritingViewModel) {
 //            textAlign = TextAlign.End,
 //            modifier = Modifier.fillMaxWidth()
 //        )
+        }
     }
+
 
 
 }
@@ -574,108 +580,113 @@ fun MyDivider(viewModel: WritingViewModel) {
 @Composable
 fun WritingCancelCard(viewModel: WritingViewModel, navController: NavController,isStoreClicked : ()->Unit) {
 
-    Column(
-        modifier = Modifier.padding(horizontal = 20.dp).navigationBarsPadding(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFF191919))
+    LinkedOutTheme {
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 20.dp)
+                .navigationBarsPadding(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF191919))
             ) {
-                Text(
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(top = 24.dp, bottom = 24.dp),
-                    text = "지금 취소하면 모든 내용이 삭제됩니다.",
-                    textAlign = TextAlign.Center,
-                    color = Color.White
-                )
-                HorizontalDivider(
-                    modifier = Modifier.fillMaxWidth(),
-                    thickness = 1.dp,
-                    color = Color(0xFF202020)
-                )
-                Text(
-                    modifier = Modifier
-                        .padding(top = 20.dp, bottom = 20.dp)
-                        .clickable {
-                            viewModel.initialize()
-                            navController.navigate("HOME")
-                        },
-                    fontSize = 16.sp,
-                    text = "작성취소",
-                    textAlign = TextAlign.Center,
-                    color = Color.Red
-                )
-                HorizontalDivider(
-                    modifier = Modifier.fillMaxWidth(),
-                    thickness = 1.dp,
-                    color = Color(0xFF202020)
-                )
-                Text(
-                    modifier = Modifier
-                        .padding(top = 20.dp, bottom = 20.dp)
-                        .clickable {
-                            isStoreClicked()
-                            val tagList = mutableListOf<EssayApi.Tag>()
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(top = 24.dp, bottom = 24.dp),
+                        text = "지금 취소하면 모든 내용이 삭제됩니다.",
+                        textAlign = TextAlign.Center,
+                        color = Color.White
+                    )
+                    HorizontalDivider(
+                        modifier = Modifier.fillMaxWidth(),
+                        thickness = 1.dp,
+                        color = Color(0xFF202020)
+                    )
+                    Text(
+                        modifier = Modifier
+                            .padding(top = 20.dp, bottom = 20.dp)
+                            .clickable {
+                                viewModel.initialize()
+                                navController.navigate("HOME")
+                            },
+                        fontSize = 16.sp,
+                        text = "작성취소",
+                        textAlign = TextAlign.Center,
+                        color = Color.Red
+                    )
+                    HorizontalDivider(
+                        modifier = Modifier.fillMaxWidth(),
+                        thickness = 1.dp,
+                        color = Color(0xFF202020)
+                    )
+                    Text(
+                        modifier = Modifier
+                            .padding(top = 20.dp, bottom = 20.dp)
+                            .clickable {
+                                isStoreClicked()
+                                val tagList = mutableListOf<EssayApi.Tag>()
 
-                            viewModel.hashTagList.forEach {
-                                tagList.add(EssayApi.Tag(1, it))
-                            }
+                                viewModel.hashTagList.forEach {
+                                    tagList.add(EssayApi.Tag(1, it))
+                                }
 
-                            viewModel.updateOrInsertEssay(
-                                EssayApi.EssayItem(
-                                    title = viewModel.title.value.text,
-                                    content = viewModel.content.text,
-                                    longitude = viewModel.longitude,
-                                    latitude = viewModel.latitude,
-                                    createdDate = viewModel.getCurrentDate(),
-                                    tags = tagList,
-                                    essayPrimaryId = viewModel.essayPrimaryId ?: 0,
-                                    thumbnail = viewModel.imageUrl
+                                viewModel.updateOrInsertEssay(
+                                    EssayApi.EssayItem(
+                                        title = viewModel.title.value.text,
+                                        content = viewModel.content.text,
+                                        longitude = viewModel.longitude,
+                                        latitude = viewModel.latitude,
+                                        createdDate = viewModel.getCurrentDate(),
+                                        tags = tagList,
+                                        essayPrimaryId = viewModel.essayPrimaryId ?: 0,
+                                        thumbnail = viewModel.imageUrl
+
+                                    )
+
 
                                 )
-
-
-                            )
-                            navController.popBackStack()
-                            viewModel.initialize()
-                        },
-                    fontSize = 16.sp,
-                    text = "임시저장",
-                    textAlign = TextAlign.Center,
-                    color = Color.White
-                )
+                                navController.popBackStack()
+                                viewModel.initialize()
+                            },
+                        fontSize = 16.sp,
+                        text = "임시저장",
+                        textAlign = TextAlign.Center,
+                        color = Color.White
+                    )
+                }
             }
-        }
 
-        Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
-        Card(
-            modifier = Modifier.clickable { viewModel.isCanCelClicked.value = false },
-            colors = CardDefaults.cardColors(containerColor = Color(0xFF191919))
-        ) {
-            Column(
-                modifier = Modifier
-                    .padding(vertical = 20.dp)
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
+            Card(
+                modifier = Modifier.clickable { viewModel.isCanCelClicked.value = false },
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF191919))
             ) {
-                Text(
-                    fontSize = 16.sp,
-                    text = "돌아가기",
-                    textAlign = TextAlign.Center,
-                    color = Color.White
-                )
+                Column(
+                    modifier = Modifier
+                        .padding(vertical = 20.dp)
+                        .fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        fontSize = 16.sp,
+                        text = "돌아가기",
+                        textAlign = TextAlign.Center,
+                        color = Color.White
+                    )
 
+                }
             }
-        }
-        Spacer(modifier = Modifier.height(35.dp))
+            Spacer(modifier = Modifier.height(35.dp))
 
+        }
     }
+
 }
 
 @Composable
@@ -784,174 +795,180 @@ fun TextEditBar(
     val keyboardController = LocalSoftwareKeyboardController.current
     var isKeyboardApeared by remember { mutableStateOf(true) }
     val requestPermissionsUtil = RequestPermissionsUtil(LocalContext.current, viewModel)
-    Row(
-        modifier = Modifier
-            .background(Color(0xFF1D1D1D))
-            .fillMaxWidth()
-            //.imePadding()
-            .height(60.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        if (viewModel.isHashTagClicked && !viewModel.isLocationClicked) {
-            Spacer(modifier = Modifier.width(20.dp))
-            TextItem(icon = R.drawable.keyboard_hashtag, LinkedInColor) {}
-            HashTagTextField(viewModel = viewModel)
-        } else if (viewModel.isLocationClicked && !viewModel.isHashTagClicked) {
-            Spacer(modifier = Modifier.width(15.dp))
-            Icon(
-                tint = Color(0xFF616FED),
-                imageVector = Icons.Default.LocationOn,
-                contentDescription = "location",
-                modifier = Modifier
-                    .size(50.dp)
-                    .padding(end = 14.dp)
-                    .clickable { requestPermissionsUtil.RequestLocationUpdates() }
-            )
-            LocationTextField(viewModel = viewModel)
-        } else {
+    LinkedOutTheme {
+        Row(
+            modifier = Modifier
+                .background(Color(0xFF1D1D1D))
+                .fillMaxWidth()
+                //.imePadding()
+                .height(60.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (viewModel.isHashTagClicked && !viewModel.isLocationClicked) {
+                Spacer(modifier = Modifier.width(20.dp))
+                TextItem(icon = R.drawable.keyboard_hashtag, LinkedInColor) {}
+                HashTagTextField(viewModel = viewModel)
+            } else if (viewModel.isLocationClicked && !viewModel.isHashTagClicked) {
+                Spacer(modifier = Modifier.width(15.dp))
+                Icon(
+                    tint = Color(0xFF616FED),
+                    imageVector = Icons.Default.LocationOn,
+                    contentDescription = "location",
+                    modifier = Modifier
+                        .size(50.dp)
+                        .padding(end = 14.dp)
+                        .clickable { requestPermissionsUtil.RequestLocationUpdates() }
+                )
+                LocationTextField(viewModel = viewModel)
+            } else {
 
-            Spacer(modifier = Modifier.width(20.dp))
-            Icon(
-                painter = painterResource(id = R.drawable.editbar_thick),
-                contentDescription = "icon",
-                tint = if (isSystemInDarkTheme()) {
-                    if (!isTextSettingSelected) Color.White else LinkedInColor
-                } else {
-                    if (!isTextSettingSelected) Color.Black else
-                        LinkedInColor
-                },
-                modifier = Modifier
-                    .size(30.dp)
-                    .padding(end = 14.dp)
-                    .clickable { onTextSettingSelected(!isTextSettingSelected) }
-            )
-
-            //글 정렬
-
-            TextItem(
-                icon = R.drawable.editbar_alignment, if (isSystemInDarkTheme()) {
-                    if (!isTextAlignSelected) Color.White else LinkedInColor
-                } else {
-                    if (!isTextAlignSelected) Color.Black else
-                        LinkedInColor
-                }
-            ) {
-                onTextAlignSelected(!isTextAlignSelected)
-            }
-
-
-            //밑줄
-            TextItem(
-                icon = R.drawable.editbar_underline, if (isSystemInDarkTheme()) {
-                    if (!isTextUnderLineSelected) Color.White else LinkedInColor
-                } else {
-                    if (!isTextUnderLineSelected) Color.Black else
-                        LinkedInColor
-                }
-            ) {
-                onTextUnderLineSelected(!isTextUnderLineSelected)
-            }
-            Icon(
-                painter = painterResource(id = R.drawable.editbar_more),
-                contentDescription = "icon",
-                modifier = Modifier
-                    .size(40.dp)
-                    .padding(end = 14.dp)
-                    .clickable {
-                        isKeyboardApeared = !isKeyboardApeared
-                        if (isKeyboardApeared) keyboardController?.show() else keyboardController?.hide()
-                        viewModel.isTextFeatOpened.value = true
+                Spacer(modifier = Modifier.width(20.dp))
+                Icon(
+                    painter = painterResource(id = R.drawable.editbar_thick),
+                    contentDescription = "icon",
+                    tint = if (isSystemInDarkTheme()) {
+                        if (!isTextSettingSelected) Color.White else LinkedInColor
+                    } else {
+                        if (!isTextSettingSelected) Color.Black else
+                            LinkedInColor
                     },
-                tint = Color.Unspecified
-            )
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
+                    modifier = Modifier
+                        .size(30.dp)
+                        .padding(end = 14.dp)
+                        .clickable { onTextSettingSelected(!isTextSettingSelected) }
+                )
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "저장", color = Color.White, modifier = Modifier.clickable {
-                        //room db에 저장
-                        val tagList = mutableListOf<EssayApi.Tag>()
-                        viewModel.hashTagList.forEach {
-                            tagList.add(EssayApi.Tag(1,it))
-                        }
+                //글 정렬
 
-                        viewModel.updateOrInsertEssay(
-                            EssayApi.EssayItem(
-                                title = viewModel.title.value.text,
-                                content = viewModel.content.text,
-                                longitude = viewModel.longitude,
-                                latitude = viewModel.latitude,
-                                createdDate = viewModel.getCurrentDate(),
-                                tags = tagList,
-                                essayPrimaryId = viewModel.essayPrimaryId ?: 0
+                TextItem(
+                    icon = R.drawable.editbar_alignment, if (isSystemInDarkTheme()) {
+                        if (!isTextAlignSelected) Color.White else LinkedInColor
+                    } else {
+                        if (!isTextAlignSelected) Color.Black else
+                            LinkedInColor
+                    }
+                ) {
+                    onTextAlignSelected(!isTextAlignSelected)
+                }
 
+
+                //밑줄
+                TextItem(
+                    icon = R.drawable.editbar_underline, if (isSystemInDarkTheme()) {
+                        if (!isTextUnderLineSelected) Color.White else LinkedInColor
+                    } else {
+                        if (!isTextUnderLineSelected) Color.Black else
+                            LinkedInColor
+                    }
+                ) {
+                    onTextUnderLineSelected(!isTextUnderLineSelected)
+                }
+                Icon(
+                    painter = painterResource(id = R.drawable.editbar_more),
+                    contentDescription = "icon",
+                    modifier = Modifier
+                        .size(40.dp)
+                        .padding(end = 14.dp)
+                        .clickable {
+                            isKeyboardApeared = !isKeyboardApeared
+                            if (isKeyboardApeared) keyboardController?.show() else keyboardController?.hide()
+                            viewModel.isTextFeatOpened.value = true
+                        },
+                    tint = Color.Unspecified
+                )
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(text = "저장", color = Color.White, modifier = Modifier.clickable {
+                            //room db에 저장
+                            val tagList = mutableListOf<EssayApi.Tag>()
+                            viewModel.hashTagList.forEach {
+                                tagList.add(EssayApi.Tag(1,it))
+                            }
+
+                            viewModel.updateOrInsertEssay(
+                                EssayApi.EssayItem(
+                                    title = viewModel.title.value.text,
+                                    content = viewModel.content.text,
+                                    longitude = viewModel.longitude,
+                                    latitude = viewModel.latitude,
+                                    createdDate = viewModel.getCurrentDate(),
+                                    tags = tagList,
+                                    essayPrimaryId = viewModel.essayPrimaryId ?: 0
+
+                                )
                             )
-                        )
-                        
-                        keyboardController!!.hide()
-                        viewModel.isStored = true
-                    })
-                    Spacer(modifier = Modifier.width(15.dp))
-                    VerticalDivider(
-                        modifier = Modifier
-                            .height(34.dp)
-                            .padding(end = 12.dp), thickness = 1.dp
-                    )
-                    TextItem(
-                        icon = R.drawable.editbar_next, if (isSystemInDarkTheme()) {
-                            if (!isTextSettingSelected) Color.White else LinkedInColor
-                        } else {
-                            if (!isTextSettingSelected) Color.Black else
-                                LinkedInColor
-                        }
-                    ) {}
 
+                            keyboardController!!.hide()
+                            viewModel.isStored = true
+                        })
+                        Spacer(modifier = Modifier.width(15.dp))
+                        VerticalDivider(
+                            modifier = Modifier
+                                .height(34.dp)
+                                .padding(end = 12.dp), thickness = 1.dp
+                        )
+                        TextItem(
+                            icon = R.drawable.editbar_next, if (isSystemInDarkTheme()) {
+                                if (!isTextSettingSelected) Color.White else LinkedInColor
+                            } else {
+                                if (!isTextSettingSelected) Color.Black else
+                                    LinkedInColor
+                            }
+                        ) {}
+
+                    }
                 }
             }
         }
     }
+
 }
 
 @Composable
 fun TextSettingsBar(viewModel: WritingViewModel) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .height(50.dp)
-            .background(color = Color(0xFF313131)),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Spacer(modifier = Modifier.width(20.dp))
-        Text(text = "기본고딕", color = Color.White, modifier = Modifier.clickable { })
-        Spacer(modifier = Modifier.width(20.dp))
-        Text(text = "나눔명조", color = Color.White, modifier = Modifier.clickable { })
-        Spacer(modifier = Modifier.width(20.dp))
-        Text(text = "16", color = Color.White, modifier = Modifier.clickable { })
-        Spacer(modifier = Modifier.width(20.dp))
-        Text(
-            text = "B",
-            fontWeight = FontWeight.Bold,
-            color = Color.White,
-            modifier = Modifier.clickable {
-                if (viewModel.content.selection.start != viewModel.content.selection.end) {
-                    val cursorPosition = viewModel.content.selection.start
-                    val endPosition = viewModel.content.selection.end
-                    val newText = viewModel.content.text.substring(0, cursorPosition) +
-                            "<b>" + viewModel.content.text.substring(
-                        cursorPosition,
-                        endPosition
-                    ) + "</b>" +
-                            viewModel.content.text.substring(
-                                endPosition,
-                                viewModel.content.text.length
-                            )
+    LinkedOutTheme {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+                .background(color = Color(0xFF313131)),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Spacer(modifier = Modifier.width(20.dp))
+            Text(text = "기본고딕", color = Color.White, modifier = Modifier.clickable { })
+            Spacer(modifier = Modifier.width(20.dp))
+            Text(text = "나눔명조", color = Color.White, modifier = Modifier.clickable { })
+            Spacer(modifier = Modifier.width(20.dp))
+            Text(text = "16", color = Color.White, modifier = Modifier.clickable { })
+            Spacer(modifier = Modifier.width(20.dp))
+            Text(
+                text = "B",
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                modifier = Modifier.clickable {
+                    if (viewModel.content.selection.start != viewModel.content.selection.end) {
+                        val cursorPosition = viewModel.content.selection.start
+                        val endPosition = viewModel.content.selection.end
+                        val newText = viewModel.content.text.substring(0, cursorPosition) +
+                                "<b>" + viewModel.content.text.substring(
+                            cursorPosition,
+                            endPosition
+                        ) + "</b>" +
+                                viewModel.content.text.substring(
+                                    endPosition,
+                                    viewModel.content.text.length
+                                )
 
 
-                    viewModel.content = TextFieldValue(
-                        text = newText,
-                    )
-                }
-            })
+                        viewModel.content = TextFieldValue(
+                            text = newText,
+                        )
+                    }
+                })
+        }
     }
+
 }
 
 @Preview

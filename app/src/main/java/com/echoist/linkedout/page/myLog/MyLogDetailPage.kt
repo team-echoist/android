@@ -11,7 +11,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -305,7 +304,7 @@ fun DetailTopAppBar(navController: NavController, viewModel: MyLogViewModel) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "arrow back",
-                tint = if (isSystemInDarkTheme()) Color(0xFF727070) else Color.Gray,
+                tint = Color(0xFF727070),
                 modifier = Modifier
                     .padding(start = 10.dp)
                     .size(30.dp)
@@ -662,90 +661,103 @@ fun DetailEssay2(viewModel: MyLogViewModel) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp)
         ) {
             if (essay.thumbnail != null) {
                 Column {
-                    GlideImage(
-                        model = essay.thumbnail, contentDescription = "", modifier = Modifier
+                    Box(
+                        modifier = Modifier
                             .fillMaxWidth()
-                            .height(220.dp)
-                    )
+                            .height(220.dp), contentAlignment = Alignment.Center
+                    ) {
+                        GlideImage(
+                            model = essay.thumbnail,
+                            contentDescription = "essay Thumbnail",
+                            contentScale = ContentScale.FillHeight
+                        )
+
+                    }
                 }
             }
-            Spacer(modifier = Modifier.height(20.dp))
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+            ) {
+                Spacer(modifier = Modifier.height(20.dp))
 
-            Text(text = essay.title!!, fontSize = viewModel.titleTextSize, modifier = Modifier)
-            Spacer(modifier = Modifier.height(40.dp))
-            Text(
-                text = essay.content!!,
-                fontSize = viewModel.contentTextSize,
-                modifier = Modifier,
-                color = Color(0xFFB4B4B4)
-            )
-            Spacer(modifier = Modifier.height(46.dp))
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
-                Column {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
-                        (if (essay.author != null) essay.author!!.nickname else "")?.let {
+                Text(text = essay.title!!, fontSize = viewModel.titleTextSize, modifier = Modifier)
+                Spacer(modifier = Modifier.height(40.dp))
+                Text(
+                    text = essay.content!!,
+                    fontSize = viewModel.contentTextSize,
+                    modifier = Modifier,
+                    color = Color(0xFFB4B4B4)
+                )
+                Spacer(modifier = Modifier.height(46.dp))
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
+                    Column {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
+                            (if (essay.author != null) essay.author!!.nickname else "")?.let {
+                                Text(
+                                    text = it,
+                                    fontSize = 12.sp,
+                                    textAlign = TextAlign.End,
+                                    color = Color(0xFF686868)
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
                             Text(
-                                text = it,
+                                text = formatDateTime(essay.createdDate ?: ""),
                                 fontSize = 12.sp,
                                 textAlign = TextAlign.End,
                                 color = Color(0xFF686868)
                             )
                         }
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
-                        Text(
-                            text = formatDateTime(essay.createdDate ?: ""),
-                            fontSize = 12.sp,
-                            textAlign = TextAlign.End,
-                            color = Color(0xFF686868)
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    if (essay.linkedOutGauge != null) {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.CenterEnd
-                        ) {
-                            Row {
-                                repeat(essay.linkedOutGauge!!) {
-                                    Image(
-                                        painter = painterResource(id = R.drawable.ring),
-                                        contentDescription = "ring",
-                                        modifier = Modifier.size(14.dp),
-                                        colorFilter = ColorFilter.tint(Color(0xFF686868))
-                                    )
-                                    if (it != essay.linkedOutGauge!! - 1) Spacer(
-                                        modifier = Modifier.width(
-                                            4.dp
+                        Spacer(modifier = Modifier.height(8.dp))
+                        if (essay.linkedOutGauge != null) {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.CenterEnd
+                            ) {
+                                Row {
+                                    repeat(essay.linkedOutGauge!!) {
+                                        Image(
+                                            painter = painterResource(id = R.drawable.ring),
+                                            contentDescription = "ring",
+                                            modifier = Modifier.size(14.dp),
+                                            colorFilter = ColorFilter.tint(Color(0xFF686868))
                                         )
-                                    )
+                                        if (it != essay.linkedOutGauge!! - 1) Spacer(
+                                            modifier = Modifier.width(
+                                                4.dp
+                                            )
+                                        )
+                                    }
                                 }
                             }
                         }
-                    }
 
-                }
-            }
-            Spacer(modifier = Modifier.height(28.dp))
-            if (essay.tags != null) {
-                Row {
-                    repeat(essay.tags!!.size) {
-                        SuggestionChip(
-                            onClick = { },
-                            label = { Text(essay.tags!![it].name) },
-                            shape = RoundedCornerShape(50)
-                        )
-                        if (it != essay.tags!!.size - 1) Spacer(modifier = Modifier.width(10.dp))
                     }
                 }
+                Spacer(modifier = Modifier.height(28.dp))
+                if (essay.tags != null) {
+                    Row {
+                        repeat(essay.tags!!.size) {
+                            SuggestionChip(
+                                onClick = { },
+                                label = { Text(essay.tags!![it].name) },
+                                shape = RoundedCornerShape(50)
+                            )
+                            if (it != essay.tags!!.size - 1) Spacer(modifier = Modifier.width(10.dp))
+                        }
+                    }
+                }
+
+            }
             }
 
-        }
 
     }
 

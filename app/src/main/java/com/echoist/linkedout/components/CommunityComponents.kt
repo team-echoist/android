@@ -1113,11 +1113,8 @@ fun EssayListItem(
     viewModel: CommunityViewModel,
     navController: NavController
 ) {
-    val color = if (isSystemInDarkTheme()) {
+    val color =
         Color.White
-    } else {
-        Color.Black
-    }
     Box(modifier = Modifier
         .fillMaxWidth()
         .background(Color.Black)
