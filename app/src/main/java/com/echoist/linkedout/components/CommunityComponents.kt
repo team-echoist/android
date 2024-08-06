@@ -14,7 +14,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +23,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -54,8 +54,10 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -464,8 +466,8 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
             ExtendedSpans(
                 RoundedCornerSpanPainter(
                     cornerRadius = 20.sp,
-                    topMargin = 0.sp,
-                    bottomMargin = 0.sp,
+                    topMargin = -2.sp,
+                    bottomMargin = -2.sp,
                     padding = RoundedCornerSpanPainter.TextPaddingValues(
                         horizontal = 14.sp,
                         vertical = 0.sp
@@ -477,8 +479,8 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
             ExtendedSpans(
                 RoundedCornerSpanPainter(
                     cornerRadius = 20.sp,
-                    topMargin = 0.sp,
-                    bottomMargin = 0.sp,
+                    topMargin = -2.sp,
+                    bottomMargin = -2.sp,
                     padding = RoundedCornerSpanPainter.TextPaddingValues(
                         horizontal = 14.sp,
                         vertical = 0.sp
@@ -490,8 +492,8 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
             ExtendedSpans(
                 RoundedCornerSpanPainter(
                     cornerRadius = 20.sp,
-                    topMargin = 0.sp,
-                    bottomMargin = 0.sp,
+                    topMargin = -2.sp,
+                    bottomMargin = -2.sp,
                     padding = RoundedCornerSpanPainter.TextPaddingValues(
                         horizontal = 14.sp,
                         vertical = 0.sp
@@ -504,8 +506,8 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
             ExtendedSpans(
                 RoundedCornerSpanPainter(
                     cornerRadius = 20.sp,
-                    topMargin = 0.sp,
-                    bottomMargin = 0.sp,
+                    topMargin = -2.sp,
+                    bottomMargin = -2.sp,
                     padding = RoundedCornerSpanPainter.TextPaddingValues(
                         horizontal = 14.sp,
                         vertical = 0.sp
@@ -517,8 +519,8 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
             ExtendedSpans(
                 RoundedCornerSpanPainter(
                     cornerRadius = 20.sp,
-                    topMargin = 0.sp,
-                    bottomMargin = 0.sp,
+                    topMargin = -2.sp,
+                    bottomMargin = -2.sp,
                     padding = RoundedCornerSpanPainter.TextPaddingValues(
                         horizontal = 14.sp,
                         vertical = 0.sp
@@ -592,6 +594,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                     extendedSpans.extend(annotatedString2)
                 },fontSize = 14.sp,
                 modifier = Modifier
+                    .offset(y = 4.dp)
                     .horizontalScroll(state = rememberScrollState())
                     // .fillMaxWidth()
                     .drawBehind(extendedSpans2)
@@ -648,6 +651,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                     extendedSpans3.extend(annotatedString3)
                 },fontSize = 14.sp,
                 modifier = Modifier
+                    .offset(y = 8.dp)
                     .horizontalScroll(state = rememberScrollState())
                     // .fillMaxWidth()
                     .drawBehind(extendedSpans3)
@@ -705,6 +709,8 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                     extendedSpans4.extend(annotatedString4)
                 },fontSize = 14.sp,
                 modifier = Modifier
+                    .offset(y = 12.dp)
+
                     .horizontalScroll(state = rememberScrollState())
                     // .fillMaxWidth()
                     .drawBehind(extendedSpans4)
@@ -763,6 +769,8 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                     extendedSpans5.extend(annotatedString5)
                 }, fontSize = 14.sp,
                 modifier = Modifier
+                    .offset(y = 16.dp)
+
                     .horizontalScroll(state = rememberScrollState())
                     // .fillMaxWidth()
                     .drawBehind(extendedSpans5)
@@ -885,7 +893,7 @@ fun SentenceChoice(viewModel: CommunityViewModel) {
                 Text(text = "한 문장을 모아", fontWeight = FontWeight.SemiBold, color = color)
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(text = "글의 시작을 알리는 문장들을 만나보세요.", color = Color(0xFF696969), fontSize = 12.sp)
-
+                Spacer(modifier = Modifier.height(15.dp))
             }
         }
         Box(
@@ -994,13 +1002,13 @@ fun CommunityChips(pagerState: PagerState) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(26.dp)
+            .height(30.dp)
     ) {
 
         HorizontalDivider(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 27.dp), thickness = 1.dp, color = Color(0xFFAEAEAE)
+                .padding(top = 30.dp), thickness = 1.dp, color = Color(0xFFAEAEAE)
         )
 
         Row(
@@ -1147,6 +1155,8 @@ fun EssayListItem(
                     Text(
                         modifier = Modifier,
                         text = item.title!!,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Normal,
                         color = color,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
@@ -1160,6 +1170,7 @@ fun EssayListItem(
                 Text(
                     text = item.content!!,
                     maxLines = 2,
+                    fontSize = 14.sp,
                     lineHeight = 27.2.sp,
                     color = color,
                     overflow = TextOverflow.Ellipsis
@@ -1233,7 +1244,7 @@ fun RandomCommunityPage(viewModel: CommunityViewModel, navController: NavControl
             Column {
                 SentenceChoice(viewModel)
                 RandomSentences(viewModel,navController)
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(40.dp))
 
                 TodaysLogTitle()
 
@@ -1402,7 +1413,68 @@ fun CommunityPager(
 
 
 
+@Preview
+@Composable
+fun prev2() {
+    val color = Color.Black
+    var isClicked by remember { mutableStateOf(false) }
+    var text by remember {
+        mutableStateOf("첫 문장       ")
+    }
+    val arrow = if (isClicked) R.drawable.arrowup else R.drawable.arrowdown
+    val height = if (isClicked) 80.dp else 40.dp
+    Card(
+        shape = RoundedCornerShape(10),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFCFCFCF)),
+        modifier = Modifier.size(120.dp,height)
 
+    ) {
+        Column(
+            modifier = Modifier
+                .height(height)
+                .padding(horizontal = 10.dp),
+            verticalArrangement = Arrangement.Center
+        ) {
+            Row (verticalAlignment = Alignment.CenterVertically){
+                Text(
+                    text = text,
+                    modifier = Modifier
+                        .padding(start = 10.dp)
+                        .clickable {
+                        },
+                    fontSize = 12.sp,
+                    color = color
+                )
+                Icon(
+                    painter = painterResource(arrow),
+                    modifier = Modifier.size(24.dp).clickable { isClicked = !isClicked },
+                    contentDescription = ""
+                )
+
+            }
+
+            if (isClicked) {
+                Spacer(modifier = Modifier.height(6.dp))
+                HorizontalDivider(color = Color(0xFFC5C5C5))
+                Spacer(modifier = Modifier.height(6.dp))
+
+                Text(
+                    text = "마지막 문장",
+                    modifier = Modifier
+                        .padding(start = 10.dp)
+                        .clickable {
+                            text = "마지막 문장    "
+                            isClicked = false
+                        },
+                    fontSize = 12.sp,
+                    color = color
+                )
+            }
+
+
+        }
+    }
+}
 
 
 

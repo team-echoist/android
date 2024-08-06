@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -182,7 +181,7 @@ fun LastEssayPager(viewModel: MyLogViewModel, navController: NavController){
             Modifier.padding(start = 20.dp, top = 16.dp, bottom = 16.dp),
             color = Color(0xFF616FED)
         )
-        HorizontalDivider(color = Color(0xFF686868))
+        HorizontalDivider(color = Color(0xFF1A1A1A))
 
         //저장된 글 리스트가 비어있다면
         if (lastEssayList.isEmpty()){

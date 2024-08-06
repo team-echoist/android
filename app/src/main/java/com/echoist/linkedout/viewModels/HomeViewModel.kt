@@ -111,7 +111,6 @@ class HomeViewModel @Inject constructor(
                 callback(null) // 작업 실패 시 null 반환
                 return@addOnCompleteListener
             }
-
             // Get new FCM registration token
             val token = task.result
             callback(token)
@@ -120,15 +119,12 @@ class HomeViewModel @Inject constructor(
     }
 
     fun requestRegisterDevice(context: Context) {
-
         val ssaid = getSSAID(context)
         getFCMToken { token ->
             if (token != null) {
                 // 서버에 토큰값 보내기 등의 작업을 여기서 처리할 수 있습니다.
                 val body = SignUpApiImpl.RegisterDeviceRequest(ssaid, token)
-
                 viewModelScope.launch {
-
                     try {
                         supportApi.requestRegisterDevice(Token.accessToken, body)
                         Log.i("FCM Token", "ssaid 값 : $ssaid \n FCM token 값 : $token")

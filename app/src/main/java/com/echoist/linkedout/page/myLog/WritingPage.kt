@@ -15,7 +15,6 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,6 +40,7 @@ import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -50,6 +50,7 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -66,10 +67,12 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -100,6 +103,10 @@ import com.echoist.linkedout.page.login.keyboardAsState
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.WritingViewModel
+import com.mohamedrejeb.richeditor.model.RichTextState
+import com.mohamedrejeb.richeditor.model.rememberRichTextState
+import com.mohamedrejeb.richeditor.ui.material3.RichTextEditor
+import com.mohamedrejeb.richeditor.ui.material3.RichTextEditorDefaults
 import kotlinx.coroutines.delay
 
 object Token {
@@ -129,8 +136,18 @@ fun WritingPage(
     val background = Color.Black
 
     var isTextSettingSelected by remember { mutableStateOf(false) }
-    var isTextAlignSelected by remember { mutableStateOf(false) }
+    var isTextBoldSelected by remember { mutableStateOf(false) }
     var isTextUnderLineSelected by remember { mutableStateOf(false) }
+    var isTextMiddleLineSelected by remember { mutableStateOf(false) }
+
+
+    //리치텍스트
+    val textState = rememberRichTextState()
+    val currentSpanStyle = textState.currentSpanStyle
+    val isBold = currentSpanStyle.fontWeight == FontWeight.Bold
+    val isItalic = currentSpanStyle.fontStyle == FontStyle.Italic
+    val isUnderline = currentSpanStyle.textDecoration == TextDecoration.Underline
+
 
     Log.d(TAG, "WritingPage: ${viewModel.readDetailEssay()}")
 
@@ -154,17 +171,13 @@ fun WritingPage(
                         .verticalScroll(scrollState)
                 )
                 {
-                    WritingTopAppBar(navController = navController, viewModel)
+                    WritingTopAppBar(navController = navController, viewModel){viewModel.content = textState.toHtml()}
 
 
-                    ContentTextField(viewModel = viewModel)
-//                    MarkdownText(
-//                        markdown = viewModel.content.text,
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .padding(start = 20.dp, top = 80.dp),
-//                        color = Color.White
-//                    )
+                    ContentTextField(viewModel = viewModel,textState)
+                    Log.d(TAG, "WritingTopAppBar: ${textState.toHtml()}")
+
+
                     Spacer(modifier = Modifier.height(50.dp))
 
                         Box(
@@ -273,54 +286,37 @@ fun WritingPage(
 
 
                         if (isTextSettingSelected) {
-                            TextSettingsBar(viewModel)
-                        }
-                        if (isTextAlignSelected) {
-                            Row {
-                                Spacer(modifier = Modifier.width(40.dp))
-                                TextAlignBar()
-
-                            }
+                            TextSettingsBar(textState)
                         }
                         TextEditBar(viewModel,
-                            isTextSettingSelected, {
+                            isTextSettingSelected = isTextSettingSelected,
+                            onTextSettingSelected = {
                                 isTextSettingSelected = it
-                                isTextAlignSelected = false
-                                isTextUnderLineSelected = false
                             },
-                            isTextAlignSelected,
+                            isTextBoldSelected = isTextBoldSelected,
+                            onTextBoldSelected =
                             {
-                                isTextAlignSelected = it
+                                isTextBoldSelected = it
+                                if (isTextBoldSelected) textState.addSpanStyle(SpanStyle(fontWeight = FontWeight.Bold))
+                                else textState.removeSpanStyle(SpanStyle(fontWeight = FontWeight.Bold))
                                 isTextSettingSelected = false
-                                isTextUnderLineSelected = false
                             },
-                            isTextUnderLineSelected,
+                            isTextUnderLineSelected = isTextUnderLineSelected,
+                            onTextUnderLineSelected =
                             {
                                 isTextUnderLineSelected = it
-                                isTextAlignSelected = false
+                                if (isTextUnderLineSelected) textState.addSpanStyle(SpanStyle(textDecoration = TextDecoration.Underline))
+                                else textState.removeSpanStyle(SpanStyle(textDecoration = TextDecoration.Underline))
                                 isTextSettingSelected = false
 
-                                if (viewModel.content.selection.start != viewModel.content.selection.end) {
-                                    val cursorPosition = viewModel.content.selection.start
-                                    val endPosition = viewModel.content.selection.end
-                                    val newText =
-                                        viewModel.content.text.substring(0, cursorPosition) +
-                                                "<u>" + viewModel.content.text.substring(
-                                            cursorPosition,
-                                            endPosition
-                                        ) + "</u>" +
-                                                viewModel.content.text.substring(
-                                                    endPosition,
-                                                    viewModel.content.text.length
-                                                )
+                            },
+                            isTextMiddleLineSelected = isTextMiddleLineSelected,
+                            onTextMiddleLineSelected = {
+                                isTextMiddleLineSelected = it
+                                if (isTextMiddleLineSelected) textState.addSpanStyle(SpanStyle(textDecoration = TextDecoration.LineThrough))
+                                else textState.removeSpanStyle(SpanStyle(textDecoration = TextDecoration.LineThrough))
 
-
-                                    viewModel.content = TextFieldValue(
-                                        text = newText,
-                                    )
-                                }
-
-
+                                isTextSettingSelected = false
                             })
 
                         KeyboardLocationFunc(viewModel, navController)
@@ -338,6 +334,7 @@ fun WritingPage(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 20.dp)
+                    .padding(bottom = 10.dp)
                     .navigationBarsPadding(),
                 contentAlignment = Alignment.BottomCenter
             ){
@@ -357,7 +354,8 @@ fun WritingPage(
 @Composable
 fun WritingTopAppBar(
     navController: NavController,
-    viewModel: WritingViewModel
+    viewModel: WritingViewModel,
+    isCompleteClicked : ()-> Unit
 ) {
     Log.d(TAG, "WritingTopAppBar: ${viewModel.title}")
     val isKeyboardOpen by keyboardAsState() //keyBoard.Opened
@@ -409,7 +407,7 @@ fun WritingTopAppBar(
                         modifier = Modifier
                             .clickable {
 
-                                if (viewModel.title.value.text.isEmpty() && viewModel.content.text.isEmpty()) {
+                                if (viewModel.title.value.text.isEmpty() && viewModel.content.isEmpty()) {
                                     navController.popBackStack()
                                     viewModel.initialize()
                                 } else {
@@ -477,8 +475,10 @@ fun WritingTopAppBar(
                     fontSize = 16.sp,
                     modifier = Modifier
                         .clickable {
-                            if (viewModel.title.value.text.isNotEmpty() && viewModel.content.text.length >= viewModel.minLength)
-                                navController.navigate("WritingCompletePage")
+                            isCompleteClicked()
+                            if (viewModel.title.value.text.isNotEmpty() && viewModel.content.length >= viewModel.minLength){
+                                Log.d(TAG, "WritingTopAppBar: ${viewModel.content}")
+                                navController.navigate("WritingCompletePage")}
                             else {
                                 isContentNotEmpty.value = true
                             }
@@ -503,8 +503,9 @@ fun WritingTopAppBar(
 
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ContentTextField(viewModel: WritingViewModel) {
+fun ContentTextField(viewModel: WritingViewModel,textState: RichTextState) {
     val focusState = viewModel.focusState
 
     val ydp = animateDpAsState(
@@ -514,46 +515,32 @@ fun ContentTextField(viewModel: WritingViewModel) {
 
     LinkedOutTheme {
         Column {
-            TextField(
-
+            RichTextEditor(
+                state = textState,
                 modifier = Modifier
                     .offset(x = 0.dp, y = ydp)
                     .onFocusChanged { focusState.value = it.isFocused }
                     .fillMaxWidth()
                     .padding(5.dp),
-                value = viewModel.content,
-                onValueChange = {
-                    if (viewModel.maxLength >= it.text.length)
-                        viewModel.content = it
-                },
                 placeholder = {
                     Text(
                         text = viewModel.hint,
+                        fontSize = 14.sp,
                         color = Color(0xFF686868)
                     )
                 },
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
+                colors = RichTextEditorDefaults.richTextEditorColors
+                    (containerColor = Color.Transparent,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White
-                )
+                    textColor = Color.White)
+
             )
+
             Spacer(modifier = Modifier.height(20.dp))
 
-//        Text(
-//            text = "${viewModel.content.text.length} / ${viewModel.maxLength}",
-//            color = Color.Gray,
-//            textAlign = TextAlign.End,
-//            modifier = Modifier.fillMaxWidth()
-//        )
         }
     }
-
-
-
 }
 
 @Composable
@@ -638,7 +625,7 @@ fun WritingCancelCard(viewModel: WritingViewModel, navController: NavController,
                                 viewModel.updateOrInsertEssay(
                                     EssayApi.EssayItem(
                                         title = viewModel.title.value.text,
-                                        content = viewModel.content.text,
+                                        content = viewModel.content,
                                         longitude = viewModel.longitude,
                                         latitude = viewModel.latitude,
                                         createdDate = viewModel.getCurrentDate(),
@@ -722,11 +709,11 @@ fun KeyboardLocationFunc(viewModel: WritingViewModel, navController: NavControll
             viewModel.isHashTagClicked = !viewModel.isHashTagClicked
             Log.d("tagtag", "tag")
         },
+
+        FuncItemData("이미지", R.drawable.keyboard_image) { navController.navigate("CropImagePage") },
+
         FuncItemData("쓰다 만 글", R.drawable.keyboard_storage) { navController.navigate("TemporaryStoragePage") },
 
-        //FuncItemData("맞춤법 검사", R.drawable.keyboard_spelling) {},
-        FuncItemData("이미지", R.drawable.keyboard_img) { navController.navigate("CropImagePage") },
-        //FuncItemData("이미지", R.drawable.pw_eye) {},
     )
 
     val density = LocalDensity.current
@@ -777,11 +764,16 @@ fun TextEditBar(
     viewModel: WritingViewModel,
     isTextSettingSelected: Boolean,
     onTextSettingSelected: (Boolean) -> Unit,
-    isTextAlignSelected: Boolean,
-    onTextAlignSelected: (Boolean) -> Unit,
+    isTextBoldSelected: Boolean,
+    onTextBoldSelected: (Boolean) -> Unit,
     isTextUnderLineSelected: Boolean,
     onTextUnderLineSelected: (Boolean) -> Unit,
+    isTextMiddleLineSelected: Boolean,
+    onTextMiddleLineSelected: (Boolean) -> Unit,
+
 ) {
+
+    var isOpened by remember { mutableStateOf(true) }
 
     val insets = ViewCompat.getRootWindowInsets(LocalView.current)
     val imeHeightPx = insets?.getInsets(WindowInsetsCompat.Type.ime())?.bottom ?: 0
@@ -792,230 +784,183 @@ fun TextEditBar(
 
     Log.d("TAG", "Keyboard height in dp: $imeHeightDp")
 
+    //키보드 높이만큼 상승
     val keyboardController = LocalSoftwareKeyboardController.current
     var isKeyboardApeared by remember { mutableStateOf(true) }
     val requestPermissionsUtil = RequestPermissionsUtil(LocalContext.current, viewModel)
+
     LinkedOutTheme {
-        Row(
-            modifier = Modifier
-                .background(Color(0xFF1D1D1D))
-                .fillMaxWidth()
-                //.imePadding()
-                .height(60.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            if (viewModel.isHashTagClicked && !viewModel.isLocationClicked) {
-                Spacer(modifier = Modifier.width(20.dp))
-                TextItem(icon = R.drawable.keyboard_hashtag, LinkedInColor) {}
-                HashTagTextField(viewModel = viewModel)
-            } else if (viewModel.isLocationClicked && !viewModel.isHashTagClicked) {
-                Spacer(modifier = Modifier.width(15.dp))
-                Icon(
-                    tint = Color(0xFF616FED),
-                    imageVector = Icons.Default.LocationOn,
-                    contentDescription = "location",
-                    modifier = Modifier
-                        .size(50.dp)
-                        .padding(end = 14.dp)
-                        .clickable { requestPermissionsUtil.RequestLocationUpdates() }
-                )
-                LocationTextField(viewModel = viewModel)
-            } else {
+        if (isOpened) {
+            Row(
+                modifier = Modifier
+                    .background(Color(0xFF1D1D1D))
+                    .fillMaxWidth()
+                    //.imePadding()
+                    .height(55.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (viewModel.isHashTagClicked && !viewModel.isLocationClicked) {
+                    Spacer(modifier = Modifier.width(20.dp))
+                    TextItem(icon = R.drawable.keyboard_hashtag, LinkedInColor) {}
+                    HashTagTextField(viewModel = viewModel)
+                } else if (viewModel.isLocationClicked && !viewModel.isHashTagClicked) {
+                    Spacer(modifier = Modifier.width(15.dp))
+                    Icon(
+                        tint = Color(0xFF616FED),
+                        imageVector = Icons.Default.LocationOn,
+                        contentDescription = "location",
+                        modifier = Modifier
+                            .size(50.dp)
+                            .padding(end = 14.dp)
+                            .clickable { requestPermissionsUtil.RequestLocationUpdates() }
+                    )
+                    LocationTextField(viewModel = viewModel)
+                } else {
 
-                Spacer(modifier = Modifier.width(20.dp))
-                Icon(
-                    painter = painterResource(id = R.drawable.editbar_thick),
-                    contentDescription = "icon",
-                    tint = if (isSystemInDarkTheme()) {
+                    Spacer(modifier = Modifier.width(20.dp))
+
+                    TextItem(
+                        icon = R.drawable.editor_thick,
                         if (!isTextSettingSelected) Color.White else LinkedInColor
-                    } else {
-                        if (!isTextSettingSelected) Color.Black else
-                            LinkedInColor
-                    },
-                    modifier = Modifier
-                        .size(30.dp)
-                        .padding(end = 14.dp)
-                        .clickable { onTextSettingSelected(!isTextSettingSelected) }
-                )
 
-                //글 정렬
+                    ) {
+                        onTextSettingSelected(!isTextSettingSelected)
 
-                TextItem(
-                    icon = R.drawable.editbar_alignment, if (isSystemInDarkTheme()) {
-                        if (!isTextAlignSelected) Color.White else LinkedInColor
-                    } else {
-                        if (!isTextAlignSelected) Color.Black else
-                            LinkedInColor
                     }
-                ) {
-                    onTextAlignSelected(!isTextAlignSelected)
-                }
 
+                    //글 정렬
 
-                //밑줄
-                TextItem(
-                    icon = R.drawable.editbar_underline, if (isSystemInDarkTheme()) {
+                    TextItem(
+                        icon = R.drawable.editbar_bold,
+                        if (!isTextBoldSelected) Color.White else LinkedInColor
+
+                    ) {
+                        onTextBoldSelected(!isTextBoldSelected)
+                    }
+
+                    //밑줄
+                    TextItem(
+                        icon = R.drawable.editbar_underline,
                         if (!isTextUnderLineSelected) Color.White else LinkedInColor
-                    } else {
-                        if (!isTextUnderLineSelected) Color.Black else
-                            LinkedInColor
+
+                    ) {
+                        onTextUnderLineSelected(!isTextUnderLineSelected)
                     }
-                ) {
-                    onTextUnderLineSelected(!isTextUnderLineSelected)
-                }
-                Icon(
-                    painter = painterResource(id = R.drawable.editbar_more),
-                    contentDescription = "icon",
-                    modifier = Modifier
-                        .size(40.dp)
-                        .padding(end = 14.dp)
-                        .clickable {
-                            isKeyboardApeared = !isKeyboardApeared
-                            if (isKeyboardApeared) keyboardController?.show() else keyboardController?.hide()
-                            viewModel.isTextFeatOpened.value = true
-                        },
-                    tint = Color.Unspecified
-                )
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
 
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = "저장", color = Color.White, modifier = Modifier.clickable {
-                            //room db에 저장
-                            val tagList = mutableListOf<EssayApi.Tag>()
-                            viewModel.hashTagList.forEach {
-                                tagList.add(EssayApi.Tag(1,it))
-                            }
+                    TextItem(
+                        icon = R.drawable.editbar_middleline,
+                        if (!isTextMiddleLineSelected) Color.White else LinkedInColor
 
-                            viewModel.updateOrInsertEssay(
-                                EssayApi.EssayItem(
-                                    title = viewModel.title.value.text,
-                                    content = viewModel.content.text,
-                                    longitude = viewModel.longitude,
-                                    latitude = viewModel.latitude,
-                                    createdDate = viewModel.getCurrentDate(),
-                                    tags = tagList,
-                                    essayPrimaryId = viewModel.essayPrimaryId ?: 0
+                    ) {
+                        onTextMiddleLineSelected(!isTextMiddleLineSelected)
+                    }
+                    TextItem(
+                        icon = R.drawable.editbar_more,
+                        if (viewModel.isTextFeatOpened.value) LinkedInColor else Color.White
+                    ) {
 
+                        isKeyboardApeared = !isKeyboardApeared
+                        if (isKeyboardApeared) keyboardController?.show() else keyboardController?.hide()
+                        viewModel.isTextFeatOpened.value = !viewModel.isTextFeatOpened.value
+
+                    }
+
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
+
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(text = "저장", color = Color.White, modifier = Modifier.clickable {
+                                //room db에 저장
+                                val tagList = mutableListOf<EssayApi.Tag>()
+                                viewModel.hashTagList.forEach {
+                                    tagList.add(EssayApi.Tag(1,it))
+                                }
+
+                                viewModel.updateOrInsertEssay(
+                                    EssayApi.EssayItem(
+                                        title = viewModel.title.value.text,
+                                        content = viewModel.content,
+                                        longitude = viewModel.longitude,
+                                        latitude = viewModel.latitude,
+                                        createdDate = viewModel.getCurrentDate(),
+                                        tags = tagList,
+                                        essayPrimaryId = viewModel.essayPrimaryId ?: 0
+
+                                    )
                                 )
+
+                                keyboardController!!.hide()
+                                viewModel.isStored = true
+                            })
+                            Spacer(modifier = Modifier.width(15.dp))
+                            VerticalDivider(
+                                modifier = Modifier
+                                    .height(34.dp)
+                                    .padding(end = 12.dp), thickness = 1.dp
                             )
+                            TextItem(
+                                icon = R.drawable.editbar_next,
+                                    if (!isTextSettingSelected) Color.White else LinkedInColor
 
-                            keyboardController!!.hide()
-                            viewModel.isStored = true
-                        })
-                        Spacer(modifier = Modifier.width(15.dp))
-                        VerticalDivider(
-                            modifier = Modifier
-                                .height(34.dp)
-                                .padding(end = 12.dp), thickness = 1.dp
-                        )
-                        TextItem(
-                            icon = R.drawable.editbar_next, if (isSystemInDarkTheme()) {
-                                if (!isTextSettingSelected) Color.White else LinkedInColor
-                            } else {
-                                if (!isTextSettingSelected) Color.Black else
-                                    LinkedInColor
-                            }
-                        ) {}
+                            ) {isOpened = false}
 
+                        }
                     }
                 }
             }
+
         }
+        else{
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    //.imePadding()
+                    .height(55.dp), contentAlignment = Alignment.CenterEnd
+            ){
+
+                //todo 아이콘 다운
+                Icon(
+                    painter = painterResource(id = R.drawable.editbar_bold),
+                    contentDescription = "",
+                    tint = Color.White,
+                    modifier = Modifier.clickable { isOpened = true }
+                )
+
+
+            }
+        }
+
     }
 
 }
 
 @Composable
-fun TextSettingsBar(viewModel: WritingViewModel) {
+fun TextSettingsBar(textState: RichTextState) {
+
+    var selectedFontSize by remember { mutableIntStateOf(textState.currentSpanStyle.fontSize.value.toInt()) }
+    val fontSizeList = listOf(13,14,15,16,17,18,19,20,22,24)
+
     LinkedOutTheme {
         Row(
             Modifier
+                .horizontalScroll(rememberScrollState())
                 .fillMaxWidth()
                 .height(50.dp)
                 .background(color = Color(0xFF313131)),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Spacer(modifier = Modifier.width(20.dp))
-            Text(text = "기본고딕", color = Color.White, modifier = Modifier.clickable { })
-            Spacer(modifier = Modifier.width(20.dp))
-            Text(text = "나눔명조", color = Color.White, modifier = Modifier.clickable { })
-            Spacer(modifier = Modifier.width(20.dp))
-            Text(text = "16", color = Color.White, modifier = Modifier.clickable { })
-            Spacer(modifier = Modifier.width(20.dp))
-            Text(
-                text = "B",
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-                modifier = Modifier.clickable {
-                    if (viewModel.content.selection.start != viewModel.content.selection.end) {
-                        val cursorPosition = viewModel.content.selection.start
-                        val endPosition = viewModel.content.selection.end
-                        val newText = viewModel.content.text.substring(0, cursorPosition) +
-                                "<b>" + viewModel.content.text.substring(
-                            cursorPosition,
-                            endPosition
-                        ) + "</b>" +
-                                viewModel.content.text.substring(
-                                    endPosition,
-                                    viewModel.content.text.length
-                                )
-
-
-                        viewModel.content = TextFieldValue(
-                            text = newText,
-                        )
-                    }
-                })
+            Spacer(modifier = Modifier.width(24.dp))
+            fontSizeList.forEach { size ->
+                Text(
+                    text = size.toString(),
+                    modifier = Modifier.clickable { selectedFontSize = size
+                        textState.addSpanStyle(SpanStyle(fontSize = selectedFontSize.sp))},
+                    color = if (selectedFontSize == size) LinkedInColor else Color.White
+                )
+                Spacer(modifier = Modifier.width(32.dp))
+            }
         }
     }
 
-}
-
-@Preview
-@Composable
-fun TextAlignBar() {
-    Column(
-        Modifier
-            .size(44.dp, 150.dp)
-            .background(color = Color(0xFF1D1D1D)),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.textalignleft),
-            tint = Color.White,
-            contentDescription = "",
-            modifier = Modifier
-                .weight(
-                    1f
-                )
-                .size(20.dp)
-                .clickable { }
-        )
-        Icon(
-            painter = painterResource(id = R.drawable.textalighright),
-            tint = Color.White,
-            contentDescription = "",
-            modifier = Modifier
-                .weight(
-                    1f
-                )
-                .size(20.dp)
-                .clickable { }
-        )
-
-        Icon(
-            painter = painterResource(id = R.drawable.textalignmiddle),
-            tint = Color.White,
-            contentDescription = "",
-            modifier = Modifier
-                .weight(
-                    1f
-                )
-                .size(20.dp)
-                .clickable { }
-        )
-
-    }
 }
 
 @OptIn(ExperimentalGlideComposeApi::class)
@@ -1030,19 +975,22 @@ fun test(){
         contentAlignment = Alignment.Center,
     ) {
         Box{
-            GlideImage(model = R.drawable.alarm_pending, contentDescription = "uri") //todo 위치 조절 제대로하기
+            GlideImage(model = R.drawable.background_logo_btn, contentDescription = "uri") //todo 위치 조절 제대로하기
 
-            Row(
-                Modifier
-                    .offset(x = 20.dp, y = 20.dp)
-                    .width(50.dp)
-                    .height(27.dp)
-                    .background(
-                        color = Color(0xFF616FED),
-                        shape = RoundedCornerShape(20)
-                    ), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
-                Text(text = "변경", fontSize = 12.sp, color = Color.White)
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopEnd){
+                Row(
+                    Modifier
+                        .offset(x = -(10).dp, y = 10.dp)
+                        .width(50.dp)
+                        .height(27.dp)
+                        .background(
+                            color = Color(0xFF616FED),
+                            shape = RoundedCornerShape(20)
+                        ), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+                    Text(text = "변경", fontSize = 12.sp, color = Color.White)
+                }
             }
+
 
         }
     }

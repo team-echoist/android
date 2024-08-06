@@ -166,7 +166,7 @@ class LoginPage : ComponentActivity() {
             val keyHash = Utility.getKeyHash(this)
             Log.d("Hash", keyHash)
             val navController = rememberNavController()
-            NavHost(navController = navController, startDestination = "OnBoarding") {
+            NavHost(navController = navController, startDestination = "LoginPage") {
                 composable("OnBoarding") {
                     OnBoardingPage(navController)
                 }
@@ -623,7 +623,7 @@ fun PwTextField(viewModel: SocialLoginViewModel) {
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
                     Icon(
                         modifier = Modifier.size(24.dp),
-                        painter = painterResource(id = if (passwordVisible) R.drawable.pw_eye else R.drawable.pw_eye_off),
+                        painter = painterResource(id = if (passwordVisible) R.drawable.pw_eye_on else R.drawable.pw_eye_off),
                         contentDescription = "pw_eye"
                     )
 

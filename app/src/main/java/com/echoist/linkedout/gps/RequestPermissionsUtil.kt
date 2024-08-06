@@ -83,7 +83,7 @@ private fun stringToLongitude(longitudeStr: String): String {
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             locationManager.requestLocationUpdates( //NETWORK_PROVIDER과 GPS_PROVIDER를 사용할 수 있다.
-                LocationManager.GPS_PROVIDER,
+                LocationManager.NETWORK_PROVIDER, //todo gps
                 0,
                 0f,
                 locationListener

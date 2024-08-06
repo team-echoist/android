@@ -162,7 +162,7 @@ fun EssayItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column {
-            Text(text = essayItem.title)
+            Text(text = essayItem.title, fontSize = 14.sp)
             Text(text = formatDateTime(essayItem.createdDate), fontSize = 10.sp, color = Color(0xFF727070))
         }
         IconButton(onClick = { onItemSelected(!isSelected) }) {

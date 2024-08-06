@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -79,31 +80,12 @@ fun NotificationSettingPage(navController: NavController,homeViewModel: HomeView
                 content = {
                     var isClickedTimeSelection by remember { mutableStateOf(false) }
 
-                    Box(modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 20.dp)
-                        .padding(bottom = 60.dp), contentAlignment = Alignment.BottomCenter){
-                        Button(modifier = Modifier
-                            .fillMaxWidth()
-                            .height(61.dp), shape = RoundedCornerShape(20),
-                            onClick = {
-                                homeViewModel.updateUserNotification(navController,homeViewModel.locationNotification)
-                                SharedPreferencesUtil.saveWritingRemindNotification(context,writingRemindNotification) //글쓰기 시간 알림 설정 저장
-                                if (writingRemindNotification){
-                                    //homeViewModel.setAlarmAfter10(context) //테스트용 1초후알람
-                                    homeViewModel.setAlarmFromTimeString(context = context,hour,min,period) //정해진 시간에 알람설정.
-                                }
-                                else{
-                                    homeViewModel.cancelAlarm(context) //알람 취소
-                                }
-                            }) {
-                            Text(text = "저장", color = Color.Black)
-                        }
-                    }
+
                     if (homeViewModel.isApifinished){
                         Column(
                             Modifier
                                 .padding(it)
+                                .navigationBarsPadding().padding(bottom = 20.dp)
                                 .verticalScroll(rememberScrollState())) {
 
                             Text(
@@ -191,6 +173,7 @@ fun NotificationSettingPage(navController: NavController,homeViewModel: HomeView
 
 
 
+
                     AnimatedVisibility(
                         visible = isClickedTimeSelection,
                         enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)),
@@ -199,7 +182,29 @@ fun NotificationSettingPage(navController: NavController,homeViewModel: HomeView
                         NotificationTimePickerBox({ isClickedTimeSelection = false },navController)
 
                     }
+                    Box(modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 20.dp)
+                        .padding(bottom = 60.dp), contentAlignment = Alignment.BottomCenter){
+                        Button(modifier = Modifier
+                            .fillMaxWidth()
+                            .height(61.dp), shape = RoundedCornerShape(20),
+                            onClick = {
+                                homeViewModel.updateUserNotification(navController,homeViewModel.locationNotification)
+                                SharedPreferencesUtil.saveWritingRemindNotification(context,writingRemindNotification) //글쓰기 시간 알림 설정 저장
+                                if (writingRemindNotification){
+                                    //homeViewModel.setAlarmAfter10(context) //테스트용 1초후알람
+                                    homeViewModel.setAlarmFromTimeString(context = context,hour,min,period) //정해진 시간에 알람설정.
+                                }
+                                else{
+                                    homeViewModel.cancelAlarm(context) //알람 취소
+                                }
+                            }) {
+                            Text(text = "저장", color = Color.Black)
+                        }
+                    }
                 }
+
             )
         }
     }

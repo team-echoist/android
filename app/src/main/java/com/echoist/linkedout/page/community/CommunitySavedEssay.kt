@@ -5,7 +5,6 @@ import android.content.ContentValues
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -164,6 +163,7 @@ fun SavedEssayListItem(
                         modifier = Modifier,
                         text = item.title!!,
                         color = color,
+                        fontSize = 14.sp,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                     )
@@ -174,6 +174,7 @@ fun SavedEssayListItem(
                 Text(
                     text = item.content!!,
                     lineHeight = 27.2.sp,
+                    fontSize = 14.sp,
                     maxLines = 2,
                     color = color,
                     overflow = TextOverflow.Ellipsis

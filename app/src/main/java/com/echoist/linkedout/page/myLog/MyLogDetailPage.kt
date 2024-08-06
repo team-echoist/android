@@ -61,6 +61,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.colintheshots.twain.MarkdownText
 import com.echoist.linkedout.INSPECT_POPUP_URL
 import com.echoist.linkedout.LINKEDOUT_POPUP_URL
 import com.echoist.linkedout.PRIVATE_POPUP_URL
@@ -162,7 +163,7 @@ fun ModifyOption(
                 .padding(end = 23.dp),
             contentAlignment = Alignment.TopEnd
         ) {
-            Surface(modifier = Modifier.size(180.dp, 305.dp), shape = RoundedCornerShape(10)) {
+            Surface(modifier = Modifier.size(180.dp, 280.dp), shape = RoundedCornerShape(10)) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -170,6 +171,7 @@ fun ModifyOption(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    Spacer(modifier = Modifier.height(14.dp))
                     Row(
                         modifier = Modifier.background(Color(0xFF0E0E0E)),
                         horizontalArrangement = Arrangement.Center,
@@ -184,7 +186,7 @@ fun ModifyOption(
                                 .clickable { viewModel.textSizeDown() }
                         )
                         Spacer(modifier = Modifier.width(30.dp))
-                        Text(text = "가", fontSize = 24.sp)
+                        Text(text = "가", fontSize = 24.sp, color = Color.White)
                         Spacer(modifier = Modifier.width(30.dp))
                         Icon(
                             painter = painterResource(id = R.drawable.text_plus),
@@ -197,12 +199,12 @@ fun ModifyOption(
 
                     }
                     Spacer(modifier = Modifier.height(12.dp))
-                    HorizontalDivider()
+                    HorizontalDivider(color = Color(0xFF1A1A1A))
                     OptionItem(text = "수정", Color.White, {
                         writingViewModel.title.value =
                             TextFieldValue(viewModel.readDetailEssay().title!!)
                         writingViewModel.content =
-                            TextFieldValue(viewModel.readDetailEssay().content!!)
+                            viewModel.readDetailEssay().content!!
                         writingViewModel.hashTagList =
                             viewModel.readDetailEssay().tags!!.map { it.name }.toMutableStateList()
                         writingViewModel.latitude = viewModel.readDetailEssay().latitude
@@ -215,28 +217,31 @@ fun ModifyOption(
 
                         navController.navigate("WritingPage")
                     }, R.drawable.option_modify)
-                    HorizontalDivider()
+                    HorizontalDivider(color = Color(0xFF1A1A1A))
+
                     OptionItem(
                         text = "발행",
                         Color.White,
                         { viewModel.updateEssayToPublished(navController) },
                         R.drawable.option_link
                     )
-                    HorizontalDivider()
+                    HorizontalDivider(color = Color(0xFF1A1A1A))
+
                     OptionItem(
                         text = "Linked-out",
                         Color.White,
                         { viewModel.updateEssayToLinkedOut(navController) },
                         R.drawable.option_linkedout
                     )
-                    HorizontalDivider()
+                    HorizontalDivider(color = Color(0xFF1A1A1A))
                     OptionItem(text = "스토리 선택", Color(0xFF616FED),
                         {
                             isStoryClicked = true
                         }, R.drawable.option_check
                     )
-                    HorizontalDivider()
-                    OptionItem(text = "삭제", Color.Red, {
+                    HorizontalDivider(color = Color(0xFF1A1A1A))
+
+                    OptionItem(text = "삭제", Color(0xFFE43446), {
                         viewModel.deleteEssay(
                             navController = navController,
                             viewModel.readDetailEssay().id ?: 0
@@ -367,8 +372,8 @@ fun DetailEssay(viewModel: MyLogViewModel) {
 
                 Text(text = essay.title!!, fontSize = viewModel.titleTextSize, modifier = Modifier)
                 Spacer(modifier = Modifier.height(40.dp))
-                Text(
-                    text = essay.content!!,
+                MarkdownText(
+                    markdown = essay.content!!,
                     fontSize = viewModel.contentTextSize,
                     modifier = Modifier,
                     color = Color(0xFFB4B4B4)
@@ -662,20 +667,18 @@ fun DetailEssay2(viewModel: MyLogViewModel) {
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            if (essay.thumbnail != null) {
-                Column {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(220.dp), contentAlignment = Alignment.Center
-                    ) {
-                        GlideImage(
-                            model = essay.thumbnail,
-                            contentDescription = "essay Thumbnail",
-                            contentScale = ContentScale.FillHeight
-                        )
+            if (essay.thumbnail != null && essay.thumbnail!!.startsWith("https")) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(220.dp), contentAlignment = Alignment.Center
+                ) {
+                    GlideImage(
+                        model = essay.thumbnail,
+                        contentDescription = "essay Thumbnail",
+                        contentScale = ContentScale.FillHeight
+                    )
 
-                    }
                 }
             }
             Column(
@@ -831,7 +834,7 @@ fun WriteCompleteBox(type: String) {
                             Text(text = "완료", fontSize = 24.sp, color = Color.White)
                         }
                         Spacer(modifier = Modifier.height(18.dp))
-                        Text(text = text, textAlign = TextAlign.Center, color = Color.White)
+                        Text(text = text, textAlign = TextAlign.Center, color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
 
                     }
                 }
@@ -847,7 +850,7 @@ fun WriteCompleteBox(type: String) {
                         shape = RoundedCornerShape(20),
                         colors = ButtonDefaults.buttonColors(containerColor = LinkedInColor)
                     ) {
-                        Text(text = "닫기")
+                        Text(text = "닫기", fontSize = 14.sp, color = Color.Black)
                     }
                 }
             }
@@ -857,9 +860,3 @@ fun WriteCompleteBox(type: String) {
     }
 
 }
-
-
-
-
-
-

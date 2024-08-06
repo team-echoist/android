@@ -75,10 +75,12 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -109,6 +111,10 @@ import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
 import com.echoist.linkedout.viewModels.SettingsViewModel
+import com.mohamedrejeb.richeditor.annotation.ExperimentalRichTextApi
+import com.mohamedrejeb.richeditor.model.rememberRichTextState
+import com.mohamedrejeb.richeditor.ui.material3.RichText
+import com.mohamedrejeb.richeditor.ui.material3.RichTextEditor
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -382,6 +388,7 @@ fun SettingBar(text: String, onClick: () -> Unit) {
         }
     }
 }
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun MembershipSettingBar(text: String, onClick: () -> Unit){
 
@@ -399,10 +406,13 @@ fun MembershipSettingBar(text: String, onClick: () -> Unit){
             )
         }
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
-            Box(modifier = Modifier
-                .size(60.dp, 24.dp)
-                .background(Color(0xFF191919), shape = RoundedCornerShape(40)), contentAlignment = Alignment.Center){
-                Text(text = "  준비중  ", fontWeight = FontWeight.SemiBold, color = LinkedInColor, fontSize = 12.sp )
+            Box(
+                modifier = Modifier
+                    .size(60.dp, 24.dp)
+                    .background(Color(0xFF191919), shape = RoundedCornerShape(40)),
+                contentAlignment = Alignment.Center
+            ){
+                GlideImage(model = R.drawable.icon_comingsoon, contentDescription = "comingsoon")
 
             }
 
@@ -415,7 +425,7 @@ fun RecentEssayItem(item: EssayApi.EssayItem,viewModel : CommunityViewModel = hi
     Box(modifier = Modifier
         .size(150.dp, 120.dp)
         .clickable { /* 에세이로 이동 */
-            viewModel.readDetailRecentEssay(item.id!!, navController,TYPE_COMMUNITY)
+            viewModel.readDetailRecentEssay(item.id!!, navController, TYPE_COMMUNITY)
         }) {
         Column {
             Text(text = item.title!!)
@@ -877,6 +887,7 @@ val context = LocalContext.current
         }
     }
 }
+
 
 
 

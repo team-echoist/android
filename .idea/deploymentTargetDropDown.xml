@@ -2,10 +2,10 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="GeulRoquis">
+      <entry key="DropdownMenu">
         <State />
       </entry>
-      <entry key="OutBox2">
+      <entry key="TextAlignBar">
         <State>
           <runningDeviceTargetSelectedWithDropDown>
             <Target>
@@ -18,17 +18,8 @@
               </deviceKey>
             </Target>
           </runningDeviceTargetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-07-28T09:49:25.535225Z" />
+          <timeTargetWasSelectedWithDropDown value="2024-08-06T15:42:49.468945Z" />
         </State>
-      </entry>
-      <entry key="PrevSignUpPage">
-        <State />
-      </entry>
-      <entry key="WebViewExa2mple">
-        <State />
-      </entry>
-      <entry key="WebViewExample">
-        <State />
       </entry>
       <entry key="app">
         <State>
@@ -43,7 +34,29 @@
               </deviceKey>
             </Target>
           </runningDeviceTargetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-08-04T17:38:01.669433Z" />
+          <timeTargetWasSelectedWithDropDown value="2024-08-06T17:00:59.492944Z" />
+        </State>
+      </entry>
+      <entry key="prev2">
+        <State />
+      </entry>
+      <entry key="t">
+        <State />
+      </entry>
+      <entry key="t (1)">
+        <State>
+          <targetSelectedWithDropDown>
+            <Target>
+              <type value="QUICK_BOOT_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="VIRTUAL_DEVICE_PATH" />
+                  <value value="$USER_HOME$/.android/avd/Client_Test.avd" />
+                </Key>
+              </deviceKey>
+            </Target>
+          </targetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2024-08-05T13:08:11.851406Z" />
         </State>
       </entry>
     </value>

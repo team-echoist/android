@@ -72,6 +72,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -89,6 +90,8 @@ import com.echoist.linkedout.page.myLog.OptionItem
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
+import com.mohamedrejeb.richeditor.model.rememberRichTextState
+import com.mohamedrejeb.richeditor.ui.material3.RichText
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -361,7 +364,7 @@ fun ReportOption( onClickReport: () -> Unit,viewModel: CommunityViewModel) {
 
                 )
             }
-            HorizontalDivider()
+            HorizontalDivider(color = Color(0xFF1A1A1A))
             OptionItem(text = "신고하기", Color(0xFFE43446), onClick =  {onClickReport()}, R.drawable.option_report)
 
         }
@@ -425,13 +428,18 @@ fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navContro
                     }
                 }
                 Spacer(modifier = Modifier.height(40.dp))
-                Text(
-                    text = item.content!!,
+//                Text(
+//                    text = item.content!!,
+//                    fontSize = viewModel.contentTextSize,
+//                    lineHeight = 27.2.sp,
+//                    modifier = Modifier.padding(horizontal = 20.dp),
+//                    color = Color(0xFFB4B4B4)
+//                )
+                RichText(state = rememberRichTextState().setHtml(item.content!!),
                     fontSize = viewModel.contentTextSize,
                     lineHeight = 27.2.sp,
                     modifier = Modifier.padding(horizontal = 20.dp),
-                    color = Color(0xFFB4B4B4)
-                )
+                    color = Color(0xFFB4B4B4))
 
                 Spacer(modifier = Modifier.height(46.dp))
                 Box(modifier = Modifier

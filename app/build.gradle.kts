@@ -120,6 +120,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+
     implementation("androidx.compose.material:material-icons-extended:1.6.7")
     implementation ("com.squareup.retrofit2:retrofit:2.11.0")
     implementation ("com.squareup.retrofit2:converter-moshi:2.11.0")
@@ -206,6 +207,12 @@ dependencies {
 
     //splashscreen api
     implementation ("androidx.core:core-splashscreen:1.0.0-rc01")
+
+    //리치텍스트 compose용 라이브러리 에디터
+    implementation("com.mohamedrejeb.richeditor:richeditor-compose:1.0.0-rc04")
+
+
+
 
 
 }

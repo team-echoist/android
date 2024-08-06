@@ -133,13 +133,10 @@ fun OnBoardingPage(navController: NavController) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize() /* 부모 만큼 */
-                        .padding(bottom = 20.dp), contentAlignment = Alignment.BottomCenter
+                        .navigationBarsPadding().padding(bottom = 20.dp), contentAlignment = Alignment.BottomCenter
                 ) {
 
                     Row(
-                        Modifier
-                            .height(100.dp)
-                            .padding(bottom = 30.dp), //box 안에 있어야하는거같기도?
                         horizontalArrangement = Arrangement.Center
                     )
                     {
@@ -148,32 +145,34 @@ fun OnBoardingPage(navController: NavController) {
                                 if (pagerstate.currentPage == iteration) Color(0xFF616FED) else Color.White.copy(
                                     alpha = 0.5f
                                 )
-                            if (pagerstate.currentPage == iteration) {
-                                Box(
-                                    modifier = Modifier
-                                        .padding(4.dp)
-                                        .clip(CircleShape)
-                                        .background(color)
-                                        .size(20.dp, 10.dp)
+                            if (pagerstate.currentPage != 3){
+                                if (pagerstate.currentPage == iteration) {
+                                    Box(
+                                        modifier = Modifier
+                                            .padding(4.dp)
+                                            .clip(CircleShape)
+                                            .background(color)
+                                            .size(20.dp, 10.dp)
 
-                                )
+                                    )
 
-                            } else {
-                                Box(
-                                    modifier = Modifier
-                                        .padding(4.dp)
-                                        .clip(CircleShape)
-                                        .background(color)
-                                        .size(10.dp, 10.dp)
+                                } else {
+                                    Box(
+                                        modifier = Modifier
+                                            .padding(4.dp)
+                                            .clip(CircleShape)
+                                            .background(color)
+                                            .size(10.dp, 10.dp)
 
-                                )
+                                    )
+                                }
                             }
+
 
                         }
                     }
                     if (pagerstate.currentPage == 3) {
                         Button(modifier = Modifier
-                            .padding(top = 13.dp, bottom = 10.dp)
                             .navigationBarsPadding()
                             .size(
                                 200.dp,
@@ -223,7 +222,7 @@ fun OnBoardingPager(
 
                 Text(text = mainText, color = Color.White, textAlign = TextAlign.Center, fontSize = 20.sp)
                 Spacer(modifier = Modifier.height(16.dp))
-                Text(text = subText, color = Color(0xFF686868), textAlign = TextAlign.Center)
+                Text(text = subText, color = Color(0xFF686868), textAlign = TextAlign.Center, fontSize = 16.sp)
             }
         }
     }

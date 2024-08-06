@@ -58,7 +58,7 @@ class WritingViewModel @Inject constructor(
 
     //ftb 를 통해 들어가면 storedDetailEssay를 null값으로 만들면됨
     var title = mutableStateOf(TextFieldValue(""))
-    var content by mutableStateOf(TextFieldValue(""))
+    var content by mutableStateOf((""))
     var hint by mutableStateOf("10자 이상의 내용을 입력해 주세요")
     var ringTouchedTime by mutableIntStateOf(5)
     var essayPrimaryId : Int? by mutableStateOf(null)
@@ -107,7 +107,7 @@ class WritingViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             storedDetailEssay = essayStoreDao.getEssayById(id)!!
             title.value = TextFieldValue(storedDetailEssay.title.toString())
-            content = TextFieldValue(storedDetailEssay.content.toString())
+            content = storedDetailEssay.content.toString()
             longitude = storedDetailEssay.longitude
             latitude = storedDetailEssay.latitude
             essayPrimaryId = storedDetailEssay.essayPrimaryId
@@ -158,7 +158,7 @@ class WritingViewModel @Inject constructor(
         titleFocusState.value = false
         focusState.value = false
         title.value = TextFieldValue("")
-        content = TextFieldValue("")
+        content = ""
         date.value = ""
         ringTouchedTime = 5
         isCanCelClicked.value = false
@@ -190,7 +190,7 @@ class WritingViewModel @Inject constructor(
 
                 val essayData = EssayApi.WritingEssayItem(
                     title.value.text,
-                    content.text,
+                    content,
                     linkedOutGauge = ringTouchedTime,
                     //categoryId = 0, 이값도 넣어야할것
                     thumbnail = imageUrl,
@@ -254,7 +254,7 @@ class WritingViewModel @Inject constructor(
             try {
                 val essayData = EssayApi.WritingEssayItem(
                     title.value.text,
-                    content.text,
+                    content,
                     linkedOutGauge = ringTouchedTime,
                     thumbnail = imageUrl,
                     status = status,

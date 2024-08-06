@@ -65,6 +65,8 @@ import com.echoist.linkedout.page.myLog.OptionItem
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.MyLogViewModel
 import com.echoist.linkedout.viewModels.WritingViewModel
+import com.mohamedrejeb.richeditor.model.rememberRichTextState
+import com.mohamedrejeb.richeditor.ui.material3.RichText
 import kotlinx.coroutines.launch
 
 
@@ -107,7 +109,7 @@ fun EssayChips(pagerState: PagerState,viewModel: MyLogViewModel){
     LinkedOutTheme {
         Box(modifier = Modifier
             .fillMaxWidth()
-            .height(26.dp)){
+            .height(30.dp)){
             Row(modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 17.dp)) {
@@ -173,7 +175,7 @@ fun Essaychip(
                 modifier = Modifier.clickable { clickable() } // Modifier.clickable을 마지막에 적용합니다
             )
 
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(4.dp))
             HorizontalDivider(modifier = Modifier
                 .width(dividerWidth),
                 color = color,
@@ -236,6 +238,7 @@ fun EssayListItem(
                         fontSize = 20.sp,
 
                         )
+
                     if (pagerState.currentPage == 1){
                         Spacer(modifier = Modifier.width(8.dp))
 
@@ -254,13 +257,26 @@ fun EssayListItem(
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))
-                Text(
-                    text = item.content!!,
+
+                RichText(state = rememberRichTextState().setHtml(item.content!!),
+                    color = color,
+                    fontSize = 20.sp,
                     lineHeight = 27.2.sp,
                     maxLines = 3,
-                    color = color,
-                    overflow = TextOverflow.Ellipsis
-                )
+                    overflow = TextOverflow.Ellipsis)
+//                MarkdownText(
+//                    markdown = item.content!!,
+//                    color = color,
+//                    fontSize = 20.sp,
+//                    maxLines = 3,
+//                )
+//                Text(
+//                    text = item.content!!,
+//                    lineHeight = 27.2.sp,
+//                    maxLines = 3,
+//                    color = color,
+//                    overflow = TextOverflow.Ellipsis
+//                )
 
             }
             Box(contentAlignment = Alignment.TopEnd, modifier = Modifier
@@ -531,7 +547,7 @@ fun ModifyOrDeleteBox(
                     Spacer(modifier = Modifier.height(10.dp))
                     OptionItem(text = "수정", Color.White,{
                         writingViewModel.title.value = TextFieldValue(essayItem.title!!)
-                        writingViewModel.content = TextFieldValue(essayItem.content!!)
+                        writingViewModel.content = essayItem.content!!
                         writingViewModel.imageUrl = essayItem.thumbnail
                         writingViewModel.isModifyClicked = true
                         writingViewModel.modifyEssayid = essayItem.id!!
@@ -539,8 +555,8 @@ fun ModifyOrDeleteBox(
                         navController.navigate("WritingPage")
 
                     },R.drawable.option_modify)
-                    HorizontalDivider()
-                    OptionItem(text = "삭제", Color.Red,{
+                    HorizontalDivider(color = Color(0xFF1A1A1A))
+                    OptionItem(text = "삭제", Color(0xFFE43446),{
                         viewModel.deleteEssay(navController = navController,essayItem.id!!)
                         Log.d(TAG, "ModifyOption: dd")
                     },R.drawable.option_trash)

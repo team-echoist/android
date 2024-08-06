@@ -102,7 +102,7 @@ fun prevItem(){
 }
 @Composable
 fun FuncItem(text : String, icon: Int, clickable: () -> Unit){
-    val color = Color.White
+    val color = Color.Unspecified
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -120,7 +120,7 @@ fun FuncItem(text : String, icon: Int, clickable: () -> Unit){
             color
         )
         Spacer(modifier = Modifier.height(23.dp))
-        Text(text = text, color = color,
+        Text(text = text, color = Color.White,
             fontSize = 12.sp,
             textAlign = TextAlign.Center)
 
@@ -136,8 +136,8 @@ fun TextItem(icon : Int, color: Color, clickable : () -> Unit){
         contentDescription = "icon",
         tint = color,
         modifier = Modifier
-            .size(40.dp)
             .padding(end = 14.dp)
+            .size(30.dp)
             .clickable { clickable() }
     )
 }

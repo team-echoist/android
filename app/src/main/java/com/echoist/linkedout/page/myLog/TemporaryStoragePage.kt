@@ -298,6 +298,6 @@ fun DeleteBtn(count: Int, onDeleteClicked: () -> Unit, btnColor: Color) {
         shape = RoundedCornerShape(20),
         colors = ButtonDefaults.buttonColors(containerColor = btnColor)
     ) {
-        Text(text = "총 ${count}개 삭제")
+        Text(text = "총 ${count}개 삭제", color = Color.Black)
     }
 }

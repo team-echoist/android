@@ -286,7 +286,7 @@ fun WriteFTB(navController: NavController,viewModel: HomeViewModel,writingViewMo
             writingViewModel.isModifyClicked = false
                   },
         shape = RoundedCornerShape(100.dp),
-        containerColor = if (isSystemInDarkTheme()) Color.White else Color.Gray
+        containerColor = Color.White
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ftb_edit),
@@ -984,6 +984,7 @@ fun GeulRoquis(isHoldClicked : ()-> Unit, isAcceptClicked : () -> Unit, viewMode
             .background(color = Color(0xF2121212), shape = RoundedCornerShape(4))
             .size(281.dp, 411.dp)){
             GlideImage(
+                modifier = Modifier.fillMaxWidth().height(256.dp),
                 model = R.drawable.geulroquis_background,
                 contentDescription = "linkedout logo",
                 contentScale = ContentScale.Crop
@@ -1033,5 +1034,49 @@ fun GeulRoquis(isHoldClicked : ()-> Unit, isAcceptClicked : () -> Unit, viewMode
     }
 
 }
+@OptIn(ExperimentalGlideComposeApi::class)
+@Preview
+@Composable
+fun t(){
+    LinkedOutTheme {
+        Box(modifier = Modifier
+            .background(color = Color(0xF2121212), shape = RoundedCornerShape(4))
+            .size(281.dp, 411.dp)){
+            GlideImage(
+                modifier = Modifier.fillMaxWidth().height(256.dp),
+                model = R.drawable.geulroquis_background,
+                contentDescription = "linkedout logo",
+                contentScale = ContentScale.Crop
+            )
+            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()) {
+                Spacer(modifier = Modifier.height(31.dp))
+                Text(text = "오늘의 글로키가 도착했어요!", color = Color.White, fontSize = 16.sp)
+                Spacer(modifier = Modifier.height(5.dp))
+                Text(text = "2024-07-24 GeulRoquis", color = Color.White, fontSize = 12.sp)
+                Spacer(modifier = Modifier.height(20.dp))
 
+
+                    GlideImage(
+                        model = R.drawable.home_basic,
+                        contentDescription = "",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .height(240.dp)
+                            .fillMaxWidth()
+                    )
+
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "보류", color = Color.White, fontSize = 16.sp, modifier = Modifier
+                        .weight(1f), textAlign = TextAlign.Center)
+                    VerticalDivider(color = Color(0xFF292929))
+                    Text(text = "수락", color = Color.White, fontSize = 16.sp,modifier = Modifier
+                        .weight(1f),textAlign = TextAlign.Center)
+
+                }
+
+            }
+        }
+    }
+}
 
