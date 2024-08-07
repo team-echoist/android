@@ -31,8 +31,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material3.BottomSheetScaffold
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -68,6 +66,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.colintheshots.twain.MarkdownText
 import com.echoist.linkedout.R
+import com.echoist.linkedout.Routes
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.components.HashTagGroup
 import com.echoist.linkedout.components.LocationGroup
@@ -456,55 +455,18 @@ fun WritingCompletePager(essayItem: EssayApi.EssayItem,viewModel: WritingViewMod
                                 modifier = Modifier.padding(bottom = 25.dp),
                                 color = Color.White
                             )
-                            Box{
-                                Button(
-                                    onClick = {
-                                        if (viewModel.isModifyClicked) viewModel.modifyEssay(navController, status = "private")
-                                        else viewModel.writeEssay(navController, status = "private")
-                                    },
-                                    modifier = Modifier
-                                        .padding(bottom = 16.dp, start = 50.dp, end = 50.dp)
-                                        .fillMaxWidth()
-                                        .height(44.dp),
-                                    colors = ButtonDefaults.buttonColors(containerColor = LinkedInColor)
-                                ) {
-                                    Text(text = "저장", color = Color.White)
-                                }
-                            }
 
+                            Writing_Btn("저장",R.drawable.btn_privated){
+                                if (viewModel.isModifyClicked) viewModel.modifyEssay(navController, status = "private")
+                                else viewModel.writeEssay(navController, status = "private")}
 
-                            Button(
-                                onClick = {
+                            Writing_Btn("발행",R.drawable.btn_published){
+                                if (viewModel.isModifyClicked) viewModel.modifyEssay(navController, status = "published")
+                                else viewModel.writeEssay(navController, status = "published")}
 
-                                    if (viewModel.isModifyClicked) viewModel.modifyEssay(navController, status = "published")
-                                    else viewModel.writeEssay(navController, status = "published")
-
-
-                                },
-                                modifier = Modifier
-                                    .padding(bottom = 16.dp, start = 50.dp, end = 50.dp)
-                                    .fillMaxWidth()
-                                    .height(44.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = LinkedInColor)
-
-                            ) {
-                                Text(text = "발행", color = Color.White)
-                            }
-                            Button(
-                                onClick = {
-                                    if (viewModel.isModifyClicked) viewModel.modifyEssay(navController, status = "linkedout")
-                                    else viewModel.writeEssay(navController, status = "linkedout")
-
-                                },
-                                modifier = Modifier
-                                    .padding(bottom = 30.dp, start = 50.dp, end = 50.dp)
-                                    .fillMaxWidth()
-                                    .height(44.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = LinkedInColor)
-
-                            ) {
-                                Text(text = "linked-out", color = Color.White)
-                            }
+                            Writing_Btn("linked-out",R.drawable.btn_linkedout){
+                                if (viewModel.isModifyClicked) viewModel.modifyEssay(navController, status = "linkedout")
+                                else viewModel.writeEssay(navController, status = "linkedout")}
 
                         }
                         Box(
@@ -571,7 +533,7 @@ fun WritingDeleteCard(viewModel: WritingViewModel, navController: NavController)
                                         "OnBoarding",
                                         false
                                     ) //onboarding까지 전부 삭제.
-                                    navController.navigate("HOME")
+                                    navController.navigate("${Routes.Home}/200")
                                     viewModel.initialize()
                                 },
                             fontSize = 16.sp,
@@ -610,5 +572,23 @@ fun WritingDeleteCard(viewModel: WritingViewModel, navController: NavController)
         }
 
     }
+}
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun Writing_Btn(text : String,imageResource : Int, isBtnClicked : ()->Unit){
+    Box(modifier = Modifier
+        .clickable { isBtnClicked() }
+        .fillMaxWidth()
+        .padding(bottom = 16.dp, start = 50.dp, end = 50.dp)
+        .height(44.dp)){
+
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+
+            GlideImage(model = imageResource, contentDescription = "")
+            Text(text = text, color = Color.White, fontSize = 16.sp)
+        }
+    }
+
+
 }
 

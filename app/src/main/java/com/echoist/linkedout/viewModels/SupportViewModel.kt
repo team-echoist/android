@@ -11,6 +11,7 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.echoist.linkedout.Routes
 import com.echoist.linkedout.TYPE_COMMUNITY
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.api.SupportApi
@@ -124,7 +125,7 @@ class SupportViewModel @Inject constructor(
                 if (response.isSuccessful){
                     Token.accessToken = (response.headers()["authorization"].toString())
                     //todo alert 성공!
-                    navController.navigate("HOME")
+                    navController.navigate("${Routes.Home}/200")
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
@@ -122,7 +121,6 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
                             },
                             bottomBar = { MyBottomNavigation(navController) },
                             content = {
-                                Box(modifier = Modifier.padding(it))
                                 val isRefreshing by viewModel.isRefreshing.collectAsState()
 
                                 SwipeRefresh(
@@ -132,8 +130,7 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
                                     if (viewModel.isApifinished) {
                                         Box(
                                             modifier = Modifier
-                                                .padding(top = 60.dp, bottom = 80.dp)
-                                                .systemBarsPadding()
+                                                .padding(it) // topbar 만큼의 패딩을 갖는다  아마 bottombar 만큼의 패딩값도 함께
                                         ) {
                                             CommunityPager(
                                                 viewModel = viewModel,

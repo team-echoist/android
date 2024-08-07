@@ -19,6 +19,7 @@ import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.page.myLog.Token
 import com.echoist.linkedout.room.EssayStoreDao
+import com.mohamedrejeb.richeditor.model.RichTextState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -59,6 +60,7 @@ class WritingViewModel @Inject constructor(
     //ftb 를 통해 들어가면 storedDetailEssay를 null값으로 만들면됨
     var title = mutableStateOf(TextFieldValue(""))
     var content by mutableStateOf((""))
+    var state by mutableStateOf(RichTextState)
     var hint by mutableStateOf("10자 이상의 내용을 입력해 주세요")
     var ringTouchedTime by mutableIntStateOf(5)
     var essayPrimaryId : Int? by mutableStateOf(null)

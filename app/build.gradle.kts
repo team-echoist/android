@@ -211,7 +211,8 @@ dependencies {
     //리치텍스트 compose용 라이브러리 에디터
     implementation("com.mohamedrejeb.richeditor:richeditor-compose:1.0.0-rc04")
 
-
+    //브라우저 헬퍼
+    implementation ("com.google.androidbrowserhelper:androidbrowserhelper:2.2.0")
 
 
 

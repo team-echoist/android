@@ -2,14 +2,8 @@ package com.echoist.linkedout.components
 
 import android.content.ContentValues.TAG
 import android.util.Log
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.Crossfade
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -873,83 +867,6 @@ fun ChoiceBox(viewModel: CommunityViewModel) {
         }
     }
 }
-@OptIn(ExperimentalAnimationApi::class)
-@Composable
-fun SentenceChoice(viewModel: CommunityViewModel) {
-    val color = Color.Black
-
-    Box(
-        modifier = Modifier
-            .padding(start = 20.dp, end = 20.dp, top = 10.dp)
-            .fillMaxWidth()
-            .height(82.dp),
-        contentAlignment = Alignment.Center
-    ) {
-
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart) {
-            Column {
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Text(text = "한 문장을 모아", fontWeight = FontWeight.SemiBold, color = color)
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(text = "글의 시작을 알리는 문장들을 만나보세요.", color = Color(0xFF696969), fontSize = 12.sp)
-                Spacer(modifier = Modifier.height(15.dp))
-            }
-        }
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.CenterEnd
-        ) {
-            Row(
-                modifier = Modifier
-                    .background(
-                        color = Color(0xFFCFCFCF), // 배경색 설정
-                        shape = RoundedCornerShape(10.dp) // 원하는 radius 값 설정
-                    )
-                    .clickable {
-                        viewModel.isClicked = !viewModel.isClicked
-                    }
-                    .padding(start = 10.dp, end = 10.dp, top = 5.dp, bottom = 5.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                val arrow = if (viewModel.isClicked) R.drawable.arrowup else R.drawable.arrowdown
-
-
-                AnimatedContent(
-                    targetState = viewModel.sentenceInfo,
-                    transitionSpec = {
-                        fadeIn(animationSpec = tween(300)) togetherWith fadeOut(animationSpec = tween(300))
-                    }, label = ""
-                ) { targetState ->
-                    Text(
-                        fontSize = 12.sp,
-                        text = if (targetState == SentenceInfo.First) "첫 문장" else "마지막 문장",
-                        color = Color.Black
-                    )
-                }
-                Spacer(modifier = Modifier.width(23.dp))
-
-
-                Crossfade(
-                    targetState = arrow,
-                    animationSpec = tween(durationMillis = 200), label = ""
-                ) { currentArrow ->
-                    Icon(
-                        painter = painterResource(id = currentArrow),
-                        contentDescription = "",
-                        modifier = Modifier
-                            .size(20.dp),
-                        tint = Color.Black
-                    )
-                }
-
-            }
-
-        }
-
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -1234,28 +1151,48 @@ fun RandomCommunityPage(viewModel: CommunityViewModel, navController: NavControl
             }
     }
 
-    LazyColumn(
-        state = listState,
-        modifier = Modifier
-            .background(Color(0xFFD9D9D9))
-            .padding(top = 20.dp)
-    ) {
-        item {
-            Column {
-                SentenceChoice(viewModel)
-                RandomSentences(viewModel,navController)
-                Spacer(modifier = Modifier.height(40.dp))
 
-                TodaysLogTitle()
+    Box{
+        LazyColumn(
+            state = listState,
+            modifier = Modifier
+                .background(Color(0xFFD9D9D9))
+        ) {
+            item {
+                Column {
+                    Row {
+                        Column(modifier = Modifier.padding(horizontal = 20.dp))
+                        {
+                            Spacer(modifier = Modifier.height(30.dp))
+                            Text(text = "한 문장을 모아", fontWeight = FontWeight.SemiBold, color = Color.Black, fontSize = 18.sp)
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(text = "글의 시작을 알리는 문장들을 만나보세요.", color = Color(0xFF696969), fontSize = 12.sp)
+                            Spacer(modifier = Modifier.height(23.dp))
+                        }
+                        Box(modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = 20.dp), contentAlignment = Alignment.TopEnd){
+                            SentenceChoiceBox(viewModel)
+                        }
+
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
+                    RandomSentences(viewModel,navController)
+                    Spacer(modifier = Modifier.height(40.dp))
+
+                    TodaysLogTitle()
+
+                }
 
             }
-        }
-        items(viewModel.randomEssayList) { it ->
-            EssayListItem(item = it, viewModel = viewModel, navController = navController)
+            items(viewModel.randomEssayList) { it ->
+                EssayListItem(item = it, viewModel = viewModel, navController = navController)
+            }
         }
 
 
     }
+
 
 }
 
@@ -1411,43 +1348,45 @@ fun CommunityPager(
     }
 }
 
-
-
-@Preview
 @Composable
-fun prev2() {
-    val color = Color.Black
-    var isClicked by remember { mutableStateOf(false) }
-    var text by remember {
-        mutableStateOf("첫 문장       ")
-    }
-    val arrow = if (isClicked) R.drawable.arrowup else R.drawable.arrowdown
-    val height = if (isClicked) 80.dp else 40.dp
-    Card(
-        shape = RoundedCornerShape(10),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFCFCFCF)),
-        modifier = Modifier.size(120.dp,height)
+fun SentenceChoiceBox(viewModel: CommunityViewModel) {
 
-    ) {
+    val first = "첫 문장"
+    val last = "마지막 문장"
+    var isClicked by remember { mutableStateOf(false) }
+    var text by remember { mutableStateOf("첫 문장") }
+
+    val arrow = if (isClicked) R.drawable.arrowup else R.drawable.arrowdown
+    val animatedHeight by animateDpAsState(targetValue = if (isClicked) 80.dp else 40.dp, label = "")
+
         Column(
             modifier = Modifier
-                .height(height)
-                .padding(horizontal = 10.dp),
+                .padding(horizontal = 10.dp)
+                .size(120.dp, animatedHeight)
+                .background(Color(0xFFCFCFCF), shape = RoundedCornerShape(10))
+                ,
             verticalArrangement = Arrangement.Center
         ) {
             Row (verticalAlignment = Alignment.CenterVertically){
                 Text(
                     text = text,
                     modifier = Modifier
+                        .weight(4f)
                         .padding(start = 10.dp)
                         .clickable {
+                            if (isClicked) isClicked = false
                         },
                     fontSize = 12.sp,
-                    color = color
+                    color = Color.Black
                 )
+                Spacer(modifier = Modifier.width(10.dp))
                 Icon(
                     painter = painterResource(arrow),
-                    modifier = Modifier.size(24.dp).clickable { isClicked = !isClicked },
+                    tint = Color.Black,
+                    modifier = Modifier
+                        .padding(end = 10.dp)
+                        .size(24.dp)
+                        .clickable { isClicked = !isClicked },
                     contentDescription = ""
                 )
 
@@ -1459,22 +1398,27 @@ fun prev2() {
                 Spacer(modifier = Modifier.height(6.dp))
 
                 Text(
-                    text = "마지막 문장",
+                    text = if (text == first) last else first,
                     modifier = Modifier
                         .padding(start = 10.dp)
                         .clickable {
-                            text = "마지막 문장    "
+                            if (text == last) {
+                                text = first
+                                viewModel.sentenceInfo = SentenceInfo.First
+                            } else {
+                                text = last
+                                viewModel.sentenceInfo = SentenceInfo.Last
+                            }
                             isClicked = false
+
                         },
                     fontSize = 12.sp,
-                    color = color
+                    color = Color.Black
                 )
             }
-
-
         }
     }
-}
+
 
 
 

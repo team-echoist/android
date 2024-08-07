@@ -3,7 +3,6 @@ package com.echoist.linkedout.api
 import com.echoist.linkedout.data.BadgeDetailResponse
 import com.echoist.linkedout.data.BadgeSimpleResponse
 import com.echoist.linkedout.data.BasicResponse
-import com.echoist.linkedout.data.IsFirstCheckResponse
 import com.echoist.linkedout.data.UserEssayStatsResponse
 import com.echoist.linkedout.data.UserGraphSummaryResponse
 import com.echoist.linkedout.data.UserInfo
@@ -11,6 +10,7 @@ import com.echoist.linkedout.data.UserResponse
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Multipart
@@ -42,11 +42,6 @@ interface UserApi {
     ): Response<BasicResponse>
 
     @PUT("api/users")
-    suspend fun readMyInfo(
-        @Header("Authorization") accessToken: String
-    ): UserResponse
-
-    @PUT("api/users")
     suspend fun userUpdate(
         @Header("Authorization") accessToken: String,
         @Body userInfo: UserInfo
@@ -72,7 +67,7 @@ interface UserApi {
         )
 
 
-    @POST("api/users/deactivate")
+    @POST("api/users/deactivate") //회원 탈퇴 요청 유예 기간 부여
     suspend fun requestDeactivate(
         @Header("Authorization") accessToken: String,
         @Body deactivate: RequestDeactivate,
@@ -80,12 +75,17 @@ interface UserApi {
 
     data class RequestDeactivate(val reasons : List<String>)
 
+    @POST("api/users/reactivate") //회원 탈퇴 요청 취소
+    suspend fun requestReactivate(
+        @Header("Authorization") accessToken: String
+    ): Response<Unit>
 
-    //유저 첫 회원가입인지 판별
-    @GET("api/users/check-first")
-    suspend fun requestUserFirstCheck(
-        @Header("Authorization") accessToken: String,
-    ): Response<IsFirstCheckResponse>
+    @DELETE("api/users") //회원 탈퇴 바로 진행
+    suspend fun requestDeleteUser(
+        @Header("Authorization") accessToken: String
+    ): Response<Unit>
+
+
 
     //유저 주간 링크드아웃 지수 통계 (그래프용)
     @GET("api/users/summary")

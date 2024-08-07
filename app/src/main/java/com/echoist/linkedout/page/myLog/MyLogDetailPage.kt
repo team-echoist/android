@@ -74,6 +74,8 @@ import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.MyLogViewModel
 import com.echoist.linkedout.viewModels.WritingViewModel
+import com.mohamedrejeb.richeditor.model.rememberRichTextState
+import com.mohamedrejeb.richeditor.ui.material3.RichText
 import kotlinx.coroutines.delay
 
 
@@ -312,6 +314,7 @@ fun DetailTopAppBar(navController: NavController, viewModel: MyLogViewModel) {
                 tint = Color(0xFF727070),
                 modifier = Modifier
                     .padding(start = 10.dp)
+                    .size(30.dp)
                     .size(30.dp)
 
                     .clickable {
@@ -690,12 +693,12 @@ fun DetailEssay2(viewModel: MyLogViewModel) {
 
                 Text(text = essay.title!!, fontSize = viewModel.titleTextSize, modifier = Modifier)
                 Spacer(modifier = Modifier.height(40.dp))
-                Text(
-                    text = essay.content!!,
+
+                RichText(state = rememberRichTextState().setHtml(essay.content!!),
                     fontSize = viewModel.contentTextSize,
                     modifier = Modifier,
-                    color = Color(0xFFB4B4B4)
-                )
+                    color = Color(0xFFB4B4B4))
+
                 Spacer(modifier = Modifier.height(46.dp))
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
                     Column {

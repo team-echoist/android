@@ -2,7 +2,10 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="DropdownMenu">
+      <entry key="Btn_writing">
+        <State />
+      </entry>
+      <entry key="ReactivateOrDeleteBox">
         <State />
       </entry>
       <entry key="TextAlignBar">
@@ -23,28 +26,6 @@
       </entry>
       <entry key="app">
         <State>
-          <runningDeviceTargetSelectedWithDropDown>
-            <Target>
-              <type value="RUNNING_DEVICE_TARGET" />
-              <deviceKey>
-                <Key>
-                  <type value="SERIAL_NUMBER" />
-                  <value value="R39M30CVAGA" />
-                </Key>
-              </deviceKey>
-            </Target>
-          </runningDeviceTargetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-08-06T17:00:59.492944Z" />
-        </State>
-      </entry>
-      <entry key="prev2">
-        <State />
-      </entry>
-      <entry key="t">
-        <State />
-      </entry>
-      <entry key="t (1)">
-        <State>
           <targetSelectedWithDropDown>
             <Target>
               <type value="QUICK_BOOT_TARGET" />
@@ -56,8 +37,14 @@
               </deviceKey>
             </Target>
           </targetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-08-05T13:08:11.851406Z" />
+          <timeTargetWasSelectedWithDropDown value="2024-08-07T14:23:29.907729Z" />
         </State>
+      </entry>
+      <entry key="prev2">
+        <State />
+      </entry>
+      <entry key="t">
+        <State />
       </entry>
     </value>
   </component>

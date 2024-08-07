@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,6 +31,7 @@ import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
+import com.echoist.linkedout.Routes
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.HomeViewModel
@@ -38,11 +40,14 @@ import kotlinx.coroutines.delay
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun SignUpCompletePage(homeViewModel: HomeViewModel,navController: NavController) {
+    var isLoading by remember { androidx.compose.runtime.mutableStateOf(true) }
 
     LaunchedEffect(key1 = Unit) {
         homeViewModel.requestMyInfo()
+        isLoading = true
         delay(3000)
-        navController.navigate("HOME")
+        isLoading = false
+        navController.navigate("${Routes.Home}/200")
     }
 
     LinkedOutTheme {
@@ -68,6 +73,11 @@ fun SignUpCompletePage(homeViewModel: HomeViewModel,navController: NavController
                             .padding(bottom = 80.dp)
                             .size(240.dp, 90.dp)
                     )
+                }
+            }
+            if (isLoading){
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                    CircularProgressIndicator(color = LinkedInColor)
                 }
             }
         }

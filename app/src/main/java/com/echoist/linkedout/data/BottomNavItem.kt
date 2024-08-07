@@ -1,6 +1,7 @@
 package com.echoist.linkedout.data
 
 import com.echoist.linkedout.R
+import com.echoist.linkedout.Routes
 
 sealed class BottomNavItem(
     val title: String,
@@ -9,29 +10,29 @@ sealed class BottomNavItem(
 ) {
     data object Home :
         BottomNavItem(
-            "HOME",
+            Routes.Home,
             R.drawable.bottom_nav_1,
-            "HOME" //
+            "${Routes.Home}/200" //
         )
 
     data object MyLog :
         BottomNavItem(
-            "MYLOG",
+            Routes.MyLog,
             R.drawable.bottom_nav_2,
-            "MYLOG"
+            Routes.MyLog
         )
 
     data object Community :
         BottomNavItem(
-            "COMMUNITY",
+            Routes.Community,
             R.drawable.bottom_nav_3,
-            "COMMUNITY"
+            Routes.Community
         )
 
     data object Settings :
         BottomNavItem(
-            "SETTINGS",
+            Routes.Settings,
             R.drawable.bottom_nav_4,
-            "SETTINGS"
+            Routes.Settings
         )
 }

@@ -18,6 +18,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.echoist.linkedout.AlarmReceiver
 import com.echoist.linkedout.DeviceId
+import com.echoist.linkedout.Routes
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.api.SignUpApiImpl
 import com.echoist.linkedout.api.SupportApi
@@ -193,7 +194,7 @@ class HomeViewModel @Inject constructor(
 
 
 
-                navController.navigate("HOME")
+                navController.navigate("${Routes.Home}/200")
             } catch (e: Exception) {
                 e.printStackTrace()
                 Log.d(TAG, "noti update failed: ${e.message}")
@@ -362,7 +363,6 @@ class HomeViewModel @Inject constructor(
         }
     }
     var geulRoquisUrl by mutableStateOf("")
-    var isApiFinished by mutableStateOf(false)
     fun requestGuleRoquis(){
         viewModelScope.launch {
             try {
@@ -379,6 +379,45 @@ class HomeViewModel @Inject constructor(
             }
             finally {
                 isApifinished = true
+            }
+        }
+    }
+
+    fun requestUserReActivate(){
+        viewModelScope.launch {
+            try {
+                val response = userApi.requestReactivate(Token.accessToken)
+                if (response.isSuccessful){
+                    Log.d("유저 탈퇴 취소", "성공: ${response.body()}")
+                }
+                else{
+                    Log.e("유저 탈퇴 취소", "실패: ${response.code()}", )
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.e("유저 탈퇴 취소", "실패: ${e.message}", )
+            }
+        }
+    }
+
+    fun requestUserDelete(navController: NavController){
+        viewModelScope.launch {
+            try {
+                val response = userApi.requestDeleteUser(Token.accessToken)
+                if (response.isSuccessful){
+                    Log.d("유저 즉시 탈퇴", "성공: ${response.body()}")
+                    navController.navigate(Routes.LoginPage) {
+                        popUpTo(Routes.LoginPage) {
+                            inclusive = true
+                        }
+                    }
+                }
+                else{
+                    Log.e("유저 즉시 탈퇴", "실패: ${response.code()}", )
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.e("유저 즉시 탈퇴", "실패: ${e.message}", )
             }
         }
     }

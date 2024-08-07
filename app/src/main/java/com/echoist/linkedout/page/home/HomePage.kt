@@ -89,6 +89,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
 import com.echoist.linkedout.TUTORIAL_BULB
+import com.echoist.linkedout.UserStatus
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.BottomNavItem
 import com.echoist.linkedout.data.UserInfo
@@ -111,7 +112,16 @@ import java.util.Locale
 
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewModel : WritingViewModel) {
+fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewModel : WritingViewModel, statusCode : Int) {
+
+    Log.d("유저의 상태코드", statusCode.toString())
+    var userStatus by remember { mutableStateOf(UserStatus.Activated) }
+
+    userStatus = when(statusCode){
+        202 -> UserStatus.DeActivated
+        403 -> UserStatus.Banned
+        else -> UserStatus.Activated //todo 현재 202만 탈퇴유저 밴, 관찰유저, 등등 추가예정
+    }
 
     LaunchedEffect(key1 = Unit) {
         viewModel.requestMyInfo()
@@ -146,7 +156,11 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewMo
                                 if (isClosed) open() else close()
                             }
                         }
-                    },{navController.navigate("NotificationPage")},viewModel.isExistUnreadAlerts)
+                    },{navController.navigate("NotificationPage")},
+                        viewModel.isExistUnreadAlerts)
+                    {
+                        viewModel.isFirstUser = true //튜토리얼 화면띄우기위함
+                    }
                 },
                 bottomBar = { MyBottomNavigation(navController) },
                 floatingActionButton = { WriteFTB(navController,viewModel,writingViewModel) },
@@ -202,10 +216,8 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewMo
                     },viewModel)
             }
         }
-
-
-
-        if (viewModel.isFirstUser){ // todo 첫 회원이라면
+        
+        if (viewModel.isFirstUser){ // 첫 회원이라면
             Box(modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Black.copy(0.7f)))
@@ -218,6 +230,21 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewMo
                     viewModel.isFirstUser = false
                 viewModel.setFirstUserToExistUser()
                 })
+        }
+        if (userStatus == UserStatus.DeActivated){
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center)
+            {
+                ReactivateOrDeleteBox(
+                    isClickedReActivate = {
+                        viewModel.requestUserReActivate()
+                        userStatus = UserStatus.Activated
+                    })
+                {
+                    viewModel.requestUserDelete(navController)
+                }
+            }
         }
     }
 }
@@ -299,7 +326,7 @@ fun WriteFTB(navController: NavController,viewModel: HomeViewModel,writingViewMo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CustomTopAppBar(onClick: () -> Unit,onClickNotification : ()->Unit,isExistUnreadAlerts : Boolean) {
+fun CustomTopAppBar(onClick: () -> Unit,onClickNotification : ()->Unit,isExistUnreadAlerts : Boolean,isClickedTutorial : ()-> Unit) {
     val img = if (isExistUnreadAlerts) R.drawable.icon_noti_on else R.drawable.icon_noti_off
     TopAppBar(
         title = { }, colors = TopAppBarDefaults.topAppBarColors(Color.Transparent),
@@ -315,6 +342,15 @@ fun CustomTopAppBar(onClick: () -> Unit,onClickNotification : ()->Unit,isExistUn
             )
         },
         actions = {
+            Icon(
+                painter = painterResource(id = R.drawable.icon_information),
+                contentDescription = "Notifications",
+                tint = Color.White,
+                modifier = Modifier
+                    .clickable { isClickedTutorial() }
+                    .padding(end = 10.dp)
+                    .size(30.dp)
+            )
             Icon(
                 painter = painterResource(id = img),
                 contentDescription = "Notifications",
@@ -984,7 +1020,9 @@ fun GeulRoquis(isHoldClicked : ()-> Unit, isAcceptClicked : () -> Unit, viewMode
             .background(color = Color(0xF2121212), shape = RoundedCornerShape(4))
             .size(281.dp, 411.dp)){
             GlideImage(
-                modifier = Modifier.fillMaxWidth().height(256.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(256.dp),
                 model = R.drawable.geulroquis_background,
                 contentDescription = "linkedout logo",
                 contentScale = ContentScale.Crop
@@ -1043,7 +1081,9 @@ fun t(){
             .background(color = Color(0xF2121212), shape = RoundedCornerShape(4))
             .size(281.dp, 411.dp)){
             GlideImage(
-                modifier = Modifier.fillMaxWidth().height(256.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(256.dp),
                 model = R.drawable.geulroquis_background,
                 contentDescription = "linkedout logo",
                 contentScale = ContentScale.Crop
@@ -1078,5 +1118,66 @@ fun t(){
             }
         }
     }
+}
+
+//탈퇴유저에게 보여줄 카드.
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun ReactivateOrDeleteBox(isClickedReActivate: () -> Unit, isClickedDeActivate: () -> Unit) {
+    LinkedOutTheme {
+        Box(
+            modifier = Modifier
+                .size(300.dp, 286.dp)
+                .background(Color(0xFF1D1D1D), shape = RoundedCornerShape(4))
+        ) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopEnd) {
+                GlideImage(
+                    model = R.drawable.geulroquis_background,
+                    contentDescription = "background logo",
+                    modifier = Modifier.padding(start = 130.dp, bottom = 100.dp)
+                )
+            }
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Text(text = "오랜만에 봬요!", fontSize = 24.sp, color = Color.White)
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = "다시 링크드아웃에\n돌아오신 걸 환영해요.",
+                    fontSize = 16.sp,
+                    lineHeight = 24.sp,
+                    color = Color.White,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(30.dp))
+                Button(
+                    onClick = { isClickedDeActivate() },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .padding(horizontal = 20.dp),
+                    shape = RoundedCornerShape(20),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF929292))
+                ) {
+                    Text(text = "지금 계정 삭제하기", color = Color.Black)
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+                Button(
+                    onClick = { isClickedReActivate() },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .padding(horizontal = 20.dp),
+
+                    shape = RoundedCornerShape(20)
+                ) {
+                    Text(text = "계정 복구하기", color = Color.Black)
+                }
+            }
+        }
+    }
+
 }
 

@@ -10,7 +10,9 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -85,6 +87,7 @@ import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
+import com.echoist.linkedout.Routes
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.components.BlankWarningAlert
 import com.echoist.linkedout.components.FuncItem
@@ -151,6 +154,10 @@ fun WritingPage(
 
     Log.d(TAG, "WritingPage: ${viewModel.readDetailEssay()}")
 
+    LaunchedEffect(key1 = Unit) {
+        textState.setHtml(viewModel.content)
+    }
+
     LaunchedEffect(key1 = viewModel.isStored) {
         if (viewModel.isStored){
             delay(2000)
@@ -171,7 +178,11 @@ fun WritingPage(
                         .verticalScroll(scrollState)
                 )
                 {
-                    WritingTopAppBar(navController = navController, viewModel){viewModel.content = textState.toHtml()}
+                    WritingTopAppBar(
+                        navController = navController,
+                        viewModel,
+                        textState
+                    ){viewModel.content = textState.toHtml()}
 
 
                     ContentTextField(viewModel = viewModel,textState)
@@ -355,9 +366,9 @@ fun WritingPage(
 fun WritingTopAppBar(
     navController: NavController,
     viewModel: WritingViewModel,
+    state: RichTextState,
     isCompleteClicked : ()-> Unit
 ) {
-    Log.d(TAG, "WritingTopAppBar: ${viewModel.title}")
     val isKeyboardOpen by keyboardAsState() //keyBoard.Opened
 
     val focusRequester = remember { FocusRequester() }
@@ -406,7 +417,7 @@ fun WritingTopAppBar(
                         color = Color(0xFF686868),
                         modifier = Modifier
                             .clickable {
-
+                                viewModel.content = state.toHtml()
                                 if (viewModel.title.value.text.isEmpty() && viewModel.content.isEmpty()) {
                                     navController.popBackStack()
                                     viewModel.initialize()
@@ -599,7 +610,7 @@ fun WritingCancelCard(viewModel: WritingViewModel, navController: NavController,
                             .padding(top = 20.dp, bottom = 20.dp)
                             .clickable {
                                 viewModel.initialize()
-                                navController.navigate("HOME")
+                                navController.navigate("${Routes.Home}/200")
                             },
                         fontSize = 16.sp,
                         text = "작성취소",
@@ -770,7 +781,6 @@ fun TextEditBar(
     onTextUnderLineSelected: (Boolean) -> Unit,
     isTextMiddleLineSelected: Boolean,
     onTextMiddleLineSelected: (Boolean) -> Unit,
-
 ) {
 
     var isOpened by remember { mutableStateOf(true) }
@@ -779,23 +789,40 @@ fun TextEditBar(
     val imeHeightPx = insets?.getInsets(WindowInsetsCompat.Type.ime())?.bottom ?: 0
     val density = LocalDensity.current
 
-    // Convert pixels to dp
     val imeHeightDp = with(density) { imeHeightPx.toDp() }
 
-    Log.d("TAG", "Keyboard height in dp: $imeHeightDp")
+    var isAnimationComplete by remember { mutableStateOf(false) }
 
-    //키보드 높이만큼 상승
+    // LaunchedEffect를 통해 애니메이션이 완료된 후 상태를 업데이트
+    LaunchedEffect(isOpened) {
+        if (!isOpened) {
+            delay(1000) // 애니메이션의 지속 시간과 일치
+            isAnimationComplete = true
+        } else {
+            isAnimationComplete = false
+        }
+    }
+
     val keyboardController = LocalSoftwareKeyboardController.current
-    var isKeyboardApeared by remember { mutableStateOf(true) }
+    var isKeyboardAppeared by remember { mutableStateOf(true) }
     val requestPermissionsUtil = RequestPermissionsUtil(LocalContext.current, viewModel)
 
     LinkedOutTheme {
-        if (isOpened) {
+        AnimatedVisibility(
+            visible = isOpened,
+            enter = slideInHorizontally(
+                initialOffsetX = { fullWidth -> fullWidth }, // 화면 오른쪽에서 시작
+                animationSpec = tween(durationMillis = 1000) // 애니메이션 속도
+            ),
+            exit = slideOutHorizontally(
+                targetOffsetX = { fullWidth -> fullWidth }, // 화면 오른쪽으로 나감
+                animationSpec = tween(durationMillis = 1000) // 애니메이션 속도
+            )
+        ) {
             Row(
                 modifier = Modifier
                     .background(Color(0xFF1D1D1D))
                     .fillMaxWidth()
-                    //.imePadding()
                     .height(55.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -816,33 +843,25 @@ fun TextEditBar(
                     )
                     LocationTextField(viewModel = viewModel)
                 } else {
-
                     Spacer(modifier = Modifier.width(20.dp))
 
                     TextItem(
                         icon = R.drawable.editor_thick,
                         if (!isTextSettingSelected) Color.White else LinkedInColor
-
                     ) {
                         onTextSettingSelected(!isTextSettingSelected)
-
                     }
-
-                    //글 정렬
 
                     TextItem(
                         icon = R.drawable.editbar_bold,
                         if (!isTextBoldSelected) Color.White else LinkedInColor
-
                     ) {
                         onTextBoldSelected(!isTextBoldSelected)
                     }
 
-                    //밑줄
                     TextItem(
                         icon = R.drawable.editbar_underline,
                         if (!isTextUnderLineSelected) Color.White else LinkedInColor
-
                     ) {
                         onTextUnderLineSelected(!isTextUnderLineSelected)
                     }
@@ -850,29 +869,28 @@ fun TextEditBar(
                     TextItem(
                         icon = R.drawable.editbar_middleline,
                         if (!isTextMiddleLineSelected) Color.White else LinkedInColor
-
                     ) {
                         onTextMiddleLineSelected(!isTextMiddleLineSelected)
                     }
+
                     TextItem(
                         icon = R.drawable.editbar_more,
                         if (viewModel.isTextFeatOpened.value) LinkedInColor else Color.White
                     ) {
-
-                        isKeyboardApeared = !isKeyboardApeared
-                        if (isKeyboardApeared) keyboardController?.show() else keyboardController?.hide()
+                        isKeyboardAppeared = !isKeyboardAppeared
+                        if (isKeyboardAppeared) keyboardController?.show() else keyboardController?.hide()
                         viewModel.isTextFeatOpened.value = !viewModel.isTextFeatOpened.value
-
                     }
 
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
-
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(text = "저장", color = Color.White, modifier = Modifier.clickable {
-                                //room db에 저장
                                 val tagList = mutableListOf<EssayApi.Tag>()
                                 viewModel.hashTagList.forEach {
-                                    tagList.add(EssayApi.Tag(1,it))
+                                    tagList.add(EssayApi.Tag(1, it))
                                 }
 
                                 viewModel.updateOrInsertEssay(
@@ -884,7 +902,6 @@ fun TextEditBar(
                                         createdDate = viewModel.getCurrentDate(),
                                         tags = tagList,
                                         essayPrimaryId = viewModel.essayPrimaryId ?: 0
-
                                     )
                                 )
 
@@ -899,38 +916,31 @@ fun TextEditBar(
                             )
                             TextItem(
                                 icon = R.drawable.editbar_next,
-                                    if (!isTextSettingSelected) Color.White else LinkedInColor
-
-                            ) {isOpened = false}
-
+                                if (!isTextSettingSelected) Color.White else LinkedInColor
+                            ) { isOpened = false }
                         }
                     }
                 }
             }
-
         }
-        else{
+
+        if (isAnimationComplete) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    //.imePadding()
-                    .height(55.dp), contentAlignment = Alignment.CenterEnd
-            ){
-
-                //todo 아이콘 다운
+                    .height(55.dp)
+                    .padding(end = 8.dp),
+                contentAlignment = Alignment.CenterEnd
+            ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.editbar_bold),
+                    painter = painterResource(id = R.drawable.editbar_reopen),
                     contentDescription = "",
-                    tint = Color.White,
+                    tint = Color.Unspecified,
                     modifier = Modifier.clickable { isOpened = true }
                 )
-
-
             }
         }
-
     }
-
 }
 
 @Composable

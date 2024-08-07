@@ -86,17 +86,10 @@ fun LastEssayItem(
                             modifier = Modifier.fillMaxWidth(0.7f),
                             text = item.title!!,
                             color = color,
-                            maxLines = 2,
+                            maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             fontSize = 20.sp,
                         )
-//                    if (item.id == viewModel.detailEssay.id){
-//                        Spacer(modifier = Modifier.width(10.dp))
-//                        Surface(shape = RoundedCornerShape(60), color = Color.Magenta) {
-//                            Text(text = "현재 글",Modifier.padding(start = 5.dp, end = 5.dp))
-//                        }
-//                    } todo 이전 글 파싱하는방법 찾아야할듯? 아이디를 기준으로 앞에걸 자른다던지
-
                     }
 
 

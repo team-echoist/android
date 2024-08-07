@@ -10,8 +10,6 @@ import java.time.temporal.ChronoUnit
 const val TYPE_COMMUNITY = "community"
 const val TYPE_PROFILE = "profile"
 
-
-
 const val MAX_TITLE_SIZE = 26
 const val MAX_CONTENT_SIZE = 20
 const val MIN_TITLE_SIZE = 16
@@ -42,6 +40,54 @@ const val PROFILE_IMAGE_12 = "https://driqat77mj5du.cloudfront.net/service/profi
 
 const val TUTORIAL_BULB = "https://driqat77mj5du.cloudfront.net/service/geulroquis_bulb.gif"
 
+object Routes {
+    const val OnBoarding = "OnBoarding"
+    const val LoginPage = "LoginPage"
+    const val SignUp = "SIGNUP"
+    const val AgreeOfProvisionsPage = "AgreeOfProvisionsPage"
+    const val SignUpComplete = "SignUpComplete"
+    const val Home = "HOME"
+    const val DarkModeSettingPage = "DarkModeSettingPage"
+    const val NotificationPage = "NotificationPage"
+    const val NotificationSettingPage = "NotificationSettingPage"
+    const val SupportPage = "SupportPage"
+    const val LinkedOutSupportPage = "LinkedOutSupportPage"
+    const val InquiryPage = "InquiryPage"
+    const val UpdateHistoryPage = "UpdateHistoryPage"
+    const val MyLog = "MYLOG"
+    const val StoryPage = "StoryPage"
+    const val StoryDetailPage = "StoryDetailPage"
+    const val DetailEssayInStoryPage = "DetailEssayInStoryPage"
+    const val MyLogDetailPage = "MyLogDetailPage"
+    const val CompletedEssayPage = "CompletedEssayPage"
+    const val Community = "COMMUNITY"
+    const val CommunityDetailPage = "CommunityDetailPage"
+    const val CommunitySavedEssayPage = "CommunitySavedEssayPage"
+    const val SubscriberPage = "SubscriberPage"
+    const val FullSubscriberPage = "FullSubscriberPage"
+    const val Settings = "SETTINGS"
+    const val RecentViewedEssayPage = "RecentViewedEssayPage"
+    const val RecentEssayDetailPage = "RecentEssayDetailPage"
+    const val AccountPage = "AccountPage"
+    const val ChangeEmailPage = "ChangeEmailPage"
+    const val ChangePwPage = "ChangePwPage"
+    const val ResetPwPageWithEmail = "ResetPwPageWithEmail"
+    const val ResetPwPage = "ResetPwPage"
+    const val AccountWithdrawalPage = "AccountWithdrawalPage"
+    const val BadgePage = "BadgePage"
+    const val WritingPage = "WritingPage"
+    const val WritingCompletePage = "WritingCompletePage"
+    const val TemporaryStoragePage = "TemporaryStoragePage"
+    const val CropImagePage = "CropImagePage"
+    const val TermsAndConditionsPage = "TermsAndConditionsPage"
+    const val PrivacyPolicyPage = "PrivacyPolicyPage"
+    const val LocationPolicyPage = "LocationPolicyPage"
+    const val FontCopyRight = "FontCopyRight"
+}
+
+enum class UserStatus {
+    Activated,Monitored,Banned,DeActivated
+}
 
 
 fun formatDateTime(input: String): String {
