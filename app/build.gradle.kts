@@ -214,6 +214,9 @@ dependencies {
     //브라우저 헬퍼
     implementation ("com.google.androidbrowserhelper:androidbrowserhelper:2.2.0")
 
+    implementation ("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+
+
 
 
 }

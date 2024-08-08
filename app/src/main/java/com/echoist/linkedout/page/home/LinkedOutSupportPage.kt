@@ -92,9 +92,6 @@ fun LinkedOutSupportPage(
                     }
 
 
-
-
-
                 Spacer(modifier = Modifier.height(20.dp)) // 상단 내용과 하단 버튼 사이의 간격
                 // 하단 버튼
 

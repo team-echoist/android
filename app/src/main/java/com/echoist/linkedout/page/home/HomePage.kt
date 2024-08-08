@@ -186,13 +186,17 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewMo
                 .fillMaxSize()
                 .padding(start = 165.dp, bottom = 130.dp), contentAlignment = Alignment.Center){
                 CompositionLocalProvider(LocalRippleConfiguration provides  null) {
-                GlideImage( //전구 클릭하면 글로키 On
-                    model = TUTORIAL_BULB,
-                    contentDescription = "bulb_img",
-                    modifier = Modifier
+                    Box(Modifier
                         .size(80.dp)
-                        .clickable { viewModel.isVisibleGeulRoquis = true }
-                )
+                        .clickable() { viewModel.isVisibleGeulRoquis = true }){
+                        GlideImage( //전구 클릭하면 글로키 On
+                            model = TUTORIAL_BULB,
+                            contentDescription = "bulb_img",
+                            modifier = Modifier
+                                .size(80.dp)
+                        )
+                    }
+
             }
         }
 
