@@ -40,6 +40,14 @@ const val PROFILE_IMAGE_12 = "https://driqat77mj5du.cloudfront.net/service/profi
 
 const val TUTORIAL_BULB = "https://driqat77mj5du.cloudfront.net/service/geulroquis_bulb.gif"
 
+const val PRIVACY_POLICY_URL = "https://www.linkedoutapp.com/policy"
+object DeviceType {
+    const val DESKTOP = "Desktop"
+    const val LAPTOP = "Laptop"
+    const val MOBILE = "Mobile"
+    const val TABLET = "Tablet"
+    const val UNKNOWN = "Unknown"
+}
 object Routes {
     const val OnBoarding = "OnBoarding"
     const val LoginPage = "LoginPage"

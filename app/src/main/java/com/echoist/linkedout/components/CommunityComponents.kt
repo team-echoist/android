@@ -1150,9 +1150,6 @@ fun RandomCommunityPage(viewModel: CommunityViewModel, navController: NavControl
                 }
             }
     }
-
-
-    Box{
         LazyColumn(
             state = listState,
             modifier = Modifier
@@ -1189,11 +1186,6 @@ fun RandomCommunityPage(viewModel: CommunityViewModel, navController: NavControl
                 EssayListItem(item = it, viewModel = viewModel, navController = navController)
             }
         }
-
-
-    }
-
-
 }
 
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)

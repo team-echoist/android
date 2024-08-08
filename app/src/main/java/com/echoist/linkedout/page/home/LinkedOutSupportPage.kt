@@ -61,6 +61,7 @@ fun LinkedOutSupportPage(
 
     // 테마 적용
     LinkedOutTheme {
+
         Scaffold(
             topBar = {
                 SettingTopAppBar("링크드아웃 고객센터", navController)

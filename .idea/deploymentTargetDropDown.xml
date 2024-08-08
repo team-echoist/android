@@ -2,13 +2,19 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="Btn_writing">
+      <entry key="Notice_Main">
         <State />
       </entry>
-      <entry key="ReactivateOrDeleteBox">
+      <entry key="ProvisionsWebv2iew">
         <State />
       </entry>
-      <entry key="TextAlignBar">
+      <entry key="ProvisionsWebview">
+        <State />
+      </entry>
+      <entry key="WebViewExa2mple">
+        <State />
+      </entry>
+      <entry key="app">
         <State>
           <runningDeviceTargetSelectedWithDropDown>
             <Target>
@@ -21,11 +27,6 @@
               </deviceKey>
             </Target>
           </runningDeviceTargetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-08-06T15:42:49.468945Z" />
-        </State>
-      </entry>
-      <entry key="app">
-        <State>
           <targetSelectedWithDropDown>
             <Target>
               <type value="QUICK_BOOT_TARGET" />
@@ -37,11 +38,8 @@
               </deviceKey>
             </Target>
           </targetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-08-07T14:23:29.907729Z" />
+          <timeTargetWasSelectedWithDropDown value="2024-08-08T16:51:20.275373Z" />
         </State>
-      </entry>
-      <entry key="prev2">
-        <State />
       </entry>
       <entry key="t3">
         <State />

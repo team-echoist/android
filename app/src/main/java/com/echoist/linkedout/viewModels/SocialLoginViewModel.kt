@@ -25,6 +25,7 @@ import com.echoist.linkedout.Routes
 import com.echoist.linkedout.api.NaverApiService
 import com.echoist.linkedout.api.SignUpApi
 import com.echoist.linkedout.api.SocialSignUpApi
+import com.echoist.linkedout.api.SupportApi
 import com.echoist.linkedout.api.UserApi
 import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.page.myLog.Token
@@ -56,7 +57,8 @@ class SocialLoginViewModel @Inject constructor(
     private val userApi: UserApi,
     private val exampleItems: ExampleItems,
     private val signUpApi: SignUpApi,
-    private val socialSignUpApi: SocialSignUpApi
+    private val socialSignUpApi: SocialSignUpApi,
+    private val supportApi: SupportApi
 ) : ViewModel() {
     private val auth: FirebaseAuth = Firebase.auth
 
@@ -115,7 +117,6 @@ class SocialLoginViewModel @Inject constructor(
                 val userAccount = SignUpApi.UserAccount(userId, userPw)
                 val response = signUpApi.login(userAccount)
 
-
                 if (response.isSuccessful) {
                     Log.i("server header token", response.headers()["authorization"].toString())
                     Token.accessToken = (response.headers()["authorization"].toString())
@@ -138,9 +139,32 @@ class SocialLoginViewModel @Inject constructor(
             }
         }
     }
+    //앱 버전 확인
+    fun requestAppVersion(){
+        viewModelScope.launch {
+            try {
+                val response = supportApi.requestAppVersion()
+                if (response.isSuccessful){
+                    val currentVersion = BuildConfig.VERSION_NAME
+                    val latestVersion = response.body()!!.data.versions.android_mobile
 
+                    //현재 지금은 테스트중. 둘다 1.0.0이다
 
-
+                    if (currentVersion == latestVersion)
+                        Log.d("버전 일치", "최신 버전 : $latestVersion\n현재 버전 : $currentVersion")
+                    else
+                        Log.e("버전 불일치", "최신 버전 : $latestVersion\n현재 버전 : $currentVersion")
+                    //todo 버전 업데이트 하라는 모달 필요
+                }
+                else{
+                    Log.e("앱 버전 체크 실패", "${response.code()}")
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.e("앱 버전 체크 실패", e.message.toString())
+            }
+        }
+    }
     fun signInWithGoogle(
         launcher: ManagedActivityResultLauncher<Intent, ActivityResult>,
         context: Context

@@ -8,7 +8,7 @@ import retrofit2.http.POST
 
 class SignUpApiImpl : SignUpApi {
 
-    data class RegisterDeviceRequest(val deviceId : String, val deviceToken : String)
+    data class RegisterDeviceRequest(val uid : String, val fcmToken : String)
 
 
     override suspend fun emailDuplicateConfirm(email: SignUpApi.EmailRequest): Response<Unit> {

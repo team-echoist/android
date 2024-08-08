@@ -12,7 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 object DeviceId{
-    var deviceId : String = ""
+    var ssaid : String = ""
 }
 class MyFirebaseMessagingService : FirebaseMessagingService(){
 
@@ -22,13 +22,13 @@ class MyFirebaseMessagingService : FirebaseMessagingService(){
     override fun onNewToken(token: String) {
         Log.d(TAG, "FCM_Token: $token")
         getSSAID()
-        val body = SignUpApiImpl.RegisterDeviceRequest(DeviceId.deviceId,token)
+        val body = SignUpApiImpl.RegisterDeviceRequest(uid = DeviceId.ssaid, fcmToken = token)
 
         //뉴토큰 서버에 보내기
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                SignUpApiImpl().requestRegisterDevice(Token.accessToken, body)
+                SignUpApiImpl().requestRegisterDevice(Token.accessToken, registerDeviceRequest = body)
                 Log.d(TAG, "Token registration request successful")
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to register token", e)
@@ -38,7 +38,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService(){
     }
 
     private fun getSSAID(){
-        DeviceId.deviceId = Settings.Secure.getString(applicationContext.contentResolver, Settings.Secure.ANDROID_ID)
-        Log.d("DeviceID", "Device ID: ${DeviceId.deviceId}")
+        DeviceId.ssaid = Settings.Secure.getString(applicationContext.contentResolver, Settings.Secure.ANDROID_ID)
+        Log.d("DeviceID", "Device ID: ${DeviceId.ssaid}")
     }
 }

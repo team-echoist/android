@@ -128,6 +128,7 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewMo
         viewModel.requestUserGraphSummaryResponse()
         viewModel.requestGuleRoquis()
         viewModel.requestUnreadAlerts()
+        viewModel.requestLatestNotice()
 
     }
 
@@ -186,9 +187,10 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewMo
                 .fillMaxSize()
                 .padding(start = 165.dp, bottom = 130.dp), contentAlignment = Alignment.Center){
                 CompositionLocalProvider(LocalRippleConfiguration provides  null) {
-                    Box(Modifier
-                        .size(80.dp)
-                        .clickable() { viewModel.isVisibleGeulRoquis = true }){
+                    Box(
+                        Modifier
+                            .size(80.dp)
+                            .clickable() { viewModel.isVisibleGeulRoquis = true }){
                         GlideImage( //전구 클릭하면 글로키 On
                             model = TUTORIAL_BULB,
                             contentDescription = "bulb_img",
@@ -248,6 +250,14 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewMo
                 {
                     viewModel.requestUserDelete(navController)
                 }
+            }
+        }
+        if (viewModel.isExistLatestNotice == true){
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center)
+            {
+                Notice_Main()
             }
         }
     }
@@ -1178,6 +1188,44 @@ fun ReactivateOrDeleteBox(isClickedReActivate: () -> Unit, isClickedDeActivate: 
                     shape = RoundedCornerShape(20)
                 ) {
                     Text(text = "계정 복구하기", color = Color.Black)
+                }
+            }
+        }
+    }
+
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Preview
+@Composable
+fun Notice_Main(){
+    LinkedOutTheme {
+        Box(modifier = Modifier
+            .width(280.dp)
+            .height(411.dp)
+            .background(color = Color(0xFF121212), shape = RoundedCornerShape(size = 10.dp)), contentAlignment = Alignment.Center){
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                GlideImage(model = R.drawable.notice_linkedouticon, contentDescription = "")
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = "아무개님, 새로운 공지사항이 있어요!",
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        lineHeight = 24.sp,
+                        fontWeight = FontWeight(700),
+                        color = Color(0xFFFFFFFF),
+                        textAlign = TextAlign.Center,
+                    )
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(text = "공지사항 내용을 추가해야합니다.\n없음없음", modifier = Modifier
+                    .height(240.dp)
+                    .verticalScroll(rememberScrollState()))
+                Button(onClick = { /*TODO*/ }, shape = RoundedCornerShape(10), modifier = Modifier
+                    .height(50.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 10.dp)) {
+                    Text(text = "닫기", color = Color.Black)
                 }
             }
         }

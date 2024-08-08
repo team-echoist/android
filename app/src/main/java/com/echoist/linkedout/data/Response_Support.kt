@@ -148,3 +148,34 @@ data class GuleroquisResponse(
     val timestamp: String,
     val statusCode : Int,
     )
+
+//최신 공지사항
+data class LatestNoticeResponse(
+    val data: LatestNotice,
+    val path: String,
+    val success: Boolean,
+    val timestamp: String,
+    val statusCode : Int,
+)
+
+data class LatestNotice(val newNotice : Boolean?)
+
+//버전체크
+data class VersionsResponse(
+    val data: Versions,
+    val path: String,
+    val success: Boolean,
+    val timestamp: String,
+    val statusCode : Int,
+)
+data class Versions(
+    val versions : DevicesVersions
+)
+data class DevicesVersions(
+    val android_mobile : String,
+    val android_tablet : String,
+    val ios_mobile : String,
+    val ios_tablet : String,
+    val desktop_mac : String,
+    val desktop_windows : String,
+)

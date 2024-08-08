@@ -9,7 +9,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.echoist.linkedout.DeviceId
 import com.echoist.linkedout.api.SignUpApi
 import com.echoist.linkedout.api.SupportApi
 import com.echoist.linkedout.api.UserApi
@@ -258,7 +257,7 @@ class SignUpViewModel @Inject constructor(
                     }
                     //사용자의 마케팅 동의
 
-                        val response = supportApi.updateUserNotification(Token.accessToken,DeviceId.deviceId,option)
+                        val response = supportApi.updateUserNotification(Token.accessToken,option)
                         if (response.isSuccessful){
                             Log.d(TAG, "마케팅 동의 저장 성공: ${response.code()}")
                             navController.navigate("SignUpComplete")

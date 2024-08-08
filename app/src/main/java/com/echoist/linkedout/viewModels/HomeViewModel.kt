@@ -53,6 +53,7 @@ class HomeViewModel @Inject constructor(
 
     var isLoading by mutableStateOf(false)
     var isFirstUser by mutableStateOf(false)
+    var isExistLatestNotice : Boolean? by mutableStateOf(null) //공지가 있을경우 true, 없을경우 Null
 
     var updateHistory: SnapshotStateList<History> =  mutableStateListOf()
 
@@ -150,7 +151,7 @@ class HomeViewModel @Inject constructor(
     fun readUserNotification() {
         viewModelScope.launch {
             try {
-                val response = supportApi.readUserNotification(Token.accessToken, DeviceId.deviceId)
+                val response = supportApi.readUserNotification(Token.accessToken)
                 Log.d(TAG, "readUserNotification: ${response.body()?.data!!}")
 
                 if (response.isSuccessful) {
@@ -162,14 +163,14 @@ class HomeViewModel @Inject constructor(
                     requestMyInfo()
                 } else {
                     Log.e(TAG, "readUserNotification: err${response.code()}")
-                    Log.e(TAG, "readUserNotification: err device id${DeviceId.deviceId}")
+                    Log.e(TAG, "readUserNotification: err device id${DeviceId.ssaid}")
 
                 }
 
             } catch (e: Exception) {
                 e.printStackTrace()
                 Log.e(TAG, "readUserNotification: error ${e.message}")
-                Log.e(TAG, "readUserNotification: error device id :  ${DeviceId.deviceId}\n token : ${Token.accessToken}")
+                Log.e(TAG, "readUserNotification: error device id :  ${DeviceId.ssaid}\n token : ${Token.accessToken}")
 
             }
             finally {
@@ -183,7 +184,7 @@ class HomeViewModel @Inject constructor(
         val body = NotificationSettings(viewedNotification, reportNotification,marketingNotification)
         viewModelScope.launch {
             try {
-                supportApi.updateUserNotification(Token.accessToken, DeviceId.deviceId, body)
+                supportApi.updateUserNotification(Token.accessToken,  body)
                 Log.d(TAG, "updateUserNotification success: $body")
 
                     val userInfo = UserInfo(locationConsent = locationAgreement)
@@ -284,6 +285,28 @@ class HomeViewModel @Inject constructor(
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
 
         Log.d(TAG, "Alarm set for 10 seconds later.")
+    }
+
+    //최신공지 여부
+    fun requestLatestNotice(){
+        viewModelScope.launch {
+            try {
+                val response = supportApi.requestLatestNotice(Token.accessToken)
+                if (response.isSuccessful){
+                    //공지가 있을경우 true, 없을경우 Null
+                    isExistLatestNotice = response.body()!!.data.newNotice
+                    Log.d("최신공지 확인", "확인 성공 newNotice : ${response.body()!!.data.newNotice}")
+                }
+                else{
+                    Log.e("최신공지 확인", "확인 실패 ${response.code()}")
+                }
+            }catch (e:Exception){
+                Log.e("최신공지 확인", "확인 실패 ${e.message}")
+                e.printStackTrace()
+
+            }
+        }
+
     }
 
     fun readUpdateHistory(){

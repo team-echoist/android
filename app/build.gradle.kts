@@ -23,7 +23,7 @@ android {
         minSdk = 26
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0"
         //git ignore 용입니다.
         //구글 네이티브 앱 키
         buildConfigField(
@@ -215,6 +215,8 @@ dependencies {
     implementation ("com.google.androidbrowserhelper:androidbrowserhelper:2.2.0")
 
     implementation ("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+
+    implementation ("com.google.accompanist:accompanist-webview:0.30.0")
 
 
 

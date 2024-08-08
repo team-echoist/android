@@ -6,11 +6,13 @@ import com.echoist.linkedout.data.GuleroquisResponse
 import com.echoist.linkedout.data.Inquiry
 import com.echoist.linkedout.data.InquiryResponse
 import com.echoist.linkedout.data.IsFirstCheckResponse
+import com.echoist.linkedout.data.LatestNoticeResponse
 import com.echoist.linkedout.data.NoticeDetailResponse
 import com.echoist.linkedout.data.NoticeResponse
 import com.echoist.linkedout.data.NotificationResponse
 import com.echoist.linkedout.data.NotificationSettings
 import com.echoist.linkedout.data.UpdateHistoryResponse
+import com.echoist.linkedout.data.VersionsResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -63,15 +65,13 @@ interface SupportApi {
         @Header("Authorization") accessToken: String,
         @Body registerDeviceRequest: SignUpApiImpl.RegisterDeviceRequest
     ): Response<Unit>
-    @GET("api/support/settings/{deviceId}")
+    @GET("api/support/settings")
     suspend fun readUserNotification(
         @Header("Authorization") accessToken: String,
-        @Path("deviceId") deviceId: String,
     ): Response<NotificationResponse>
-    @POST("api/support/settings/{deviceId}")
+    @POST("api/support/settings")
     suspend fun updateUserNotification(
         @Header("Authorization") accessToken: String,
-        @Path("deviceId") deviceId: String,
         @Body requestSettings: NotificationSettings
     ): Response<Unit>
 
@@ -93,11 +93,21 @@ interface SupportApi {
         @Header("Authorization") accessToken: String,
     ): Response<IsFirstCheckResponse>
 
-    @GET("api/home/geulroquis") //todo 수정
+    //글로키 주소 가져오기
+    @GET("api/home/geulroquis")
     suspend fun readGeulroquis(
         @Header("Authorization") accessToken: String
     ): Response<GuleroquisResponse>
 
+    //최신 공지사항 여부
+    @GET("api/support/notices/latest")
+    suspend fun requestLatestNotice(
+        @Header("Authorization") accessToken: String
+    ): Response<LatestNoticeResponse>
+
+    //앱 버전 조회
+    @GET("api/support/versions")
+    suspend fun requestAppVersion(): Response<VersionsResponse>
 
 
 }

@@ -46,6 +46,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -137,7 +138,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class LoginPage : ComponentActivity() {
     private fun getSSAID(context: Context) {
-        DeviceId.deviceId =
+        DeviceId.ssaid =
             Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
     }
 
@@ -148,7 +149,7 @@ class LoginPage : ComponentActivity() {
         Firebase.auth.signOut()
 
         getSSAID(this)
-        Log.d("SSAID", "SSAID: ${DeviceId.deviceId}") //고유식별자
+        Log.d("SSAID", "SSAID: ${DeviceId.ssaid}") //고유식별자
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -462,7 +463,13 @@ fun LoginPage(
 
     val keyboardController = LocalSoftwareKeyboardController.current
     val scrollState = rememberScrollState()
+    Log.d("현재 사용중인 안드로이드 앱 버전", BuildConfig.VERSION_NAME)
 
+
+    //앱버전 체크 후 최신버전 아닌경우 마켓업데이트.
+    LaunchedEffect(key1 = Unit) {
+        viewModel.requestAppVersion()
+    }
 
     LinkedOutTheme {
         Scaffold(
