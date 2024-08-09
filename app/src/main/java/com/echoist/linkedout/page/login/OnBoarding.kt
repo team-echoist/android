@@ -129,7 +129,7 @@ fun OnBoardingPage(navController: NavController) {
 
 
             }
-            if (!isChanged) {
+            if (!isChanged || pagerstate.currentPage == 3) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize() /* 부모 만큼 */

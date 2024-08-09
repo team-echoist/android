@@ -429,11 +429,8 @@ class HomeViewModel @Inject constructor(
                 val response = userApi.requestDeleteUser(Token.accessToken)
                 if (response.isSuccessful){
                     Log.d("유저 즉시 탈퇴", "성공: ${response.body()}")
-                    navController.navigate(Routes.LoginPage) {
-                        popUpTo(Routes.LoginPage) {
-                            inclusive = true
-                        }
-                    }
+                    navController.popBackStack(Routes.OnBoarding,false)
+                    navController.navigate(Routes.LoginPage)
                 }
                 else{
                     Log.e("유저 즉시 탈퇴", "실패: ${response.code()}", )

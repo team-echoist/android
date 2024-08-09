@@ -334,6 +334,11 @@ fun EssayListPage1(viewModel: MyLogViewModel, pagerState: PagerState, navControl
                 EssayListItem(item = it,pagerState,viewModel,navController,writingViewModel)
             }
         }
+    if (viewModel.myEssayList.isEmpty()){
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+            Text(text = "작성한 글이 없습니다.", color = Color.Gray)
+        }
+    }
 }
 
 @Composable
@@ -350,11 +355,16 @@ fun EssayListPage2(viewModel: MyLogViewModel, pagerState: PagerState, navControl
                 }
             }
     }
-        LazyColumn(state = listState) {
+    LazyColumn(state = listState) {
             items(viewModel.publishedEssayList) {
                 EssayListItem(item = it, pagerState, viewModel, navController,writingViewModel)
             }
         }
+    if (viewModel.publishedEssayList.isEmpty()){
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+            Text(text = "작성한 글이 없습니다.", color = Color.Gray)
+        }
+    }
 }
 
 @OptIn(ExperimentalGlideComposeApi::class)

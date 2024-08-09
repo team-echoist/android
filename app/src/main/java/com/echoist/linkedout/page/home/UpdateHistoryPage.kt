@@ -107,7 +107,7 @@ fun UpdateTitleBox(date: String) {
 fun UpdateHistoryBox(date: String, histories: List<History>) {
     Column(
         Modifier
-            .background(Color(0xFF0E0E0E), shape = RoundedCornerShape(10))
+            .background(Color(0xFF0E0E0E), shape = RoundedCornerShape(4))
             .fillMaxWidth()
             .padding(16.dp)
     ) {

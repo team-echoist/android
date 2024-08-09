@@ -59,6 +59,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.colintheshots.twain.MarkdownText
@@ -67,6 +68,7 @@ import com.echoist.linkedout.LINKEDOUT_POPUP_URL
 import com.echoist.linkedout.PRIVATE_POPUP_URL
 import com.echoist.linkedout.PUBLISHED_POPUP_URL
 import com.echoist.linkedout.R
+import com.echoist.linkedout.Routes
 import com.echoist.linkedout.components.LastEssayPager
 import com.echoist.linkedout.data.Story
 import com.echoist.linkedout.formatDateTime
@@ -304,6 +306,15 @@ fun OptionItem(
 @Composable
 fun DetailTopAppBar(navController: NavController, viewModel: MyLogViewModel) {
 
+    // 현재 백스택 상태를 관찰하여 상태 변경 시 리컴포지션을 트리거
+    val backStackEntry = navController.currentBackStackEntryAsState().value
+    // 백스택에서 바로 뒤의 항목 가져오기
+    val previousBackStackEntry = backStackEntry?.let {
+        navController.previousBackStackEntry
+    }
+    // 이전 목적지의 라우트 확인
+    val previousRoute = previousBackStackEntry?.destination?.route
+
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
         title = { },
@@ -318,15 +329,25 @@ fun DetailTopAppBar(navController: NavController, viewModel: MyLogViewModel) {
                     .size(30.dp)
 
                     .clickable {
-                        if (viewModel.detailEssayBackStack.isNotEmpty()) {
-                            viewModel.detailEssayBackStack.pop()
-                            Log.d(TAG, "pushpushpop: ${viewModel.detailEssayBackStack}")
-                            if (viewModel.detailEssayBackStack.isNotEmpty()) {
-                                viewModel.detailEssay = viewModel.detailEssayBackStack.peek()
-                            }
+                        //writingcomplete에서 왔다면 홈으로보내기
+                        if (previousRoute == Routes.WritingCompletePage){
+                            navController.popBackStack(Routes.WritingPage,true)
+                            navController.navigate("${Routes.Home}/200")
                         }
-                        navController.popBackStack()
-                        viewModel.isActionClicked = false
+
+
+                        else{
+                            if (viewModel.detailEssayBackStack.isNotEmpty()) {
+                                viewModel.detailEssayBackStack.pop()
+                                Log.d(TAG, "pushpushpop: ${viewModel.detailEssayBackStack}")
+                                if (viewModel.detailEssayBackStack.isNotEmpty()) {
+                                    viewModel.detailEssay = viewModel.detailEssayBackStack.peek()
+                                }
+                            }
+                            navController.popBackStack()
+                            viewModel.isActionClicked = false
+                        }
+
                     } //뒤로가기
             )
         },

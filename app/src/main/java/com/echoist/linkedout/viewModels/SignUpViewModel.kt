@@ -1,6 +1,8 @@
 package com.echoist.linkedout.viewModels
 
 import android.content.ContentValues.TAG
+import android.content.Context
+import android.provider.Settings
 import android.util.Log
 import android.util.Patterns
 import androidx.compose.runtime.getValue
@@ -10,15 +12,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.echoist.linkedout.api.SignUpApi
+import com.echoist.linkedout.api.SignUpApiImpl
 import com.echoist.linkedout.api.SupportApi
 import com.echoist.linkedout.api.UserApi
 import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.data.NotificationSettings
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.myLog.Token
+import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
@@ -132,6 +138,8 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
+
+
     var isSendEmailVerifyApiFinished by mutableStateOf(false)
     //이메일변경용 메일요청
     fun sendEmailVerificationForChange(email : String) { //코루틴스코프에서 순차적으로 수행된다. 뷰모델스코프는 위에걸로
@@ -236,42 +244,95 @@ class SignUpViewModel @Inject constructor(
         locationAgreement: Boolean,
         marketingAgreement: Boolean,
         serviceAlertAgreement: Boolean,
-        navController: NavController
-    ){
+        navController: NavController,
+        context: Context
+    ) {
         val option = when {
             marketingAgreement -> NotificationSettings(serviceAlertAgreement, serviceAlertAgreement, true)
             else -> NotificationSettings(viewed = true, report = true, marketing = false)
         }
 
         viewModelScope.launch {
-            Log.d("약관 동의 저장시작", "1")
-                try {
-                    if (locationAgreement){ //사용자의 위치서비스 동의
-                        val userInfo = UserInfo(locationConsent = true)
-                        val response = userApi.userUpdate(Token.accessToken,userInfo)
+            try {
+                // 사용자 기기 등록
+                Log.d("약관 기기등록 ", "1")
+                requestRegisterDevice(context)
 
-                        if (response.isSuccessful) Log.d(TAG, "위치서비스 동의 저장 성공: ${response.code()}")
-                        else Log.e(TAG, "위치서비스 동의 저장 실패: ${response.code()}")
-                        Log.d("약관 동의 저장시작", "2")
+                // 위치서비스 동의 등록
+                Log.d("위치서비스 동의 등록 ", "2")
+                if (locationAgreement) {
+                    val userInfo = UserInfo(locationConsent = true)
+                    val response = userApi.userUpdate(Token.accessToken, userInfo)
 
+                    if (response.isSuccessful) {
+                        Log.d(TAG, "위치서비스 동의 저장 성공: ${response.code()}")
+                    } else {
+                        Log.e(TAG, "위치서비스 동의 저장 실패: ${response.code()}")
                     }
-                    //사용자의 마케팅 동의
+                }
 
-                        val response = supportApi.updateUserNotification(Token.accessToken,option)
-                        if (response.isSuccessful){
-                            Log.d(TAG, "마케팅 동의 저장 성공: ${response.code()}")
-                            navController.navigate("SignUpComplete")
-                        }
+                // 사용자의 마케팅 동의
+                Log.d("약관 동의 저장시작", "3")
+                val response = supportApi.updateUserNotification(Token.accessToken, option)
+                if (response.isSuccessful) {
+                    Log.d(TAG, "마케팅 동의 저장 성공: ${response.code()}")
 
-                        else {
-                            Log.e(TAG, "마케팅 동의 저장 실패: ${response.code()}")
-                            Log.e(TAG, "마케팅 동의 저장 실패: ${response.errorBody()}")
-                        }
+                    navController.navigate("SignUpComplete")
+                } else {
+                    Log.e(TAG, "마케팅 동의 저장 실패: ${response.code()}")
+                    Log.e(TAG, "마케팅 동의 저장 실패: ${response.errorBody()}")
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.e("이용정보 동의 저장실패", "${e.printStackTrace()}")
+            }
+        }
+    }
 
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    Log.e("이용정보 동의 저장실패","${e.printStackTrace()}")
+    private suspend fun requestRegisterDevice(context: Context) {
+        val ssaid = getSSAID(context)
+        val token = getFCMToken() // Suspend 함수로 호출
+
+        if (token != null) {
+            // 서버에 토큰값 보내기 등의 작업을 여기서 처리할 수 있습니다.
+            val body = SignUpApiImpl.RegisterDeviceRequest(ssaid, token)
+            try {
+                val response = supportApi.requestRegisterDevice(Token.accessToken, body)
+                if (response.isSuccessful) {
+                    Log.i("FCM Token", "ssaid 값 : $ssaid \n FCM token 값 : $token")
+                    Log.d("기기 등록 성공입니다.", "success: ")
+                } else {
+                    Log.e("기기등록 실패", "Failed")
+                }
+            } catch (e: Exception) {
+                Log.e("FCM Token", "Failed to fetch token")
+            }
+        } else {
+            Log.e("FCM Token", "Failed to fetch token")
+            // 토큰이 없으면 기기 등록도 안됨
+        }
+    }
+
+    // FCM 토큰을 얻는 suspend 함수
+    private suspend fun getFCMToken(): String? {
+        return suspendCoroutine { continuation ->
+            FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    // 작업이 성공하면 토큰 반환
+                    continuation.resume(task.result)
+                } else {
+                    // 작업이 실패하면 null 반환
+                    Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+                    continuation.resume(null)
                 }
             }
+        }
     }
+
+    private fun getSSAID(context: Context): String {
+        val deviceId = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+        Log.d("DeviceID", "Device ID: $deviceId")
+        return deviceId
+    }
+
 }

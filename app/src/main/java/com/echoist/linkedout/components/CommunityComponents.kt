@@ -33,8 +33,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -821,53 +819,6 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
 
 
 
-@Composable
-fun ChoiceBox(viewModel: CommunityViewModel) {
-    val color = Color.Black
-    Card(
-        shape = RoundedCornerShape(20),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFCFCFCF)),
-        modifier = Modifier.size(
-            104.dp,
-            70.dp
-        )
-    ) {
-        Column(
-            Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = "첫 문장",
-                modifier = Modifier
-                    .padding(start = 10.dp)
-                    .clickable {
-                        viewModel.isClicked = false
-                        viewModel.sentenceInfo = SentenceInfo.First
-                    },
-                fontSize = 12.sp,
-                color = color
-            )
-            Spacer(modifier = Modifier.height(6.dp))
-            HorizontalDivider(Modifier.fillMaxWidth(), color = Color(0xFFC5C5C5))
-            Spacer(modifier = Modifier.height(6.dp))
-
-            Text(
-                text = "마지막 문장",
-                modifier = Modifier
-                    .padding(start = 10.dp)
-                    .clickable {
-                        viewModel.isClicked = false
-                        viewModel.sentenceInfo = SentenceInfo.Last
-
-                    },
-                fontSize = 12.sp,
-                color = color
-            )
-
-        }
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CommunityTopAppBar(
@@ -1157,7 +1108,7 @@ fun RandomCommunityPage(viewModel: CommunityViewModel, navController: NavControl
         ) {
             item {
                 Column {
-                    Row {
+                    Box {
                         Column(modifier = Modifier.padding(horizontal = 20.dp))
                         {
                             Spacer(modifier = Modifier.height(30.dp))

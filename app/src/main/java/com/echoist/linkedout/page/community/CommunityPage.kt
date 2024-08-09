@@ -1,20 +1,11 @@
 package com.echoist.linkedout.page.community
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
@@ -35,7 +26,6 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.echoist.linkedout.components.ChoiceBox
 import com.echoist.linkedout.components.CommunityChips
 import com.echoist.linkedout.components.CommunityPager
 import com.echoist.linkedout.components.CommunityTopAppBar
@@ -138,30 +128,6 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
                                                 navController = navController
                                             )
 
-                                        }
-                                        AnimatedVisibility(
-                                            visible = viewModel.isClicked,
-                                            enter = fadeIn(
-                                                animationSpec = tween(
-                                                    durationMillis = 500,
-                                                    easing = FastOutSlowInEasing
-                                                )
-                                            ),
-                                            exit = fadeOut(
-                                                animationSpec = tween(
-                                                    durationMillis = 300,
-                                                    easing = LinearEasing
-                                                )
-                                            )
-                                        ) {
-                                            Box(
-                                                modifier = Modifier
-                                                    .fillMaxSize()
-                                                    .padding(top = 155.dp, end = 18.dp).padding(WindowInsets.statusBars.asPaddingValues()),
-                                                contentAlignment = Alignment.TopEnd
-                                            ) {
-                                                ChoiceBox(viewModel)
-                                            }
                                         }
 
 

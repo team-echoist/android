@@ -151,9 +151,9 @@ class SocialLoginViewModel @Inject constructor(
                     //현재 지금은 테스트중. 둘다 1.0.0이다
 
                     if (currentVersion == latestVersion)
-                        Log.d("버전 일치", "최신 버전 : $latestVersion\n현재 버전 : $currentVersion")
+                        Log.d("버전 일치 확인", "버전 일치. 최신 버전 : $latestVersion\n현재 버전 : $currentVersion")
                     else
-                        Log.e("버전 불일치", "최신 버전 : $latestVersion\n현재 버전 : $currentVersion")
+                        Log.e("버전 일치 확인", "버전 불일치. 최신 버전 : $latestVersion\n현재 버전 : $currentVersion")
                     //todo 버전 업데이트 하라는 모달 필요
                 }
                 else{

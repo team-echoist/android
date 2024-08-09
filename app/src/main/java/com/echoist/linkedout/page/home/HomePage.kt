@@ -71,6 +71,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -114,6 +115,9 @@ import java.util.Locale
 @Composable
 fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewModel : WritingViewModel, statusCode : Int) {
 
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp // 화면의 높이를 DP 단위로 가져옴
+
     Log.d("유저의 상태코드", statusCode.toString())
     var userStatus by remember { mutableStateOf(UserStatus.Activated) }
 
@@ -140,7 +144,7 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewMo
         drawerContent = {
 
             ModalBottomSheetContent(viewModel = viewModel,navController)
-        }
+        },
 
     ) {
         val context = LocalContext.current
@@ -257,7 +261,7 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewMo
                 .fillMaxSize()
                 .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center)
             {
-                Notice_Main()
+                Notice_Main{viewModel.isExistLatestNotice = null}
             }
         }
     }
@@ -270,6 +274,7 @@ fun ModalBottomSheetContent(viewModel: HomeViewModel,navController: NavControlle
     val scrollState = rememberScrollState()
 
     ModalDrawerSheet(
+        modifier = Modifier.fillMaxWidth(0.9f),
         drawerShape = RectangleShape,
         drawerContainerColor = Color(0xFF121212)
     ) {
@@ -1196,9 +1201,8 @@ fun ReactivateOrDeleteBox(isClickedReActivate: () -> Unit, isClickedDeActivate: 
 }
 
 @OptIn(ExperimentalGlideComposeApi::class)
-@Preview
 @Composable
-fun Notice_Main(){
+fun Notice_Main(isClickedClose : ()->Unit){
     LinkedOutTheme {
         Box(modifier = Modifier
             .width(280.dp)
@@ -1218,10 +1222,10 @@ fun Notice_Main(){
                     )
                 )
                 Spacer(modifier = Modifier.height(6.dp))
-                Text(text = "공지사항 내용을 추가해야합니다.\n없음없음", modifier = Modifier
+                Text(text = "\n\n아직 공지는 없답니다?", textAlign = TextAlign.Center, color = Color.White, modifier = Modifier
                     .height(240.dp)
                     .verticalScroll(rememberScrollState()))
-                Button(onClick = { /*TODO*/ }, shape = RoundedCornerShape(10), modifier = Modifier
+                Button(onClick = { isClickedClose() }, shape = RoundedCornerShape(10), modifier = Modifier
                     .height(50.dp)
                     .fillMaxWidth()
                     .padding(horizontal = 10.dp)) {

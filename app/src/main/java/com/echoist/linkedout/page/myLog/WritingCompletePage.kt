@@ -16,9 +16,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -52,6 +56,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -67,7 +72,6 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.colintheshots.twain.MarkdownText
 import com.echoist.linkedout.R
 import com.echoist.linkedout.Routes
-import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.components.HashTagGroup
 import com.echoist.linkedout.components.LocationGroup
 import com.echoist.linkedout.ui.theme.LinkedInColor
@@ -88,6 +92,10 @@ fun WritingCompletePage(
     val scaffoldState = androidx.compose.material3.rememberBottomSheetScaffoldState(
         bottomSheetState = bottomSheetState
     )
+    //네비게이션바 높이
+    val navigationBarHeightPx = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+    val navigationBarHeightDp = with(LocalDensity.current) { navigationBarHeightPx}
+
 
     // 페이지가 로드될 때 BottomSheet를 확장 상태로 설정하기 위한 코드
     LaunchedEffect(Unit) {
@@ -101,9 +109,9 @@ fun WritingCompletePage(
             sheetContainerColor = Color(0xFF191919),
             scaffoldState = scaffoldState,
             sheetContent = {
-                WritingCompletePager(viewModel.readDetailEssay(), viewModel = viewModel, navController = navController)
+                WritingCompletePager(viewModel = viewModel, navController = navController)
             },
-            sheetPeekHeight = 46.dp
+            sheetPeekHeight = 56.dp + navigationBarHeightDp
         ) {
             Scaffold(
                 modifier = Modifier
@@ -358,7 +366,7 @@ fun RingImg(viewModel: WritingViewModel) {
 }
 
 @Composable
-fun WritingCompletePager(essayItem: EssayApi.EssayItem,viewModel: WritingViewModel, navController: NavController) {
+fun WritingCompletePager(viewModel: WritingViewModel, navController: NavController) {
     val scrollState = rememberScrollState()
     val pagerstate = rememberPagerState { 2 }
     val coroutineScope = rememberCoroutineScope()
@@ -444,7 +452,8 @@ fun WritingCompletePager(essayItem: EssayApi.EssayItem,viewModel: WritingViewMod
                     Box {
                         Column(
                             modifier = Modifier
-                                .padding(20.dp)
+                                .padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
+                                .navigationBarsPadding()
                                 .fillMaxWidth()
                                 .height(279.dp),
                             verticalArrangement = Arrangement.Center,
