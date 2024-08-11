@@ -65,7 +65,7 @@ import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.SupportViewModel
 
-@OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
+@OptIn( ExperimentalMaterial3Api::class)
 @Composable
 fun InquiryPage(
     navController : NavController,
@@ -86,6 +86,7 @@ fun InquiryPage(
 
     // ScrollState를 기억하여 스크롤 상태를 추적
     val scrollState = rememberScrollState()
+    viewModel.requestNoticesList()
 
     // 스크롤 상태를 추적
     val isScrolling = scrollState.isScrollInProgress

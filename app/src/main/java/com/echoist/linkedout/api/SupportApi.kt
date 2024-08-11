@@ -26,15 +26,15 @@ interface SupportApi {
     @GET("api/support/notices")
     suspend fun readNotices(
         @Header("Authorization") accessToken: String,
-        @Query("page") page : Int,
-        @Query("limit") limit : Int
-    ): NoticeResponse
+        @Query("page") page : Int = 1,
+        @Query("limit") limit : Int = 20
+    ): Response<NoticeResponse>
 
     @GET("api/support/notices/{noticeId}")
     suspend fun readNoticeDetail(
         @Header("Authorization") accessToken: String,
-        @Path("noticeId") noticeId : String
-    ): NoticeDetailResponse
+        @Path("noticeId") noticeId : Int
+    ): Response<NoticeDetailResponse>
 
     @POST("api/support/inquiries")
     suspend fun writeInquiry(

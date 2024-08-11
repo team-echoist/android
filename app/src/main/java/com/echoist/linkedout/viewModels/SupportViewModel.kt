@@ -18,6 +18,7 @@ import com.echoist.linkedout.api.SupportApi
 import com.echoist.linkedout.data.Alert
 import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.data.Inquiry
+import com.echoist.linkedout.data.Notice
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.myLog.Token
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -36,6 +37,8 @@ class SupportViewModel @Inject constructor(
 
     var isLoading by mutableStateOf(false)
     var alertList: SnapshotStateList<Alert> =  mutableStateListOf()
+    var noticeList: SnapshotStateList<Notice> =  mutableStateListOf()
+    var detailNotice : Notice? by mutableStateOf(null)
 
      private val _inquiryList = MutableStateFlow<List<Inquiry>>(emptyList())
     val inquiryList: StateFlow<List<Inquiry>>
@@ -171,6 +174,46 @@ class SupportViewModel @Inject constructor(
             null // 예외 발생 시 null 반환
         } finally {
             isLoading = false
+        }
+    }
+
+    fun requestNoticesList(){
+        noticeList.clear()
+        viewModelScope.launch {
+            try {
+                val response = supportApi.readNotices(Token.accessToken)
+                if (response.isSuccessful){
+                    Token.accessToken = (response.headers()["authorization"].toString())
+                    noticeList.addAll(response.body()!!.data.Notices)
+                    Log.d("공지사항 목록 불러오기", "성공: $noticeList")
+                }
+                else{
+                    Log.e("공지사항 목록 불러오기", "실패: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                Log.e("공지사항 목록 불러오기", "실패: ${e.printStackTrace()}")
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun requestDetailNotice(noticeId : Int,navController: NavController){
+        viewModelScope.launch {
+            try {
+                val response = supportApi.readNoticeDetail(Token.accessToken,noticeId)
+                if (response.isSuccessful){
+                    Token.accessToken = (response.headers()["authorization"].toString())
+                    Log.d("공지사항 디테일 확인", "성공 내용 : ${response.body()!!.data.content}")
+                    detailNotice = response.body()!!.data
+                    navController.navigate(Routes.NoticeDetailPage)
+                }
+                else{
+                    Log.e("공지사항 디테일 확인", "실패: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                Log.e("공지사항 디테일 확인", "실패: ${e.printStackTrace()}")
+                e.printStackTrace()
+            }
         }
     }
 }

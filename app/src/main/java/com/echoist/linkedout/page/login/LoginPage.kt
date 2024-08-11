@@ -91,6 +91,8 @@ import com.echoist.linkedout.page.home.DarkModeSettingPage
 import com.echoist.linkedout.page.home.HomePage
 import com.echoist.linkedout.page.home.InquiryPage
 import com.echoist.linkedout.page.home.LinkedOutSupportPage
+import com.echoist.linkedout.page.home.NoticeDetailPage
+import com.echoist.linkedout.page.home.NoticePage
 import com.echoist.linkedout.page.home.NotificationPage
 import com.echoist.linkedout.page.home.NotificationSettingPage
 import com.echoist.linkedout.page.home.SupportPage
@@ -128,6 +130,7 @@ import com.echoist.linkedout.viewModels.MyLogViewModel
 import com.echoist.linkedout.viewModels.SettingsViewModel
 import com.echoist.linkedout.viewModels.SignUpViewModel
 import com.echoist.linkedout.viewModels.SocialLoginViewModel
+import com.echoist.linkedout.viewModels.SupportViewModel
 import com.echoist.linkedout.viewModels.WritingViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -164,6 +167,7 @@ class LoginPage : ComponentActivity() {
         val myLogViewModel: MyLogViewModel by viewModels()
         val communityViewModel: CommunityViewModel by viewModels()
         val settingsViewModel: SettingsViewModel by viewModels()
+        val supportViewModel : SupportViewModel by viewModels()
         //top,bottom 시스템 바 등의 설정
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
@@ -171,7 +175,7 @@ class LoginPage : ComponentActivity() {
             val keyHash = Utility.getKeyHash(this)
             Log.d("Hash", keyHash)
             val navController = rememberNavController()
-            NavHost(navController = navController, startDestination = Routes.OnBoarding) {
+            NavHost(navController = navController, startDestination = Routes.LoginPage) {
                 composable(Routes.OnBoarding) {
                     OnBoardingPage(navController)
                 }
@@ -227,6 +231,12 @@ class LoginPage : ComponentActivity() {
                 }
                 composable(Routes.InquiryPage) {
                     InquiryPage(navController)
+                }
+                composable(Routes.NoticePage) {
+                    NoticePage(navController,supportViewModel)
+                }
+                composable(Routes.NoticeDetailPage) {
+                    NoticeDetailPage(navController, supportViewModel)
                 }
                 composable(Routes.UpdateHistoryPage) {
                     UpdateHistoryPage(navController)

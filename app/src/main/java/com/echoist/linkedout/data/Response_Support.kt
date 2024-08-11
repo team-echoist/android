@@ -5,16 +5,13 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class NoticeResponse(
-    val data: List<Notice>,
+    val data: NoticeList,
     val path: String,
     val success: Boolean,
     val timestamp: String,
     val statusCode : Int,
-    val total : Int,
-    val totalPages : Int,
-    val page : Int
-
 )
+data class NoticeList(val Notices : List<Notice>,val total: Int,val page: Int,val totalPage: Int)
 
 @JsonClass(generateAdapter = true)
 data class NoticeDetailResponse(

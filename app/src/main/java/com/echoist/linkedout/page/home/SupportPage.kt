@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.echoist.linkedout.R
+import com.echoist.linkedout.Routes
 import com.echoist.linkedout.page.settings.ModifyBox
 import com.echoist.linkedout.page.settings.SettingTopAppBar
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
@@ -44,7 +45,7 @@ fun SupportPage(navController : NavController){
 
             Column(Modifier.padding(it)) {
                 ModifyBox("링크드아웃 고객센터") {navController.navigate("LinkedOutSupportPage")}
-                ModifyBox("공지사항") {}
+                ModifyBox("공지사항") {navController.navigate(Routes.NoticePage)}
                 Legal_Notice(navController = navController)
 
             }
