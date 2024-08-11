@@ -104,29 +104,50 @@ enum class UserStatus {
 }
 
 
+//2024-07-01T14:22:46.803+09:00 to 2024.07.01
 fun formatDateTime(input: String): String {
-    // Define the input format
+
     val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
-
-    // Parse the input string to a LocalDateTime
     val dateTime = LocalDateTime.parse(input, inputFormatter)
-
-    // Define the output format
     val outputFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
 
-    // Format the LocalDateTime to the desired output format
     return dateTime.format(outputFormatter)
+}
+//2024-07-01T14:22:46.803 09:00 to 2024-07-01T14:22:46.803+09:00 to 2024.07.01
+
+fun parseAndFormatDateTime(dateTimeString: String): String {
+    // 공백을 +로 바꾸어 표준 형식으로 만듦
+    val correctedDateTimeString = dateTimeString.replace(" ", "+")
+    // 원본 문자열의 형식 지정
+    val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+    val outputFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
+    val zonedDateTime = ZonedDateTime.parse(correctedDateTimeString, inputFormatter)
+    return outputFormatter.format(zonedDateTime.toLocalDate())
 }
 
 fun getCurrentDateFormatted(): String {
     // 현재 날짜를 가져옵니다.
     val currentDate = LocalDate.now()
-
     // 원하는 포맷을 정의합니다.
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-
     // 포맷을 사용하여 날짜를 문자열로 변환합니다.
     return currentDate.format(formatter)
+}
+
+// 00 일째 링크드아웃! 의 계산함수
+fun calculateDaysDifference(dateString: String): Long {
+    // 입력된 날짜를 ZonedDateTime으로 파싱
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+    val parsedDate = ZonedDateTime.parse(dateString, formatter)
+
+    // 현재 날짜를 가져오기 (시스템 기본 시간대 사용)
+    val currentDate = LocalDate.now()
+
+    // 입력된 날짜의 LocalDate 가져오기
+    val targetDate = parsedDate.toLocalDate()
+
+    // 두 날짜 간의 차이 계산
+    return ChronoUnit.DAYS.between(targetDate, currentDate)
 }
 
 fun formatElapsedTime(isoDateTimeString: String): String {

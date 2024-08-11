@@ -55,7 +55,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -196,7 +195,7 @@ fun WritingPage(
                             contentAlignment = Alignment.Center,
                         ) {
                             Box{
-                                GlideImage(model = viewModel.imageUri ?: viewModel.imageUrl , contentDescription = "uri") //todo 위치 조절 제대로하기
+                                GlideImage(model = viewModel.imageUri ?: viewModel.imageUrl , contentDescription = "uri")
                                 Log.d(TAG, "WritingPage: ${viewModel.imageUri}, ${viewModel.imageUrl}")
                                 if (viewModel.imageUri != null || (viewModel.imageUrl != null && viewModel.imageUrl!!.startsWith("https"))){ //image url 주소가 널이 아니고 https값으로 시작해야 제대로된 Url link
                                     Row( //변경버튼 클릭 시 화면이동
@@ -478,7 +477,6 @@ fun WritingTopAppBar(
                     )
                 }
                 val context = LocalContext.current
-                val scope = rememberCoroutineScope()
                 // 완료 버튼을 오른쪽에 배치
                 Text(
                     color = Color.White,
@@ -532,7 +530,7 @@ fun ContentTextField(viewModel: WritingViewModel,textState: RichTextState) {
                     .offset(x = 0.dp, y = ydp)
                     .onFocusChanged { focusState.value = it.isFocused }
                     .fillMaxWidth()
-                    .padding(5.dp),
+                    .padding(horizontal = 5.dp),
                 placeholder = {
                     Text(
                         text = viewModel.hint,

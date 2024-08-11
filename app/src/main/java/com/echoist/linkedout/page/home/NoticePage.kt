@@ -32,6 +32,7 @@ import androidx.navigation.NavController
 import com.echoist.linkedout.data.Notice
 import com.echoist.linkedout.formatDateTime
 import com.echoist.linkedout.page.settings.SettingTopAppBar
+import com.echoist.linkedout.parseAndFormatDateTime
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.SupportViewModel
 
@@ -89,7 +90,7 @@ fun NoticeItem(notice: Notice,onClickItem :()->Unit){
                 Modifier
                     .fillMaxSize()
                     .padding(horizontal = 10.dp)) {
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(14.dp))
                 Text(
                     text = notice.title,
                     modifier = Modifier.weight(4f),
@@ -114,7 +115,7 @@ fun NoticeItem(notice: Notice,onClickItem :()->Unit){
 }
 
 @Composable
-fun NoticeDetailPage(navController: NavController,viewModel: SupportViewModel){
+fun NoticeDetailPage(navController: NavController, notice : Notice){
     LinkedOutTheme {
         Scaffold(
             topBar = {
@@ -128,20 +129,14 @@ fun NoticeDetailPage(navController: NavController,viewModel: SupportViewModel){
                     .verticalScroll(rememberScrollState())
                     .fillMaxHeight()
             ) {
-                if(viewModel.detailNotice !=null){
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Text(text = viewModel.detailNotice!!.title, fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Text(text = viewModel.detailNotice!!.content ?: "내용이 없습니다. 하지만 없다면 서버오류입니다.", fontSize = 16.sp)
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Text(text = formatDateTime(viewModel.detailNotice!!.createdDate) , fontSize = 12.sp,color = Color.Gray)
 
-                }
-                else{
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text(text = "공지사항이 없습니다.", color = Color.Gray)
-                    }
-                }
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Text(text = notice.title, fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Text(text = notice.content ?: "내용이 없습니다. 하지만 없다면 서버오류입니다.", fontSize = 16.sp)
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Text(text = parseAndFormatDateTime(notice.createdDate) , fontSize = 12.sp,color = Color.Gray)
+
 
             }
         }

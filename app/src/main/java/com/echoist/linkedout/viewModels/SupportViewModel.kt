@@ -21,11 +21,14 @@ import com.echoist.linkedout.data.Inquiry
 import com.echoist.linkedout.data.Notice
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.myLog.Token
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.net.URLEncoder
 import javax.inject.Inject
 
 @HiltViewModel
@@ -198,14 +201,25 @@ class SupportViewModel @Inject constructor(
     }
 
     fun requestDetailNotice(noticeId : Int,navController: NavController){
+
         viewModelScope.launch {
             try {
                 val response = supportApi.readNoticeDetail(Token.accessToken,noticeId)
                 if (response.isSuccessful){
                     Token.accessToken = (response.headers()["authorization"].toString())
                     Log.d("공지사항 디테일 확인", "성공 내용 : ${response.body()!!.data.content}")
+                    Log.d("공지사항 디테일 확인", "성공 시간 : ${response.body()!!.data.createdDate}")
+
+
+                    val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+                    val jsonAdapter = moshi.adapter(Notice::class.java)
+
+                    val data = response.body()!!.data
+                    val json = jsonAdapter.toJson(data)
+                    val encodedJson = URLEncoder.encode(json, "UTF-8")
+
                     detailNotice = response.body()!!.data
-                    navController.navigate(Routes.NoticeDetailPage)
+                    navController.navigate("${Routes.NoticeDetailPage}/$encodedJson")
                 }
                 else{
                     Log.e("공지사항 디테일 확인", "실패: ${response.code()}")

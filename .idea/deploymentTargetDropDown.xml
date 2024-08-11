@@ -3,7 +3,20 @@
   <component name="deploymentTargetDropDown">
     <value>
       <entry key="Notice_Main">
-        <State />
+        <State>
+          <runningDeviceTargetSelectedWithDropDown>
+            <Target>
+              <type value="RUNNING_DEVICE_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="VIRTUAL_DEVICE_PATH" />
+                  <value value="$USER_HOME$/.android/avd/Client_Test.avd" />
+                </Key>
+              </deviceKey>
+            </Target>
+          </runningDeviceTargetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2024-08-11T12:33:07.305734Z" />
+        </State>
       </entry>
       <entry key="ProvisionsWebv2iew">
         <State />
@@ -27,7 +40,7 @@
               </deviceKey>
             </Target>
           </runningDeviceTargetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-08-11T09:50:25.511716Z" />
+          <timeTargetWasSelectedWithDropDown value="2024-08-11T15:24:12.162199Z" />
         </State>
       </entry>
       <entry key="t3">

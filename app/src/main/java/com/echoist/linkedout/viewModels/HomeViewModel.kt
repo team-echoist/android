@@ -25,10 +25,13 @@ import com.echoist.linkedout.api.SupportApi
 import com.echoist.linkedout.api.UserApi
 import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.data.History
+import com.echoist.linkedout.data.Notice
 import com.echoist.linkedout.data.NotificationSettings
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.myLog.Token
 import com.google.firebase.messaging.FirebaseMessaging
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -349,7 +352,6 @@ class HomeViewModel @Inject constructor(
             } finally {
             }
         }
-
     }
 
     fun setFirstUserToExistUser(){
@@ -438,6 +440,32 @@ class HomeViewModel @Inject constructor(
             } catch (e: Exception) {
                 e.printStackTrace()
                 Log.e("유저 즉시 탈퇴", "실패: ${e.message}", )
+            }
+        }
+    }
+    //notice 세부 사항 읽은 후 세부 페이지로 이동
+    fun requestDetailNotice(noticeId : Int,navController: NavController){
+
+        viewModelScope.launch {
+            try {
+                val response = supportApi.readNoticeDetail(Token.accessToken,noticeId)
+                if (response.isSuccessful){
+                    Token.accessToken = (response.headers()["authorization"].toString())
+                    Log.d("공지사항 디테일 확인", "성공 공지 내용 : ${response.body()!!.data.content}")
+
+                    val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+                    val jsonAdapter = moshi.adapter(Notice::class.java)
+                    val json = jsonAdapter.toJson(response.body()!!.data)
+
+                    navController.navigate("${Routes.NoticeDetailPage}/$json")
+
+                }
+                else{
+                    Log.e("공지사항 디테일 확인", "실패: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                Log.e("공지사항 디테일 확인", "실패: ${e.printStackTrace()}")
+                e.printStackTrace()
             }
         }
     }

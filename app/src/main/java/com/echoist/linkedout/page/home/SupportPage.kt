@@ -93,7 +93,6 @@ fun Legal_Notice(navController: NavController){
                 Legal_NoticeMenu("위치 기반 서비스 이용 약관"){navController.navigate("LocationPolicyPage")}
                 Legal_NoticeMenu("개인정보처리방침"){navController.navigate("PrivacyPolicyPage")}
                 Legal_NoticeMenu("글꼴 저작권"){navController.navigate("FontCopyRight")}
-                Legal_NoticeMenu("추가될것 하나"){navController.navigate("FontCopyRight")}
             }
         }
     }

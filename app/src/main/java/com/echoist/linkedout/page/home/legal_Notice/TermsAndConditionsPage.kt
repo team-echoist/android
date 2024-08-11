@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -26,8 +25,7 @@ fun TermsAndConditionsPage(navController : NavController){
 
             Column(
                 Modifier
-                    .padding(it)
-                    .navigationBarsPadding()) {
+                    .padding(it)) {
                 AndroidView(
                     factory = { context ->
                         WebView(context).apply {

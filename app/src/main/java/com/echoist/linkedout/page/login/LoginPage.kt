@@ -83,6 +83,7 @@ import com.echoist.linkedout.DeviceId
 import com.echoist.linkedout.R
 import com.echoist.linkedout.Routes
 import com.echoist.linkedout.components.CropImagePage
+import com.echoist.linkedout.data.Notice
 import com.echoist.linkedout.page.community.CommunityDetailPage
 import com.echoist.linkedout.page.community.CommunityPage
 import com.echoist.linkedout.page.community.CommunitySavedEssayPage
@@ -137,7 +138,11 @@ import com.google.firebase.ktx.Firebase
 import com.kakao.sdk.common.KakaoSdk
 import com.kakao.sdk.common.util.Utility
 import com.navercorp.nid.NaverIdLoginSDK
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.hilt.android.AndroidEntryPoint
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 
 
 @AndroidEntryPoint
@@ -158,6 +163,10 @@ class LoginPage : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+        val jsonAdapter = moshi.adapter(Notice::class.java)
+
         super.onCreate(savedInstanceState)
 
         val homeViewModel: HomeViewModel by viewModels()
@@ -235,8 +244,15 @@ class LoginPage : ComponentActivity() {
                 composable(Routes.NoticePage) {
                     NoticePage(navController,supportViewModel)
                 }
-                composable(Routes.NoticeDetailPage) {
-                    NoticeDetailPage(navController, supportViewModel)
+                composable(
+                    route = "${Routes.NoticeDetailPage}/{noticeJson}",
+                    arguments = listOf(navArgument("noticeJson") { type = NavType.StringType })
+                ) {backStackEntry ->
+                    val noticeJson = backStackEntry.arguments?.getString("noticeJson")
+                    val decodedJson = noticeJson?.let { URLDecoder.decode(it, StandardCharsets.UTF_8.name()) }
+                    val notice = jsonAdapter.fromJson(decodedJson!!)
+
+                    NoticeDetailPage(navController, notice ?: Notice(0,"no title","no content","2024 08 03"))
                 }
                 composable(Routes.UpdateHistoryPage) {
                     UpdateHistoryPage(navController)

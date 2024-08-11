@@ -58,10 +58,7 @@
                 <data android:scheme="myapp" />
                 <data android:host="splash" />
             </intent-filter>
-
-
         </activity>
-
 
         <activity
             android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
@@ -77,19 +74,19 @@
                     android:host="oauth"
                     android:scheme="@string/kakao_oauth_host" />
             </intent-filter>
-
         </activity>
 
         <activity
             android:name=".page.login.LoginPage"
             android:exported="true"
             android:theme="@style/LinkedOut">
-            <intent-filter >
+            <intent-filter android:autoVerify="false">
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
+                <data android:scheme="http" />
                 <data android:scheme="https" />
                 <data android:host="linkedoutapp.com" />
                 <data android:path="/login" />

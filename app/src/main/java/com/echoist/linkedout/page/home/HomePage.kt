@@ -92,6 +92,7 @@ import com.echoist.linkedout.R
 import com.echoist.linkedout.TUTORIAL_BULB
 import com.echoist.linkedout.UserStatus
 import com.echoist.linkedout.api.EssayApi
+import com.echoist.linkedout.calculateDaysDifference
 import com.echoist.linkedout.data.BottomNavItem
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.getCurrentDateFormatted
@@ -261,7 +262,12 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewMo
                 .fillMaxSize()
                 .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center)
             {
-                Notice_Main{viewModel.latestNoticeId = null}
+                Notice_Main(isClickedClose = {
+                    viewModel.latestNoticeId = null
+                                             },
+                    isClickedOpened = {
+                        viewModel.requestDetailNotice(viewModel.latestNoticeId!!,navController)
+                    })
             }
         }
     }
@@ -465,7 +471,7 @@ fun MyProfile(item: UserInfo, onClick: () -> Unit) {
                         Text(text = " 아무개", color = Color.White)
                     }
                     Spacer(modifier = Modifier.height(7.dp))
-                    Text(text = "43일째 링크드 아웃!", color = Color(0xFF686868))
+                    Text(text = "${calculateDaysDifference(item.createdDate!!)}일째 링크드 아웃!", color = Color(0xFF686868), fontSize = 12.sp)
                 }
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
@@ -573,7 +579,7 @@ fun MyDrawableItem(text : String , onClick: () -> Unit) {
         NavigationDrawerItem(
             modifier = Modifier.height(70.dp),
             label = {
-                Text(text = text, color = Color(0xFF797979), fontWeight = FontWeight.SemiBold)
+                Text(text = text, color = Color(0xFF797979))
             },
             selected = false,
             onClick = { onClick() },
@@ -1203,7 +1209,7 @@ fun ReactivateOrDeleteBox(isClickedReActivate: () -> Unit, isClickedDeActivate: 
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun Notice_Main(isClickedClose : ()->Unit){
+fun Notice_Main(isClickedClose : ()->Unit,isClickedOpened : ()-> Unit){
     LinkedOutTheme {
         Box(modifier = Modifier
             .width(280.dp)
@@ -1226,12 +1232,23 @@ fun Notice_Main(isClickedClose : ()->Unit){
                 Text(text = "\n\n아직 공지는 없답니다?", textAlign = TextAlign.Center, color = Color.White, modifier = Modifier
                     .height(240.dp)
                     .verticalScroll(rememberScrollState()))
-                Button(onClick = { isClickedClose() }, shape = RoundedCornerShape(10), modifier = Modifier
-                    .height(50.dp)
-                    .fillMaxWidth()
-                    .padding(horizontal = 10.dp)) {
-                    Text(text = "닫기", color = Color.Black)
+                Row {
+                    Button(onClick = { isClickedOpened() },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF868686)),
+                        shape = RoundedCornerShape(20), modifier = Modifier
+                            .height(50.dp)
+                            .padding(start = 15.dp, end = 5.dp)
+                            .weight(1f)) {
+                        Text(text = "자세히 보기", color = Color.Black)
+                    }
+                    Button(onClick = { isClickedClose() }, shape = RoundedCornerShape(20), modifier = Modifier
+                        .height(50.dp)
+                        .padding(start = 5.dp, end = 15.dp)
+                        .weight(1f)) {
+                        Text(text = "닫기", color = Color.Black)
+                    }
                 }
+
             }
         }
     }
