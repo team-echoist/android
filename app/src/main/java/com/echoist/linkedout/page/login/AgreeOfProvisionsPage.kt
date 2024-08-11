@@ -1,5 +1,7 @@
 package com.echoist.linkedout.page.login
 
+import android.annotation.SuppressLint
+import android.graphics.Bitmap
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.animation.AnimatedVisibility
@@ -28,6 +30,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -51,12 +54,15 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.echoist.linkedout.LOCATION_POLICY_URL
 import com.echoist.linkedout.PRIVACY_POLICY_URL
 import com.echoist.linkedout.R
+import com.echoist.linkedout.TERMS_POLICY_URL
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.SignUpViewModel
 
+@SuppressLint("SetJavaScriptEnabled")
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun AgreeOfProvisionsPage(navController: NavController, viewModel: SignUpViewModel) {
@@ -65,17 +71,15 @@ fun AgreeOfProvisionsPage(navController: NavController, viewModel: SignUpViewMod
     val screenHeight = configuration.screenHeightDp // 화면의 높이를 DP 단위로 가져옴
 
     var webViewUrl by remember { mutableStateOf(PRIVACY_POLICY_URL) }
-
     var isClicked by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
-
     LinkedOutTheme {
-
         Scaffold { it ->
             Box(
-                modifier = Modifier
-                    .fillMaxSize(), contentAlignment = Alignment.TopEnd
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.TopEnd
             ) {
                 GlideImage(
                     model = R.drawable.background_logo_340,
@@ -88,13 +92,11 @@ fun AgreeOfProvisionsPage(navController: NavController, viewModel: SignUpViewMod
                         .fillMaxSize()
                         .padding(it)
                 ) {
-
                     Spacer(modifier = Modifier.height(20.dp))
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "arrowback",
-                        tint =
-                        Color.White,
+                        tint = Color.White,
                         modifier = Modifier
                             .padding(16.dp)
                             .size(30.dp)
@@ -115,6 +117,8 @@ fun AgreeOfProvisionsPage(navController: NavController, viewModel: SignUpViewMod
                         modifier = Modifier.padding(start = 16.dp, bottom = 32.dp),
                         color = Color.White
                     )
+
+                    // Agreement options
                     val agreementList = listOf(
                         viewModel.agreement_location,
                         viewModel.agreement_service,
@@ -149,6 +153,8 @@ fun AgreeOfProvisionsPage(navController: NavController, viewModel: SignUpViewMod
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(text = "전체 동의")
                     }
+
+                    // Agreement items
                     AgreementTextWithInfo(
                         text = "(필수)  서비스  이용약관  동의",
                         {
@@ -158,7 +164,7 @@ fun AgreeOfProvisionsPage(navController: NavController, viewModel: SignUpViewMod
                         if (viewModel.agreement_service) LinkedInColor else Color(0xFF919191),
                         {
                             isClicked = true
-                            webViewUrl = PRIVACY_POLICY_URL
+                            webViewUrl = TERMS_POLICY_URL
                         }
                     )
                     AgreementTextWithInfo(
@@ -170,7 +176,7 @@ fun AgreeOfProvisionsPage(navController: NavController, viewModel: SignUpViewMod
                         if (viewModel.agreement_collection) LinkedInColor else Color(0xFF919191),
                         {
                             isClicked = true
-                            webViewUrl = PRIVACY_POLICY_URL //todo 교체필요
+                            webViewUrl = PRIVACY_POLICY_URL
                         }
                     )
                     AgreementText(
@@ -187,7 +193,7 @@ fun AgreeOfProvisionsPage(navController: NavController, viewModel: SignUpViewMod
                         if (viewModel.agreement_location) LinkedInColor else Color(0xFF919191),
                         {
                             isClicked = true
-                            webViewUrl = PRIVACY_POLICY_URL //todo 교체필요
+                            webViewUrl = LOCATION_POLICY_URL
                         }
                     )
                     AgreementText(
@@ -241,6 +247,8 @@ fun AgreeOfProvisionsPage(navController: NavController, viewModel: SignUpViewMod
                     )
                 }
             }
+
+            // WebView and loading animation
             AnimatedVisibility(
                 visible = isClicked,
                 enter = slideInVertically(
@@ -258,18 +266,38 @@ fun AgreeOfProvisionsPage(navController: NavController, viewModel: SignUpViewMod
                         .background(Color.Transparent, shape = RoundedCornerShape(10.dp)),
                     contentAlignment = Alignment.BottomCenter
                 ) {
-                    // The WebView should be inside another Box to apply rounded corners
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height((0.95 * screenHeight).dp)
-                            .clip(RoundedCornerShape(10.dp)) // Apply rounded corners here
-                            .background(Color.White) // Background color if needed
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(Color.White)
                     ) {
+                        // Loading spinner
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                            if (isLoading) {
+                                CircularProgressIndicator(
+                                    color = LinkedInColor
+                                )
+                            }
+                        }
+
+
+                        // WebView
                         AndroidView(
                             factory = { context ->
                                 WebView(context).apply {
-                                    webViewClient = WebViewClient()
+                                    webViewClient = object : WebViewClient() {
+                                        override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                                            super.onPageStarted(view, url, favicon)
+                                            isLoading = true // Show loading indicator when page starts loading
+                                        }
+
+                                        override fun onPageFinished(view: WebView?, url: String?) {
+                                            super.onPageFinished(view, url)
+                                            isLoading = false // Hide loading indicator when page finishes loading
+                                        }
+                                    }
                                     settings.javaScriptEnabled = true
                                 }
                             },
@@ -277,6 +305,8 @@ fun AgreeOfProvisionsPage(navController: NavController, viewModel: SignUpViewMod
                                 webView.loadUrl(webViewUrl)
                             }
                         )
+
+                        // Close button
                         Box(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.TopEnd
@@ -296,6 +326,7 @@ fun AgreeOfProvisionsPage(navController: NavController, viewModel: SignUpViewMod
         }
     }
 }
+
 
 @Composable
 fun AgreementTextWithInfo(

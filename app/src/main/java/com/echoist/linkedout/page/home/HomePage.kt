@@ -256,12 +256,12 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewMo
                 }
             }
         }
-        if (viewModel.isExistLatestNotice == true){
+        if (viewModel.latestNoticeId != null){ //id값
             Box(modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center)
             {
-                Notice_Main{viewModel.isExistLatestNotice = null}
+                Notice_Main{viewModel.latestNoticeId = null}
             }
         }
     }
@@ -330,6 +330,7 @@ fun WriteFTB(navController: NavController,viewModel: HomeViewModel,writingViewMo
             viewModel.initializeDetailEssay()
             viewModel.setStorageEssay(EssayApi.EssayItem())
             writingViewModel.isModifyClicked = false
+            writingViewModel.initialize()
                   },
         shape = RoundedCornerShape(100.dp),
         containerColor = Color.White

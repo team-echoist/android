@@ -345,7 +345,9 @@ fun SavedEssayListScreen(viewModel: CommunityViewModel, navController: NavContro
             else
             {
 
-                Text(text = "저장한 글이 없습니다.", fontSize = 20.sp, modifier = Modifier.padding(start = 20.dp))
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                    Text(text = "저장한 글이 없습니다.", color = Color.Gray)
+                }
             }
 
                 val containerColor =

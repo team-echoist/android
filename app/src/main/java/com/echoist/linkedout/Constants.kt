@@ -40,7 +40,11 @@ const val PROFILE_IMAGE_12 = "https://driqat77mj5du.cloudfront.net/service/profi
 
 const val TUTORIAL_BULB = "https://driqat77mj5du.cloudfront.net/service/geulroquis_bulb.gif"
 
-const val PRIVACY_POLICY_URL = "https://www.linkedoutapp.com/policy"
+const val PRIVACY_POLICY_URL = "https://www.linkedoutapp.com/privacy-policy" // 개인정보 처리방침
+const val LOCATION_POLICY_URL = "https://www.linkedoutapp.com/location-terms" // 위치기반 서비스 이용약관
+const val OPERATIONAL_POLICY_URL = "https://www.linkedoutapp.com/operational_policy" // 운영정책
+const val TERMS_POLICY_URL = "https://www.linkedoutapp.com/terms" // 이용약관
+
 object DeviceType {
     const val DESKTOP = "Desktop"
     const val LAPTOP = "Laptop"

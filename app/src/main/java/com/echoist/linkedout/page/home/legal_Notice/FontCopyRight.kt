@@ -27,7 +27,7 @@ fun FontCopyRight(navController : NavController){
                     .padding(horizontal = 20.dp)
                     .verticalScroll(rememberScrollState())
                     .navigationBarsPadding()) {
-                Text(text = "### Linkedout 이용약관\n" )
+                Text(text = "### Linkedout 글꼴 저작권 pretendard\n" )
 
             }
         }

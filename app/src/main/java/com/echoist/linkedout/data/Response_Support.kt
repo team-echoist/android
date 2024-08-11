@@ -158,7 +158,7 @@ data class LatestNoticeResponse(
     val statusCode : Int,
 )
 
-data class LatestNotice(val newNotice : Boolean?)
+data class LatestNotice(val newNotice : Int?)
 
 //버전체크
 data class VersionsResponse(

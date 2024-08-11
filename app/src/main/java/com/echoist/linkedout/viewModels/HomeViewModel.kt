@@ -53,7 +53,7 @@ class HomeViewModel @Inject constructor(
 
     var isLoading by mutableStateOf(false)
     var isFirstUser by mutableStateOf(false)
-    var isExistLatestNotice : Boolean? by mutableStateOf(null) //공지가 있을경우 true, 없을경우 Null
+    var latestNoticeId : Int? by mutableStateOf(null) //공지가 있을경우 true, 없을경우 Null
 
     var updateHistory: SnapshotStateList<History> =  mutableStateListOf()
 
@@ -294,7 +294,7 @@ class HomeViewModel @Inject constructor(
                 val response = supportApi.requestLatestNotice(Token.accessToken)
                 if (response.isSuccessful){
                     //공지가 있을경우 true, 없을경우 Null
-                    isExistLatestNotice = response.body()!!.data.newNotice
+                    latestNoticeId = response.body()!!.data.newNotice
                     Log.d("최신공지 확인", "확인 성공 newNotice : ${response.body()!!.data.newNotice}")
                 }
                 else{

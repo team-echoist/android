@@ -330,7 +330,7 @@ fun WritingPage(
                                 isTextSettingSelected = false
                             })
 
-                        KeyboardLocationFunc(viewModel, navController)
+                        KeyboardLocationFunc(viewModel, navController,textState)
 
                     }
                 }
@@ -688,7 +688,7 @@ fun WritingCancelCard(viewModel: WritingViewModel, navController: NavController,
 }
 
 @Composable
-fun KeyboardLocationFunc(viewModel: WritingViewModel, navController: NavController) {
+fun KeyboardLocationFunc(viewModel: WritingViewModel, navController: NavController,state: RichTextState) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val requestPermissionsUtil = RequestPermissionsUtil(LocalContext.current, viewModel)
 
@@ -721,7 +721,9 @@ fun KeyboardLocationFunc(viewModel: WritingViewModel, navController: NavControll
             Log.d("tagtag", "tag")
         },
 
-        FuncItemData("이미지", R.drawable.keyboard_image) { navController.navigate("CropImagePage") },
+        FuncItemData("이미지", R.drawable.keyboard_image) {
+            viewModel.content = state.toHtml()
+            navController.navigate("CropImagePage") },
 
         FuncItemData("쓰다 만 글", R.drawable.keyboard_storage) { navController.navigate("TemporaryStoragePage") },
 

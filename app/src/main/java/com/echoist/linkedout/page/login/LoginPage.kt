@@ -2,7 +2,9 @@ package com.echoist.linkedout.page.login
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.graphics.Rect
+import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
@@ -187,6 +189,8 @@ class LoginPage : ComponentActivity() {
                     deepLinks = listOf(navDeepLink {
                         uriPattern =
                             "https://linkedoutapp.com/${Routes.SignUpComplete}?token={token}"
+                        // https://linkedoutapp.com/SignUpComplete?token={token}
+                        //https://linkedoutapp.com/login
                     }),
                     arguments = listOf(navArgument("token") {
                         type = NavType.StringType
@@ -363,6 +367,10 @@ class LoginPage : ComponentActivity() {
             }
         }
 
+        // ATTENTION: This was auto-generated to handle app links.
+        val appLinkIntent: Intent = intent
+        val appLinkAction: String? = appLinkIntent.action
+        val appLinkData: Uri? = appLinkIntent.data
     }
 }
 
