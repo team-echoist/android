@@ -225,7 +225,7 @@ class MyLogViewModel @Inject constructor(
                 if (response.isSuccessful){
                     isActionClicked = false
                     Token.accessToken = (response.headers()["authorization"].toString())
-                    navController.navigate("MYLOG")
+                    navController.navigate("MYLOG/0")
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -240,7 +240,7 @@ class MyLogViewModel @Inject constructor(
                     if (response.isSuccessful){
                         isActionClicked = false
                         Token.accessToken = (response.headers()["authorization"].toString())
-                        navController.navigate("MYLOG")
+                        navController.navigate("MYLOG/0")
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -261,7 +261,7 @@ class MyLogViewModel @Inject constructor(
                     Token.accessToken = (response.headers()["authorization"].toString())
                     Log.e("writeEssayApiSuccess", "${response.code()}")
                     isActionClicked = false
-                    navController.navigate("MYLOG") {
+                    navController.navigate("MYLOG/0") {
                         popUpTo("MYLOG") {
                             inclusive = false
                         }
@@ -305,7 +305,7 @@ class MyLogViewModel @Inject constructor(
                 val response = storyApi.deleteStory(Token.accessToken, storyId)
                 if (response.isSuccessful) {
                     Token.accessToken = (response.headers()["authorization"].toString())
-                    navController.navigate("MYLOG")
+                    navController.navigate("MYLOG/2")
 
                     Log.e("writeEssayApiSuccess", "${response.headers()}")
                     Log.e("writeEssayApiSuccess", "${response.code()}")
@@ -323,16 +323,16 @@ class MyLogViewModel @Inject constructor(
         }
     }
 
-    fun createStory(navController: NavController){
+    fun createStory(navController: NavController, essayidList: List<Int>){
         viewModelScope.launch {
             try {
-                val storyData = StoryApi.StoryData(storyTextFieldTitle,essayIdList)
+                val storyData = StoryApi.StoryData(storyTextFieldTitle,essayidList)
 
                 val response = storyApi.createStory(Token.accessToken,storyData)
 
                 if (response.isSuccessful) {
                     Token.accessToken = (response.headers()["authorization"].toString())
-                    navController.navigate("MYLOG")
+                    navController.navigate("MYLOG/2")
                     storyTextFieldTitle = ""
                     essayIdList.clear()
 
@@ -353,32 +353,35 @@ class MyLogViewModel @Inject constructor(
         }
     }
 
-    fun modifyStory(navController: NavController){
+    fun modifyStory(navController: NavController,essayidList : List<Int>){ //todo essaylist가 비어있을때는 동작x
         viewModelScope.launch {
             try {
-                val storyData = StoryApi.StoryData(storyTextFieldTitle,essayIdList)
+                val storyData = StoryApi.StoryData(storyTextFieldTitle,essayidList)
 
                 val response = storyApi.modifyStory(Token.accessToken,getSelectedStory().id!!,storyData)
 
                 if (response.isSuccessful) {
                     Token.accessToken = (response.headers()["authorization"].toString())
+                    Log.d("스토리 수정 성공", "스토리 이름 - ${getSelectedStory().name}")
+                    Log.d("스토리 수정 성공", "수정할 스토리 제목 - $storyTextFieldTitle")
+                    Log.d("스토리 수정 성공", "수정할 에세이 id 리스트 - $essayIdList")
+
                     storyTextFieldTitle = ""
                     essayIdList.clear()
-                    navController.navigate("MYLOG")
+                    navController.navigate("MYLOG/2")
 
-                    Log.e("writeEssayApiSuccess", "${response.headers()}")
-                    Log.e("writeEssayApiSuccess", "${response.code()}")
+                    Log.e("스토리 수정 성공", "${response.code()}")
                 }
                 else{
-                    Log.e("writeEssayApiFailed", "${response.errorBody()}")
-                    Log.e("writeEssayApiFailed", "${response.code()}")
+                    Log.e("스토리 수정 실패", "${response.errorBody()}")
+                    Log.e("스토리 수정 실패", "${response.code()}")
                 }
 
 
             } catch (e: Exception) {
                 e.printStackTrace()
                 // api 요청 실패
-                Log.e("writeEssayApiFailed", "Failed to write essay: ${e.message}")
+                Log.e("스토리 수정 실패", "Failed to write essay: ${e.message}")
             }
         }
     }
@@ -392,7 +395,7 @@ class MyLogViewModel @Inject constructor(
                 if (response.isSuccessful) {
                     Token.accessToken = (response.headers()["authorization"].toString())
                     isActionClicked = false
-                    navController.navigate("MYLOG")
+                    navController.navigate("MYLOG/0")
 
                     Log.e("writeEssayApiSuccess", "${response.headers()}")
                     Log.e("writeEssayApiSuccess", "${response.code()}")
@@ -420,7 +423,7 @@ class MyLogViewModel @Inject constructor(
                 if (response.isSuccessful) {
                     Token.accessToken = (response.headers()["authorization"].toString())
                     isActionClicked = false
-                    navController.navigate("MYLOG")
+                    navController.navigate("MYLOG/2")
                     storyTextFieldTitle = ""
                     essayIdList.clear()
 
@@ -452,7 +455,6 @@ class MyLogViewModel @Inject constructor(
 
                 if (response.body()!!.data.anotherEssays != null) {
                     exampleItems.previousEssayList = response.body()!!.data.anotherEssays!!.essays.toMutableStateList()
-
                     previousEssayList = exampleItems.previousEssayList
                 }
                 Log.d(TAG, "readDetailEssay ${exampleItems.detailEssay}")

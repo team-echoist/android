@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -48,6 +49,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -270,6 +272,7 @@ fun AgreeOfProvisionsPage(navController: NavController, viewModel: SignUpViewMod
                         modifier = Modifier
                             .fillMaxWidth()
                             .height((0.95 * screenHeight).dp)
+                            .navigationBarsPadding()
                             .clip(RoundedCornerShape(10.dp))
                             .background(Color.White)
                     ) {
@@ -285,6 +288,7 @@ fun AgreeOfProvisionsPage(navController: NavController, viewModel: SignUpViewMod
 
                         // WebView
                         AndroidView(
+
                             factory = { context ->
                                 WebView(context).apply {
                                     webViewClient = object : WebViewClient() {
@@ -352,9 +356,16 @@ fun AgreementTextWithInfo(
 
         )
         Spacer(modifier = Modifier.width(8.dp))
-        Text(text = text, fontSize = 14.sp, color = Color(0xFF919191))
-        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
-            Icon(
+        Text(
+            text = text,
+            fontSize = 14.sp,
+            color = Color(0xFF919191),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(8f)
+        )
+
+        Icon(
                 painter = painterResource(id = R.drawable.icon_information),
                 contentDescription = "check",
                 modifier = Modifier
@@ -362,7 +373,7 @@ fun AgreementTextWithInfo(
                     .size(25.dp)
                     .clickable { isClickedInfo() }
 
-            )
-        }
+        )
+
     }
 }

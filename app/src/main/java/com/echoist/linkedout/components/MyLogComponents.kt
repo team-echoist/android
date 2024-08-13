@@ -436,8 +436,6 @@ fun StoryItem(story: Story,viewModel: MyLogViewModel,navController: NavControlle
                             viewModel.isCreateStory = false
                             viewModel.setSelectStory(story)
                             Log.d(TAG, "StoryItem: ${viewModel.getSelectedStory().name}")
-                            Log.d(TAG, "StoryItem: ${viewModel.getSelectedStory().name}")
-
                         }
                         .size(30.dp)
                 )

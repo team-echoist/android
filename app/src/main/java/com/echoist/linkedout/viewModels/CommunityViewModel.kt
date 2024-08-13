@@ -138,8 +138,8 @@ open class CommunityViewModel @Inject constructor(
         return exampleItems.recentViewedEssayList
     }
 
-    fun readRandomEssayList() : List<EssayApi.EssayItem>{
-        return exampleItems.randomList
+    fun readAnotherEssays() : List<EssayApi.EssayItem>{
+        return exampleItems.previousEssayList
     }
 
     fun readDetailEssay(): EssayApi.EssayItem {

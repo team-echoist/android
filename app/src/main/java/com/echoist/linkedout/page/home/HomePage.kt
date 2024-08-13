@@ -150,43 +150,43 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewMo
     ) {
         val context = LocalContext.current
         viewModel.requestRegisterDevice(context) //로그인 후 홈 진입 시 회원정보등록
+        CompositionLocalProvider(LocalRippleConfiguration provides  null) {
+            LinkedOutTheme {
 
-        LinkedOutTheme {
+                Scaffold(
+                    topBar = {
 
-            Scaffold(
-                topBar = {
-
-                    CustomTopAppBar( {
-                        scope.launch {
-                            drawerState.apply {
-                                if (isClosed) open() else close()
+                        CustomTopAppBar( {
+                            scope.launch {
+                                drawerState.apply {
+                                    if (isClosed) open() else close()
+                                }
                             }
+                        },{navController.navigate("NotificationPage")},
+                            viewModel.isExistUnreadAlerts)
+                        {
+                            viewModel.isFirstUser = true //튜토리얼 화면띄우기위함
                         }
-                    },{navController.navigate("NotificationPage")},
-                        viewModel.isExistUnreadAlerts)
-                    {
-                        viewModel.isFirstUser = true //튜토리얼 화면띄우기위함
-                    }
-                },
-                bottomBar = { MyBottomNavigation(navController) },
-                floatingActionButton = { WriteFTB(navController,viewModel,writingViewModel) },
-                content = {
-                    Column(modifier = Modifier.padding(it)) {
+                    },
+                    bottomBar = { MyBottomNavigation(navController) },
+                    floatingActionButton = { WriteFTB(navController,viewModel,writingViewModel) },
+                    content = {
+                        Column(modifier = Modifier.padding(it)) {
 
-                    }
-                    Box(modifier = Modifier.fillMaxSize()){
-                        GlideImage(
-                            model = R.drawable.home_basic,
-                            contentDescription = "home_img",
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.FillWidth
-                        )
+                        }
+                        Box(modifier = Modifier.fillMaxSize()){
+                            GlideImage(
+                                model = R.drawable.home_basic,
+                                contentDescription = "home_img",
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.FillWidth
+                            )
 
+                        }
                     }
-                }
-            )
-        }
-        //터치 효과 x
+                )
+            }
+            //터치 효과 x
 
             Box(modifier = Modifier
                 .fillMaxSize()
@@ -204,73 +204,76 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewMo
                         )
                     }
 
+                }
             }
-        }
 
 
-        AnimatedVisibility(
-            visible = viewModel.isVisibleGeulRoquis,
-            enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)),
-            exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
-        ){
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center){
-                GeulRoquis(
-                    isHoldClicked = {viewModel.isVisibleGeulRoquis = false},
-                    isAcceptClicked = {
-                        writingViewModel.title.value = TextFieldValue("${getCurrentDateFormatted()} GeulRoquis")
-                        writingViewModel.hint = ("글로키란? : 글(geul)과 크로키(croquis)의 합성어로 글을 본격적으로 쓰기 전, 주어진 상황을 묘사하거나 상상을 덧대어 빠르게 스케치 하듯이 글을 쓰는 몸풀기를 말합니다. ")
-                        writingViewModel.imageUrl = viewModel.geulRoquisUrl
-                        navController.navigate("WritingPage")
-                        viewModel.isVisibleGeulRoquis = false
-                    },viewModel)
+            AnimatedVisibility(
+                visible = viewModel.isVisibleGeulRoquis && !viewModel.isFirstUser, //튜토리얼을 건너뛰어야 글로키를 볼수있음
+                enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)),
+                exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
+            ){
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center){
+                    GeulRoquis(
+                        isHoldClicked = {viewModel.isVisibleGeulRoquis = false},
+                        isAcceptClicked = {
+                            writingViewModel.title.value = TextFieldValue("${getCurrentDateFormatted()} GeulRoquis")
+                            writingViewModel.hint = ("글로키란? : 글(geul)과 크로키(croquis)의 합성어로 글을 본격적으로 쓰기 전, 주어진 상황을 묘사하거나 상상을 덧대어 빠르게 스케치 하듯이 글을 쓰는 몸풀기를 말합니다. ")
+                            writingViewModel.imageUrl = viewModel.geulRoquisUrl
+                            navController.navigate("WritingPage")
+                            viewModel.isVisibleGeulRoquis = false
+                        },viewModel)
+                }
             }
-        }
-        
-        if (viewModel.isFirstUser){ // 첫 회원이라면
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(0.7f)))
-            TutorialPage(
-                isCloseClicked = {
-                    viewModel.isFirstUser = false
-                viewModel.setFirstUserToExistUser()
-                                          },
-                isSkipClicked = {
-                    viewModel.isFirstUser = false
-                viewModel.setFirstUserToExistUser()
-                })
-        }
-        if (userStatus == UserStatus.DeActivated){
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center)
-            {
-                ReactivateOrDeleteBox(
-                    isClickedReActivate = {
-                        viewModel.requestUserReActivate()
-                        userStatus = UserStatus.Activated
+
+            if (viewModel.isFirstUser){ // 첫 회원이라면
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(0.7f)))
+                TutorialPage(
+                    isCloseClicked = {
+                        viewModel.isFirstUser = false
+                        viewModel.setFirstUserToExistUser()
+                    },
+                    isSkipClicked = {
+                        viewModel.isFirstUser = false
+                        viewModel.setFirstUserToExistUser()
                     })
+            }
+            if (userStatus == UserStatus.DeActivated){
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center)
                 {
-                    viewModel.requestUserDelete(navController)
+                    ReactivateOrDeleteBox(
+                        isClickedReActivate = {
+                            viewModel.requestUserReActivate()
+                            userStatus = UserStatus.Activated
+                        })
+                    {
+                        viewModel.requestUserDelete(navController)
+                    }
+                }
+            }
+            if (viewModel.latestNoticeId != null){ //id값
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center)
+                {
+                    Notice_Main(isClickedClose = {
+                        viewModel.latestNoticeId = null
+                    },
+                        isClickedOpened = {
+                            viewModel.requestDetailNotice(viewModel.latestNoticeId!!,navController)
+                        })
                 }
             }
         }
-        if (viewModel.latestNoticeId != null){ //id값
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center)
-            {
-                Notice_Main(isClickedClose = {
-                    viewModel.latestNoticeId = null
-                                             },
-                    isClickedOpened = {
-                        viewModel.requestDetailNotice(viewModel.latestNoticeId!!,navController)
-                    })
-            }
         }
-    }
+
+
 }
 
 
@@ -734,16 +737,6 @@ fun TutorialPage(isCloseClicked: () -> Unit,isSkipClicked : ()->Unit){
                             )
 
                         }
-                    },isCompleteClicked =
-                    {
-                        coroutineScope.launch {
-                            pagerstate.animateScrollToPage(3,
-                                animationSpec = tween(
-                                    durationMillis = 600,
-                                    easing = FastOutSlowInEasing
-                                ))
-
-                        } //왼쪽드래그 -> 1페이지로이동
                     })
 
 
@@ -911,7 +904,7 @@ fun Tutorial_2(isTutorial3Clicked : ()->Unit, draggedToLeft: () -> Unit){
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun Tutorial_3(isCompleteClicked : () -> Unit,draggedToLeft:()->Unit){
+fun Tutorial_3(draggedToLeft:()->Unit){
     var isClicked by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     LinkedOutTheme {
@@ -949,7 +942,7 @@ fun Tutorial_3(isCompleteClicked : () -> Unit,draggedToLeft:()->Unit){
                 targetOffsetY = { 2000 },
                 animationSpec = tween(durationMillis = 500)
             )) {
-            Box{
+
                 Box(modifier = Modifier.fillMaxSize()){
                     GlideImage(
                         model = R.drawable.tutorial_4,
@@ -958,18 +951,7 @@ fun Tutorial_3(isCompleteClicked : () -> Unit,draggedToLeft:()->Unit){
                         contentScale = ContentScale.FillWidth
                     )
                 }
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = 65.dp, end = 20.dp),
-                    contentAlignment = Alignment.TopEnd
-                ){
-                    Text(text = "완료", color = Color.White, modifier = Modifier.clickable {
-                        isCompleteClicked()
 
-                    })
-                }
-            }
         }
     }
 
@@ -1002,7 +984,7 @@ fun Tutorial_4(isCloseClicked : ()->Unit){
                     imageVector = Icons.Default.Close,
                     contentDescription = "close",
                     tint = Color.White,
-                    modifier = Modifier.clickable { isCloseClicked()}
+                    modifier = Modifier.size(30.dp).clickable { isCloseClicked()}
                 )
             }
         }
@@ -1077,7 +1059,7 @@ fun GeulRoquis(isHoldClicked : ()-> Unit, isAcceptClicked : () -> Unit, viewMode
                         contentDescription = "",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
-                            .height(260.dp)
+                            .height(250.dp)
                             .fillMaxWidth()
                     )
                 }
@@ -1229,7 +1211,7 @@ fun Notice_Main(isClickedClose : ()->Unit,isClickedOpened : ()-> Unit){
                     )
                 )
                 Spacer(modifier = Modifier.height(6.dp))
-                Text(text = "\n\n아직 공지는 없답니다?", textAlign = TextAlign.Center, color = Color.White, modifier = Modifier
+                Text(text = "자세히 보기를 눌러 공지를 확인하세요.", textAlign = TextAlign.Center, color = Color.White, modifier = Modifier
                     .height(240.dp)
                     .verticalScroll(rememberScrollState()))
                 Row {
@@ -1239,13 +1221,13 @@ fun Notice_Main(isClickedClose : ()->Unit,isClickedOpened : ()-> Unit){
                             .height(50.dp)
                             .padding(start = 15.dp, end = 5.dp)
                             .weight(1f)) {
-                        Text(text = "자세히 보기", color = Color.Black)
+                        Text(text = "자세히 보기", color = Color.Black, fontSize = 12.sp)
                     }
                     Button(onClick = { isClickedClose() }, shape = RoundedCornerShape(20), modifier = Modifier
                         .height(50.dp)
                         .padding(start = 5.dp, end = 15.dp)
                         .weight(1f)) {
-                        Text(text = "닫기", color = Color.Black)
+                        Text(text = "닫기", color = Color.Black, fontSize = 12.sp)
                     }
                 }
 

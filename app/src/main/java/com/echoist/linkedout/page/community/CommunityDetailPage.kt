@@ -72,15 +72,16 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
+import com.echoist.linkedout.Routes
 import com.echoist.linkedout.TYPE_COMMUNITY
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.components.EssayListItem
@@ -201,8 +202,7 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
 
                                     }
                                 }
-                                //todo 다른 랜덤 에세이 목록 띄워주기
-                                items(items = viewModel.previousEssayList) { it -> //랜덤리스트 말고 수정할것. 그사람의 리스트로
+                                items(items = viewModel.readAnotherEssays()) { it -> //랜덤리스트 말고 수정할것. 그사람의 리스트로
                                     EssayListItem(
                                         item = it,
                                         viewModel = viewModel,
@@ -289,6 +289,14 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CommunityTopAppBar(navController: NavController, viewModel: CommunityViewModel) {
+    // 현재 백스택 상태를 관찰하여 상태 변경 시 리컴포지션을 트리거
+    val backStackEntry = navController.currentBackStackEntryAsState().value
+    // 백스택에서 바로 뒤의 항목 가져오기
+    val previousBackStackEntry = backStackEntry?.let {
+        navController.previousBackStackEntry
+    }
+    // 이전 목적지의 라우트 확인
+    val previousRoute = previousBackStackEntry?.destination?.route
 
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
@@ -303,18 +311,22 @@ fun CommunityTopAppBar(navController: NavController, viewModel: CommunityViewMod
                     .size(30.dp)
 
                     .clickable {
-                        if (viewModel.detailEssayBackStack.isNotEmpty()) {
-                            viewModel.detailEssayBackStack.pop()
-                            Log.d(
-                                ContentValues.TAG,
-                                "pushpushpop: ${viewModel.detailEssayBackStack}"
-                            )
+
+//searching은 그냥 뒤로가기 해야 서칭페이지로 나감
+
                             if (viewModel.detailEssayBackStack.isNotEmpty()) {
-                                viewModel.detailEssay = viewModel.detailEssayBackStack.peek()
-                                viewModel.setBackDetailEssay(viewModel.detailEssayBackStack.peek()) //detailEssay값을 아예 수정
+                                viewModel.detailEssayBackStack.pop()
+                                Log.d(
+                                    ContentValues.TAG,
+                                    "pushpushpop: ${viewModel.detailEssayBackStack}"
+                                )
+                                if (viewModel.detailEssayBackStack.isNotEmpty()) {
+                                    viewModel.detailEssay = viewModel.detailEssayBackStack.peek()
+                                    viewModel.setBackDetailEssay(viewModel.detailEssayBackStack.peek()) //detailEssay값을 아예 수정
+                                }
                             }
-                        }
-                        navController.popBackStack()
+                            navController.popBackStack()
+
                     } //뒤로가기
             )
         },
@@ -447,7 +459,7 @@ fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navContro
                     .padding(horizontal = 20.dp), contentAlignment = Alignment.BottomEnd) {
                     Column {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
-                            (if (item.author !=null) item.author!!.nickname else "")?.let {
+                            (if (item.author !=null) item.author!!.nickname else "알 수 없는")?.let {
                                 Text(
                                     text = it,
                                     fontSize = 12.sp,
@@ -455,6 +467,7 @@ fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navContro
                                     color = Color(0xFF686868)
                                 )
                             }
+
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
@@ -509,69 +522,122 @@ fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navContro
 
 @Composable
 fun SequenceBottomBar(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navController: NavController){
+    // 현재 백스택 상태를 관찰하여 상태 변경 시 리컴포지션을 트리거
+    val backStackEntry = navController.currentBackStackEntryAsState().value
+    // 백스택에서 바로 뒤의 항목 가져오기
+    val previousBackStackEntry = backStackEntry?.let { navController.previousBackStackEntry }
+    // 이전 목적지의 라우트 확인
+    val previousRoute = previousBackStackEntry?.destination?.route
 
     var isEssayBookMarked by remember { mutableStateOf(item.isBookmarked) }
     val iconImg = if (isEssayBookMarked) Icons.Default.Bookmark else Icons.Default.BookmarkBorder
 
-    Box(modifier = Modifier
-        .background(Color.Black)
-        .fillMaxWidth()
-        .height(70.dp)){
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart){
+    var noExistPreviousStack by remember { mutableStateOf(false) }
 
-            Icon(imageVector = iconImg, contentDescription = "bookMark",
-                Modifier
-                    .padding(start = 20.dp)
-                    .clickable {
-                        isEssayBookMarked = !isEssayBookMarked
+    LaunchedEffect(key1 = noExistPreviousStack) { //1초 뒤에 이전 조회글 토스트 사라지게.
+        delay(1500)
+        noExistPreviousStack = false
+    }
 
-                        viewModel.viewModelScope.launch {
-                            if (isEssayBookMarked) viewModel.addBookMark(item.id!!)
-                            else viewModel.deleteBookMark(
-                                item.id!!
-                            )
-                        }
-
-                    }
-                    .size(35.dp))
-        }
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
-            Row {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowLeft,
-                    contentDescription = "bookMark",
-                    Modifier
-                        .size(50.dp)
-                        .clickable {
-                            viewModel.detailEssayBackStack.push(item)
-                            viewModel.readDetailEssay(
-                                viewModel.previousEssayList[0].id!!,
-                                navController = navController,
-                                TYPE_COMMUNITY
-                            )
-                        }
+    Column {
+        AnimatedVisibility(
+            visible = noExistPreviousStack,
+            enter = fadeIn(animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing)),
+            exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
+        ){
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp)
+                    .padding(horizontal = 20.dp)
+                    .background(color = Color(0xFF212121), shape = RoundedCornerShape(size = 10.dp))
+            ){
+                Text(
+                    text = "이전에 조회한 글이 없습니다.",
+                    fontSize = 16.sp,
+                    color = Color.White,
+                    modifier = Modifier.align(
+                        Alignment.Center
+                    )
                 )
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowRight,
-                    contentDescription = "bookMark",
-                    Modifier
-                        .size(50.dp)
-                        .clickable {
-                            viewModel.detailEssayBackStack.push(item)
-                            viewModel.readDetailEssay(
-                                viewModel.previousEssayList[0].id!!,
-                                navController = navController,
-                                TYPE_COMMUNITY
-                            )
-                        }
-                )
-
-
             }
         }
 
+        Spacer(modifier = Modifier.height(14.dp))
+        Box(modifier = Modifier
+            .background(Color.Black)
+            .fillMaxWidth()
+            .height(70.dp)){
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart){
 
+                Icon(imageVector = iconImg, contentDescription = "bookMark",
+                    Modifier
+                        .padding(start = 20.dp)
+                        .clickable {
+                            isEssayBookMarked = !isEssayBookMarked
+
+                            viewModel.viewModelScope.launch {
+                                if (isEssayBookMarked) viewModel.addBookMark(item.id!!)
+                                else viewModel.deleteBookMark(
+                                    item.id!!
+                                )
+                            }
+
+                        }
+                        .size(35.dp))
+            }
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
+                Row {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowLeft,
+                        contentDescription = "nav back",
+                        Modifier
+                            .size(50.dp)
+                            .clickable {
+                                // 커뮤니티 홈에서 들어온경우를 제외하고 back stack한다
+                                if (previousRoute != Routes.Community) {
+                                    if (viewModel.detailEssayBackStack.isNotEmpty()) {
+                                        viewModel.detailEssayBackStack.pop()
+                                        Log.d(
+                                            ContentValues.TAG,
+                                            "pushpushpop: ${viewModel.detailEssayBackStack}"
+                                        )
+                                        if (viewModel.detailEssayBackStack.isNotEmpty()) {
+                                            viewModel.detailEssay =
+                                                viewModel.detailEssayBackStack.peek()
+                                            viewModel.setBackDetailEssay(viewModel.detailEssayBackStack.peek()) //detailEssay값을 아예 수정
+                                        }
+                                    }
+                                    navController.popBackStack()
+                                } else {
+                                    noExistPreviousStack = true
+                                }
+
+                            }
+                    )
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowRight,
+                        contentDescription = "next random essay",
+                        Modifier
+                            .size(50.dp)
+                            .clickable {
+                                viewModel.detailEssayBackStack.push(item)
+                                viewModel.readDetailEssay(
+                                    viewModel.previousEssayList[0].id!!,
+                                    navController = navController,
+                                    TYPE_COMMUNITY
+                                )
+                            }
+                    )
+
+
+                }
+            }
+
+
+        }
     }
+    
 }
 @Composable
 fun ReportMenuBottomSheet(viewModel: CommunityViewModel) {

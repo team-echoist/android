@@ -84,7 +84,7 @@ fun BlankWarningAlert(dialogState: MutableState<Boolean>){
                     Text(text = "확인")
                 }
             },
-            text = { Text(text = "제목, 또는 내용이 10자 이하면 완료 할 수 없습니다.") },
+            text = { Text(text = "제목이 30자 이상 이거나 내용이 10자 이하면 완료 할 수 없습니다.") },
         )
     }
 
@@ -281,7 +281,7 @@ fun LocationGroup(viewModel: WritingViewModel){
                 text = "편집",
                 color = Color.White,
                 modifier = Modifier
-                    .padding(end = 11.5.dp)
+                    .padding(end = 11.5.dp, bottom = 5.dp)
                     .clickable {
                         viewModel.isLocationClicked = true
                         viewModel.isTextFeatOpened.value = true
@@ -362,7 +362,7 @@ fun HashTagGroup(viewModel: WritingViewModel){
                 text = "편집",
                 color = Color.White,
                 modifier = Modifier
-                    .padding(end = 11.5.dp)
+                    .padding(end = 11.5.dp, bottom = 5.dp)
                     .clickable {
                         viewModel.isHashTagClicked = true
                         viewModel.isTextFeatOpened.value = true
@@ -564,7 +564,7 @@ fun StoryCountIcon(count : Int){
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopEnd){
             Surface(shape = CircleShape, modifier = Modifier.size(18.dp), color = circleColor) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-                    Text(text = count.toString(),color = color)
+                    Text(text = count.toString(),color = Color.Black, modifier = Modifier.offset(y=(-2).dp))
 
                 }
             }

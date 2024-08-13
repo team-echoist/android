@@ -214,31 +214,39 @@ fun BadgeItem(badgeBoxItem: BadgeBoxItemWithTag, viewModel: SettingsViewModel) {
                         .padding(15.dp)
                 ) {
 
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(4),
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(10.dp),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        items(badgeTagList) {
-                            Text(
-                                text = it,
-                                color = Color(0xFF536DFE), // Text color similar to the one in the image
-                                fontSize = 12.sp,
-                                textAlign = TextAlign.Center,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(50))
-                                    .border(
-                                        1.dp,
-                                        Color(0xFF536DFE),
-                                        RoundedCornerShape(50)
-                                    )
-                                    .padding(horizontal = 5.dp, vertical = 5.dp)
-                            )
+                    if (badgeTagList.isNotEmpty()) {
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(4),
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(10.dp),
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            items(badgeTagList) {
+                                Text(
+                                    text = it,
+                                    color = Color(0xFF536DFE), // Text color similar to the one in the image
+                                    fontSize = 12.sp,
+                                    textAlign = TextAlign.Center,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(50))
+                                        .border(
+                                            1.dp,
+                                            Color(0xFF536DFE),
+                                            RoundedCornerShape(50)
+                                        )
+                                        .padding(horizontal = 5.dp, vertical = 5.dp)
+                                )
+                            }
                         }
                     }
+                    else{
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                            Text(text = "아직 일치하는 해시태그가 없습니다!", color = Color.Gray)
+                        }
+                    }
+                    
                 }
             }
         }

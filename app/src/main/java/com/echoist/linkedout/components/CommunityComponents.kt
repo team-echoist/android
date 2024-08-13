@@ -90,8 +90,8 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
     val oneSentenceList by if (viewModel.sentenceInfo == SentenceInfo.First) viewModel.firstSentences.collectAsState() else viewModel.lastSentences.collectAsState()
 
 
-    //한줄추천 받아온 리스트값이 비어있으면 안보여줌
-    if (oneSentenceList.isNotEmpty() && oneSentenceList.size>5){
+    //한줄추천 받아온 리스트값이 비어있거나 25사이즈 전이면 안보여줌.
+    if (oneSentenceList.isNotEmpty() && oneSentenceList.size>25){
 
         val annotatedString = remember(viewModel.sentenceInfo, oneSentenceList) {
             buildAnnotatedString {
@@ -164,7 +164,6 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                 }
             }
         }
-
         val annotatedString2 = remember(viewModel.sentenceInfo, oneSentenceList) {
             buildAnnotatedString {
                 withStyle(style = ParagraphStyle(lineHeight = 40.sp)) { // 원하는 줄 간격 설정
@@ -1021,7 +1020,7 @@ fun EssayListItem(
                     }
 
                     Text(
-                        modifier = Modifier,
+                        modifier = Modifier.weight(8f),
                         text = item.title!!,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
@@ -1045,7 +1044,7 @@ fun EssayListItem(
                 )
             }
 
-            if (item.thumbnail != null) {
+            if (item.thumbnail != null && item.thumbnail!!.startsWith("https")) { //널이 아니거나 Https로 시작해야됨
                 GlideImage(
                     model = item.thumbnail,
                     contentDescription = null,
@@ -1065,11 +1064,20 @@ fun EssayListItem(
                 .fillMaxSize()
                 .padding(start = 20.dp, bottom = 10.dp)
         ) {
-            Text(
-                text = if (item.author?.nickname != null) item.author!!.nickname!! else "",
-                fontSize = 10.sp,
-                color = Color(0xFF686868)
-            )
+            if (item.author != null){ //author이 널이거나
+                Text(
+                    text = item.author!!.nickname ?: "알 수 없는 아무개",
+                    fontSize = 10.sp,
+                    color = Color(0xFF686868)
+                )
+            }
+            else{
+                Text(
+                    text = "알 수 없는 아무개",
+                    fontSize = 10.sp,
+                    color = Color(0xFF686868))
+            }
+
         }
         Box(
             contentAlignment = Alignment.BottomEnd, modifier = Modifier

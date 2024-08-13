@@ -117,8 +117,9 @@ fun SearchingPager(pagerState: PagerState,searchingViewModel: SearchingViewModel
 @Composable
 fun SearchingBar(viewModel: SearchingViewModel, onClick: () -> Unit, drawerState: DrawerState){
 
+
     val keyboardController = LocalSoftwareKeyboardController.current
-    if (drawerState.isOpen) keyboardController?.show() else keyboardController?.hide()
+    //if (drawerState.isOpen) keyboardController?.show() else keyboardController?.hide()
 
     Row (modifier = Modifier
         .fillMaxWidth()

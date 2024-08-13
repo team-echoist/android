@@ -51,7 +51,7 @@ class WritingViewModel @Inject constructor(
     var accessToken by mutableStateOf("")
     var isStored by mutableStateOf(false)
 
-    val maxLength = 4000
+    val maxLength = 10000
     val minLength = 10
 
     var focusState = mutableStateOf(false)

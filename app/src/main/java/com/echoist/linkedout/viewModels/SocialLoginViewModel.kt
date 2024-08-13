@@ -367,7 +367,7 @@ class SocialLoginViewModel @Inject constructor(
     fun handleNaverLoginResult(result: ActivityResult, navController: NavController) {
         when (result.resultCode) {
             RESULT_OK -> {
-                naverUserToken = NaverIdLoginSDK.getRefreshToken() ?: "null"
+                naverUserToken = NaverIdLoginSDK.getAccessToken() ?: "null"
                 // 네이버 로그인 인증이 성공했을 때 수행할 코드 추가
                 Log.i(
                     "Naver_TokenInfo", "Naver Token Information:" +

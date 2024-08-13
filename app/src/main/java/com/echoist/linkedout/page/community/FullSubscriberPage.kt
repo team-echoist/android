@@ -1,11 +1,7 @@
 package com.echoist.linkedout.page.community
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
@@ -166,7 +162,7 @@ fun SubscriberSimpleItem(
     viewModel: CommunityViewModel,
     navController: NavController
 ) {
-    val nickname = item.nickname ?: ""
+    val nickname = item.nickname ?: "알 수 없는"
 
     Box(
         modifier = Modifier

@@ -175,6 +175,7 @@ fun SignUpPage(
                         .clickable(enabled = false) { }){
                         Box(modifier = Modifier
                             .fillMaxSize()
+                            .navigationBarsPadding()
                             .padding(bottom = 20.dp), contentAlignment = Alignment.BottomCenter){
                             SendSignUpFinishedAlert(
                                 { viewModel.isSignUpApiFinished = false },

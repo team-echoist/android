@@ -84,7 +84,7 @@ class SignUpViewModel @Inject constructor(
                 } else {
                     isErr = true
                     Log.e("authApiFailed1", "Failed : ${response.errorBody()}")
-                        //todo check 404 뜨는 에러 해결해야할것.
+
                     Log.e("authApiSuccess", "${response.code()}")
                     if (response.code() == 409) Log.e(TAG, "getUserEmailCheck: 이미 사용중인 이메일입니다.", )
                 }

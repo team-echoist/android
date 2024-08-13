@@ -45,11 +45,13 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -126,7 +128,7 @@ fun PrevWritingPage() {
 
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
+@OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun WritingPage(
     navController: NavController,
@@ -164,31 +166,32 @@ fun WritingPage(
         }
     }
 
-    LinkedOutTheme {
-        Box {
-            Column(
-                modifier = Modifier
-                    .background(background)
-                    .fillMaxSize()
-            ) {
+    CompositionLocalProvider(LocalRippleConfiguration provides  null) {
+        LinkedOutTheme {
+            Box {
                 Column(
                     modifier = Modifier
+                        .background(background)
                         .fillMaxSize()
-                        .verticalScroll(scrollState)
-                )
-                {
-                    WritingTopAppBar(
-                        navController = navController,
-                        viewModel,
-                        textState
-                    ){viewModel.content = textState.toHtml()}
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(scrollState)
+                    )
+                    {
+                        WritingTopAppBar(
+                            navController = navController,
+                            viewModel,
+                            textState
+                        ){viewModel.content = textState.toHtml()}
 
 
-                    ContentTextField(viewModel = viewModel,textState)
-                    Log.d(TAG, "WritingTopAppBar: ${textState.toHtml()}")
+                        ContentTextField(viewModel = viewModel,textState)
+                        Log.d(TAG, "WritingTopAppBar: ${textState.toHtml()}")
 
 
-                    Spacer(modifier = Modifier.height(50.dp))
+                        Spacer(modifier = Modifier.height(50.dp))
 
                         Box(
                             modifier = Modifier.fillMaxSize(),
@@ -217,147 +220,148 @@ fun WritingPage(
                         }
 
 
-                }
-
-            }
-            //취소 클릭시 배경 어둡게
-            if (viewModel.isCanCelClicked.value)
-                Box(modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(0.7f)))
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize(),
-                contentAlignment = Alignment.BottomCenter
-            ) { //키보드 자리에 들어갈 컴포 넣기
-                Column {
-                    AnimatedVisibility(visible = viewModel.isCanCelClicked.value,
-                        enter = slideInVertically(
-                            initialOffsetY = { 2000 },
-                            animationSpec = tween(durationMillis = 500)
-                        ),
-                        exit = slideOutVertically(
-                            targetOffsetY = { 2000 },
-                            animationSpec = tween(durationMillis = 500)
-                        )
-                    ) {
-                        WritingCancelCard(viewModel = viewModel, navController = navController){viewModel.isStored = true}
                     }
-                    //장소 찍는
-                    if (viewModel.longitude != null && viewModel.latitude != null && viewModel.isTextFeatOpened.value) {
-                        if (viewModel.isLocationClicked) {
-                            Row {
-                                LocationBox(viewModel = viewModel)
-                                Spacer(modifier = Modifier.width(2.dp))
-                                Row(
-                                    Modifier
-                                        .padding(horizontal = 20.dp)
-                                        .horizontalScroll(rememberScrollState())) {
-                                    viewModel.locationList.forEach {
-                                        LocationBtn(viewModel = viewModel, text = it)
+
+                }
+                //취소 클릭시 배경 어둡게
+                if (viewModel.isCanCelClicked.value)
+                    Box(modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(0.7f)))
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.BottomCenter
+                ) { //키보드 자리에 들어갈 컴포 넣기
+                    Column {
+                        AnimatedVisibility(visible = viewModel.isCanCelClicked.value,
+                            enter = slideInVertically(
+                                initialOffsetY = { 2000 },
+                                animationSpec = tween(durationMillis = 500)
+                            ),
+                            exit = slideOutVertically(
+                                targetOffsetY = { 2000 },
+                                animationSpec = tween(durationMillis = 500)
+                            )
+                        ) {
+                            WritingCancelCard(viewModel = viewModel, navController = navController){viewModel.isStored = true}
+                        }
+                        //장소 찍는
+                        if (viewModel.longitude != null && viewModel.latitude != null && viewModel.isTextFeatOpened.value) {
+                            if (viewModel.isLocationClicked) {
+                                Row {
+                                    LocationBox(viewModel = viewModel)
+                                    Row(
+                                        Modifier
+                                            .padding(horizontal = 10.dp)
+                                            .horizontalScroll(rememberScrollState())) {
+                                        viewModel.locationList.forEach {
+                                            LocationBtn(viewModel = viewModel, text = it)
+                                        }
                                     }
                                 }
                             }
-                        }
 
-                    } else if (isKeyBoardOpened == Keyboard.Closed && !viewModel.isTextFeatOpened.value) {
-                        if (viewModel.locationList.isNotEmpty() || viewModel.longitude != null) {
-                            LocationGroup(viewModel = viewModel)
-                            Spacer(modifier = Modifier.height(10.dp))
-                            if (viewModel.hashTagList.isEmpty()){
-                                Spacer(modifier = Modifier.height(80.dp))
-                            }
-                        }
-                    }
-                    //해시태그 찍는
-                    if (viewModel.hashTagList.isNotEmpty() && viewModel.isTextFeatOpened.value) {
-                        if (viewModel.isHashTagClicked) {
-                            Row(
-                                Modifier
-                                    .horizontalScroll(rememberScrollState())
-                                    .padding(horizontal = 20.dp)) {
-                                viewModel.hashTagList.forEach {
-                                    HashTagBtn(viewModel = viewModel, text = it)
-                                    Spacer(modifier = Modifier.width(6.dp))
+                        } else if (isKeyBoardOpened == Keyboard.Closed && !viewModel.isTextFeatOpened.value) {
+                            if (viewModel.locationList.isNotEmpty() && viewModel.longitude != null) { //직접 입력한 장소가 존재해야함.
+                                LocationGroup(viewModel = viewModel)
+                                Spacer(modifier = Modifier.height(4.dp))
+                                if (viewModel.hashTagList.isEmpty()){
+                                    Spacer(modifier = Modifier.height(80.dp))
                                 }
                             }
                         }
-
-                    } else if (isKeyBoardOpened == Keyboard.Closed && !viewModel.isTextFeatOpened.value)
-                        if (viewModel.hashTagList.isNotEmpty()) {
-                            Column {
-                                HashTagGroup(viewModel = viewModel)
-                                Spacer(modifier = Modifier.height(80.dp))
+                        //해시태그 찍는
+                        if (viewModel.hashTagList.isNotEmpty() && viewModel.isTextFeatOpened.value) {
+                            if (viewModel.isHashTagClicked) {
+                                Row(
+                                    Modifier
+                                        .horizontalScroll(rememberScrollState())
+                                        .padding(horizontal = 20.dp)) {
+                                    viewModel.hashTagList.forEach {
+                                        HashTagBtn(viewModel = viewModel, text = it)
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                    }
+                                }
                             }
+
+                        } else if (isKeyBoardOpened == Keyboard.Closed && !viewModel.isTextFeatOpened.value)
+                            if (viewModel.hashTagList.isNotEmpty()) {
+                                Column {
+                                    HashTagGroup(viewModel = viewModel)
+                                    Spacer(modifier = Modifier.height(80.dp))
+                                }
+                            }
+
+                        if (isKeyBoardOpened == Keyboard.Opened || viewModel.isTextFeatOpened.value) {
+
+
+                            if (isTextSettingSelected) {
+                                TextSettingsBar(textState)
+                            }
+                            TextEditBar(viewModel,
+                                isTextSettingSelected = isTextSettingSelected,
+                                onTextSettingSelected = {
+                                    isTextSettingSelected = it
+                                },
+                                isTextBoldSelected = isTextBoldSelected,
+                                onTextBoldSelected =
+                                {
+                                    isTextBoldSelected = it
+                                    if (isTextBoldSelected) textState.addSpanStyle(SpanStyle(fontWeight = FontWeight.Bold))
+                                    else textState.removeSpanStyle(SpanStyle(fontWeight = FontWeight.Bold))
+                                    isTextSettingSelected = false
+                                },
+                                isTextUnderLineSelected = isTextUnderLineSelected,
+                                onTextUnderLineSelected =
+                                {
+                                    isTextUnderLineSelected = it
+                                    if (isTextUnderLineSelected) textState.addSpanStyle(SpanStyle(textDecoration = TextDecoration.Underline))
+                                    else textState.removeSpanStyle(SpanStyle(textDecoration = TextDecoration.Underline))
+                                    isTextSettingSelected = false
+
+                                },
+                                isTextMiddleLineSelected = isTextMiddleLineSelected,
+                                onTextMiddleLineSelected = {
+                                    isTextMiddleLineSelected = it
+                                    if (isTextMiddleLineSelected) textState.addSpanStyle(SpanStyle(textDecoration = TextDecoration.LineThrough))
+                                    else textState.removeSpanStyle(SpanStyle(textDecoration = TextDecoration.LineThrough))
+
+                                    isTextSettingSelected = false
+                                })
+
+                            KeyboardLocationFunc(viewModel, navController,textState)
+
                         }
-
-                    if (isKeyBoardOpened == Keyboard.Opened || viewModel.isTextFeatOpened.value) {
-
-
-                        if (isTextSettingSelected) {
-                            TextSettingsBar(textState)
-                        }
-                        TextEditBar(viewModel,
-                            isTextSettingSelected = isTextSettingSelected,
-                            onTextSettingSelected = {
-                                isTextSettingSelected = it
-                            },
-                            isTextBoldSelected = isTextBoldSelected,
-                            onTextBoldSelected =
-                            {
-                                isTextBoldSelected = it
-                                if (isTextBoldSelected) textState.addSpanStyle(SpanStyle(fontWeight = FontWeight.Bold))
-                                else textState.removeSpanStyle(SpanStyle(fontWeight = FontWeight.Bold))
-                                isTextSettingSelected = false
-                            },
-                            isTextUnderLineSelected = isTextUnderLineSelected,
-                            onTextUnderLineSelected =
-                            {
-                                isTextUnderLineSelected = it
-                                if (isTextUnderLineSelected) textState.addSpanStyle(SpanStyle(textDecoration = TextDecoration.Underline))
-                                else textState.removeSpanStyle(SpanStyle(textDecoration = TextDecoration.Underline))
-                                isTextSettingSelected = false
-
-                            },
-                            isTextMiddleLineSelected = isTextMiddleLineSelected,
-                            onTextMiddleLineSelected = {
-                                isTextMiddleLineSelected = it
-                                if (isTextMiddleLineSelected) textState.addSpanStyle(SpanStyle(textDecoration = TextDecoration.LineThrough))
-                                else textState.removeSpanStyle(SpanStyle(textDecoration = TextDecoration.LineThrough))
-
-                                isTextSettingSelected = false
-                            })
-
-                        KeyboardLocationFunc(viewModel, navController,textState)
-
                     }
                 }
-                }
             }
-        AnimatedVisibility(
-            visible = viewModel.isStored,
-            enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)),
-            exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
-        ){
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 20.dp)
-                    .padding(bottom = 10.dp)
-                    .navigationBarsPadding(),
-                contentAlignment = Alignment.BottomCenter
+            AnimatedVisibility(
+                visible = viewModel.isStored,
+                enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)),
+                exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
             ){
-                Box(modifier = Modifier
-                    .fillMaxWidth()
-                    .height(60.dp)
-                    .background(Color(0xFF212121), shape = RoundedCornerShape(20)), contentAlignment = Alignment.Center){
-                    Text(text = "임시 저장이 완료되었습니다.", color = Color.White, fontSize = 16.sp)
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 20.dp)
+                        .padding(bottom = 10.dp)
+                        .navigationBarsPadding(),
+                    contentAlignment = Alignment.BottomCenter
+                ){
+                    Box(modifier = Modifier
+                        .fillMaxWidth()
+                        .height(60.dp)
+                        .background(Color(0xFF212121), shape = RoundedCornerShape(20)), contentAlignment = Alignment.Center){
+                        Text(text = "임시 저장이 완료되었습니다.", color = Color.White, fontSize = 16.sp)
+                    }
                 }
             }
+
         }
-        
-        }
+    }
+
     }
 
 
@@ -460,7 +464,11 @@ fun WritingTopAppBar(
                             }
                         },
                         value = viewModel.title.value,
-                        onValueChange = { viewModel.title.value = it },
+                        onValueChange = {
+                            if (it.text.length <= 30){
+                                viewModel.title.value = it }
+                            }
+                            ,
                         textStyle = TextStyle(
                             textAlign = if (viewModel.titleFocusState.value) TextAlign.Start else TextAlign.Center,
                             fontSize = if (viewModel.titleFocusState.value) 20.sp else 16.sp
@@ -484,8 +492,8 @@ fun WritingTopAppBar(
                     fontSize = 16.sp,
                     modifier = Modifier
                         .clickable {
-                            isCompleteClicked()
-                            if (viewModel.title.value.text.isNotEmpty() && viewModel.content.length >= viewModel.minLength){
+                            isCompleteClicked() //타이틀이 공백x 30자 넘지않게. 내용은 미니멈보다 많게
+                            if (viewModel.title.value.text.isNotEmpty() && viewModel.content.length >= viewModel.minLength && viewModel.content.length <= viewModel.maxLength && viewModel.title.value.text.length <= 30){
                                 Log.d(TAG, "WritingTopAppBar: ${viewModel.content}")
                                 navController.navigate("WritingCompletePage")}
                             else {

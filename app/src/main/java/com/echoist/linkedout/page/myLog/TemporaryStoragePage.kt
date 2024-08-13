@@ -43,6 +43,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
+import com.echoist.linkedout.R
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
@@ -137,6 +140,7 @@ fun StorageTopAppBar(
     )
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun StorageWritingEssay(title : String, createdDate : String) {
     Box(
@@ -157,16 +161,7 @@ fun StorageWritingEssay(title : String, createdDate : String) {
                 )
             }
             Spacer(modifier = Modifier.width(20.dp))
-            Box(
-                modifier = Modifier
-                    .width(50.dp)
-                    .height(25.dp)
-                    .background(color = Color(0xFFE43446), shape = RoundedCornerShape(size = 27.dp))
-                    .padding(start = 6.dp, top = 1.dp, end = 6.dp, bottom = 1.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = "작성중", fontSize = 10.sp, color = Color.White)
-            }
+            GlideImage(model = R.drawable.chip_writing, contentDescription = "작성중 chip", modifier = Modifier.size(40.dp,18.dp))
         }
     }
 }
@@ -293,7 +288,8 @@ fun DeleteBtn(count: Int, onDeleteClicked: () -> Unit, btnColor: Color) {
         onClick = { onDeleteClicked() },
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp).padding(bottom = 20.dp)
+            .padding(horizontal = 20.dp)
+            .padding(bottom = 20.dp)
             .height(61.dp),
         shape = RoundedCornerShape(20),
         colors = ButtonDefaults.buttonColors(containerColor = btnColor)

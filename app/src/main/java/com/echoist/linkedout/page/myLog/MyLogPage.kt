@@ -20,6 +20,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,7 +49,7 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-fun MyLogPage(navController: NavController, viewModel: MyLogViewModel,writingViewModel: WritingViewModel) {
+fun MyLogPage(navController: NavController, viewModel: MyLogViewModel,writingViewModel: WritingViewModel,page : Int = 0) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val homeViewModel: HomeViewModel = hiltViewModel()
@@ -57,16 +58,21 @@ fun MyLogPage(navController: NavController, viewModel: MyLogViewModel,writingVie
     val hasCalledApi = remember { mutableStateOf(false) }
     val isLoading by viewModel.isLoading.collectAsState()
 
-    if (!hasCalledApi.value) {
-        viewModel.myEssayList.clear()
-        viewModel.publishedEssayList.clear()
-        viewModel.readMyEssay()
-        viewModel.readPublishEssay()
-        viewModel.readMyStory()
-        viewModel.requestUnreadAlerts()
+    LaunchedEffect(key1 = Unit) {
+        pagerstate.animateScrollToPage(page)
 
-        hasCalledApi.value = true
+        if (!hasCalledApi.value) {
+            viewModel.myEssayList.clear()
+            viewModel.publishedEssayList.clear()
+            viewModel.readMyEssay()
+            viewModel.readPublishEssay()
+            viewModel.readMyStory()
+            viewModel.requestUnreadAlerts()
+
+            hasCalledApi.value = true
+        }
     }
+
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         ModalNavigationDrawer(

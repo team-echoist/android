@@ -257,11 +257,16 @@ class LoginPage : ComponentActivity() {
                 composable(Routes.UpdateHistoryPage) {
                     UpdateHistoryPage(navController)
                 }
-                composable(Routes.MyLog) {
-                    MyLogPage(navController = navController, myLogViewModel, writingViewModel)
-                }
                 composable(
-                    Routes.StoryPage,
+                    route = "${Routes.MyLog}/{page}",
+                    arguments = listOf(navArgument("page") { type = NavType.IntType })
+                ) {backStackEntry ->
+                    val page = backStackEntry.arguments?.getInt("page") ?: 0
+                    MyLogPage(navController, myLogViewModel, writingViewModel, page)
+
+                }
+
+                composable (Routes.StoryPage,
                     enterTransition = {
                         slideInVertically(
                             initialOffsetY = { 2000 },

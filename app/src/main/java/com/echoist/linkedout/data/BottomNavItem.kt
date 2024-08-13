@@ -19,7 +19,7 @@ sealed class BottomNavItem(
         BottomNavItem(
             Routes.MyLog,
             R.drawable.bottom_nav_2,
-            Routes.MyLog
+            "${Routes.MyLog}/0"
         )
 
     data object Community :

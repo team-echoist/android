@@ -154,7 +154,7 @@ fun WritingCompletePage(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        if (viewModel.locationList.isNotEmpty() || viewModel.longitude != null){
+                        if (viewModel.locationList.isNotEmpty() && viewModel.longitude != null){
                             Spacer(modifier = Modifier.height(50.dp))
                             LocationGroup(viewModel = viewModel)
                         }

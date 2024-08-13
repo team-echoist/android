@@ -1,5 +1,6 @@
 package com.echoist.linkedout.page.myLog
 
+import android.annotation.SuppressLint
 import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.compose.foundation.background
@@ -70,7 +71,7 @@ fun StoryPage(viewModel: MyLogViewModel, navController: NavController) {
     if (isApiFinished) {
 
         LinkedOutTheme {
-            Scaffold(topBar = { StoryTopAppBar(navController, viewModel) }, bottomBar = {})
+            Scaffold(topBar = { StoryTopAppBar(navController) }, bottomBar = {})
             {
                 Column(Modifier.padding(it)) {
                     StoryTitleTextField(viewModel)
@@ -86,7 +87,7 @@ fun StoryPage(viewModel: MyLogViewModel, navController: NavController) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StoryTopAppBar(navController: NavController, viewModel: MyLogViewModel) {
+fun StoryTopAppBar(navController: NavController) {
     TopAppBar(modifier = Modifier.padding(horizontal = 10.dp),
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
         title = {
@@ -174,20 +175,17 @@ fun EssayItem(
         }
     }
 }
+@SuppressLint("MutableCollectionMutableState")
 @Composable
 fun StoryEssayListScreen(viewModel: MyLogViewModel, navController: NavController) {
     val essayItems = if (viewModel.isCreateStory) viewModel.createStoryEssayItems else viewModel.modifyStoryEssayItems
-    // var selectedItems by remember { mutableStateOf(viewModel.findEssayInStory2().toSet()) }
-    //이렇게 코드짜면 안되는 이유가 modifyStoryEssayItems 가 받아들여와지지 않은상태 (api 호출이 종료되지않은상태)에서 실행되버리기때문에
-    //0.1초 딜레이를 주고 api 호출이 이루어지고 난 뒤에 실행되도록
-    //그냥 간단하게 viewmodel.findEssayInStory2가 api 호출이 끝나고 난 뒤에 실행되도록 해야함.
 
     var isFunFinished by remember{ mutableStateOf(false) }
     LaunchedEffect(key1 = Unit ) {
         delay(100)
         isFunFinished = true
-
     }
+    val essayIdList by remember { mutableStateOf(mutableListOf<Int>()) }
 
     if (isFunFinished){
         var selectedItems by remember { mutableStateOf(viewModel.findEssayInStory().toSet()) }
@@ -268,10 +266,13 @@ fun StoryEssayListScreen(viewModel: MyLogViewModel, navController: NavController
                     )
                 }
             }
+
+            essayIdList.clear()
             selectedItems.forEach {
-                viewModel.essayIdList.add(it.id)
-                Log.d(TAG, "EssayListScreen: ${it.id}")
+                essayIdList.add(it.id)
             }
+
+            Log.d(TAG, "$essayIdList")
 
             val containerColor =
                 if (viewModel.storyTextFieldTitle.isNotEmpty()) LinkedInColor else Color(0xFF868686)
@@ -281,10 +282,13 @@ fun StoryEssayListScreen(viewModel: MyLogViewModel, navController: NavController
                     onClick = {
                         if (viewModel.storyTextFieldTitle.isNotEmpty()) {
                             if (viewModel.isCreateStory){ //스토리 생성
-                                viewModel.createStory(navController)
+                                viewModel.createStory(navController,essayIdList)
+                                Log.d("에세이 수정테스트", "스토리 생성입니다.: $selectedItems")
                             }
                             else{ // 스토리 수정
-                                viewModel.modifyStory(navController)
+                                viewModel.modifyStory(navController,essayIdList)
+                                Log.d("에세이 수정테스트", "스토리 수정입니다.: $selectedItems")
+
                             }
                         }
                     },
