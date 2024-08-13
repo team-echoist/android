@@ -2,6 +2,7 @@ package com.echoist.linkedout.page.login
 
 import android.app.Activity
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.Rect
 import android.os.Bundle
 import android.provider.Settings
@@ -96,6 +97,7 @@ import com.echoist.linkedout.Routes
 import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.components.CropImagePage
 import com.echoist.linkedout.data.Notice
+import com.echoist.linkedout.navigation.TabletNavHost
 import com.echoist.linkedout.page.community.CommunityDetailPage
 import com.echoist.linkedout.page.community.CommunityPage
 import com.echoist.linkedout.page.community.CommunitySavedEssayPage
@@ -198,213 +200,221 @@ class LoginPage : ComponentActivity() {
             Log.d("Hash", keyHash)
             val navController = rememberNavController()
 
-            NavHost(navController = navController, startDestination = Routes.OnBoarding) {
-                composable(Routes.OnBoarding) {
-                    OnBoardingPage(navController)
-                }
-                composable(Routes.LoginPage) {
-                    LoginPage(navController = navController, viewModel = viewModel)
-                }
-                composable(Routes.SignUp) {
-                    SignUpPage(navController, signUpViewModel)
-                }
-                composable(Routes.AgreeOfProvisionsPage) {
-                    AgreeOfProvisionsPage(navController, signUpViewModel)
-                }
-                composable(Routes.SignUpComplete) {
-                    SignUpCompletePage(homeViewModel, navController)
-                }
-                composable(
-                    "${Routes.Home}/{statusCode}",
-                    arguments = listOf(navArgument("statusCode") { type = NavType.IntType })
-                ) { backStackEntry ->
-                    val statusCode = backStackEntry.arguments?.getInt("statusCode") ?: 200
-                    HomePage(navController, homeViewModel, writingViewModel, statusCode)
-                }
-                composable(Routes.DarkModeSettingPage) {
-                    DarkModeSettingPage(navController)
-                }
-                composable(Routes.NotificationPage) {
-                    NotificationPage(navController)
-                }
-                composable(Routes.NotificationSettingPage) {
-                    NotificationSettingPage(navController)
-                }
-                composable(Routes.SupportPage) {
-                    SupportPage(navController)
-                }
-                composable(Routes.LinkedOutSupportPage) {
-                    LinkedOutSupportPage(navController)
-                }
-                composable(Routes.InquiryPage) {
-                    InquiryPage(navController)
-                }
-                composable(Routes.NoticePage) {
-                    NoticePage(navController, supportViewModel)
-                }
-                composable(
-                    route = "${Routes.NoticeDetailPage}/{noticeJson}",
-                    arguments = listOf(navArgument("noticeJson") { type = NavType.StringType })
-                ) { backStackEntry ->
-                    val noticeJson = backStackEntry.arguments?.getString("noticeJson")
-                    val decodedJson =
-                        noticeJson?.let { URLDecoder.decode(it, StandardCharsets.UTF_8.name()) }
-                    val notice = jsonAdapter.fromJson(decodedJson!!)
+            val isTablet = ((resources.configuration.screenLayout
+                    and Configuration.SCREENLAYOUT_SIZE_MASK)
+                    >= Configuration.SCREENLAYOUT_SIZE_LARGE)
 
-                    NoticeDetailPage(
-                        navController,
-                        notice ?: Notice(0, "no title", "no content", "2024 08 03")
-                    )
-                }
-                composable(Routes.UpdateHistoryPage) {
-                    UpdateHistoryPage(navController)
-                }
-                composable(
-                    route = "${Routes.MyLog}/{page}",
-                    arguments = listOf(navArgument("page") { type = NavType.IntType })
-                ) { backStackEntry ->
-                    val page = backStackEntry.arguments?.getInt("page") ?: 0
-                    MyLogPage(navController, myLogViewModel, writingViewModel, page)
+            if (isTablet) {
+                TabletNavHost(navController = navController)
+            } else {
+                NavHost(navController = navController, startDestination = Routes.OnBoarding) {
+                    composable(Routes.OnBoarding) {
+                        OnBoardingPage(navController)
+                    }
+                    composable(Routes.LoginPage) {
+                        LoginPage(navController = navController, viewModel = viewModel)
+                    }
+                    composable(Routes.SignUp) {
+                        SignUpPage(navController, signUpViewModel)
+                    }
+                    composable(Routes.AgreeOfProvisionsPage) {
+                        AgreeOfProvisionsPage(navController, signUpViewModel)
+                    }
+                    composable(Routes.SignUpComplete) {
+                        SignUpCompletePage(homeViewModel, navController)
+                    }
+                    composable(
+                        "${Routes.Home}/{statusCode}",
+                        arguments = listOf(navArgument("statusCode") { type = NavType.IntType })
+                    ) { backStackEntry ->
+                        val statusCode = backStackEntry.arguments?.getInt("statusCode") ?: 200
+                        HomePage(navController, homeViewModel, writingViewModel, statusCode)
+                    }
+                    composable(Routes.DarkModeSettingPage) {
+                        DarkModeSettingPage(navController)
+                    }
+                    composable(Routes.NotificationPage) {
+                        NotificationPage(navController)
+                    }
+                    composable(Routes.NotificationSettingPage) {
+                        NotificationSettingPage(navController)
+                    }
+                    composable(Routes.SupportPage) {
+                        SupportPage(navController)
+                    }
+                    composable(Routes.LinkedOutSupportPage) {
+                        LinkedOutSupportPage(navController)
+                    }
+                    composable(Routes.InquiryPage) {
+                        InquiryPage(navController)
+                    }
+                    composable(Routes.NoticePage) {
+                        NoticePage(navController, supportViewModel)
+                    }
+                    composable(
+                        route = "${Routes.NoticeDetailPage}/{noticeJson}",
+                        arguments = listOf(navArgument("noticeJson") { type = NavType.StringType })
+                    ) { backStackEntry ->
+                        val noticeJson = backStackEntry.arguments?.getString("noticeJson")
+                        val decodedJson =
+                            noticeJson?.let { URLDecoder.decode(it, StandardCharsets.UTF_8.name()) }
+                        val notice = jsonAdapter.fromJson(decodedJson!!)
 
-                }
-                composable(Routes.StoryPage,
-                    enterTransition = {
-                        slideInVertically(
-                            initialOffsetY = { 2000 },
-                            animationSpec = tween(durationMillis = 500)
-                        )
-                    },
-                    exitTransition = {
-                        slideOutVertically(
-                            targetOffsetY = { 2000 },
-                            animationSpec = tween(durationMillis = 500)
+                        NoticeDetailPage(
+                            navController,
+                            notice ?: Notice(0, "no title", "no content", "2024 08 03")
                         )
                     }
-                ) {
-                    StoryPage(myLogViewModel, navController)
-                }
-                composable(Routes.StoryDetailPage) {
-                    StoryDetailPage(myLogViewModel, navController)
-                }
-                composable(Routes.DetailEssayInStoryPage) {
-                    DetailEssayInStoryPage(navController, myLogViewModel, writingViewModel)
-                }
-                composable(Routes.MyLogDetailPage) {
-                    MyLogDetailPage(
-                        navController = navController,
-                        myLogViewModel,
-                        writingViewModel
-                    )
-                }
-                composable(Routes.CompletedEssayPage) {
-                    CompletedEssayPage(
-                        navController = navController,
-                        myLogViewModel,
-                        writingViewModel
-                    )
-                }
-                composable(Routes.Community) {
-                    CommunityPage(navController = navController, communityViewModel)
-                }
-                composable(Routes.CommunityDetailPage) {
-                    CommunityDetailPage(navController, communityViewModel)
-                }
-                composable(Routes.CommunitySavedEssayPage) {
-                    CommunitySavedEssayPage(navController, communityViewModel)
-                }
-                composable(Routes.SubscriberPage) {
-                    ProfilePage(viewModel = communityViewModel, navController = navController)
-                }
-                composable(Routes.FullSubscriberPage) {
-                    FullSubscriberPage(communityViewModel, navController)
-                }
-                composable(Routes.Settings) {
-                    MyPage(navController)
-                }
-                composable(Routes.RecentViewedEssayPage) {
-                    RecentViewedEssayPage(navController, communityViewModel)
-                }
-                composable(Routes.RecentEssayDetailPage) {
-                    RecentEssayDetailPage(navController, communityViewModel)
-                }
-                composable(
-                    Routes.AccountPage,
-                    deepLinks = listOf(navDeepLink {
-                        uriPattern = "https://linkedoutapp.com/${Routes.AccountPage}"
-                    })
-                ) {
-                    AccountPage(navController)
-                }
-                composable(Routes.ChangeEmailPage) {
-                    ChangeEmailPage(navController)
-                }
-                composable(Routes.ChangePwPage) {
-                    ChangePwPage(navController)
-                }
-                composable(Routes.ResetPwPageWithEmail) {
-                    ResetPwPageWithEmail(navController)
-                }
-                composable(
-                    Routes.ResetPwPage,
-                    deepLinks = listOf(navDeepLink {
-                        uriPattern =
-                            "https://linkedoutapp.com/${Routes.ResetPwPage}?token={token}"
-                    }),
+                    composable(Routes.UpdateHistoryPage) {
+                        UpdateHistoryPage(navController)
+                    }
+                    composable(
+                        route = "${Routes.MyLog}/{page}",
+                        arguments = listOf(navArgument("page") { type = NavType.IntType })
+                    ) { backStackEntry ->
+                        val page = backStackEntry.arguments?.getInt("page") ?: 0
+                        MyLogPage(navController, myLogViewModel, writingViewModel, page)
 
-                    arguments = listOf(navArgument("token") {
-                        type = NavType.StringType
-                        defaultValue = ""
-                    })
-                ) {
-                    if (it.arguments?.getString("token").toString().isNotEmpty()) {
-                        Token.accessToken = it.arguments?.getString("token").toString()
-                        Log.i("header token by deepLink:", " ${Token.accessToken}")
                     }
-                    ResetPwPage(navController, it.arguments?.getString("token").toString())
-                }
-                composable(Routes.AccountWithdrawalPage) {
-                    AccountWithdrawalPage(navController)
-                }
-                composable(Routes.BadgePage) {
-                    BadgePage(navController, settingsViewModel)
-                }
-                composable(
-                    Routes.WritingPage,
-                    enterTransition = {
-                        slideInVertically(
-                            initialOffsetY = { 2000 },
-                            animationSpec = tween(durationMillis = 500)
-                        )
-                    },
-                    exitTransition = {
-                        slideOutVertically(
-                            targetOffsetY = { 2000 },
-                            animationSpec = tween(durationMillis = 500)
+                    composable(Routes.StoryPage,
+                        enterTransition = {
+                            slideInVertically(
+                                initialOffsetY = { 2000 },
+                                animationSpec = tween(durationMillis = 500)
+                            )
+                        },
+                        exitTransition = {
+                            slideOutVertically(
+                                targetOffsetY = { 2000 },
+                                animationSpec = tween(durationMillis = 500)
+                            )
+                        }
+                    ) {
+                        StoryPage(myLogViewModel, navController)
+                    }
+                    composable(Routes.StoryDetailPage) {
+                        StoryDetailPage(myLogViewModel, navController)
+                    }
+                    composable(Routes.DetailEssayInStoryPage) {
+                        DetailEssayInStoryPage(navController, myLogViewModel, writingViewModel)
+                    }
+                    composable(Routes.MyLogDetailPage) {
+                        MyLogDetailPage(
+                            navController = navController,
+                            myLogViewModel,
+                            writingViewModel
                         )
                     }
-                ) {
-                    WritingPage(navController, writingViewModel)
-                }
-                composable(Routes.WritingCompletePage) {
-                    WritingCompletePage(navController, writingViewModel)
-                }
-                composable(Routes.TemporaryStoragePage) {
-                    TemporaryStoragePage(navController, writingViewModel)
-                }
-                composable(Routes.CropImagePage) {
-                    CropImagePage(navController, writingViewModel)
-                }
-                composable(Routes.TermsAndConditionsPage) {
-                    TermsAndConditionsPage(navController)
-                }
-                composable(Routes.PrivacyPolicyPage) {
-                    PrivacyPolicyPage(navController)
-                }
-                composable(Routes.LocationPolicyPage) {
-                    LocationPolicyPage(navController)
-                }
-                composable(Routes.FontCopyRight) {
-                    FontCopyRight(navController)
+                    composable(Routes.CompletedEssayPage) {
+                        CompletedEssayPage(
+                            navController = navController,
+                            myLogViewModel,
+                            writingViewModel
+                        )
+                    }
+                    composable(Routes.Community) {
+                        CommunityPage(navController = navController, communityViewModel)
+                    }
+                    composable(Routes.CommunityDetailPage) {
+                        CommunityDetailPage(navController, communityViewModel)
+                    }
+                    composable(Routes.CommunitySavedEssayPage) {
+                        CommunitySavedEssayPage(navController, communityViewModel)
+                    }
+                    composable(Routes.SubscriberPage) {
+                        ProfilePage(viewModel = communityViewModel, navController = navController)
+                    }
+                    composable(Routes.FullSubscriberPage) {
+                        FullSubscriberPage(communityViewModel, navController)
+                    }
+                    composable(Routes.Settings) {
+                        MyPage(navController)
+                    }
+                    composable(Routes.RecentViewedEssayPage) {
+                        RecentViewedEssayPage(navController, communityViewModel)
+                    }
+                    composable(Routes.RecentEssayDetailPage) {
+                        RecentEssayDetailPage(navController, communityViewModel)
+                    }
+                    composable(
+                        Routes.AccountPage,
+                        deepLinks = listOf(navDeepLink {
+                            uriPattern = "https://linkedoutapp.com/${Routes.AccountPage}"
+                        })
+                    ) {
+                        AccountPage(navController)
+                    }
+                    composable(Routes.ChangeEmailPage) {
+                        ChangeEmailPage(navController)
+                    }
+                    composable(Routes.ChangePwPage) {
+                        ChangePwPage(navController)
+                    }
+                    composable(Routes.ResetPwPageWithEmail) {
+                        ResetPwPageWithEmail(navController)
+                    }
+                    composable(
+                        Routes.ResetPwPage,
+                        deepLinks = listOf(navDeepLink {
+                            uriPattern =
+                                "https://linkedoutapp.com/${Routes.ResetPwPage}?token={token}"
+                        }),
+
+                        arguments = listOf(navArgument("token") {
+                            type = NavType.StringType
+                            defaultValue = ""
+                        })
+                    ) {
+                        if (it.arguments?.getString("token").toString().isNotEmpty()) {
+                            Token.accessToken = it.arguments?.getString("token").toString()
+                            Log.i("header token by deepLink:", " ${Token.accessToken}")
+                        }
+                        ResetPwPage(navController, it.arguments?.getString("token").toString())
+                    }
+                    composable(Routes.AccountWithdrawalPage) {
+                        AccountWithdrawalPage(navController)
+                    }
+                    composable(Routes.BadgePage) {
+                        BadgePage(navController, settingsViewModel)
+                    }
+                    composable(
+                        Routes.WritingPage,
+                        enterTransition = {
+                            slideInVertically(
+                                initialOffsetY = { 2000 },
+                                animationSpec = tween(durationMillis = 500)
+                            )
+                        },
+                        exitTransition = {
+                            slideOutVertically(
+                                targetOffsetY = { 2000 },
+                                animationSpec = tween(durationMillis = 500)
+                            )
+                        }
+                    ) {
+                        WritingPage(navController, writingViewModel)
+                    }
+                    composable(Routes.WritingCompletePage) {
+                        WritingCompletePage(navController, writingViewModel)
+                    }
+                    composable(Routes.TemporaryStoragePage) {
+                        TemporaryStoragePage(navController, writingViewModel)
+                    }
+                    composable(Routes.CropImagePage) {
+                        CropImagePage(navController, writingViewModel)
+                    }
+                    composable(Routes.TermsAndConditionsPage) {
+                        TermsAndConditionsPage(navController)
+                    }
+                    composable(Routes.PrivacyPolicyPage) {
+                        PrivacyPolicyPage(navController)
+                    }
+                    composable(Routes.LocationPolicyPage) {
+                        LocationPolicyPage(navController)
+                    }
+                    composable(Routes.FontCopyRight) {
+                        FontCopyRight(navController)
+                    }
                 }
             }
         }
@@ -593,7 +603,7 @@ fun LoginPage(
                                 color = Color(0xFF919191),
                                 modifier = Modifier
                                     .padding(end = 25.dp)
-                                    .clickable(enabled = false) {  }
+                                    .clickable(enabled = false) { }
                             )
                         }
                         UnderlineText(text = "비밀번호 재설정") { navController.navigate("ResetPwPageWithEmail") } //비밀번호 재설정 페이지 이동
