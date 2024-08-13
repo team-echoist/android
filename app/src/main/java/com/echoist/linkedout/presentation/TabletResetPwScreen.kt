@@ -122,7 +122,6 @@ internal fun TabletResetPwScreen(
                                 .size(30.dp),
                             tint = Color.White
                         )
-
                     }
                 )
             },

@@ -10,6 +10,7 @@ import com.echoist.linkedout.page.login.OnBoardingPage
 import com.echoist.linkedout.presentation.TabletLoginRoute
 import com.echoist.linkedout.presentation.TabletOnBoardingRoute
 import com.echoist.linkedout.presentation.TabletResetPwRoute
+import com.echoist.linkedout.presentation.TabletSignUpRoute
 
 @Composable
 fun TabletNavHost(
@@ -37,6 +38,9 @@ fun TabletNavHost(
         }
         composable(Routes.ResetPwPageWithEmail) {
             TabletResetPwRoute(navController = navController)
+        }
+        composable(Routes.SignUp) {
+            TabletSignUpRoute(navController = navController)
         }
     }
 }
