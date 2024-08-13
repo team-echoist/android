@@ -7,10 +7,12 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -40,8 +42,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -140,6 +145,7 @@ internal fun TabletLoginScreen(
                 Column(
                     modifier = Modifier
                         .padding(it)
+                        .padding(horizontal = 350.dp)
                         .verticalScroll(scrollState)
                 ) {
                     Spacer(modifier = Modifier.height(20.dp))
@@ -153,7 +159,7 @@ internal fun TabletLoginScreen(
                             .padding(16.dp)
                             .clickable { onBackPressed() } //뒤로가기
                     )
-                    Spacer(modifier = Modifier.height(30.dp))
+                    Spacer(modifier = Modifier.height(70.dp))
                     Text(
                         text = "안녕하세요! 태블릿입니다.",
                         fontSize = 20.sp,
@@ -208,14 +214,14 @@ internal fun TabletLoginScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 32.dp),
+                            .padding(top = 24.dp),
                         horizontalArrangement = Arrangement.Center
                     ) {
                         UnderlineText(text = "아이디 찾기") { }
                         UnderlineText(text = "비밀번호 재설정") { navigateToResetPassword() }
                         UnderlineText(text = "회원가입") { navigateToSignUp() }
                     }
-                    Spacer(modifier = Modifier.height(150.dp))
+                    Spacer(modifier = Modifier.height(80.dp))
 
                     Row(
                         modifier = Modifier.padding(bottom = 24.dp),
