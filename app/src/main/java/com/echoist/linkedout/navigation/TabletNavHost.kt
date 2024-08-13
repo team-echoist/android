@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import com.echoist.linkedout.Routes
 import com.echoist.linkedout.page.login.OnBoardingPage
 import com.echoist.linkedout.presentation.TabletLoginRoute
+import com.echoist.linkedout.presentation.TabletOnBoardingRoute
 
 @Composable
 fun TabletNavHost(
@@ -24,12 +25,14 @@ fun TabletNavHost(
             TabletLoginRoute(
                 navController = navController,
                 onBackPressed = { navController.popBackStack() },
-                navigateToResetPassword = { navController.navigate("ResetPwPageWithEmail") },
-                navigateToSignUp = { navController.navigate("SIGNUP") }
+                navigateToResetPassword = { navController.navigate(Routes.ResetPwPageWithEmail) },
+                navigateToSignUp = { navController.navigate(Routes.SignUp) }
             )
         }
         composable(Routes.OnBoarding) {
-            OnBoardingPage(navController)
+            TabletOnBoardingRoute(
+                onStartClick = { navController.navigate(Routes.LoginPage) }
+            )
         }
     }
 }

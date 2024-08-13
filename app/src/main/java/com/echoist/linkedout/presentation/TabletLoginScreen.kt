@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -218,7 +219,11 @@ internal fun TabletLoginScreen(
 
                     Row(
                         modifier = Modifier.padding(bottom = 24.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(
+                            12.dp,
+                            Alignment.CenterHorizontally
+                        )
                     ) {
                         HorizontalDivider(
                             thickness = 1.dp,
@@ -227,13 +232,11 @@ internal fun TabletLoginScreen(
                                 .weight(1f)
                                 .padding(12.dp)
                         )
-                        Spacer(modifier = Modifier.width(12.dp))
                         Text(
                             text = "간편 회원가입/로그인",
                             color = Color.White,
                             fontSize = 12.sp
                         )
-                        Spacer(modifier = Modifier.width(12.dp))
                         HorizontalDivider(
                             thickness = 1.dp,
                             color = Color.White,
@@ -262,7 +265,13 @@ fun SocialLoginButtonGroup(
     onNaverLoginClick: @Composable () -> Unit,
     onAppleLoginClick: () -> Unit
 ) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .navigationBarsPadding(),
+        horizontalArrangement = Arrangement.spacedBy(25.dp, Alignment.CenterHorizontally),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         SocialLoginButton(
             iconRes = R.drawable.social_googlebtn,
             contentDescription = "Google Login",
