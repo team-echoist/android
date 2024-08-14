@@ -55,6 +55,11 @@ fun RecentViewedEssayPage(navController: NavController,viewModel: CommunityViewM
 
                     }
                 }
+                if (viewModel.getRecentEssayList().isEmpty()){
+                    Box(modifier = Modifier.fillMaxSize()){
+                        Text(text = "최근 본 글이 없습니다.", modifier = Modifier.align(Alignment.Center), color = Color.Gray)
+                    }
+                }
 
             }
 
