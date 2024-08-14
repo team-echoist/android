@@ -42,7 +42,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationBar
@@ -56,7 +55,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -112,7 +110,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 
-@OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewModel : WritingViewModel, statusCode : Int) {
 
@@ -150,7 +148,6 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewMo
     ) {
         val context = LocalContext.current
         viewModel.requestRegisterDevice(context) //로그인 후 홈 진입 시 회원정보등록
-        CompositionLocalProvider(LocalRippleConfiguration provides  null) {
             LinkedOutTheme {
 
                 Scaffold(
@@ -191,7 +188,6 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewMo
             Box(modifier = Modifier
                 .fillMaxSize()
                 .padding(start = 165.dp, bottom = 130.dp), contentAlignment = Alignment.Center){
-                CompositionLocalProvider(LocalRippleConfiguration provides  null) {
                     Box(
                         Modifier
                             .size(80.dp)
@@ -205,8 +201,6 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewMo
                     }
 
                 }
-            }
-
 
             AnimatedVisibility(
                 visible = viewModel.isVisibleGeulRoquis && !viewModel.isFirstUser, //튜토리얼을 건너뛰어야 글로키를 볼수있음
@@ -274,7 +268,7 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewMo
         }
 
 
-}
+
 
 
 @Composable

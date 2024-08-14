@@ -312,7 +312,6 @@ fun GroupRingImg(viewModel: WritingViewModel) {
             else -> R.drawable.pw_eye_off
         }
 
-    CompositionLocalProvider(LocalRippleConfiguration provides  null) {
 
         Icon(painter = painterResource(id = ringImage), tint = LinkedInColor, contentDescription = "ring",
             modifier = Modifier
@@ -327,7 +326,7 @@ fun GroupRingImg(viewModel: WritingViewModel) {
 
 
 
-}
+
 
 @Composable
 fun SingleRing(viewModel: WritingViewModel) {

@@ -65,7 +65,6 @@ import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.SupportViewModel
 
-@OptIn( ExperimentalMaterial3Api::class)
 @Composable
 fun InquiryPage(
     navController : NavController,
@@ -103,7 +102,6 @@ fun InquiryPage(
                         CircularProgressIndicator(color = LinkedInColor)
                     }
                 }
-                CompositionLocalProvider(LocalRippleConfiguration provides  null) {
                     //@composable
                     Column {
                         if (isScrolling) isInfoClicked = false
@@ -216,7 +214,7 @@ fun InquiryPage(
                 }
             }
         }
-    }
+
 
 
 
@@ -341,10 +339,9 @@ fun InquiryInfoBox(){
     }
 }
 
-@OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun InquiryInformationBox(isClicked : ()->Unit){
-    CompositionLocalProvider(LocalRippleConfiguration provides  null) {
         Box(
             modifier = Modifier.offset(x = 80.dp, y = 166.dp).clickable { isClicked() },
             contentAlignment = Alignment.Center
@@ -382,4 +379,4 @@ fun InquiryInformationBox(isClicked : ()->Unit){
             }
         }
     }
-}
+

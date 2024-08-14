@@ -1157,8 +1157,6 @@ fun SubscribeUserItem(item: UserInfo, viewModel: CommunityViewModel) {
         label = ""  //todo white값을 unspecified.0.4f로 맞추면될듯
     )
 
-    CompositionLocalProvider(LocalRippleConfiguration provides null) {
-
         Box(
             modifier = Modifier
                 .width(70.dp)
@@ -1192,7 +1190,7 @@ fun SubscribeUserItem(item: UserInfo, viewModel: CommunityViewModel) {
             }
         }
     }
-}
+
 
 @Composable
 fun SubscribeUserList(viewModel: CommunityViewModel,navController: NavController) {

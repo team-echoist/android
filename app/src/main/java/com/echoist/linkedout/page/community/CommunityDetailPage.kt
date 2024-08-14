@@ -166,7 +166,6 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
 
                 },
                 content = {
-                    CompositionLocalProvider(LocalRippleConfiguration provides null) {
                         Box(
                             Modifier
                                 .clickable { isClicked = !isClicked }
@@ -251,7 +250,7 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
                             }
 
                         }
-                    }
+
                     Box(
                         modifier = Modifier
                             .fillMaxSize()

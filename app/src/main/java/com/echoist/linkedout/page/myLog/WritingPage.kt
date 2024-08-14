@@ -166,7 +166,6 @@ fun WritingPage(
         }
     }
 
-    CompositionLocalProvider(LocalRippleConfiguration provides  null) {
         LinkedOutTheme {
             Box {
                 Column(
@@ -359,7 +358,7 @@ fun WritingPage(
         }
     }
 
-    }
+
 
 
 @Composable

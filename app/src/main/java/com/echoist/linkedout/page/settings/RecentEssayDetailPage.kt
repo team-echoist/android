@@ -25,13 +25,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -70,10 +68,11 @@ fun RecentEssayDetailPage(navController: NavController, viewModel: CommunityView
     val scope = rememberCoroutineScope()
 
 
-    val peekHeight = if (viewModel.isReportClicked ) 310.dp else 0.dp
+    val peekHeight = if (viewModel.isReportClicked) 310.dp else 0.dp
 
 
-    val bottomSheetState = rememberStandardBottomSheetState(initialValue = SheetValue.Hidden, skipHiddenState = false)
+    val bottomSheetState =
+        rememberStandardBottomSheetState(initialValue = SheetValue.Hidden, skipHiddenState = false)
     val scaffoldState = androidx.compose.material3.rememberBottomSheetScaffoldState(
         bottomSheetState = bottomSheetState
     )
@@ -92,14 +91,14 @@ fun RecentEssayDetailPage(navController: NavController, viewModel: CommunityView
             sheetContent = {
 
                 //신고하기 요청보냄.
-                if (!viewModel.isReportCleared){
+                if (!viewModel.isReportCleared) {
                     ReportMenuBottomSheet(viewModel)
 
-                }
-                else{ //신고 하기 버튼 눌렀을때 제대로 요청이 들어가고 접수가되었다면. 완료버튼 클릭시
-                    ReportComplete { viewModel.isReportCleared = false
+                } else { //신고 하기 버튼 눌렀을때 제대로 요청이 들어가고 접수가되었다면. 완료버튼 클릭시
+                    ReportComplete {
+                        viewModel.isReportCleared = false
                         viewModel.isReportClicked = false
-                        viewModel.isOptionClicked =false
+                        viewModel.isOptionClicked = false
                         scope.launch {
                             bottomSheetState.hide()
                         }
@@ -115,96 +114,97 @@ fun RecentEssayDetailPage(navController: NavController, viewModel: CommunityView
             Scaffold(
                 topBar = {
 
-                    CommunityTopAppBar(navController = navController, viewModel,Color(0xFF0E0E0E))
+                    CommunityTopAppBar(navController = navController, viewModel, Color(0xFF0E0E0E))
 
                 },
                 content = {
-                    CompositionLocalProvider(LocalRippleConfiguration provides null) {
-                        Box(
-                            Modifier
-                                .clickable { isClicked = !isClicked }
-                                .padding(it)
-                                .fillMaxSize(), contentAlignment = Alignment.TopCenter
-                        ) {
-                            LazyColumn {
-                                item {
+                    Box(
+                        Modifier
+                            .clickable { isClicked = !isClicked }
+                            .padding(it)
+                            .fillMaxSize(), contentAlignment = Alignment.TopCenter
+                    ) {
+                        LazyColumn {
+                            item {
 
-                                    DetailEssay(
-                                        item = viewModel.readDetailEssay(),
-                                        viewModel,
-                                        navController
-                                    )
-                                    Spacer(modifier = Modifier.height(28.dp))
-                                    val userinfo = viewModel.readDetailEssay().author ?: UserInfo()
-
-                                    SubscriberSimpleItem(
-                                        item = userinfo,
-                                        viewModel = viewModel,
-                                        navController = navController
-                                    )
-                                    Spacer(modifier = Modifier.height(36.dp))
-                                    Box(
-                                        modifier = Modifier
-                                            .height(12.dp)
-                                            .fillMaxWidth()
-                                            .background(Color(0xFF1A1A1A))
-                                    )
-                                    Box(
-                                        modifier = Modifier
-                                            .height(56.dp)
-                                            .fillMaxWidth()
-                                            .padding(horizontal = 20.dp),
-                                        contentAlignment = Alignment.CenterStart
-                                    )
-                                    {
-                                        Text(
-                                            text = "최근 본 다른 글",
-                                            fontSize = 14.sp,
-                                            color = Color(0xFF616FED)
-                                        )
-
-                                    }
-                                }
-                                //todo 글쓴이의 최근 본 리스트중 다른글 띄우기
-                                items(items = viewModel.getFilteredRecentEssayList()) { it -> //랜덤리스트 말고 수정할것. 그사람의 리스트로
-                                    RecentEssayListItem(
-                                        item = it,
-                                        viewModel = viewModel,
-                                        navController = navController
-                                    )
-                                }
-
-
-                            }
-
-                            //신고 옵션
-                            AnimatedVisibility(
-                                visible = viewModel.isOptionClicked,
-                                enter = fadeIn(
-                                    animationSpec = tween(
-                                        durationMillis = 1000,
-                                        easing = FastOutSlowInEasing
-                                    )
-                                ),
-                                exit = fadeOut(
-                                    animationSpec = tween(
-                                        durationMillis = 500,
-                                        easing = LinearEasing
-                                    )
+                                DetailEssay(
+                                    item = viewModel.readDetailEssay(),
+                                    viewModel,
+                                    navController
                                 )
-                            ) {
+                                Spacer(modifier = Modifier.height(28.dp))
+                                val userinfo = viewModel.readDetailEssay().author ?: UserInfo()
+
+                                SubscriberSimpleItem(
+                                    item = userinfo,
+                                    viewModel = viewModel,
+                                    navController = navController
+                                )
+                                Spacer(modifier = Modifier.height(36.dp))
                                 Box(
                                     modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(end = 23.dp),
-                                    contentAlignment = Alignment.TopEnd
-                                ) {
-                                    ReportOption({viewModel.isReportClicked = !viewModel.isReportClicked}, viewModel)
+                                        .height(12.dp)
+                                        .fillMaxWidth()
+                                        .background(Color(0xFF1A1A1A))
+                                )
+                                Box(
+                                    modifier = Modifier
+                                        .height(56.dp)
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 20.dp),
+                                    contentAlignment = Alignment.CenterStart
+                                )
+                                {
+                                    Text(
+                                        text = "최근 본 다른 글",
+                                        fontSize = 14.sp,
+                                        color = Color(0xFF616FED)
+                                    )
+
                                 }
                             }
+                            //todo 글쓴이의 최근 본 리스트중 다른글 띄우기
+                            items(items = viewModel.getFilteredRecentEssayList()) { it -> //랜덤리스트 말고 수정할것. 그사람의 리스트로
+                                RecentEssayListItem(
+                                    item = it,
+                                    viewModel = viewModel,
+                                    navController = navController
+                                )
+                            }
+
 
                         }
+
+                        //신고 옵션
+                        AnimatedVisibility(
+                            visible = viewModel.isOptionClicked,
+                            enter = fadeIn(
+                                animationSpec = tween(
+                                    durationMillis = 1000,
+                                    easing = FastOutSlowInEasing
+                                )
+                            ),
+                            exit = fadeOut(
+                                animationSpec = tween(
+                                    durationMillis = 500,
+                                    easing = LinearEasing
+                                )
+                            )
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(end = 23.dp),
+                                contentAlignment = Alignment.TopEnd
+                            ) {
+                                ReportOption({
+                                    viewModel.isReportClicked = !viewModel.isReportClicked
+                                }, viewModel)
+                            }
+                        }
+
                     }
+
                     Box(
                         modifier = Modifier.fillMaxSize().navigationBarsPadding(),
                         contentAlignment = Alignment.BottomCenter
@@ -229,7 +229,7 @@ fun RecentEssayDetailPage(navController: NavController, viewModel: CommunityView
                                 )
                             )
                         ) {
-                            SequenceBottomBar(viewModel.readDetailEssay(),viewModel,navController)
+                            SequenceBottomBar(viewModel.readDetailEssay(), viewModel, navController)
                         }
                     }
                     if (viewModel.isReportClicked)
@@ -244,6 +244,7 @@ fun RecentEssayDetailPage(navController: NavController, viewModel: CommunityView
         }
     }
 }
+
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
