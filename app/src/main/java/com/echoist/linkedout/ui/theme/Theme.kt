@@ -1,12 +1,15 @@
 package com.echoist.linkedout.ui.theme
 
 import android.os.Build
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
@@ -37,6 +40,7 @@ private val LightColorScheme = lightColorScheme(
 )
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LinkedOutTheme(
     darkTheme: Boolean = true, //isSystemInDarkTheme(), //이 값 대신 SharedPreferencesUtil 을 사용
@@ -56,10 +60,14 @@ fun LinkedOutTheme(
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
+    CompositionLocalProvider(
+        LocalRippleConfiguration provides null // 리플 효과 제거
+    ) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = TypographyPretendard,
+            content = content
+        )
+    }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = TypographyPretendard,
-        content = content
-    )
 }
