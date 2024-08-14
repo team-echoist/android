@@ -51,8 +51,6 @@ fun RecentViewedEssayPage(navController: NavController,viewModel: CommunityViewM
                         items(viewModel.getRecentEssayList()) { it ->
                             EssayListItem(item = it, viewModel = viewModel, navController = navController)
                         }
-
-
                     }
                 }
                 if (viewModel.getRecentEssayList().isEmpty()){
