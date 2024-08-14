@@ -408,6 +408,7 @@ fun MyBottomNavigation(navController: NavController) {
         BottomNavItem.Community,
         BottomNavItem.Settings
     )
+
     NavigationBar(containerColor = Color.Black) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
@@ -415,25 +416,28 @@ fun MyBottomNavigation(navController: NavController) {
         items.forEach { item ->
             NavigationBarItem(
                 colors = NavigationBarItemDefaults.colors(indicatorColor = Color.Transparent),
-                selected = currentRoute == item.screenRoute,
+                selected = isRouteSelected(currentRoute, item.screenRoute),
                 onClick = {
                     navController.navigate(item.screenRoute)
-
                 },
                 icon = {
                     Icon(
                         painter = painterResource(id = item.icon),
                         contentDescription = item.title,
                         modifier = Modifier.size(32.dp),
-                        tint = if (currentRoute == item.screenRoute) Color.White else Color(
-                            0xFF686868
-                        )
+                        tint = if (isRouteSelected(currentRoute, item.screenRoute)) Color.White else Color(0xFF686868)
                     )
-                })
-
+                }
+            )
         }
     }
 }
+
+// 현재 라우트에서 동적 파라미터를 제거하고 비교
+private fun isRouteSelected(currentRoute: String?, screenRoute: String): Boolean {
+    return currentRoute?.substringBefore('/') == screenRoute.substringBefore('/')
+}
+
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -983,7 +987,9 @@ fun Tutorial_4(isCloseClicked : ()->Unit){
                     imageVector = Icons.Default.Close,
                     contentDescription = "close",
                     tint = Color.White,
-                    modifier = Modifier.size(30.dp).clickable { isCloseClicked()}
+                    modifier = Modifier
+                        .size(30.dp)
+                        .clickable { isCloseClicked() }
                 )
             }
         }

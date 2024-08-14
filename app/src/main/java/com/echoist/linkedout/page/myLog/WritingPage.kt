@@ -208,7 +208,7 @@ fun WritingPage(
                                             .height(32.dp)
                                             .clickable { navController.navigate("CropImagePage") }
                                             .background(color = Color(0xFF616FED)), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
-                                        Text(text = "변경", fontSize = 12.sp, color = Color.White)
+                                        Text(text = "변경", fontSize = 16.sp, color = Color.White)
                                     }
                                 }
 
