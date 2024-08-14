@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -54,6 +55,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
@@ -62,6 +65,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -146,7 +150,8 @@ import java.nio.charset.StandardCharsets
 @AndroidEntryPoint
 class LoginPage : ComponentActivity() {
     private fun getSSAID(context: Context) {
-        DeviceId.ssaid = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+        DeviceId.ssaid =
+            Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
     }
 
     override fun onStart() {
@@ -173,7 +178,7 @@ class LoginPage : ComponentActivity() {
         val myLogViewModel: MyLogViewModel by viewModels()
         val communityViewModel: CommunityViewModel by viewModels()
         val settingsViewModel: SettingsViewModel by viewModels()
-        val supportViewModel : SupportViewModel by viewModels()
+        val supportViewModel: SupportViewModel by viewModels()
         //top,bottom 시스템 바 등의 설정
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
@@ -181,7 +186,8 @@ class LoginPage : ComponentActivity() {
             val keyHash = Utility.getKeyHash(this)
             Log.d("Hash", keyHash)
             val navController = rememberNavController()
-            NavHost(navController = navController, startDestination = Routes.OnBoarding) {
+
+            NavHost(navController = navController, startDestination = Routes.LoginPage) {
                 composable(Routes.OnBoarding) {
                     OnBoardingPage(navController)
                 }
@@ -239,17 +245,21 @@ class LoginPage : ComponentActivity() {
                     InquiryPage(navController)
                 }
                 composable(Routes.NoticePage) {
-                    NoticePage(navController,supportViewModel)
+                    NoticePage(navController, supportViewModel)
                 }
                 composable(
                     route = "${Routes.NoticeDetailPage}/{noticeJson}",
                     arguments = listOf(navArgument("noticeJson") { type = NavType.StringType })
-                ) {backStackEntry ->
+                ) { backStackEntry ->
                     val noticeJson = backStackEntry.arguments?.getString("noticeJson")
-                    val decodedJson = noticeJson?.let { URLDecoder.decode(it, StandardCharsets.UTF_8.name()) }
+                    val decodedJson =
+                        noticeJson?.let { URLDecoder.decode(it, StandardCharsets.UTF_8.name()) }
                     val notice = jsonAdapter.fromJson(decodedJson!!)
 
-                    NoticeDetailPage(navController, notice ?: Notice(0,"no title","no content","2024 08 03"))
+                    NoticeDetailPage(
+                        navController,
+                        notice ?: Notice(0, "no title", "no content", "2024 08 03")
+                    )
                 }
                 composable(Routes.UpdateHistoryPage) {
                     UpdateHistoryPage(navController)
@@ -257,13 +267,12 @@ class LoginPage : ComponentActivity() {
                 composable(
                     route = "${Routes.MyLog}/{page}",
                     arguments = listOf(navArgument("page") { type = NavType.IntType })
-                ) {backStackEntry ->
+                ) { backStackEntry ->
                     val page = backStackEntry.arguments?.getInt("page") ?: 0
                     MyLogPage(navController, myLogViewModel, writingViewModel, page)
 
                 }
-
-                composable (Routes.StoryPage,
+                composable(Routes.StoryPage,
                     enterTransition = {
                         slideInVertically(
                             initialOffsetY = { 2000 },
@@ -286,7 +295,11 @@ class LoginPage : ComponentActivity() {
                     DetailEssayInStoryPage(navController, myLogViewModel, writingViewModel)
                 }
                 composable(Routes.MyLogDetailPage) {
-                    MyLogDetailPage(navController = navController, myLogViewModel, writingViewModel)
+                    MyLogDetailPage(
+                        navController = navController,
+                        myLogViewModel,
+                        writingViewModel
+                    )
                 }
                 composable(Routes.CompletedEssayPage) {
                     CompletedEssayPage(
@@ -339,7 +352,8 @@ class LoginPage : ComponentActivity() {
                 composable(
                     Routes.ResetPwPage,
                     deepLinks = listOf(navDeepLink {
-                        uriPattern = "https://linkedoutapp.com/${Routes.ResetPwPage}?token={token}"
+                        uriPattern =
+                            "https://linkedoutapp.com/${Routes.ResetPwPage}?token={token}"
                     }),
 
                     arguments = listOf(navArgument("token") {
@@ -399,7 +413,6 @@ class LoginPage : ComponentActivity() {
                 }
             }
         }
-
     }
 }
 
@@ -421,7 +434,6 @@ fun GoogleLoginBtn(navController: NavController, viewModel: SocialLoginViewModel
             .clickable { viewModel.signInWithGoogle(launcher, context) },
         tint = Color.Unspecified
     )
-
 }
 
 @Composable
@@ -429,7 +441,6 @@ fun KakaoLoginBtn(navController: NavController, viewModel: SocialLoginViewModel)
     val context = LocalContext.current
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-
         Icon(
             painter = painterResource(id = R.drawable.social_kakaobtn),
             contentDescription = "naver Login btn",
@@ -438,10 +449,7 @@ fun KakaoLoginBtn(navController: NavController, viewModel: SocialLoginViewModel)
                 .clickable { viewModel.handleKaKaoLogin(context, navController) },
             tint = Color.Unspecified
         )
-
-
     }
-
 }
 
 @Composable
@@ -464,10 +472,7 @@ fun NaverLoginBtn(navController: NavController, viewModel: SocialLoginViewModel)
                 .clickable { NaverIdLoginSDK.authenticate(context, launcher) },
             tint = Color.Unspecified
         )
-
-
     }
-
 }
 
 @Composable
@@ -485,10 +490,7 @@ fun AppleLoginBtn(navController: NavController, viewModel: SocialLoginViewModel)
                 .clickable { viewModel.appleLoginHandle(activity, navController) },
             tint = Color.Unspecified
         )
-
-
     }
-
 }
 
 
@@ -497,11 +499,9 @@ fun LoginPage(
     navController: NavController,
     viewModel: SocialLoginViewModel
 ) {
-
     val keyboardController = LocalSoftwareKeyboardController.current
     val scrollState = rememberScrollState()
     Log.d("현재 사용중인 안드로이드 앱 버전", BuildConfig.VERSION_NAME)
-
 
     //앱버전 체크 후 최신버전 아닌경우 마켓업데이트.
     LaunchedEffect(key1 = Unit) {
@@ -547,8 +547,8 @@ fun LoginPage(
                         modifier = Modifier.padding(start = 16.dp, bottom = 32.dp),
                         color = Color.White,
                     )
-                    IdTextField(viewModel)
-                    PwTextField(viewModel)
+
+                    LoginTextFields(viewModel, navController)
 
                     var clickedAutoLogin by remember { mutableStateOf(false) }
                     val autoLoginColor = if (clickedAutoLogin) LinkedInColor else Color.Gray
@@ -606,13 +606,20 @@ fun LoginPage(
                                 .padding(12.dp)
                         )
                     }
-
                     SocialLoginBar(navController, viewModel)
                     Spacer(modifier = Modifier.height(20.dp))
                 }
             }
         )
     }
+}
+
+@Composable
+fun LoginTextFields(viewModel: SocialLoginViewModel, navController: NavController) {
+    val passwordFocusRequester = remember { FocusRequester() }
+
+    IdTextField(viewModel, passwordFocusRequester)
+    PwTextField(navController, viewModel, passwordFocusRequester)
 }
 
 @Composable
@@ -635,7 +642,7 @@ fun SocialLoginBar(navController: NavController, viewModel: SocialLoginViewModel
 }
 
 @Composable
-fun IdTextField(viewModel: SocialLoginViewModel) {
+fun IdTextField(viewModel: SocialLoginViewModel, passwordFocusRequester: FocusRequester) {
     var text by remember { mutableStateOf("") }
 
     TextField(
@@ -644,6 +651,13 @@ fun IdTextField(viewModel: SocialLoginViewModel) {
             text = new
             viewModel.userId = text
         },
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+        keyboardActions = KeyboardActions(
+            onNext = {
+                passwordFocusRequester.requestFocus()
+            }
+        ),
         label = {
             Text(
                 "이메일 주소 또는 아이디",
@@ -658,8 +672,6 @@ fun IdTextField(viewModel: SocialLoginViewModel) {
             unfocusedTextColor = Color.White,
             focusedContainerColor = Color(0xFF252525),
             unfocusedContainerColor = Color(0xFF252525)
-
-
         ),
         shape = RoundedCornerShape(8.dp),
         modifier = Modifier
@@ -669,7 +681,11 @@ fun IdTextField(viewModel: SocialLoginViewModel) {
 }
 
 @Composable
-fun PwTextField(viewModel: SocialLoginViewModel) {
+fun PwTextField(
+    navController: NavController,
+    viewModel: SocialLoginViewModel,
+    passwordFocusRequester: FocusRequester
+) {
     var text by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     LinkedOutTheme {
@@ -679,6 +695,7 @@ fun PwTextField(viewModel: SocialLoginViewModel) {
                 text = new
                 viewModel.userPw = text
             },
+            singleLine = true,
             label = { Text("비밀번호", color = Color(0xFF919191), fontSize = 14.sp) }, // 힌트를 라벨로 설정합니다.
             colors = TextFieldDefaults.colors(
                 focusedIndicatorColor = Color.Transparent,
@@ -687,11 +704,17 @@ fun PwTextField(viewModel: SocialLoginViewModel) {
                 unfocusedTextColor = Color.White,
                 focusedContainerColor = Color(0xFF252525),
                 unfocusedContainerColor = Color(0xFF252525)
-
-
             ),
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    viewModel.login(navController)
+                }
+            ),
             trailingIcon = { // 비밀번호 표시 여부입니다.
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
                     Icon(
@@ -706,10 +729,9 @@ fun PwTextField(viewModel: SocialLoginViewModel) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 16.dp, end = 16.dp, bottom = 13.dp)
+                .focusRequester(passwordFocusRequester)
         )
     }
-
-
 }
 
 @Composable
@@ -740,7 +762,6 @@ fun LoginBtn(
             Text(text = "로그인")
         }
     }
-
 }
 
 @Composable
@@ -757,10 +778,8 @@ fun UnderlineText(
             modifier = Modifier
                 .padding(end = 25.dp)
                 .clickable { onClick() }
-
         )
     }
-
 }
 
 enum class Keyboard {
@@ -789,10 +808,5 @@ fun keyboardAsState(): State<Keyboard> {
             view.viewTreeObserver.removeOnGlobalLayoutListener(onGlobalListener)
         }
     }
-
     return keyboardState
 }
-
-
-
-
