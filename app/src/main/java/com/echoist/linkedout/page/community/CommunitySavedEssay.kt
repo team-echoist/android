@@ -53,7 +53,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.echoist.linkedout.TYPE_COMMUNITY
+import com.echoist.linkedout.TYPE_RECOMMEND
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.formatElapsedTime
@@ -327,7 +327,7 @@ fun SavedEssayListScreen(viewModel: CommunityViewModel, navController: NavContro
                             onClickItem = {
                                 if (!viewModel.isSavedEssaysModifyClicked) {
                                     viewModel.readDetailEssay(item.id!!, navController,
-                                        TYPE_COMMUNITY
+                                        TYPE_RECOMMEND
                                     )
 
                                     val exampleItems = ExampleItems()

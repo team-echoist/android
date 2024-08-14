@@ -53,7 +53,7 @@ interface SupportApi {
         @Path("inquiryId") inquiryId : Int
     ): Response<InquiryResponse>
 
-    @GET("api/support/updated-histories")
+    @GET("api/support/release")
     suspend fun readUpdatedHistories(
         @Header("Authorization") accessToken: String,
         @Query("page") page : Int = 1,

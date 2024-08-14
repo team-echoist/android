@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -40,6 +41,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -180,6 +182,18 @@ fun EssayItem(
 fun StoryEssayListScreen(viewModel: MyLogViewModel, navController: NavController) {
     val essayItems = if (viewModel.isCreateStory) viewModel.createStoryEssayItems else viewModel.modifyStoryEssayItems
 
+    val listState = rememberLazyListState()
+    LaunchedEffect(listState) {
+        // 스크롤 상태를 감지하는 LaunchedEffect
+        snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull() }
+            .collect { lastVisibleItem ->
+                // 리스트의 마지막 아이템에 도달하면 추가로딩
+                if (lastVisibleItem?.index == essayItems.size - 1) {
+                    viewModel.readStoryEssayList()
+                }
+            }
+    }
+
     var isFunFinished by remember{ mutableStateOf(false) }
     LaunchedEffect(key1 = Unit ) {
         delay(100)
@@ -207,7 +221,10 @@ fun StoryEssayListScreen(viewModel: MyLogViewModel, navController: NavController
         }
 
         Log.d(TAG, "StoryEssayListScreen: $selectedItems")
-        Log.d(TAG, "StoryEssayListScreen: $selectedItems")
+        Log.d(TAG, "StoryEssayListScreen: ${viewModel.createStoryEssayItems}")
+        Log.d(TAG, "StoryEssayListScreen: ${viewModel.modifyStoryEssayItems}")
+
+
 
         Column(Modifier.padding(horizontal = 20.dp)) {
             Spacer(modifier = Modifier.height(20.dp))
@@ -250,7 +267,7 @@ fun StoryEssayListScreen(viewModel: MyLogViewModel, navController: NavController
             Spacer(modifier = Modifier.height(10.dp))
 
             // 스토리에 들어갈 에세이 목록
-            LazyColumn(modifier = Modifier.weight(0.9f)) {
+            LazyColumn(modifier = Modifier.weight(0.9f), state = listState) {
                 items(essayItems) { item ->
                     val isSelected = item in selectedItems
                     EssayItem(

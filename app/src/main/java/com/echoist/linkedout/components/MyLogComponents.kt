@@ -57,7 +57,9 @@ import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
-import com.echoist.linkedout.TYPE_PROFILE
+import com.echoist.linkedout.TYPE_PRIVATE
+import com.echoist.linkedout.TYPE_PUBLISHED
+import com.echoist.linkedout.TYPE_RECOMMEND
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.Story
 import com.echoist.linkedout.formatDateTime
@@ -90,8 +92,9 @@ fun MyLogTopAppBar(onClickSearch : ()->Unit,nickName : String,onClickNotificatio
                 Spacer(modifier = Modifier.width(13.dp))
                 Icon(
                     painter = painterResource(id = img),
+                    tint = Color.Unspecified,
                     contentDescription = "",
-                    Modifier
+                    modifier = Modifier
                         .padding(end = 10.dp)
                         .size(30.dp)
                         .clickable { onClickNotification() }
@@ -199,11 +202,18 @@ fun EssayListItem(
     var isOptionClicked by remember {
         mutableStateOf(false)
     }
+
+    val type = when(item.status){ //리스트조회시 나오는 아이템의 status의 종류에 따라 세부에세이요청의 type, another 에세이 달라짐.
+        "published" -> TYPE_PUBLISHED
+        "private" -> TYPE_PRIVATE
+        else -> TYPE_RECOMMEND
+    }
+
     LinkedOutTheme {
         Box(modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                viewModel.readDetailEssay(item.id!!, navController, TYPE_PROFILE)
+                viewModel.readDetailEssay(item.id!!, navController, type)
                 viewModel.detailEssayBackStack.push(item)
                 Log.d(TAG, "pushpush: ${viewModel.detailEssayBackStack}")
             }
@@ -260,7 +270,7 @@ fun EssayListItem(
 
                 RichText(state = rememberRichTextState().setHtml(item.content!!),
                     color = color,
-                    fontSize = 20.sp,
+                    fontSize = 14.sp,
                     lineHeight = 27.2.sp,
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis)

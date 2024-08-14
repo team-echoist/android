@@ -40,6 +40,9 @@ import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
+import com.echoist.linkedout.TYPE_RECOMMEND
+import com.echoist.linkedout.TYPE_PRIVATE
+import com.echoist.linkedout.TYPE_PUBLISHED
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.components.ModifyStoryBox
 import com.echoist.linkedout.data.Story
@@ -164,7 +167,12 @@ fun StoryDetailList(viewModel: MyLogViewModel,navController : NavController){
         items(viewModel.modifyStoryEssayItems){
         }
         itemsIndexed(viewModel.essayListInStroy){i,essay->
-            StoryDetailItem(essay,i+1){viewModel.readDetailEssayInStory(essay.id!! ,navController,i+1)}
+            val type = when(essay.status){ //리스트조회시 나오는 아이템의 status의 종류에 따라 세부에세이요청의 type, another 에세이 달라짐.
+                "published" -> TYPE_PUBLISHED
+                "private" -> TYPE_PRIVATE
+                else -> TYPE_RECOMMEND
+            }
+            StoryDetailItem(essay,i+1){viewModel.readDetailEssayInStory(essay.id!! ,navController,i+1,type)}
 
         }
     }

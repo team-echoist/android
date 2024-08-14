@@ -75,12 +75,10 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -101,7 +99,7 @@ import com.echoist.linkedout.PROFILE_IMAGE_10
 import com.echoist.linkedout.PROFILE_IMAGE_11
 import com.echoist.linkedout.PROFILE_IMAGE_12
 import com.echoist.linkedout.R
-import com.echoist.linkedout.TYPE_COMMUNITY
+import com.echoist.linkedout.TYPE_RECOMMEND
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.BadgeBoxItem
 import com.echoist.linkedout.data.EssayStats
@@ -111,10 +109,6 @@ import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
 import com.echoist.linkedout.viewModels.SettingsViewModel
-import com.mohamedrejeb.richeditor.annotation.ExperimentalRichTextApi
-import com.mohamedrejeb.richeditor.model.rememberRichTextState
-import com.mohamedrejeb.richeditor.ui.material3.RichText
-import com.mohamedrejeb.richeditor.ui.material3.RichTextEditor
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -132,6 +126,7 @@ fun MyPage(
         mutableStateOf(false)
     }
     LaunchedEffect(key1 = isApiFinished) {
+        viewModel.requestMyInfo()
         viewModel.readSimpleBadgeList()
         viewModel.getMyInfo()
         viewModel.readRecentEssays()
@@ -425,7 +420,7 @@ fun RecentEssayItem(item: EssayApi.EssayItem,viewModel : CommunityViewModel = hi
     Box(modifier = Modifier
         .size(150.dp, 120.dp)
         .clickable { /* 에세이로 이동 */
-            viewModel.readDetailRecentEssay(item.id!!, navController, TYPE_COMMUNITY)
+            viewModel.readDetailRecentEssay(item.id!!, navController, TYPE_RECOMMEND)
         }) {
         Column {
             Text(text = item.title!!)
@@ -607,8 +602,20 @@ fun LinkedOutBadgeGrid(viewModel: SettingsViewModel) {
 @Composable
 fun ModifyNickNameTextField( viewModel: SettingsViewModel) {
 
-    var text by remember {
-        mutableStateOf(viewModel.getMyInfo().nickname ?: "에러")
+    var text by remember { mutableStateOf(viewModel.getMyInfo().nickname ?: "에러") }
+    var message by remember {
+        mutableStateOf("   *필명은 최대 6자, 한글로만 입력 가능합니다.")
+    }
+    message = when (viewModel.nicknameCheckCode){
+        200 ,201-> "   * 사용가능한 닉네임입니다!"
+        409 -> "   * 이미 사용중인 닉네임입니다."
+        400 -> "   * 필명은 3자 이상 6자 이하의 완성된 한글 단어로만 구성할 수 있습니다."
+        else -> ("   * ${viewModel.nicknameCheckCode}")          //에러코드
+    }
+    val color = when (viewModel.nicknameCheckCode){
+        409 -> Color.Red
+        400 -> Color.Red
+        else -> LinkedInColor
     }
     //수정 안했을때 기본 닉네임 설정. 원래 닉네임으로.
     viewModel.newProfile.nickname = text
@@ -621,13 +628,14 @@ fun ModifyNickNameTextField( viewModel: SettingsViewModel) {
         Spacer(modifier = Modifier.height(6.5.dp))
         OutlinedTextField(
             value = text,
+            isError = viewModel.nicknameCheckCode == 409 || viewModel.nicknameCheckCode == 400,
             onValueChange = {
                 if (it.length < 7){
                     text = it
                     viewModel.newProfile.nickname = text //수정할때마다 새 프로필 닉네임 변경
                     Log.d(TAG, "ModifyNickNameTextField: ${viewModel.newProfile}")
+                    viewModel.requestNicknameDuplicated(text)
                 }
-
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -638,13 +646,14 @@ fun ModifyNickNameTextField( viewModel: SettingsViewModel) {
                 focusedBorderColor = LinkedInColor,
                 unfocusedTextColor = LinkedInColor,
                 unfocusedContainerColor = Color.Transparent,
-                focusedContainerColor = Color.Transparent
+                focusedContainerColor = Color.Transparent,
+                errorTextColor = Color.Red,
+                errorBorderColor = Color.Red
             ),
             shape = RoundedCornerShape(10),
             )
         Spacer(modifier = Modifier.height(5.dp))
-        Text(text = "   *필명은 최대 6자, 한글로만 입력 가능합니다.", color = LinkedInColor, fontSize = 10.sp)
-
+        Text(text = message, color = color, fontSize = 10.sp)
     }
 }
 

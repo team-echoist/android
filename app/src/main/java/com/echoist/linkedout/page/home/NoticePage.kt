@@ -59,18 +59,19 @@ fun NoticePage(
                     .verticalScroll(rememberScrollState())
                     .fillMaxHeight()
             ) {
-                if (viewModel.noticeList.isEmpty()) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text(text = "공지사항이 없습니다.", color = Color.Gray)
-                    }
-                }
-                else{
+
+                if (!viewModel.noticeList.isEmpty()) {
                     viewModel.noticeList.forEach {notice->
                         NoticeItem(notice){viewModel.requestDetailNotice(notice.id,navController)}
                     }
                 }
 
 
+            }
+            if (viewModel.noticeList.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(text = "공지사항이 없습니다.", color = Color.Gray)
+                }
             }
         }
     }

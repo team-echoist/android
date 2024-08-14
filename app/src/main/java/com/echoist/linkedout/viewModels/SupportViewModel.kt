@@ -12,7 +12,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.echoist.linkedout.Routes
-import com.echoist.linkedout.TYPE_COMMUNITY
+import com.echoist.linkedout.TYPE_RECOMMEND
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.api.SupportApi
 import com.echoist.linkedout.data.Alert
@@ -92,7 +92,7 @@ class SupportViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 isLoading = true
-                val response = essayApi.readDetailEssay(Token.accessToken, id,TYPE_COMMUNITY)
+                val response = essayApi.readDetailEssay(Token.accessToken, id,TYPE_RECOMMEND)
                 exampleItems.detailEssay = response.body()!!.data.essay
                 Log.d(TAG, "readdetailEssay: 성공인데요${response.body()!!.data}")
                 Log.d(TAG, "readdetailEssay: 성공인데요${response.body()!!.data.essay.title}")
@@ -131,10 +131,15 @@ class SupportViewModel @Inject constructor(
                 if (response.isSuccessful){
                     Token.accessToken = (response.headers()["authorization"].toString())
                     //todo alert 성공!
-                    navController.navigate("${Routes.Home}/200")
+                    navController.navigate(Routes.LinkedOutSupportPage)
+                    Log.d("문의 작성 성공", "${response.code()}")
+                }
+                else{
+                    Log.e("문의 작성 에러", "실패: ${response.code()}")
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
+                Log.e("문의 작성 에러", "${e.message}", )
             }
             finally {
                 isLoading = false

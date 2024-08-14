@@ -29,8 +29,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.echoist.linkedout.TYPE_COMMUNITY
+import com.echoist.linkedout.TYPE_RECOMMEND
 import com.echoist.linkedout.api.EssayApi
+import com.echoist.linkedout.components.EssayListItem
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
 
@@ -48,7 +49,7 @@ fun RecentViewedEssayPage(navController: NavController,viewModel: CommunityViewM
                             .padding(top = 20.dp)
                     ) {
                         items(viewModel.getRecentEssayList()) { it ->
-                            RecentEssayListItemNoTime(item = it, viewModel = viewModel, navController = navController)
+                            EssayListItem(item = it, viewModel = viewModel, navController = navController)
                         }
 
 
@@ -77,7 +78,7 @@ fun RecentEssayListItemNoTime(
         .fillMaxWidth()
         .background(Color.Black)
         .clickable {
-            viewModel.readDetailRecentEssay(item.id!!, navController,TYPE_COMMUNITY)
+            viewModel.readDetailRecentEssay(item.id!!, navController, TYPE_RECOMMEND)
             //navigate
         }
         .height(140.dp)) {

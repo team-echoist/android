@@ -2,9 +2,7 @@ package com.echoist.linkedout.page.login
 
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.graphics.Rect
-import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
@@ -148,8 +146,7 @@ import java.nio.charset.StandardCharsets
 @AndroidEntryPoint
 class LoginPage : ComponentActivity() {
     private fun getSSAID(context: Context) {
-        DeviceId.ssaid =
-            Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+        DeviceId.ssaid = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
     }
 
     override fun onStart() {
@@ -344,11 +341,16 @@ class LoginPage : ComponentActivity() {
                     deepLinks = listOf(navDeepLink {
                         uriPattern = "https://linkedoutapp.com/${Routes.ResetPwPage}?token={token}"
                     }),
+
                     arguments = listOf(navArgument("token") {
                         type = NavType.StringType
                         defaultValue = ""
                     })
                 ) {
+                    if (it.arguments?.getString("token").toString().isNotEmpty()) {
+                        Token.accessToken = it.arguments?.getString("token").toString()
+                        Log.i("header token by deepLink:", " ${Token.accessToken}")
+                    }
                     ResetPwPage(navController, it.arguments?.getString("token").toString())
                 }
                 composable(Routes.AccountWithdrawalPage) {
@@ -398,10 +400,6 @@ class LoginPage : ComponentActivity() {
             }
         }
 
-        // ATTENTION: This was auto-generated to handle app links.
-        val appLinkIntent: Intent = intent
-        val appLinkAction: String? = appLinkIntent.action
-        val appLinkData: Uri? = appLinkIntent.data
     }
 }
 

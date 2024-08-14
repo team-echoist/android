@@ -7,8 +7,10 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
-const val TYPE_COMMUNITY = "community"
-const val TYPE_PROFILE = "profile"
+const val TYPE_RECOMMEND = "recommend"
+const val TYPE_PUBLISHED = "publish"
+const val TYPE_PRIVATE = "private"
+
 
 const val MAX_TITLE_SIZE = 26
 const val MAX_CONTENT_SIZE = 20

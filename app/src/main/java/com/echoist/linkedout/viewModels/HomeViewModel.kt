@@ -24,9 +24,9 @@ import com.echoist.linkedout.api.SignUpApiImpl
 import com.echoist.linkedout.api.SupportApi
 import com.echoist.linkedout.api.UserApi
 import com.echoist.linkedout.data.ExampleItems
-import com.echoist.linkedout.data.History
 import com.echoist.linkedout.data.Notice
 import com.echoist.linkedout.data.NotificationSettings
+import com.echoist.linkedout.data.Release
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.myLog.Token
 import com.google.firebase.messaging.FirebaseMessaging
@@ -58,7 +58,7 @@ class HomeViewModel @Inject constructor(
     var isFirstUser by mutableStateOf(false)
     var latestNoticeId : Int? by mutableStateOf(null) //공지가 있을경우 true, 없을경우 Null
 
-    var updateHistory: SnapshotStateList<History> =  mutableStateListOf()
+    var updateHistory: SnapshotStateList<Release> =  mutableStateListOf()
 
     var isVisibleGeulRoquis by mutableStateOf(true)
 
@@ -318,7 +318,7 @@ class HomeViewModel @Inject constructor(
                 isLoading = true
                 val response = supportApi.readUpdatedHistories(Token.accessToken)
                 if (response.isSuccessful){
-                    updateHistory = response.body()!!.data.histories.toMutableStateList()
+                    updateHistory = response.body()!!.data.releases.toMutableStateList()
                     Token.accessToken = (response.headers()["authorization"].toString())
 
                 }

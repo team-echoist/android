@@ -10,7 +10,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.echoist.linkedout.TYPE_PROFILE
 import com.echoist.linkedout.api.BookMarkApi
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.api.StoryApi
@@ -174,7 +173,6 @@ class MyLogViewModel @Inject constructor(
         }
     }
 
- //todo 마지막 index로 가면 무한로딩걸림
     fun readMyEssay() {
         //myEssayList.clear()
 
@@ -447,7 +445,7 @@ class MyLogViewModel @Inject constructor(
     override fun readDetailEssay(id: Int, navController: NavController,type: String) {
         viewModelScope.launch {
             try {
-                val response = essayApi.readDetailEssay(Token.accessToken,id,type = type , )
+                val response = essayApi.readDetailEssay(Token.accessToken,id,type = type)
                 exampleItems.detailEssay = response.body()!!.data.essay
                 detailEssay = exampleItems.detailEssay
                 Log.d(TAG, "readdetailEssay: 성공인데요${response.body()!!.data}")
@@ -475,10 +473,10 @@ class MyLogViewModel @Inject constructor(
         }
     }
 
-    fun readDetailEssayInStory(id: Int, navController: NavController,number : Int) {
+    fun readDetailEssayInStory(id: Int, navController: NavController,number : Int,type: String) {
         viewModelScope.launch {
             try {
-                val response = essayApi.readDetailEssay(Token.accessToken,id, TYPE_PROFILE)
+                val response = essayApi.readDetailEssay(Token.accessToken,id, type)
                 exampleItems.detailEssay = response.body()!!.data.essay
                 detailEssay = exampleItems.detailEssay
                 Log.d(TAG, "readdetailEssay: 성공인데요${response.body()!!.data}")
@@ -500,15 +498,20 @@ class MyLogViewModel @Inject constructor(
     }
 
     //스토리 생성 // 스토리 수정 시 selectedEssay 받아오기
+    private var limit = 40
     fun readStoryEssayList(){
+
+        modifyStoryEssayItems = listOf()
+        createStoryEssayItems = listOf()
+
         viewModelScope.launch {
             try {
                 var response : Response<RelatedEssayResponse>? = null
                 Log.d(TAG, "readStoryEssayList: ${getSelectedStory().name},${getSelectedStory().id}")
                 response = if (!isCreateStory) { //스토리 편집하기를 누른경우 selectedStory가 존재할것.
-                    storyApi.readStoryEssayList(Token.accessToken, getSelectedStory().id)
+                    storyApi.readStoryEssayList(Token.accessToken, getSelectedStory().id,limit = limit)
                 } else{
-                    storyApi.readStoryEssayList(Token.accessToken)
+                    storyApi.readStoryEssayList(Token.accessToken, limit=limit)
                 }
 
                 if (response.isSuccessful) {
@@ -516,19 +519,25 @@ class MyLogViewModel @Inject constructor(
                     Token.accessToken = response.headers()["authorization"].toString()
                     Log.d(TAG, "readStoryEssayList: ${getSelectedStory()}")
 
-                    Log.e("writeEssayApiSuccess", "${response.headers()}")
-                    Log.e("writeEssayApiSuccess", "${response.code()}")
-                } else {
+                    //스토리 생성을 누른경우
+                    if (isCreateStory){
+                        createStoryEssayItems = response.body()!!.data.essays
+                         if(createStoryEssayItems.size >= limit)
+                            limit += 20
+                    }
+                    else //스토리 수정을 누른경우
+                    {
+                        modifyStoryEssayItems = response.body()!!.data.essays
+                        if (modifyStoryEssayItems.size >= limit)
+                            limit += 20}
+                    }
+
+                else {
                     Log.e("writeEssayApiFailed", "${response.errorBody()}")
                     Log.e("writeEssayApiFailed", "${response.code()}")
                 }
 
-                //스토리 생성을 누른경우
-                if (isCreateStory){
-                    createStoryEssayItems = response.body()!!.data.essays
-                }
-                else //스토리 수정을 누른경우
-                    modifyStoryEssayItems = response.body()!!.data.essays
+
             } catch (e: Exception) {
                 Log.e("writeEssayApiError", "An error occurred: ${e.message}")
             }

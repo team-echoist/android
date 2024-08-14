@@ -15,7 +15,7 @@ import com.echoist.linkedout.MAX_CONTENT_SIZE
 import com.echoist.linkedout.MAX_TITLE_SIZE
 import com.echoist.linkedout.MIN_CONTENT_SIZE
 import com.echoist.linkedout.MIN_TITLE_SIZE
-import com.echoist.linkedout.TYPE_COMMUNITY
+import com.echoist.linkedout.TYPE_RECOMMEND
 import com.echoist.linkedout.api.BookMarkApi
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.ExampleItems
@@ -253,7 +253,7 @@ open class CommunityViewModel @Inject constructor(
         }
     }
 
-    open fun readDetailEssay(id: Int, navController: NavController,type: String = TYPE_COMMUNITY) {
+    open fun readDetailEssay(id: Int, navController: NavController,type: String = TYPE_RECOMMEND) {
         viewModelScope.launch {
             try {
                 _isLoading.emit(true)

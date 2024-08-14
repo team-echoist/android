@@ -13,24 +13,28 @@
     </style>
 
     <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
+        <!-- 스플래시 화면 배경 설정 -->
         <item name="android:windowBackground">@drawable/splash</item>
+        <!-- 스플래시 화면 미리보기 비활성화 -->
         <item name="android:windowDisablePreview">true</item>
 
-
-
-
-<!--        ....-->
+        <!-- 스플래시 화면 배경 설정 (Android 12 이상) -->
         <item name="android:windowSplashScreenBackground" tools:targetApi="S">@drawable/splash</item>
-        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="S">@drawable/pw_eye</item>
-<!--        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="S">@drawable/splash</item>-->
-<!--        <item name="android:windowSplashScreenIconBackgroundColor" tools:targetApi="S">@color/white</item>-->
+        <!-- 스플래시 화면 아이콘 설정을 제거하거나 비활성화 -->
+        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="S">@android:color/transparent</item>
+        <!-- 아이콘 배경 설정 (빈 색상 사용) -->
+        <item name="android:windowSplashScreenIconBackgroundColor" tools:targetApi="S">@android:color/transparent</item>
     </style>
 
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/purple_200</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/pw_eye</item>
+        <item name="android:windowBackground">@drawable/splash</item>
+        <!-- 스플래시 화면 미리보기 비활성화 -->
+        <item name="android:windowDisablePreview">true</item>
+
+        <!-- 스플래시 화면 아이콘 설정을 제거하거나 비활성화 -->
+        <item name="windowSplashScreenAnimatedIcon">@android:color/transparent</item>
         <item name="postSplashScreenTheme">@style/Theme.Material3.Light.NoActionBar</item>
     </style>
-
 
 </resources>

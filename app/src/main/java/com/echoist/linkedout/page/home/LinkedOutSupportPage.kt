@@ -187,19 +187,22 @@ fun InquiryBox(inquiry: Inquiry,viewModel: SupportViewModel){
 
 
             if (answer.isNotEmpty()){
-                Box(modifier = Modifier
-                    .background(color = Color(0xFF000000))
-                    .fillMaxWidth()
-                    .height(IntrinsicSize.Min)
-                    .padding(horizontal = 20.dp, vertical = 18.dp)){
-                    Row(modifier = Modifier
-                        .fillMaxSize()){
-                        Icon(imageVector = Icons.Filled.SubdirectoryArrowRight, contentDescription = "", tint = LinkedInColor)
-                        Spacer(modifier = Modifier.width(5.dp))
-                        Text(color = LinkedInColor, text = answer)
+                if (isInquiryClicked){
+                    Box(modifier = Modifier
+                        .background(color = Color(0xFF000000))
+                        .fillMaxWidth()
+                        .height(IntrinsicSize.Min)
+                        .padding(horizontal = 20.dp, vertical = 18.dp)){
+                        Row(modifier = Modifier
+                            .fillMaxSize()){
+                            Icon(imageVector = Icons.Filled.SubdirectoryArrowRight, contentDescription = "", tint = LinkedInColor)
+                            Spacer(modifier = Modifier.width(5.dp))
+                            Text(color = LinkedInColor, text = answer)
 
+                        }
                     }
                 }
+
             }
 
 

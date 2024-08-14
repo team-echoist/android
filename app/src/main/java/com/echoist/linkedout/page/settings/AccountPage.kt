@@ -48,6 +48,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import com.echoist.linkedout.Routes
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.home.LogoutBox
 import com.echoist.linkedout.ui.theme.LinkedInColor
@@ -198,6 +200,14 @@ fun ModifyBox(text : String, onClick : ()-> Unit){
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingTopAppBar(text: String,navController: NavController){
+    // 현재 백스택 상태를 관찰하여 상태 변경 시 리컴포지션을 트리거
+    val backStackEntry = navController.currentBackStackEntryAsState().value
+    // 백스택에서 바로 뒤의 항목 가져오기
+    val previousBackStackEntry = backStackEntry?.let {
+        navController.previousBackStackEntry
+    }
+    // 이전 목적지의 라우트 확인
+    val previousRoute = previousBackStackEntry?.destination?.route
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Black),
         title = {
@@ -213,7 +223,20 @@ fun SettingTopAppBar(text: String,navController: NavController){
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "arrow back",
                 modifier = Modifier
-                    .clickable { navController.popBackStack() }
+                    .clickable {
+                        if (previousRoute == Routes.InquiryPage){
+                            navController.navigate("${Routes.Home}/200") {
+                                // 기존의 모든 백스택을 제거하고 Home을 루트로 설정
+                                popUpTo(navController.graph.startDestinationId) {
+                                    inclusive = true
+                                }
+                                launchSingleTop = true
+                            }
+                        }
+                        else{
+                            navController.popBackStack()
+                        }
+                    }
                     .padding(start = 10.dp)
                     .size(30.dp),
                 tint = Color.White

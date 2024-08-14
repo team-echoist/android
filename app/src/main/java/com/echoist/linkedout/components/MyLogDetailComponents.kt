@@ -38,8 +38,11 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.echoist.linkedout.TYPE_PROFILE
+import com.echoist.linkedout.TYPE_PRIVATE
+import com.echoist.linkedout.TYPE_PUBLISHED
+import com.echoist.linkedout.TYPE_RECOMMEND
 import com.echoist.linkedout.api.EssayApi
+import com.echoist.linkedout.formatDateTime
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.MyLogViewModel
 import kotlinx.coroutines.delay
@@ -62,12 +65,17 @@ fun LastEssayItem(
     navController: NavController
 ) {
     val color = Color.White
+    val type = when(item.status){ //리스트조회시 나오는 아이템의 status의 종류에 따라 세부에세이요청의 type, another 에세이 달라짐.
+        "published" -> TYPE_PUBLISHED
+        "private" -> TYPE_PRIVATE
+        else -> TYPE_RECOMMEND
+    }
     LinkedOutTheme {
         Box(modifier = Modifier
             .fillMaxWidth()
             .clickable {
 
-                viewModel.readDetailEssay(item.id!!, navController, TYPE_PROFILE)
+                viewModel.readDetailEssay(item.id!!, navController, type)
                 viewModel.detailEssayBackStack.push(item)
                 Log.d(TAG, "pushpush: ${viewModel.detailEssayBackStack}")
 
@@ -124,7 +132,7 @@ fun LastEssayItem(
                     .fillMaxSize()
                     .padding(start = 20.dp, bottom = 10.dp)
             ) {
-                Text(text = item.createdDate!!, fontSize = 10.sp, color = Color(0xFF686868))
+                Text(text = formatDateTime(item.createdDate!!), fontSize = 10.sp, color = Color(0xFF686868))
             }
             Box(
                 contentAlignment = Alignment.BottomEnd, modifier = Modifier
@@ -135,7 +143,6 @@ fun LastEssayItem(
 
         }
     }
-
 }
 
 @OptIn(ExperimentalFoundationApi::class)

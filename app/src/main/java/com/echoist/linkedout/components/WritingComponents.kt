@@ -31,7 +31,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.DensitySmall
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -177,19 +176,24 @@ fun LocationTextField(viewModel: WritingViewModel){
 }
 @Composable
 fun LocationBox(viewModel: WritingViewModel){
-    Button(modifier = Modifier.padding(bottom = 15.dp),
-        onClick = {
-        }) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center, modifier = Modifier
+        .padding(bottom = 15.dp)
+        .clickable {}
+        .background(color = Color(0xFF616FED), shape = RoundedCornerShape(size = 65.dp))
+        .padding(start = 8.dp, top = 3.dp, end = 8.dp, bottom = 3.dp)) {
         Text(text =  "${viewModel.longitude} ${viewModel.latitude}", fontSize = 14.sp, color = Color.White)
+
     }
 
 }
 @Composable
 fun LocationBtn(viewModel: WritingViewModel,text: String){
-    Button(modifier = Modifier.padding(bottom = 15.dp),
-        onClick = {
-            viewModel.locationList.remove(text)
-        }) {
+
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center, modifier = Modifier
+        .padding(bottom = 15.dp)
+        .clickable { viewModel.locationList.remove(text) }
+        .background(color = Color(0xFF616FED), shape = RoundedCornerShape(size = 65.dp))
+        .padding(start = 8.dp, top = 3.dp, end = 8.dp, bottom = 3.dp)) {
         Text(text = text, fontSize = 14.sp, color = Color.White)
         Spacer(modifier = Modifier.width(2.dp))
         Icon(
@@ -340,14 +344,14 @@ fun HashTagGroup(viewModel: WritingViewModel){
 
             Row(
                 modifier = Modifier
-                    .padding(start = 86.dp)
+                    .padding(start = 86.dp, bottom = 4.dp)
                     .width(220.dp)
                     .fillMaxHeight()
                     .horizontalScroll(scrollState),
                 verticalAlignment = Alignment.CenterVertically
             ){
                 viewModel.hashTagList.forEach {
-                    Text(text = "#$it", color = Color.White)
+                    Text(text = "#$it", color = Color.White, fontSize = 14.sp)
                     Spacer(modifier = Modifier.width(13.dp))
                 }
             }
@@ -555,16 +559,16 @@ fun CropImagePage(navController: NavController, viewModel: WritingViewModel) {
 @Composable
 fun StoryCountIcon(count : Int){
     val color = Color.White
-    val circleColor = Color.White
+    val circleColor = Color.Transparent
 
     Box(modifier = Modifier.size(36.dp)){
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomStart){
-            Icon(imageVector = Icons.Default.DensitySmall, contentDescription = "", modifier = Modifier.size(34.dp),color)
+            Icon(painter = painterResource(id = R.drawable.icon_storyint), contentDescription = "", modifier = Modifier.size(34.dp),color)
         }
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopEnd){
             Surface(shape = CircleShape, modifier = Modifier.size(18.dp), color = circleColor) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-                    Text(text = count.toString(),color = Color.Black, modifier = Modifier.offset(y=(-2).dp))
+                    Text(text = count.toString(),color = Color.White, fontSize = 14.sp, modifier = Modifier.offset(x=(-2).dp))
 
                 }
             }

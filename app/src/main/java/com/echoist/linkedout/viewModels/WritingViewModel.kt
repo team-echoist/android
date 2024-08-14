@@ -266,21 +266,18 @@ class WritingViewModel @Inject constructor(
                     tags = hashTagList
                 )
                 Log.d(TAG, "modifyEssay: $modifyEssayid")
-                val response = essayApi.modifyEssay( Token.accessToken,
-                    modifyEssayid,
-                    essayData = essayData
-                )
+                val response = essayApi.modifyEssay( Token.accessToken, modifyEssayid, essayData = essayData)
                 if (response.isSuccessful){
+                    Log.e("수정 성공", "수정 성공!: ${response.code()}", )
+
                      accessToken = (response.headers()["authorization"].toString())
                     Token.accessToken = accessToken
 
-                    navController.navigate("HOME") {
-                        popUpTo("HOME") {
-                            inclusive = false
-                        }
-                        initialize()
 
-                    }
+                    navController.navigate("HOME/200")
+                    navController.popBackStack("OnBoarding", false) //onboarding까지 전부 삭제.
+
+                    initialize()
                 }
                 else{
                     Log.e("modifyEssayError", "modifyEssayError: ${response.code()}", )

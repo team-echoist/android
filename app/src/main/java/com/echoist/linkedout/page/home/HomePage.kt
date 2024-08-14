@@ -383,7 +383,7 @@ fun CustomTopAppBar(onClick: () -> Unit,onClickNotification : ()->Unit,isExistUn
             Icon(
                 painter = painterResource(id = img),
                 contentDescription = "Notifications",
-                tint = Color.White,
+                tint = Color.Unspecified,
                 modifier = Modifier
                     .clickable { onClickNotification() }
                     .padding(end = 10.dp)
@@ -393,7 +393,6 @@ fun CustomTopAppBar(onClick: () -> Unit,onClickNotification : ()->Unit,isExistUn
     )
 
 }
-
 
 @Preview
 @Composable

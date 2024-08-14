@@ -2,6 +2,7 @@ package com.echoist.linkedout.page.home
 
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,6 +10,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Icon
@@ -21,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -65,7 +69,13 @@ fun DarkModeSettingPage(navController: NavController){
                                 .padding(end = 140.dp)
                         ) {
                             GlideImage(model = R.drawable.mode_light, contentDescription = "modeImg")
-                            Spacer(modifier = Modifier.height(46.dp))
+                            Spacer(modifier = Modifier.height(22.dp))
+                            Box(modifier = Modifier
+                                .size(60.dp, 24.dp)
+                                .background(Color(0xFF191919), shape = RoundedCornerShape(40)), contentAlignment = Alignment.Center){
+                                Text(text = "  준비중  ", fontWeight = FontWeight.SemiBold, color = LinkedInColor, fontSize = 12.sp )
+
+                            }
                             Spacer(modifier = Modifier.height(10.dp))
                             Text(text = "라이트 모드", fontSize = 16.sp)
                         }

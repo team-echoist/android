@@ -135,9 +135,8 @@ fun SearchingBar(viewModel: SearchingViewModel, onClick: () -> Unit, drawerState
                 onClick()
             }
         )
-        Spacer(modifier = Modifier.width(10.dp))
         TextField(
-            shape = RoundedCornerShape(30),
+            shape = RoundedCornerShape(42),
             modifier = Modifier
                 .weight(1f)
                 .height(55.dp),
@@ -145,7 +144,7 @@ fun SearchingBar(viewModel: SearchingViewModel, onClick: () -> Unit, drawerState
             onValueChange = {
                 viewModel.searchingText = it
             },
-            placeholder = { Text(text = "검색", color = Color(0xFF686868)) },
+            placeholder = { Text(text = "검색어를 입력하세요", color = Color(0xFF686868), fontSize = 16.sp) },
             singleLine = true,
             trailingIcon = { if (viewModel.searchingText.isNotEmpty()) Icon(
                 imageVector = Icons.Default.Cancel,
@@ -165,8 +164,8 @@ fun SearchingBar(viewModel: SearchingViewModel, onClick: () -> Unit, drawerState
                 }
             ),
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color(0xFF222222),
-                unfocusedContainerColor = Color(0xFF222222),
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
                 focusedTextColor = Color.White,

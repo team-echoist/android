@@ -79,21 +79,21 @@ data class NotificationResponse(
 //업데이트 api
 @JsonClass(generateAdapter = true)
 data class UpdateHistoryResponse(
-    val data: Histories,
+    val data: Releases,
     val path: String?,
     val success: Boolean,
     val timestamp: String?,
     val statusCode : Int?
 )
 
-data class Histories(
-    val histories : List<History>,
+data class Releases(
+    val releases : List<Release>,
     val total : Int,
     val page : Int,
     val totalPage : Int
     )
 
-data class History(
+data class Release(
     val id: Int,
     val history : String,
     val createdDate: String,

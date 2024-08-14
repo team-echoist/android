@@ -103,7 +103,7 @@ class SettingsViewModel @Inject constructor(
         return exampleItems.recentViewedEssayList
     }
 
-    suspend fun requestMyInfo(){
+    fun requestMyInfo(){
         viewModelScope.launch {
             try {
 
@@ -112,7 +112,7 @@ class SettingsViewModel @Inject constructor(
                 exampleItems.myProfile = response.data.user
                 exampleItems.myProfile.essayStats = response.data.essayStats
                 Log.i(TAG, "readMyInfo: ${exampleItems.myProfile}")
-
+                getMyInfo()
 
             }catch (e: Exception){
                 Log.d(TAG, "readMyInfo: error err")
@@ -215,15 +215,12 @@ class SettingsViewModel @Inject constructor(
 
                 val response = userApi.userUpdate(Token.accessToken, userInfo)
 
-
-                Log.d(TAG, "updateMyInfo: ${userInfo.profileImage}")
-                Log.d(TAG, "updateMyInfo: ${newProfile.profileImage}")
-
                 Log.d(TAG, "requestBadgeLevelUp: ${Token.accessToken}")
                 if (response.isSuccessful){
                     Token.accessToken = (response.headers()["authorization"].toString())
 
-                    //todo api가 성공한다는 시점에서 바로 바뀌게 만듦.
+                    Log.d("업데이트 요청 성공", "updateMyInfo: ${newProfile.profileImage}")
+
                     exampleItems.myProfile.profileImage = newProfile.profileImage
                     exampleItems.myProfile.nickname = newProfile.nickname
 
@@ -233,10 +230,15 @@ class SettingsViewModel @Inject constructor(
                     newProfile = UserInfo()
 
                 }
+                else{
+                    Log.e("업데이트 요청 실패", "updateMyInfo: ${response.code()}")
+
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
                 // api 요청 실패
-                Log.e("writeEssayApiFailed", "Failed to write essay: ${e.message}")
+                Log.e("업데이트 요청 실패", "updateMyInfo: ${e.printStackTrace()}")
+
             }
             finally {
                 isLoading = false
@@ -282,6 +284,10 @@ class SettingsViewModel @Inject constructor(
                     Token.accessToken = (response.headers()["authorization"].toString())
                     navController.navigate("LoginPage")
                 }
+                else{
+                    Log.e("탈퇴 실패", "Failed to write essay: ${response.code()}")
+
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
                 // api 요청 실패
@@ -289,6 +295,33 @@ class SettingsViewModel @Inject constructor(
             }
             finally {
                 isLoading = false
+            }
+        }
+    }
+
+    var nicknameCheckCode by mutableStateOf(200)
+    fun requestNicknameDuplicated(nickname : String){
+        viewModelScope.launch {
+            try {
+
+                val nickname = UserApi.NickName(nickname)
+                val response = userApi.requestNicknameDuplicated(Token.accessToken,nickname)
+                Log.d("닉네임 중복검사", "requestNicknameDuplicated: $nickname")
+
+                if (response.isSuccessful){ //실시간요청이기때문에 토큰사용 x
+                    //Token.accessToken = (response.headers()["authorization"].toString())
+                    Log.d("닉네임 중복검사 성공", "코드: ${response.code()}")
+                    nicknameCheckCode = response.code()
+                }
+                else{
+                    Log.e("닉네임 중복검사 실패", "코드: ${response.code()}")
+                    nicknameCheckCode = response.code()
+
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                // api 요청 실패
+                Log.e("ApiFailed", "Failed to write essay: ${e.message}")
             }
         }
     }

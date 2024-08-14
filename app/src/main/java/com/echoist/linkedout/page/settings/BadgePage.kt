@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -206,7 +207,7 @@ fun BadgeItem(badgeBoxItem: BadgeBoxItemWithTag, viewModel: SettingsViewModel) {
             }
 
             if (isClicked) {
-                HorizontalDivider(Modifier.fillMaxWidth())
+                HorizontalDivider(color = Color(0xFF191919))
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -243,7 +244,7 @@ fun BadgeItem(badgeBoxItem: BadgeBoxItemWithTag, viewModel: SettingsViewModel) {
                     }
                     else{
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-                            Text(text = "아직 일치하는 해시태그가 없습니다!", color = Color.Gray)
+                            Text(text = "아직 일치하는 해시태그가 없습니다!", color = Color(0xFF313131), fontSize = 14.sp)
                         }
                     }
                     
@@ -257,7 +258,7 @@ fun BadgeItem(badgeBoxItem: BadgeBoxItemWithTag, viewModel: SettingsViewModel) {
 fun BadgeImg(badgeBoxItem: BadgeBoxItemWithTag){
 
     val baseModifier = Modifier
-        .size(60.dp)
+        .size(70.dp)
         .background(
             Color(0xFF0D0D0D),
             shape = RoundedCornerShape(10)
@@ -306,7 +307,7 @@ fun BadgeLevelUpSuccess(viewModel: SettingsViewModel,badgeBoxItem: BadgeBoxItemW
 @Composable
 fun ExpProgressBar(progress: Float, max: Int) {
     val progressBarWidth = 170.dp // 프로그레스 바의 너비
-    val progressBarHeight = 24.dp // 프로그레스 바의 높이
+    val progressBarHeight = 20.dp // 프로그레스 바의 높이
 
     Box(
         modifier = Modifier
@@ -326,6 +327,7 @@ fun ExpProgressBar(progress: Float, max: Int) {
             contentAlignment = Alignment.Center
         ) {
             Text(
+                modifier = Modifier.offset(y=-2.dp),
                 text = "${progress.toInt()}/${max}",
                 color = Color.Black,
                 textAlign = TextAlign.Center,

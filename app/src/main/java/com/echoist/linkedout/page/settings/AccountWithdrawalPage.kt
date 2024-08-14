@@ -80,60 +80,72 @@ fun AccountWithdrawalPage(navController : NavController) {
                         CircularProgressIndicator(color = LinkedInColor)
                     }
                 }
-                Column(
-                    Modifier
-                        .verticalScroll(scrollState)
-                        .padding(it)
-                        .padding(horizontal = 20.dp)
-                ) {
-                    Spacer(modifier = Modifier.height(42.dp))
-                    Text(text = "탈퇴 시 유의사항", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    GlideImage(model = R.drawable.box_warn, contentDescription = "deleteWarning", modifier = Modifier
-                        .fillMaxWidth()
-                        .height(274.dp))
-                    Spacer(modifier = Modifier.height(32.dp))
-
-                    Text(text = "탈퇴 사유", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Text(text = "탈퇴하는 이유를 말씀해주세요. 링크드아웃 서비스 개선에 큰 도움이 될 것입니다. 이용해주셔서 감사합니다!", fontSize = 16.sp, color = Color(0xFF5D5D5D))
-
-
-
-                    val onItemSelected: (String) -> Unit = { selectedItem ->
-                        if (selectedItems.contains(selectedItem)) {
-                            selectedItems.remove(selectedItem) // 이미 선택된 항목이면 제거
-                        } else {
-                            selectedItems.add(selectedItem) // 선택되지 않은 항목이면 추가
-                        }
-                    }
-
-
-                    MultiSelectDeleteList(reasonList,selectedItems,onItemSelected)
-
-                    Spacer(modifier = Modifier.height(32.dp))
-
-
-                    Button(
-                        onClick = { /* todo 탈퇴기능 구현 */
-                                  isWithdrawalClicked = true},
-                        enabled = !selectedItems.isEmpty(),
-                        shape = RoundedCornerShape(20),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(61.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFE43446),
-                            disabledContainerColor = Color(0xFF868686),
-
-                            )
+                Column(modifier = Modifier
+                    .verticalScroll(scrollState)
+                    .padding(it)){
+                    Column(
+                        Modifier
+                            .padding(horizontal = 20.dp)
                     ) {
-                        Text(text = "탈퇴하기", color = Color.Black)
+                        Spacer(modifier = Modifier.height(42.dp))
+                        Text(text = "탈퇴 시 유의사항", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        GlideImage(
+                            model = R.drawable.box_warn,
+                            contentDescription = "deleteWarning",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(274.dp)
+                        )
+                        Spacer(modifier = Modifier.height(32.dp))
+
+                        Text(text = "탈퇴 사유", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text(
+                            text = "탈퇴하는 이유를 말씀해주세요. 링크드아웃 서비스 개선에 큰 도움이 될 것입니다. 이용해주셔서 감사합니다!",
+                            fontSize = 16.sp,
+                            color = Color(0xFF5D5D5D)
+                        )
                     }
 
 
-                }
+                        val onItemSelected: (String) -> Unit = { selectedItem ->
+                            if (selectedItems.contains(selectedItem)) {
+                                selectedItems.remove(selectedItem) // 이미 선택된 항목이면 제거
+                            } else {
+                                selectedItems.add(selectedItem) // 선택되지 않은 항목이면 추가
+                            }
+                        }
+
+
+                        MultiSelectDeleteList(reasonList,selectedItems,onItemSelected)
+
+                        Spacer(modifier = Modifier.height(32.dp))
+
+
+                        Button(
+                            onClick = {
+                                isWithdrawalClicked = true},
+                            enabled = !selectedItems.isEmpty(),
+                            shape = RoundedCornerShape(20),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 20.dp).padding(bottom = 20.dp)
+                                .height(61.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFFE43446),
+                                disabledContainerColor = Color(0xFF868686),
+
+                                )
+                        ) {
+                            Text(text = "탈퇴하기", color = Color.Black)
+                        }
+
+
+                    }
+
+
                 AnimatedVisibility(
                     visible = isWithdrawalClicked,
                     enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)),
@@ -174,6 +186,7 @@ fun MultiSelectDeleteList(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(horizontal = 4.dp)
                     .background(Color.Transparent, shape = RoundedCornerShape(4))
                     .clickable {
                         onItemSelected(item)
@@ -243,7 +256,7 @@ fun WithdrawalWarningBox( isCancelClicked: () ->Unit, isWithdrawalClicked: () ->
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter){
         Box(modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFF121212), shape = RoundedCornerShape(20))
+            .background(Color(0xFF121212), shape = RoundedCornerShape(10))
             .height(243.dp), contentAlignment = Alignment.Center){
             Column(
                 modifier = Modifier.padding(20.dp),

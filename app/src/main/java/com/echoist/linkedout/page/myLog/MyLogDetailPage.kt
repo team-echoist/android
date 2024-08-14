@@ -62,7 +62,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.colintheshots.twain.MarkdownText
 import com.echoist.linkedout.INSPECT_POPUP_URL
 import com.echoist.linkedout.LINKEDOUT_POPUP_URL
 import com.echoist.linkedout.PRIVATE_POPUP_URL
@@ -396,12 +395,12 @@ fun DetailEssay(viewModel: MyLogViewModel) {
 
                 Text(text = essay.title!!, fontSize = viewModel.titleTextSize, modifier = Modifier)
                 Spacer(modifier = Modifier.height(40.dp))
-                MarkdownText(
-                    markdown = essay.content!!,
+
+                RichText(state = rememberRichTextState().setHtml(essay.content!!),
                     fontSize = viewModel.contentTextSize,
-                    modifier = Modifier,
-                    color = Color(0xFFB4B4B4)
-                )
+                    lineHeight = 27.2.sp,
+                    color = Color(0xFFB4B4B4))
+
                 Spacer(modifier = Modifier.height(46.dp))
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
                     Column {
@@ -854,7 +853,7 @@ fun WriteCompleteBox(type: String) {
                         modifier = Modifier.weight(4f)
                     ) {
                         Row {
-                            Text(text = "$type ", color = LinkedInColor, fontSize = 24.sp)
+                            Text(text = "$type ", color = LinkedInColor, fontSize = 24.sp, fontWeight = FontWeight.SemiBold)
                             Text(text = "완료", fontSize = 24.sp, color = Color.White)
                         }
                         Spacer(modifier = Modifier.height(18.dp))

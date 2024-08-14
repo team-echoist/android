@@ -3,6 +3,7 @@ package com.echoist.linkedout.api
 import com.echoist.linkedout.data.BadgeDetailResponse
 import com.echoist.linkedout.data.BadgeSimpleResponse
 import com.echoist.linkedout.data.BasicResponse
+import com.echoist.linkedout.data.NicknameCheckResponse
 import com.echoist.linkedout.data.UserEssayStatsResponse
 import com.echoist.linkedout.data.UserGraphSummaryResponse
 import com.echoist.linkedout.data.UserInfo
@@ -92,5 +93,13 @@ interface UserApi {
     suspend fun requestUserGraphSummary(
         @Header("Authorization") accessToken: String,
     ): Response<UserGraphSummaryResponse>
+
+    //닉네임 중복체크
+    @POST("api/auth/check/nickname")
+    suspend fun requestNicknameDuplicated(
+        @Header("Authorization") accessToken: String,
+        @Body nickname: NickName,
+    ):Response<NicknameCheckResponse>
+    data class NickName(val nickname: String)
 
 }

@@ -170,7 +170,7 @@ fun WritingCompletePage(
                         .background(Color.Black.copy(0.7f)))
                 }
                 //바텀시트 올라와있으면 패딩값 추가
-                val expandDp = if (bottomSheetState.currentValue == SheetValue.Expanded) 350.dp else 40.dp
+                val expandDp = if (bottomSheetState.currentValue == SheetValue.Expanded) 310.dp else 60.dp
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -221,8 +221,9 @@ fun CompleteAppBar(navController: NavController, viewModel: WritingViewModel) {
             actions = {
                 Text(
                     text = "삭제",
-                    color = Color.Red,
-                    modifier = Modifier
+                    color = Color(0xFFE43446)
+,
+                            modifier = Modifier
                         .padding(end = 20.dp)
                         .clickable {
                             viewModel.isDeleteClicked.value = true
@@ -438,9 +439,12 @@ fun WritingCompletePager(viewModel: WritingViewModel, navController: NavControll
                             horizontalArrangement = Arrangement.Center,
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            viewModel.hashTagList.forEach { it ->
-                                Text(text = "#$it", color = Color.White)
-                                Spacer(modifier = Modifier.width(22.dp))
+                            viewModel.hashTagList.forEachIndexed { index,tag ->
+                                Text(text = "#$tag", color = Color.White)
+                                if (index != viewModel.hashTagList.size-1){
+                                    Spacer(modifier = Modifier.width(22.dp))
+                                }
+
                             }
                         }
 
@@ -524,7 +528,7 @@ fun WritingDeleteCard(viewModel: WritingViewModel, navController: NavController)
                     ) {
                         Text(
                             fontSize = 14.sp,
-                            modifier = Modifier.padding(top = 18.dp, bottom = 18.dp),
+                            modifier = Modifier.padding(top = 28.dp, bottom = 28.dp),
                             text = "삭제된 글은 복구할 수 없습니다. 삭제하시겠습니까?",
                             textAlign = TextAlign.Center,
                             color = Color.White
@@ -548,7 +552,7 @@ fun WritingDeleteCard(viewModel: WritingViewModel, navController: NavController)
                             fontSize = 16.sp,
                             text = "삭제하기",
                             textAlign = TextAlign.Center,
-                            color = Color.Red
+                            color = Color(0xFFE43446)
                         )
                     }
                 }

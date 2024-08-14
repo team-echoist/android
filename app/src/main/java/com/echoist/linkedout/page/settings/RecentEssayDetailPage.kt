@@ -47,7 +47,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.echoist.linkedout.TYPE_COMMUNITY
+import com.echoist.linkedout.TYPE_RECOMMEND
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.formatElapsedTime
@@ -115,7 +115,7 @@ fun RecentEssayDetailPage(navController: NavController, viewModel: CommunityView
             Scaffold(
                 topBar = {
 
-                    CommunityTopAppBar(navController = navController, viewModel)
+                    CommunityTopAppBar(navController = navController, viewModel,Color(0xFF0E0E0E))
 
                 },
                 content = {
@@ -258,7 +258,7 @@ fun RecentEssayListItem(
         .fillMaxWidth()
         .background(Color.Black)
         .clickable {
-            viewModel.readDetailRecentEssay(item.id!!, navController, TYPE_COMMUNITY)
+            viewModel.readDetailRecentEssay(item.id!!, navController, TYPE_RECOMMEND)
             //navigate
         }
         .height(140.dp)) {

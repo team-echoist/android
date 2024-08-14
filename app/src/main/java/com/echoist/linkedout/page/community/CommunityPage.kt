@@ -37,14 +37,6 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.launch
 
-
-//@Preview
-//@Composable
-//fun Prev() {
-//    val viewModel : CommunityViewModel = viewModel()
-//    CommunityPage(rememberNavController(), viewModel)
-//}
-
 @Composable
 fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
 
@@ -53,9 +45,6 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
 
     val pagerstate = rememberPagerState { 1 } //todo 다음버전에 구독페이지 추가하기. pagerstate 2로 수정
     val color = if (pagerstate.currentPage == 0) Color(0xFFD9D9D9) else Color.Black
-
-
-
 
     if (pagerstate.currentPage == 1) {
         viewModel.isClicked = false

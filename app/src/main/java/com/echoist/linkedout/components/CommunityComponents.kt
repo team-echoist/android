@@ -31,7 +31,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -74,7 +73,7 @@ import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
-import com.echoist.linkedout.TYPE_COMMUNITY
+import com.echoist.linkedout.TYPE_RECOMMEND
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.formatElapsedTime
@@ -113,7 +112,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                     pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence2")
                     withStyle(
                         style = SpanStyle(
-                            color = Color.Black,
+                            color = Color(0xFF262626),
                             background = Color.White,
                             fontSize = 14.sp,
                         )
@@ -139,7 +138,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                     pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence4")
                     withStyle(
                         style = SpanStyle(
-                            color = Color.Black,
+                            color = Color(0xFF262626),
                             background = Color.White,
                             fontSize = 14.sp,
                         )
@@ -170,7 +169,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                     pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence1")
                     withStyle(
                         style = SpanStyle(
-                            color = Color.Black,
+                            color = Color(0xFF262626),
                             background = Color.White,
                             fontSize = 14.sp,
                         )
@@ -197,7 +196,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                     pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence3")
                     withStyle(
                         style = SpanStyle(
-                            color = Color.Black,
+                            color = Color(0xFF262626),
                             background = Color.White,
                             fontSize = 14.sp,
                         )
@@ -223,7 +222,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                     pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence4")
                     withStyle(
                         style = SpanStyle(
-                            color = Color.Black,
+                            color = Color(0xFF262626),
                             background = Color.White,
                             fontSize = 14.sp,
                         )
@@ -257,7 +256,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                     pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence2")
                     withStyle(
                         style = SpanStyle(
-                            color = Color.Black,
+                            color = Color(0xFF262626),
                             background = Color.White,
                             fontSize = 14.sp,
                         )
@@ -283,7 +282,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                     pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence4")
                     withStyle(
                         style = SpanStyle(
-                            color = Color.Black,
+                            color = Color(0xFF262626),
                             background = Color.White,
                             fontSize = 14.sp,
                         )
@@ -314,7 +313,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                     pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence1")
                     withStyle(
                         style = SpanStyle(
-                            color = Color.Black,
+                            color = Color(0xFF262626),
                             background = Color.White,
                             fontSize = 14.sp,
                         )
@@ -341,7 +340,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                     pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence3")
                     withStyle(
                         style = SpanStyle(
-                            color = Color.Black,
+                            color = Color(0xFF262626),
                             background = Color.White,
                             fontSize = 14.sp,
                         )
@@ -367,7 +366,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                     pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence4")
                     withStyle(
                         style = SpanStyle(
-                            color = Color.Black,
+                            color = Color(0xFF262626),
                             background = Color.White,
                             fontSize = 14.sp,
                         )
@@ -399,7 +398,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                     pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence2")
                     withStyle(
                         style = SpanStyle(
-                            color = Color.Black,
+                            color = Color(0xFF262626),
                             background = Color.White,
                             fontSize = 14.sp,
                         )
@@ -425,7 +424,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                     pushStringAnnotation(tag = "SentenceTag", annotation = "Sentence4")
                     withStyle(
                         style = SpanStyle(
-                            color = Color.Black,
+                            color = Color(0xFF262626),
                             background = Color.White,
                             fontSize = 14.sp,
                         )
@@ -846,7 +845,7 @@ fun CommunityTopAppBar(
             )
             Spacer(modifier = Modifier.width(13.dp))
             Icon(
-                imageVector = Icons.Default.Bookmark,
+                painter = painterResource(id = R.drawable.icon_bookmarkfill_black),
                 contentDescription = "",
                 Modifier
                     .padding(end = 10.dp)
@@ -995,7 +994,7 @@ fun EssayListItem(
         .background(Color.Black)
         .clickable {
             Log.d(TAG, "EssayListItem: ${item.id}")
-            viewModel.readDetailEssay(item.id!!, navController, TYPE_COMMUNITY)
+            viewModel.readDetailEssay(item.id!!, navController, TYPE_RECOMMEND)
             viewModel.detailEssayBackStack.push(item)
             //navigate
         }
@@ -1020,7 +1019,6 @@ fun EssayListItem(
                     }
 
                     Text(
-                        modifier = Modifier.weight(8f),
                         text = item.title!!,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
@@ -1029,7 +1027,7 @@ fun EssayListItem(
                         overflow = TextOverflow.Ellipsis,
                     )
                     Text(text = "   • ${formatElapsedTime(item.createdDate!!)}", fontSize = 10.sp, color = Color(0xFF686868))
-
+                    Spacer(modifier = Modifier.width(30.dp))
                 }
 
 
@@ -1098,7 +1096,6 @@ fun RandomCommunityPage(viewModel: CommunityViewModel, navController: NavControl
 
     val listState = rememberLazyListState()
 
-
     LaunchedEffect(listState) {
         // 스크롤 상태를 감지하는 LaunchedEffect
         snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull() }
@@ -1127,7 +1124,7 @@ fun RandomCommunityPage(viewModel: CommunityViewModel, navController: NavControl
                         }
                         Box(modifier = Modifier
                             .fillMaxSize()
-                            .padding(top = 20.dp), contentAlignment = Alignment.TopEnd){
+                            .padding(top = 24.dp), contentAlignment = Alignment.TopEnd){
                             SentenceChoiceBox(viewModel)
                         }
 
@@ -1327,7 +1324,7 @@ fun SentenceChoiceBox(viewModel: CommunityViewModel) {
                         .clickable {
                             if (isClicked) isClicked = false
                         },
-                    fontSize = 12.sp,
+                    fontSize = 13.sp,
                     color = Color.Black
                 )
                 Spacer(modifier = Modifier.width(10.dp))
@@ -1363,7 +1360,7 @@ fun SentenceChoiceBox(viewModel: CommunityViewModel) {
                             isClicked = false
 
                         },
-                    fontSize = 12.sp,
+                    fontSize = 13.sp,
                     color = Color.Black
                 )
             }

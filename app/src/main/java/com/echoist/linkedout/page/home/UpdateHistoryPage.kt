@@ -24,13 +24,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.echoist.linkedout.data.History
+import com.echoist.linkedout.data.Release
 import com.echoist.linkedout.page.settings.SettingTopAppBar
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.HomeViewModel
 
-fun groupHistoriesByDate(histories: List<History>): Map<String, List<History>> {
+fun groupHistoriesByDate(histories: List<Release>): Map<String, List<Release>> {
     return histories.groupBy { it.createdDate.substring(0, 10) }
 }
 
@@ -48,28 +48,29 @@ fun UpdateHistoryPage(navController: NavController, viewModel : HomeViewModel = 
                     .padding(it)
                     .verticalScroll(rememberScrollState())
             ) {
-                if(viewModel.updateHistory.isEmpty()){
-                    if (viewModel.isLoading){
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-                            CircularProgressIndicator(color = LinkedInColor)
-                        }
-                    }
-                    else{
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-                            Text(
-                                text = "업데이트 기록이 없습니다.",
-                                style = TextStyle(
-                                    fontSize = 16.sp,
-                                    lineHeight = 25.6.sp,
-                                    fontWeight = FontWeight(400),
-                                    color = Color(0xFF888888),
-                                )
-                            )
-                        }
+
+                if(!viewModel.updateHistory.isEmpty()){
+                    UpdateHistoryList(viewModel.updateHistory)
+                }
+            }
+            if(viewModel.updateHistory.isEmpty()){
+                if (viewModel.isLoading){
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                        CircularProgressIndicator(color = LinkedInColor)
                     }
                 }
                 else{
-                    UpdateHistoryList(viewModel.updateHistory)
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                        Text(
+                            text = "업데이트 기록이 없습니다.",
+                            style = TextStyle(
+                                fontSize = 16.sp,
+                                lineHeight = 25.6.sp,
+                                fontWeight = FontWeight(400),
+                                color = Color(0xFF888888),
+                            )
+                        )
+                    }
                 }
             }
         }
@@ -104,7 +105,7 @@ fun UpdateTitleBox(date: String) {
 }
 
 @Composable
-fun UpdateHistoryBox(date: String, histories: List<History>) {
+fun UpdateHistoryBox(date: String, histories: List<Release>) {
     Column(
         Modifier
             .background(Color(0xFF0E0E0E), shape = RoundedCornerShape(4))
@@ -128,7 +129,7 @@ fun UpdateHistoryBox(date: String, histories: List<History>) {
 }
 
 @Composable
-fun UpdateHistoryList(histories: List<History>) {
+fun UpdateHistoryList(histories: List<Release>) {
     val groupedHistories = groupHistoriesByDate(histories)
 
     Column {

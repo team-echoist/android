@@ -204,13 +204,10 @@ fun WritingPage(
                                     Row( //변경버튼 클릭 시 화면이동
                                         Modifier
                                             .offset(x = 10.dp, y = 10.dp)
-                                            .width(50.dp)
-                                            .height(27.dp)
+                                            .width(57.dp)
+                                            .height(32.dp)
                                             .clickable { navController.navigate("CropImagePage") }
-                                            .background(
-                                                color = Color(0xFF616FED),
-                                                shape = RoundedCornerShape(20)
-                                            ), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+                                            .background(color = Color(0xFF616FED)), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
                                         Text(text = "변경", fontSize = 12.sp, color = Color.White)
                                     }
                                 }
@@ -621,7 +618,7 @@ fun WritingCancelCard(viewModel: WritingViewModel, navController: NavController,
                         fontSize = 16.sp,
                         text = "작성취소",
                         textAlign = TextAlign.Center,
-                        color = Color.Red
+                        color = Color(0xFFE43446)
                     )
                     HorizontalDivider(
                         modifier = Modifier.fillMaxWidth(),
@@ -804,7 +801,7 @@ fun TextEditBar(
     // LaunchedEffect를 통해 애니메이션이 완료된 후 상태를 업데이트
     LaunchedEffect(isOpened) {
         if (!isOpened) {
-            delay(1000) // 애니메이션의 지속 시간과 일치
+            delay(600) // 애니메이션의 지속 시간과 일치
             isAnimationComplete = true
         } else {
             isAnimationComplete = false
@@ -820,11 +817,11 @@ fun TextEditBar(
             visible = isOpened,
             enter = slideInHorizontally(
                 initialOffsetX = { fullWidth -> fullWidth }, // 화면 오른쪽에서 시작
-                animationSpec = tween(durationMillis = 1000) // 애니메이션 속도
+                animationSpec = tween(durationMillis = 600) // 애니메이션 속도
             ),
             exit = slideOutHorizontally(
                 targetOffsetX = { fullWidth -> fullWidth }, // 화면 오른쪽으로 나감
-                animationSpec = tween(durationMillis = 1000) // 애니메이션 속도
+                animationSpec = tween(durationMillis = 600) // 애니메이션 속도
             )
         ) {
             Row(
@@ -944,7 +941,7 @@ fun TextEditBar(
                     painter = painterResource(id = R.drawable.editbar_reopen),
                     contentDescription = "",
                     tint = Color.Unspecified,
-                    modifier = Modifier.clickable { isOpened = true }
+                    modifier = Modifier.size(36.dp).clickable { isOpened = true }
                 )
             }
         }

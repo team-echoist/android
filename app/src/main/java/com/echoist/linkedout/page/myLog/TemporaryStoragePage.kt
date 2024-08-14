@@ -210,7 +210,7 @@ fun StorageEssayItem(
         .height(73.dp)){
         Row(
             verticalAlignment = Alignment.CenterVertically,
-
+            modifier = Modifier.clickable  { onItemSelected(!isSelected) }
         ) {
             Column(
                 Modifier

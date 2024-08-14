@@ -331,10 +331,10 @@ fun NotificationOpenLetter(alert: Alert, isOkClicked: () -> Unit,isCancelClicked
                     .padding(horizontal = 20.dp), contentAlignment = Alignment.BottomCenter){
                     Button(
                         onClick = { isOkClicked() },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().height(50.dp),
                         shape = RoundedCornerShape(20)
                     ) {
-                        Text(text = "확인")
+                        Text(text = "확인", color = Color.Black, fontWeight = FontWeight.SemiBold)
                     }
                 }
 

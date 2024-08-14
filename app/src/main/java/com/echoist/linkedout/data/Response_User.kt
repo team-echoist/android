@@ -84,3 +84,12 @@ data class WeeklyEssayCount(
     val weekEnd: String,
     val count: Int
 )
+
+//중복 닉 검사
+@JsonClass(generateAdapter = true)
+data class NicknameCheckResponse(
+    val timestamp: String,
+    val path: String,
+    val success: Boolean,
+    val statusCode : Int
+)

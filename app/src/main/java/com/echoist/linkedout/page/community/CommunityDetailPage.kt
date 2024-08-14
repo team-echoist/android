@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -33,8 +34,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowLeft
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
-import androidx.compose.material.icons.filled.Bookmark
-import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
@@ -82,7 +81,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
 import com.echoist.linkedout.Routes
-import com.echoist.linkedout.TYPE_COMMUNITY
+import com.echoist.linkedout.TYPE_RECOMMEND
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.components.EssayListItem
 import com.echoist.linkedout.data.UserInfo
@@ -101,12 +100,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewModel) {
 
-
     val scope = rememberCoroutineScope()
 
-
     val peekHeight = if (viewModel.isReportClicked ) 310.dp else 0.dp
-
 
     val bottomSheetState = rememberStandardBottomSheetState(initialValue = SheetValue.Hidden, skipHiddenState = false)
     val scaffoldState = androidx.compose.material3.rememberBottomSheetScaffoldState(
@@ -114,6 +110,21 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
     )
 
     var isClicked by remember { mutableStateOf(false) }
+    val listState = rememberLazyListState()
+    // 스크롤 상태 감시
+    val isScrolling = listState.isScrollInProgress
+    var color by remember { mutableStateOf(Color.Transparent) }
+
+    LaunchedEffect(isScrolling) {
+        if (isScrolling) {
+            // 스크롤이 진행 중일 때 수행할 작업
+            color = Color(0xFF0E0E0E)
+        } else {
+            // 스크롤이 멈췄을 때 수행할 작업
+            color = Color.Black
+            Log.d("ScrollStateCheckExample", "스크롤이 멈췄습니다.")
+        }
+    }
 
     LaunchedEffect(viewModel.isReportClicked) {
         if (viewModel.isReportClicked) {
@@ -151,7 +162,7 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
             Scaffold(
                 topBar = {
 
-                    CommunityTopAppBar(navController = navController, viewModel)
+                    CommunityTopAppBar(navController = navController, viewModel, color = color)
 
                 },
                 content = {
@@ -162,7 +173,7 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
                                 .padding(it)
                                 .fillMaxSize(), contentAlignment = Alignment.TopCenter
                         ) {
-                            LazyColumn {
+                            LazyColumn(state = listState) {
                                 item {
 
                                     DetailEssay(
@@ -288,7 +299,7 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CommunityTopAppBar(navController: NavController, viewModel: CommunityViewModel) {
+fun CommunityTopAppBar(navController: NavController, viewModel: CommunityViewModel, color : Color) {
     // 현재 백스택 상태를 관찰하여 상태 변경 시 리컴포지션을 트리거
     val backStackEntry = navController.currentBackStackEntryAsState().value
     // 백스택에서 바로 뒤의 항목 가져오기
@@ -299,7 +310,7 @@ fun CommunityTopAppBar(navController: NavController, viewModel: CommunityViewMod
     val previousRoute = previousBackStackEntry?.destination?.route
 
     TopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = color),
         title = { },
         navigationIcon = {
             Icon(
@@ -312,20 +323,25 @@ fun CommunityTopAppBar(navController: NavController, viewModel: CommunityViewMod
 
                     .clickable {
 
-//searching은 그냥 뒤로가기 해야 서칭페이지로 나감
 
-                            if (viewModel.detailEssayBackStack.isNotEmpty()) {
-                                viewModel.detailEssayBackStack.pop()
-                                Log.d(
-                                    ContentValues.TAG,
-                                    "pushpushpop: ${viewModel.detailEssayBackStack}"
-                                )
-                                if (viewModel.detailEssayBackStack.isNotEmpty()) {
-                                    viewModel.detailEssay = viewModel.detailEssayBackStack.peek()
-                                    viewModel.setBackDetailEssay(viewModel.detailEssayBackStack.peek()) //detailEssay값을 아예 수정
-                                }
-                            }
+//searching은 그냥 뒤로가기 해야 서칭페이지로 나감
+                        if (previousRoute == Routes.CommunityDetailPage) {
+                            navController.navigate(Routes.Community)
+                        } else {
                             navController.popBackStack()
+                        }
+//                        if (viewModel.detailEssayBackStack.isNotEmpty()) {
+//                            viewModel.detailEssayBackStack.pop()
+//                            Log.d(
+//                                ContentValues.TAG,
+//                                "pushpushpop: ${viewModel.detailEssayBackStack}"
+//                            )
+//                            if (viewModel.detailEssayBackStack.isNotEmpty()) {
+//                                viewModel.detailEssay = viewModel.detailEssayBackStack.peek()
+//                                viewModel.setBackDetailEssay(viewModel.detailEssayBackStack.peek()) //detailEssay값을 아예 수정
+//                            }
+//                        }
+//                        navController.popBackStack()
 
                     } //뒤로가기
             )
@@ -336,7 +352,7 @@ fun CommunityTopAppBar(navController: NavController, viewModel: CommunityViewMod
                 painter = painterResource(id = R.drawable.more),
                 contentDescription = "",
                 modifier = Modifier
-                    .size(50.dp)
+                    .size(40.dp)
                     .padding(end = 10.dp)
                     .clickable {
                         viewModel.isOptionClicked = !viewModel.isOptionClicked
@@ -362,18 +378,21 @@ fun ReportOption( onClickReport: () -> Unit,viewModel: CommunityViewModel) {
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.text_minus),
-                    tint = Color.Unspecified,
                     contentDescription = "minus",
-                    modifier = Modifier.clickable { viewModel.textSizeDown() }
+                    modifier = Modifier
+                        .size(30.dp)
+                        .clickable { viewModel.textSizeDown() }
                 )
                 Spacer(modifier = Modifier.width(30.dp))
                 Text(text = "가")
                 Spacer(modifier = Modifier.width(30.dp))
                 Icon(
                     painter = painterResource(id = R.drawable.text_plus),
-                    contentDescription = "plus",
-                    modifier = Modifier.clickable { viewModel.textSizeUp() }
-
+                    contentDescription = "minus",
+                    tint = Color.Gray,
+                    modifier = Modifier
+                        .size(30.dp)
+                        .clickable { viewModel.textSizeUp() }
                 )
             }
             HorizontalDivider(color = Color(0xFF1A1A1A))
@@ -395,7 +414,7 @@ fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navContro
         isApiFinished = true
     }
     var isEssayBookMarked by remember { mutableStateOf(item.isBookmarked) }
-    val iconImg = if (isEssayBookMarked) Icons.Default.Bookmark else Icons.Default.BookmarkBorder
+    val iconImg = if (isEssayBookMarked) R.drawable.icon_bookmarkfill else R.drawable.icon_bookmarkborder
 
     if (isApiFinished){
         Box {
@@ -421,7 +440,7 @@ fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navContro
 
 
                         Icon(
-                            imageVector = iconImg, //todo 이미지 출력
+                            painter = painterResource(id = iconImg),
                             contentDescription = "",
                             Modifier
                                 .size(30.dp)
@@ -530,7 +549,7 @@ fun SequenceBottomBar(item: EssayApi.EssayItem,viewModel: CommunityViewModel,nav
     val previousRoute = previousBackStackEntry?.destination?.route
 
     var isEssayBookMarked by remember { mutableStateOf(item.isBookmarked) }
-    val iconImg = if (isEssayBookMarked) Icons.Default.Bookmark else Icons.Default.BookmarkBorder
+    val iconImg = if (isEssayBookMarked) R.drawable.icon_bookmarkfill else R.drawable.icon_bookmarkborder
 
     var noExistPreviousStack by remember { mutableStateOf(false) }
 
@@ -565,12 +584,12 @@ fun SequenceBottomBar(item: EssayApi.EssayItem,viewModel: CommunityViewModel,nav
 
         Spacer(modifier = Modifier.height(14.dp))
         Box(modifier = Modifier
-            .background(Color.Black)
+            .background(Color(0xFF0E0E0E))
             .fillMaxWidth()
             .height(70.dp)){
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart){
 
-                Icon(imageVector = iconImg, contentDescription = "bookMark",
+                Icon(painter = painterResource(id = iconImg), contentDescription = "bookMark",
                     Modifier
                         .padding(start = 20.dp)
                         .clickable {
@@ -587,7 +606,7 @@ fun SequenceBottomBar(item: EssayApi.EssayItem,viewModel: CommunityViewModel,nav
                         .size(35.dp))
             }
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
-                Row {
+                Row(modifier = Modifier.height(94.dp), verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowLeft,
                         contentDescription = "nav back",
@@ -625,7 +644,7 @@ fun SequenceBottomBar(item: EssayApi.EssayItem,viewModel: CommunityViewModel,nav
                                 viewModel.readDetailEssay(
                                     viewModel.previousEssayList[0].id!!,
                                     navController = navController,
-                                    TYPE_COMMUNITY
+                                    TYPE_RECOMMEND
                                 )
                             }
                     )
