@@ -2,6 +2,7 @@ package com.echoist.linkedout.presentation
 
 import android.app.Activity
 import android.content.Intent
+import android.content.res.Configuration
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
@@ -47,6 +48,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -74,13 +76,16 @@ fun TabletLoginRoute(
     navigateToSignUp: () -> Unit
 ) {
     val context = LocalContext.current
+    val configuration = LocalConfiguration.current
 
     LaunchedEffect(key1 = Unit) {
         viewModel.requestAppVersion()
         viewModel.initializeNaverLogin(context)
     }
+
     TabletLoginScreen(
         viewModel = viewModel,
+        horizontalPadding = if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 350 else 100,
         onBackPressed = { onBackPressed() },
         navigateToResetPassword = { navigateToResetPassword() },
         navigateToSignUp = { navigateToSignUp() },
@@ -120,6 +125,7 @@ fun rememberLauncher(
 @Composable
 internal fun TabletLoginScreen(
     viewModel: SocialLoginViewModel,
+    horizontalPadding: Int = 100,
     onBackPressed: () -> Unit,
     navigateToResetPassword: () -> Unit,
     navigateToSignUp: () -> Unit,
@@ -145,7 +151,7 @@ internal fun TabletLoginScreen(
                 Column(
                     modifier = Modifier
                         .padding(it)
-                        .padding(horizontal = 350.dp)
+                        .padding(horizontal = horizontalPadding.dp)
                         .verticalScroll(scrollState)
                 ) {
                     Spacer(modifier = Modifier.height(20.dp))

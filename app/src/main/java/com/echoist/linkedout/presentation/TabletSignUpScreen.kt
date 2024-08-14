@@ -1,5 +1,6 @@
 package com.echoist.linkedout.presentation
 
+import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
@@ -36,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -56,6 +58,7 @@ fun TabletSignUpRoute(
     viewModel: SignUpViewModel = hiltViewModel(),
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
+    val configuration = LocalConfiguration.current
 
     LaunchedEffect(key1 = viewModel.isSignUpApiFinished) {
         if (viewModel.isSignUpApiFinished) {
@@ -74,6 +77,7 @@ fun TabletSignUpRoute(
 
     TabletSignUpScreen(
         viewModel = viewModel,
+        horizontalPadding = if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 350 else 100,
         detectTapGestures = { keyboardController?.hide() },
         onBackPressed = { navController.popBackStack() },
         onSubmitEmail = {
@@ -87,6 +91,7 @@ fun TabletSignUpRoute(
 @Composable
 internal fun TabletSignUpScreen(
     viewModel: SignUpViewModel,
+    horizontalPadding: Int,
     detectTapGestures: () -> Unit,
     onBackPressed: () -> Unit,
     onSubmitEmail: () -> Unit
@@ -128,7 +133,7 @@ internal fun TabletSignUpScreen(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(it)
-                            .padding(horizontal = 350.dp)
+                            .padding(horizontal = horizontalPadding.dp)
                     ) {
                         Spacer(modifier = Modifier.height(50.dp))
                         Text(
