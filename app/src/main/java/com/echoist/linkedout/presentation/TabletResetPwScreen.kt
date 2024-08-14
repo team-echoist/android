@@ -1,5 +1,6 @@
 package com.echoist.linkedout.presentation
 
+import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
@@ -41,6 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -62,6 +64,7 @@ fun TabletResetPwRoute(
     val isSendEmailVerifyApiFinished = viewModel.isSendEmailVerifyApiFinished
     val isLoading = viewModel.isLoading
     val scrollState = rememberScrollState()
+    val configuration = LocalConfiguration.current
 
     LaunchedEffect(key1 = isSendEmailVerifyApiFinished) {
         if (isSendEmailVerifyApiFinished) {
@@ -70,6 +73,7 @@ fun TabletResetPwRoute(
         }
     }
     TabletResetPwScreen(
+        horizontalPadding = if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 350 else 100,
         scrollState = scrollState,
         isLoading = isLoading,
         isSendEmailVerifyApiFinished = isSendEmailVerifyApiFinished,
@@ -91,6 +95,7 @@ fun TabletResetPwRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun TabletResetPwScreen(
+    horizontalPadding: Int,
     scrollState: ScrollState,
     isLoading: Boolean,
     isSendEmailVerifyApiFinished: Boolean,
@@ -135,7 +140,7 @@ internal fun TabletResetPwScreen(
                     Modifier
                         .verticalScroll(scrollState)
                         .padding(it)
-                        .padding(horizontal = 350.dp)
+                        .padding(horizontal = horizontalPadding.dp)
                 ) {
                     Spacer(modifier = Modifier.height(42.dp))
                     Text(
