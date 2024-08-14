@@ -1,5 +1,6 @@
 package com.echoist.linkedout.presentation
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -19,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,6 +39,7 @@ fun TabletSignUpCompleteRoute(
     navigateToHome: () -> Unit
 ) {
     var isLoading by remember { mutableStateOf(true) }
+    val configuration = LocalConfiguration.current
 
     LaunchedEffect(key1 = true) {
         viewModel.requestMyInfo()
@@ -47,21 +50,23 @@ fun TabletSignUpCompleteRoute(
 
     TabletSignUpCompleteScreen(
         isLoading = isLoading,
-        nickName = viewModel.readMyProfile().nickname
+        nickName = viewModel.readMyProfile().nickname,
+        horizontalPadding = if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 350 else 100,
     )
 }
 
 @Composable
 internal fun TabletSignUpCompleteScreen(
     isLoading: Boolean,
-    nickName: String?
+    nickName: String?,
+    horizontalPadding: Int
 ) {
     LinkedOutTheme {
         Scaffold {
             Box(
                 Modifier
                     .padding(it)
-                    .padding(horizontal = 350.dp)
+                    .padding(horizontal = horizontalPadding.dp)
                     .fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
