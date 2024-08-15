@@ -12,16 +12,24 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -143,6 +151,7 @@ import com.navercorp.nid.NaverIdLoginSDK
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 
@@ -187,7 +196,7 @@ class LoginPage : ComponentActivity() {
             Log.d("Hash", keyHash)
             val navController = rememberNavController()
 
-            NavHost(navController = navController, startDestination = Routes.LoginPage) {
+            NavHost(navController = navController, startDestination = Routes.OnBoarding) {
                 composable(Routes.OnBoarding) {
                     OnBoardingPage(navController)
                 }
@@ -507,6 +516,17 @@ fun LoginPage(
     LaunchedEffect(key1 = Unit) {
         viewModel.requestAppVersion()
     }
+    
+    LaunchedEffect(key1 = viewModel.loginStatusCode) {
+        delay(1000)
+        viewModel.loginStatusCode = 200
+    }
+    val errorText = when(viewModel.loginStatusCode){
+        401 -> "이메일 또는 비밀번호가 잘못되었습니다."
+        403 -> "권한이 존재하지 않습니다."
+        409 -> "중복된 이메일 계정이 존재합니다."
+        else -> viewModel.loginStatusCode.toString()
+    }
 
     LinkedOutTheme {
         Scaffold(
@@ -608,6 +628,32 @@ fun LoginPage(
                     }
                     SocialLoginBar(navController, viewModel)
                     Spacer(modifier = Modifier.height(20.dp))
+                }
+                //에러 박스
+                AnimatedVisibility(
+                    visible = viewModel.loginStatusCode >= 400,
+                    enter = fadeIn(animationSpec = tween(durationMillis = 500,easing = FastOutSlowInEasing)),
+                    exit = fadeOut(animationSpec = tween(durationMillis = 0, easing = LinearEasing))
+                )
+                {
+                    Box(modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(0.7f))){
+                        Box(modifier = Modifier.fillMaxWidth().align(Alignment.Center).
+                        height(60.dp).padding(horizontal = 20.dp).background(
+                            Color(0xFFE43446),
+                            shape = RoundedCornerShape(10)
+                        )){
+                            Text(
+                                text = errorText,
+                                color = Color.White,
+                                modifier = Modifier.align(
+                                    Alignment.Center
+                                )
+                            )
+                        }
+
+                    }
                 }
             }
         )
@@ -742,6 +788,7 @@ fun LoginBtn(
     val interactionSource = remember { MutableInteractionSource() }
     // val isPressed by interactionSource.collectIsPressedAsState()
     val error = viewModel.userId.isEmpty() || viewModel.userPw.isEmpty()
+  
 
     LinkedOutTheme {
         Button(
@@ -761,6 +808,8 @@ fun LoginBtn(
         ) {
             Text(text = "로그인")
         }
+
+
     }
 }
 

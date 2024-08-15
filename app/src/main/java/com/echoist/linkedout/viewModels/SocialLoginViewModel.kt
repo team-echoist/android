@@ -110,6 +110,7 @@ class SocialLoginViewModel @Inject constructor(
         }
     }
 
+    var loginStatusCode by mutableStateOf(200)
     //로그인
     fun login(navController: NavController) {
         viewModelScope.launch {
@@ -120,7 +121,7 @@ class SocialLoginViewModel @Inject constructor(
                 if (response.isSuccessful) {
                     Log.i("server header token", response.headers()["authorization"].toString())
                     Token.accessToken = (response.headers()["authorization"].toString())
-                    Log.d("authApiSuccess3", "로그인 성공! ${response.headers()["authorization"]}") // 이값을 항상 헤더에 넣을것.
+                    loginStatusCode = response.code()
                     navController.popBackStack("OnBoarding", false) //onboarding까지 전부 삭제.
 
                     if (response.code() == 202) // 탈퇴유저. 첫유저일리 없고 정보읽지않고 홈으로이동.
@@ -128,7 +129,8 @@ class SocialLoginViewModel @Inject constructor(
 
                     else readMyInfo(navController)// 첫 회원가입 여부 확인하고 화면이동
                 } else {
-                    Log.e("login_failed", "${response.code()}")
+                    loginStatusCode = response.code()
+                    Log.e("login_failed", "$loginStatusCode")
                     Log.e("login_failed", response.message())
 
                 }
@@ -231,12 +233,13 @@ class SocialLoginViewModel @Inject constructor(
                     Token.accessToken = (response.headers()["authorization"].toString())
                     Log.i("server header token(구글)", Token.accessToken)
                     Log.d("응답코드로 탈퇴/밴 사용자 여부파악 202 -> 탈퇴신청유저 ", response.code().toString())
-
+                    loginStatusCode = response.code()
                     if (response.code() == 202) // 탈퇴유저. 첫유저일리 없고 정보읽지않고 홈으로이동.
                         navController.navigate("HOME/${response.code()}")
 
                     else readMyInfo(navController)// 첫 회원가입 여부 확인하고 화면이동
                 } else { //409는 중복. 502는 아예 서버 팅
+                    loginStatusCode = response.code()
                     Log.e("google_login 서버와 api", "Failed ${response.code()}")
                 }
 
@@ -326,6 +329,7 @@ class SocialLoginViewModel @Inject constructor(
                     Log.i("server header token(카카오)", response.headers()["authorization"].toString())
                     Token.accessToken = (response.headers()["authorization"].toString())
                     Log.d(TAG, "requestKakaoLogin: ${response.code()}")
+                    loginStatusCode = response.code()
 
                     if (response.code() == 202) // 탈퇴유저. 첫유저일리 없고 정보읽지않고 홈으로이동.
                         navController.navigate("HOME/${response.code()}")
@@ -335,6 +339,7 @@ class SocialLoginViewModel @Inject constructor(
 
                 } else {
                     Log.e("kakao_login 서버와 api", "Failed ${response.code()}")
+                    loginStatusCode = response.code()
                 }
 
             } catch (e: Exception) {
@@ -450,7 +455,7 @@ class SocialLoginViewModel @Inject constructor(
                     Log.i("server header token(네이버)", response.headers()["authorization"].toString())
                     Token.accessToken = (response.headers()["authorization"].toString())
                     Log.d(TAG, "requestNaverLogin: ${response.code()}")
-
+                    loginStatusCode = response.code()
 
                     if (response.code() == 202) // 탈퇴유저. 첫유저일리 없고 정보읽지않고 홈으로이동.
                         navController.navigate("HOME/${response.code()}")
@@ -458,6 +463,7 @@ class SocialLoginViewModel @Inject constructor(
                     else readMyInfo(navController)// 첫 회원가입 여부 확인하고 화면이동
 
                 } else {
+                    loginStatusCode = response.code()
                     Log.e("naver_login 서버와 api", "Failed ${response.code()}")
                 }
 
@@ -553,7 +559,7 @@ class SocialLoginViewModel @Inject constructor(
                     Log.i("server header token(애플)", response.headers()["authorization"].toString())
                     Token.accessToken = (response.headers()["authorization"].toString())
                     Log.d(TAG, "requestAppleLogin: ${response.code()}")
-
+                    loginStatusCode = response.code()
                     if (response.code() == 202) // 탈퇴유저. 첫유저일리 없고 정보읽지않고 홈으로이동.
                         navController.navigate("HOME/${response.code()}")
 
@@ -561,6 +567,7 @@ class SocialLoginViewModel @Inject constructor(
                     else readMyInfo(navController)// 첫 회원가입 여부 확인하고 화면이동
 
                 } else {
+                    loginStatusCode = response.code()
                     Log.e("Apple_login 서버와 api", "Failed ${response.code()}")
                 }
 
