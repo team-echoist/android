@@ -43,6 +43,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -640,11 +641,15 @@ fun LoginPage(
                     Box(modifier = Modifier
                         .fillMaxSize()
                         .background(Color.Black.copy(0.7f))){
-                        Box(modifier = Modifier.fillMaxWidth().align(Alignment.Center).
-                        height(60.dp).padding(horizontal = 20.dp).background(
-                            Color(0xFFE43446),
-                            shape = RoundedCornerShape(10)
-                        )){
+                        Box(modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.Center)
+                            .height(60.dp)
+                            .padding(horizontal = 20.dp)
+                            .background(
+                                Color(0xFFE43446),
+                                shape = RoundedCornerShape(10)
+                            )){
                             Text(
                                 text = errorText,
                                 color = Color.White,
@@ -722,6 +727,16 @@ fun IdTextField(viewModel: SocialLoginViewModel, passwordFocusRequester: FocusRe
             focusedContainerColor = Color(0xFF252525),
             unfocusedContainerColor = Color(0xFF252525)
         ),
+        trailingIcon = {
+            if (text.isNotEmpty())
+            Icon(
+                imageVector = Icons.Default.Cancel,
+                contentDescription = "cancel",
+                modifier = Modifier.clickable {
+                    text = ""
+                    viewModel.userId = ""
+                }
+            )},
         shape = RoundedCornerShape(8.dp),
         modifier = Modifier
             .fillMaxWidth()
@@ -768,14 +783,26 @@ fun PwTextField(
                 }
             ),
             trailingIcon = { // 비밀번호 표시 여부입니다.
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                    Icon(
-                        modifier = Modifier.size(24.dp),
-                        painter = painterResource(id = if (passwordVisible) R.drawable.pw_eye_on else R.drawable.pw_eye_off),
-                        contentDescription = "pw_eye"
-                    )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (text.isNotEmpty())
+                        Icon(
+                            imageVector = Icons.Default.Cancel,
+                            contentDescription = "cancel",
+                            modifier = Modifier.clickable {
+                                text = ""
+                                viewModel.userPw = ""
+                            }
+                        )
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(
+                            modifier = Modifier.size(24.dp),
+                            painter = painterResource(id = if (passwordVisible) R.drawable.pw_eye_on else R.drawable.pw_eye_off),
+                            contentDescription = "pw_eye"
+                        )
 
+                    }
                 }
+
             },
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier
@@ -812,7 +839,7 @@ fun LoginBtn(
                 .height(55.dp)
                 .padding(start = 16.dp, end = 16.dp)
         ) {
-            Text(text = "로그인")
+            Text(text = "로그인",color=Color.Black)
         }
 
 
