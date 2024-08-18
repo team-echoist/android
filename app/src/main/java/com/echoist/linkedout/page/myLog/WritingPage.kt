@@ -63,6 +63,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
@@ -196,7 +197,7 @@ fun WritingPage(
                             contentAlignment = Alignment.Center,
                         ) {
                             Box{
-                                GlideImage(model = viewModel.imageUri ?: viewModel.imageUrl , contentDescription = "uri")
+                                GlideImage(model = viewModel.imageUri ?: viewModel.imageUrl , contentDescription = "uri", contentScale = ContentScale.Crop)
                                 Log.d(TAG, "WritingPage: ${viewModel.imageUri}, ${viewModel.imageUrl}")
                                 if (viewModel.imageUri != null || (viewModel.imageUrl != null && viewModel.imageUrl!!.startsWith("https"))){ //image url 주소가 널이 아니고 https값으로 시작해야 제대로된 Url link
                                     Row( //변경버튼 클릭 시 화면이동
