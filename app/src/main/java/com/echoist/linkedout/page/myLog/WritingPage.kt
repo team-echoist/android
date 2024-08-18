@@ -45,13 +45,11 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -325,7 +323,7 @@ fun WritingPage(
                                     else textState.removeSpanStyle(SpanStyle(textDecoration = TextDecoration.LineThrough))
 
                                     isTextSettingSelected = false
-                                })
+                                }, textState)
 
                             KeyboardLocationFunc(viewModel, navController,textState)
 
@@ -785,6 +783,7 @@ fun TextEditBar(
     onTextUnderLineSelected: (Boolean) -> Unit,
     isTextMiddleLineSelected: Boolean,
     onTextMiddleLineSelected: (Boolean) -> Unit,
+    textState: RichTextState
 ) {
 
     var isOpened by remember { mutableStateOf(true) }
@@ -881,6 +880,7 @@ fun TextEditBar(
                         icon = R.drawable.editbar_more,
                         if (viewModel.isTextFeatOpened.value) LinkedInColor else Color.White
                     ) {
+                        viewModel.content = textState.toHtml()
                         isKeyboardAppeared = !isKeyboardAppeared
                         if (isKeyboardAppeared) keyboardController?.show() else keyboardController?.hide()
                         viewModel.isTextFeatOpened.value = !viewModel.isTextFeatOpened.value
