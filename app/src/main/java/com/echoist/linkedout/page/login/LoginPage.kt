@@ -92,6 +92,7 @@ import com.echoist.linkedout.BuildConfig
 import com.echoist.linkedout.DeviceId
 import com.echoist.linkedout.R
 import com.echoist.linkedout.Routes
+import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.components.CropImagePage
 import com.echoist.linkedout.data.Notice
 import com.echoist.linkedout.page.community.CommunityDetailPage
@@ -511,6 +512,7 @@ fun LoginPage(
     val keyboardController = LocalSoftwareKeyboardController.current
     val scrollState = rememberScrollState()
     Log.d("현재 사용중인 안드로이드 앱 버전", BuildConfig.VERSION_NAME)
+    viewModel.clickedAutoLogin = SharedPreferencesUtil.getClickedAutoLogin(LocalContext.current)
 
     //앱버전 체크 후 최신버전 아닌경우 마켓업데이트.
     LaunchedEffect(key1 = Unit) {
@@ -570,8 +572,7 @@ fun LoginPage(
 
                     LoginTextFields(viewModel, navController)
 
-                    var clickedAutoLogin by remember { mutableStateOf(false) }
-                    val autoLoginColor = if (clickedAutoLogin) LinkedInColor else Color.Gray
+                    val autoLoginColor = if (viewModel.clickedAutoLogin) LinkedInColor else Color.Gray
 
                     Row(
                         modifier = Modifier.padding(horizontal = 20.dp),
@@ -582,7 +583,7 @@ fun LoginPage(
                             tint = autoLoginColor,
                             contentDescription = "check",
                             modifier = Modifier
-                                .clickable { clickedAutoLogin = !clickedAutoLogin }
+                                .clickable { viewModel.clickedAutoLogin = !viewModel.clickedAutoLogin }
                         )
                         Text(text = "자동 로그인", fontSize = 14.sp, color = autoLoginColor)
                     }
@@ -689,7 +690,9 @@ fun SocialLoginBar(navController: NavController, viewModel: SocialLoginViewModel
 
 @Composable
 fun IdTextField(viewModel: SocialLoginViewModel, passwordFocusRequester: FocusRequester) {
-    var text by remember { mutableStateOf("") }
+    val context = LocalContext.current
+    var text by remember { mutableStateOf(SharedPreferencesUtil.getLocalAccountInfo(context).id) }
+    viewModel.userId = text //초기값 설정 빈값으로 두지 않기위함
 
     TextField(
         value = text,
@@ -732,8 +735,11 @@ fun PwTextField(
     viewModel: SocialLoginViewModel,
     passwordFocusRequester: FocusRequester
 ) {
-    var text by remember { mutableStateOf("") }
+    val context = LocalContext.current
+    var text by remember { mutableStateOf(SharedPreferencesUtil.getLocalAccountInfo(context).pw) }
+    viewModel.userPw = text
     var passwordVisible by remember { mutableStateOf(false) }
+
     LinkedOutTheme {
         TextField(
             value = text,

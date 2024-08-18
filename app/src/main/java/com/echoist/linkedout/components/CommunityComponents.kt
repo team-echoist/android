@@ -1054,7 +1054,6 @@ fun EssayListItem(
                     text = item.content!!,
                     maxLines = 2,
                     fontSize = 14.sp,
-                    lineHeight = 27.2.sp,
                     color = color,
                     overflow = TextOverflow.Ellipsis
                 )

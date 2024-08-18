@@ -22,6 +22,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.echoist.linkedout.BuildConfig
 import com.echoist.linkedout.Routes
+import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.api.NaverApiService
 import com.echoist.linkedout.api.SignUpApi
 import com.echoist.linkedout.api.SocialSignUpApi
@@ -79,6 +80,9 @@ class SocialLoginViewModel @Inject constructor(
     private var appleUserToken by mutableStateOf("")
     private var appleUserId by mutableStateOf("")
 
+    var clickedAutoLogin by  mutableStateOf(false)
+
+
 
     var userId by mutableStateOf("")
     var userPw by mutableStateOf("")
@@ -123,6 +127,14 @@ class SocialLoginViewModel @Inject constructor(
                     Token.accessToken = (response.headers()["authorization"].toString())
                     loginStatusCode = response.code()
                     navController.popBackStack("OnBoarding", false) //onboarding까지 전부 삭제.
+
+                    if (clickedAutoLogin){ //자동로그인 클릭 + 로그인 성공 시 로컬계정 저장
+                        saveLocalAccount(navController.context, SharedPreferencesUtil.LocalAccountInfo(userId, userPw))
+                    }
+                    else{ //자동로그인 클릭x 시 빈 값 저장
+                        saveLocalAccount(navController.context, SharedPreferencesUtil.LocalAccountInfo("", ""))
+
+                    }
 
                     if (response.code() == 202) // 탈퇴유저. 첫유저일리 없고 정보읽지않고 홈으로이동.
                         navController.navigate("HOME/${response.code()}")
@@ -577,6 +589,11 @@ class SocialLoginViewModel @Inject constructor(
                 Log.e("Apple login failed", "Failed: ${e.message}")
             }
         }
+    }
+
+    private fun saveLocalAccount(context: Context, localAccountInfo: SharedPreferencesUtil.LocalAccountInfo){
+        SharedPreferencesUtil.saveLocalAccountInfo(context, localAccountInfo)
+        SharedPreferencesUtil.saveClickedAutoLogin(context, clickedAutoLogin)
     }
 
 }

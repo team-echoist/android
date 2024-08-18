@@ -11,12 +11,16 @@ object SharedPreferencesUtil {
     private const val KEY_HOUR_INDEX = "hour_index"
     private const val KEY_MINUTE_INDEX = "minute_index"
 
+    private const val ID_LOCAL_STORAGE = "id"
+    private const val PW_LOCAL_STORAGE = "pw"
+
     private const val DISPLAY_INFO = DARK_MODE
 
     private val periodMap = mapOf(0 to "AM", 1 to "PM")
     private val hourMap = (0..11).associateWith { (it + 1).toString().padStart(2, '0') }
     private val minuteMap = (0..5).associateWith { (it * 10).toString().padStart(2, '0') }
 
+    data class LocalAccountInfo(val id: String, val pw: String)
     fun saveWritingRemindNotification(context: Context, writingRemindNotification: Boolean) {
         val sharedPreferences: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         with(sharedPreferences.edit()) {
@@ -37,6 +41,36 @@ object SharedPreferencesUtil {
             putString(DISPLAY_INFO, displayInfo)
             apply()
         }
+    }
+
+    fun getLocalAccountInfo(context: Context) : LocalAccountInfo{
+        val sharedPreferences: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val accountInfoId = sharedPreferences.getString(ID_LOCAL_STORAGE, "")
+        val accountInfoPw = sharedPreferences.getString(PW_LOCAL_STORAGE, "")
+        return LocalAccountInfo(accountInfoId!!,accountInfoPw!!)
+    }
+
+    fun saveLocalAccountInfo(context: Context, localAccountInfo: LocalAccountInfo) {
+        val sharedPreferences: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            putString(ID_LOCAL_STORAGE, localAccountInfo.id)
+            putString(PW_LOCAL_STORAGE, localAccountInfo.pw)
+            apply()
+        }
+    }
+
+    fun saveClickedAutoLogin(context: Context, isClickedAutoLogin: Boolean) {
+        val sharedPreferences: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            putBoolean("isClickedAutoLogin", isClickedAutoLogin)
+            apply()
+        }
+    }
+
+    fun getClickedAutoLogin(context: Context) : Boolean{
+        val sharedPreferences: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val isClickedAutoLogin = sharedPreferences.getBoolean("isClickedAutoLogin", false)
+        return isClickedAutoLogin
     }
 
     fun getDisplayInfo(context: Context) : String{
