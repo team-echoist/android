@@ -521,8 +521,8 @@ fun LoginPage(
         delay(1000)
         viewModel.loginStatusCode = 200
     }
-    val errorText = when(viewModel.loginStatusCode){
-        401 -> "이메일 또는 비밀번호가 잘못되었습니다."
+    val errorText = when(viewModel.loginStatusCode){ //todo 유형 별 코드 파악
+        400, 401 -> "이메일 또는 비밀번호가 잘못되었습니다."
         403 -> "권한이 존재하지 않습니다."
         409 -> "중복된 이메일 계정이 존재합니다."
         else -> viewModel.loginStatusCode.toString()

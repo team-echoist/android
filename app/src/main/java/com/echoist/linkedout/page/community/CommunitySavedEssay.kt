@@ -45,6 +45,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
@@ -134,6 +135,32 @@ fun SavedEssayListItem(
 ) {
     val color = Color.White
 
+    val annotatedTitleString = buildAnnotatedString {
+        // 첫 번째 텍스트 (title)
+        append(item.title ?: "")
+        addStyle(
+            style = SpanStyle(
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Normal,
+                color = color
+            ),
+            start = 0,
+            end = item.title?.length ?: 0
+        )
+
+        // 두 번째 텍스트 ( "   • ${formatElapsedTime(item.createdDate!!)}" )
+        val bulletText = "   • ${formatElapsedTime(item.createdDate!!)}"
+        append(bulletText)
+        addStyle(
+            style = SpanStyle(
+                fontSize = 10.sp,
+                color = Color(0xFF686868)
+            ),
+            start = item.title?.length ?: 0,
+            end = item.title?.length?.plus(bulletText.length) ?: bulletText.length
+        )
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -156,18 +183,13 @@ fun SavedEssayListItem(
             ) {
                 Row(
                     Modifier.padding(top = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        modifier = Modifier,
-                        text = item.title!!,
-                        color = color,
-                        fontSize = 14.sp,
+                        text = annotatedTitleString,
                         maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
+                        overflow = TextOverflow.Ellipsis
                     )
-                    Text(text = "   • ${formatElapsedTime(item.createdDate!!)}", fontSize = 10.sp, color = Color(0xFF686868))
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))

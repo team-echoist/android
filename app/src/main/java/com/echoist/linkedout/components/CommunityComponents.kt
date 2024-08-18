@@ -35,13 +35,11 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -987,8 +985,34 @@ fun EssayListItem(
     viewModel: CommunityViewModel,
     navController: NavController
 ) {
-    val color =
-        Color.White
+    val color = Color.White
+
+    val annotatedTitleString = buildAnnotatedString {
+        // 첫 번째 텍스트 (title)
+        append(item.title ?: "")
+        addStyle(
+            style = SpanStyle(
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Normal,
+                color = color
+            ),
+            start = 0,
+            end = item.title?.length ?: 0
+        )
+
+        // 두 번째 텍스트 ( "   • ${formatElapsedTime(item.createdDate!!)}" )
+        val bulletText = "   • ${formatElapsedTime(item.createdDate!!)}"
+        append(bulletText)
+        addStyle(
+            style = SpanStyle(
+                fontSize = 10.sp,
+                color = Color(0xFF686868)
+            ),
+            start = item.title?.length ?: 0,
+            end = item.title?.length?.plus(bulletText.length) ?: bulletText.length
+        )
+    }
+
     Box(modifier = Modifier
         .fillMaxWidth()
         .background(Color.Black)
@@ -1009,7 +1033,6 @@ fun EssayListItem(
             ) {
                 Row(
                     Modifier.padding(top = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
                     if (item.status == "linkedout"){
@@ -1017,16 +1040,11 @@ fun EssayListItem(
                         Spacer(modifier = Modifier.width(6.dp))
 
                     }
-
                     Text(
-                        text = item.title!!,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Normal,
-                        color = color,
+                        text = annotatedTitleString,
                         maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
+                        overflow = TextOverflow.Ellipsis
                     )
-                    Text(text = "   • ${formatElapsedTime(item.createdDate!!)}", fontSize = 10.sp, color = Color(0xFF686868))
                     Spacer(modifier = Modifier.width(30.dp))
                 }
 
