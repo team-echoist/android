@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -529,6 +530,7 @@ fun ContentTextField(viewModel: WritingViewModel,textState: RichTextState) {
             RichTextEditor(
                 state = textState,
                 modifier = Modifier
+                    .imePadding()
                     .offset(x = 0.dp, y = ydp)
                     .onFocusChanged { focusState.value = it.isFocused }
                     .fillMaxWidth()
