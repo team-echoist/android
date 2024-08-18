@@ -173,15 +173,17 @@ open class CommunityViewModel @Inject constructor(
                     exampleItems.randomList = response.body()!!.data.essays.toMutableStateList()
                     _randomList.emit(response.body()!!.data.essays.toMutableStateList())
                     //_randomList.emit(response.body()!!.data.essays.toMutableStateList())
+
                     response.body()!!.data.essays.forEach{it->
-                        randomEssayList.add(it)
+                        if (it !in randomEssayList){ //id 가 set에 없다면 추가.
+                            randomEssayList.add(it)
+                        }
                     }
 
-                    Log.d(TAG, "readRandomEssays: 성공인데요${response.body()!!.data.essays.toMutableStateList()}")
-                    Log.d(TAG, "readRandomEssays: 성공입니다 아니면 예시 ${exampleItems.randomList}")
+
+                    Log.d("랜덤에세이 호출성공", "전체 호출하는 limit 사이즈 ${randomEssayList.size}")
+                    Log.d("랜덤에세이 호출성공", "실제 랜덤 에세이 사이즈  ${exampleItems.randomList.size}")
                 }
-
-
 
                 // API 호출 결과 처리 (예: response 데이터 사용)
             } catch (e: Exception) {
