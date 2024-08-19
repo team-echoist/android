@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,12 +32,14 @@ import androidx.navigation.NavController
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChangePwPage(navController: NavController) {
 
     val scrollState = rememberScrollState()
 
-    LinkedOutTheme {
+    LinkedOutTheme{
+
         Scaffold(
             topBar = {
                 SettingTopAppBar("비밀번호 변경",navController)
@@ -118,9 +121,8 @@ fun ChangePwPage(navController: NavController) {
                         hint = "새 비밀번호 확인"
                     )
                     if (newPwCheckErr) {
-                        Text(text = "올바른 이메일 형식이 아닙니다.", color = Color.Red, fontSize = 12.sp)
+                        Text(text = "비밀번호가 일치하지 않습니다.", color = Color.Red, fontSize = 12.sp)
                     }
-
 
                     Spacer(modifier = Modifier.height(187.dp))
 

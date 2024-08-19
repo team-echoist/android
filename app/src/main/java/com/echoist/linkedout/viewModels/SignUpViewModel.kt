@@ -143,6 +143,7 @@ class SignUpViewModel @Inject constructor(
     var isSendEmailVerifyApiFinished by mutableStateOf(false)
     //이메일변경용 메일요청
     fun sendEmailVerificationForChange(email : String) { //코루틴스코프에서 순차적으로 수행된다. 뷰모델스코프는 위에걸로
+        isLoading = true
         viewModelScope.launch {
             try {
                 val userEmail = SignUpApi.EmailRequest(email)
@@ -166,11 +167,15 @@ class SignUpViewModel @Inject constructor(
                 // api 요청 실패
                 Log.e("writeEssayApiFailed2", "Failed: ${e.message}")
             }
+            finally {
+                isLoading=false
+            }
         }
 
     }
 
     fun requestChangePw(email : String){
+        isLoading = true
         viewModelScope.launch {
             isLoading = true
             val userEmail = SignUpApi.EmailRequest(email)
@@ -182,16 +187,16 @@ class SignUpViewModel @Inject constructor(
                 //헤더에 토큰이 없다.
                 //Token.accessToken = (response.headers()["authorization"].toString())
                 isSendEmailVerifyApiFinished = true
-                isLoading = false
+
 
             }
             else{
                 // code == 400 잘못된 이메일주소
                 Log.e("authApiFailed2", "Failed : ${response.headers()}")
                 Log.e("authApiFailed2", "${response.code()}")
-                isLoading = false
-            }
 
+            }
+            isLoading = false
 
         }
     }

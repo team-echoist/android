@@ -211,23 +211,7 @@ class LoginPage : ComponentActivity() {
                 composable(Routes.AgreeOfProvisionsPage) {
                     AgreeOfProvisionsPage(navController, signUpViewModel)
                 }
-                composable(
-                    Routes.SignUpComplete,
-                    deepLinks = listOf(navDeepLink {
-                        uriPattern =
-                            "https://linkedoutapp.com/login/${Routes.SignUpComplete}?token={token}"
-                        // https://linkedoutapp.com/SignUpComplete?token={token}
-                        //https://linkedoutapp.com/login/SignUpComplete?token={token}
-                    }),
-                    arguments = listOf(navArgument("token") {
-                        type = NavType.StringType
-                        defaultValue = ""
-                    })
-                ) {
-                    if (it.arguments?.getString("token").toString().isNotEmpty()) {
-                        Token.accessToken = it.arguments?.getString("token").toString()
-                        Log.i("header token by deepLink:", " ${Token.accessToken}")
-                    }
+                composable(Routes.SignUpComplete) {
                     SignUpCompletePage(homeViewModel, navController)
                 }
                 composable(

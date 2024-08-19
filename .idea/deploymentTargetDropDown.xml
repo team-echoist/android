@@ -37,13 +37,13 @@
               <type value="RUNNING_DEVICE_TARGET" />
               <deviceKey>
                 <Key>
-                  <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="$USER_HOME$/.android/avd/Client_Test.avd" />
+                  <type value="SERIAL_NUMBER" />
+                  <value value="R39M30CVAGA" />
                 </Key>
               </deviceKey>
             </Target>
           </runningDeviceTargetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-08-19T08:49:19.738198Z" />
+          <timeTargetWasSelectedWithDropDown value="2024-08-19T10:55:40.073601Z" />
         </State>
       </entry>
     </value>
