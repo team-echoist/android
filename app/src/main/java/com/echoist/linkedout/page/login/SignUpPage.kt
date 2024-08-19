@@ -139,7 +139,7 @@ fun SignUpPage(
                         EmailTextField(viewModel)
                         PwTextField(viewModel)
                         Spacer(modifier = Modifier.height(4.dp))
-                        Text(text = "*비밀번호는 영문(대소문자), 특수문자, 숫자 포함 8~12자를 조합해 주세요.", fontSize = 10.5.sp, color = LinkedInColor, modifier = Modifier.padding(horizontal = 30.dp))
+                        Text(text = "* 비밀번호는 영문(대소문자), 특수문자, 숫자 포함 8~30자를 조합해 주세요.", fontSize = 10.5.sp, color = LinkedInColor, modifier = Modifier.padding(horizontal = 30.dp))
 
 
                         Button(
