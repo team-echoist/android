@@ -215,9 +215,9 @@ class LoginPage : ComponentActivity() {
                     Routes.SignUpComplete,
                     deepLinks = listOf(navDeepLink {
                         uriPattern =
-                            "https://linkedoutapp.com/${Routes.SignUpComplete}?token={token}"
+                            "https://linkedoutapp.com/login/${Routes.SignUpComplete}?token={token}"
                         // https://linkedoutapp.com/SignUpComplete?token={token}
-                        //https://linkedoutapp.com/login
+                        //https://linkedoutapp.com/login/SignUpComplete?token={token}
                     }),
                     arguments = listOf(navArgument("token") {
                         type = NavType.StringType
@@ -519,14 +519,14 @@ fun LoginPage(
     LaunchedEffect(key1 = Unit) {
         viewModel.requestAppVersion()
     }
-    
+
     LaunchedEffect(key1 = viewModel.loginStatusCode) {
         delay(1000)
         viewModel.loginStatusCode = 200
     }
-    val errorText = when(viewModel.loginStatusCode){ //todo 유형 별 코드 파악
+    val errorText = when (viewModel.loginStatusCode) { //todo 유형 별 코드 파악
         400, 401 -> "이메일 또는 비밀번호가 잘못되었습니다."
-        403 -> "권한이 존재하지 않습니다."
+        403 -> "정지된 계정입니다."
         409 -> "중복된 이메일 계정이 존재합니다."
         else -> viewModel.loginStatusCode.toString()
     }
@@ -573,7 +573,8 @@ fun LoginPage(
 
                     LoginTextFields(viewModel, navController)
 
-                    val autoLoginColor = if (viewModel.clickedAutoLogin) LinkedInColor else Color.Gray
+                    val autoLoginColor =
+                        if (viewModel.clickedAutoLogin) LinkedInColor else Color.Gray
 
                     Row(
                         modifier = Modifier.padding(horizontal = 20.dp),
@@ -584,7 +585,9 @@ fun LoginPage(
                             tint = autoLoginColor,
                             contentDescription = "check",
                             modifier = Modifier
-                                .clickable { viewModel.clickedAutoLogin = !viewModel.clickedAutoLogin }
+                                .clickable {
+                                    viewModel.clickedAutoLogin = !viewModel.clickedAutoLogin
+                                }
                         )
                         Text(text = "자동 로그인", fontSize = 14.sp, color = autoLoginColor)
                     }
@@ -634,22 +637,31 @@ fun LoginPage(
                 //에러 박스
                 AnimatedVisibility(
                     visible = viewModel.loginStatusCode >= 400,
-                    enter = fadeIn(animationSpec = tween(durationMillis = 500,easing = FastOutSlowInEasing)),
+                    enter = fadeIn(
+                        animationSpec = tween(
+                            durationMillis = 500,
+                            easing = FastOutSlowInEasing
+                        )
+                    ),
                     exit = fadeOut(animationSpec = tween(durationMillis = 0, easing = LinearEasing))
                 )
                 {
-                    Box(modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Black.copy(0.7f))){
-                        Box(modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.Center)
-                            .height(60.dp)
-                            .padding(horizontal = 20.dp)
-                            .background(
-                                Color(0xFFE43446),
-                                shape = RoundedCornerShape(10)
-                            )){
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black.copy(0.7f))
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .align(Alignment.Center)
+                                .height(60.dp)
+                                .padding(horizontal = 20.dp)
+                                .background(
+                                    Color(0xFFE43446),
+                                    shape = RoundedCornerShape(10)
+                                )
+                        ) {
                             Text(
                                 text = errorText,
                                 color = Color.White,
@@ -729,14 +741,15 @@ fun IdTextField(viewModel: SocialLoginViewModel, passwordFocusRequester: FocusRe
         ),
         trailingIcon = {
             if (text.isNotEmpty())
-            Icon(
-                imageVector = Icons.Default.Cancel,
-                contentDescription = "cancel",
-                modifier = Modifier.clickable {
-                    text = ""
-                    viewModel.userId = ""
-                }
-            )},
+                Icon(
+                    imageVector = Icons.Default.Cancel,
+                    contentDescription = "cancel",
+                    modifier = Modifier.clickable {
+                        text = ""
+                        viewModel.userId = ""
+                    }
+                )
+        },
         shape = RoundedCornerShape(8.dp),
         modifier = Modifier
             .fillMaxWidth()
@@ -821,7 +834,7 @@ fun LoginBtn(
     val interactionSource = remember { MutableInteractionSource() }
     // val isPressed by interactionSource.collectIsPressedAsState()
     val error = viewModel.userId.isEmpty() || viewModel.userPw.isEmpty()
-  
+
 
     LinkedOutTheme {
         Button(
@@ -839,7 +852,7 @@ fun LoginBtn(
                 .height(55.dp)
                 .padding(start = 16.dp, end = 16.dp)
         ) {
-            Text(text = "로그인",color=Color.Black)
+            Text(text = "로그인", color = Color.Black)
         }
 
 

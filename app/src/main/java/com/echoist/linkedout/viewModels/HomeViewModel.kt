@@ -195,10 +195,7 @@ class HomeViewModel @Inject constructor(
                     Log.d(TAG, "위치서비스 동의 저장 성공: ${response.code()}")
                     Log.d(TAG, "위치서비스 동의 저장 성공: $locationNotification")
 
-
-
-
-                navController.navigate("${Routes.Home}/200")
+                    navController.navigate("${Routes.Home}/200")
             } catch (e: Exception) {
                 e.printStackTrace()
                 Log.d(TAG, "noti update failed: ${e.message}")

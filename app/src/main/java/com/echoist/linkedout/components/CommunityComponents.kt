@@ -1042,7 +1042,7 @@ fun EssayListItem(
                     }
                     Text(
                         text = annotatedTitleString,
-                        maxLines = 2,
+                        maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                     Spacer(modifier = Modifier.width(30.dp))
