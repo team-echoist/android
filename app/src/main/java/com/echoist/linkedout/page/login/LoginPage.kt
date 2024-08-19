@@ -599,7 +599,19 @@ fun LoginPage(
                             .padding(top = 32.dp),
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        UnderlineText(text = "아이디 찾기") { } //아이디찾기 페이지 이동
+                        // UnderlineText(text = "아이디 찾기") { } //아이디찾기 페이지 이동
+                        //임시 아이디 찾기 닫아둠.
+                        LinkedOutTheme {
+                            Text(
+                                text = "아이디 찾기",
+                                fontSize = 12.sp,
+                                style = TextStyle(textDecoration = TextDecoration.LineThrough),
+                                color = Color(0xFF919191),
+                                modifier = Modifier
+                                    .padding(end = 25.dp)
+                                    .clickable(enabled = false) {  }
+                            )
+                        }
                         UnderlineText(text = "비밀번호 재설정") { navController.navigate("ResetPwPageWithEmail") } //비밀번호 재설정 페이지 이동
                         UnderlineText(text = "회원가입") { navController.navigate("SIGNUP") } // 회원가입 페이지 이동
                     }
