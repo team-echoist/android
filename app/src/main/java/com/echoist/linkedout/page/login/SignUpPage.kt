@@ -257,16 +257,13 @@ fun EmailTextField(viewModel: SignUpViewModel) {
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 14.dp)
+                    .padding(start = 16.dp, end = 16.dp, bottom = if (viewModel.userEmailError) 2.dp else 14.dp)
             )
             if (viewModel.userEmailError) {
                 if (errorText.isNotEmpty())
-                    Text(
-                        text = errorText,
-                        fontSize = 12.sp,
-                        color = Color.Red,
-                        modifier = Modifier.padding(start = 16.dp, bottom = 14.dp)
-                    )
+                Text(text = "* $errorText", fontSize = 10.5.sp, color = Color.Red, modifier = Modifier.padding(horizontal = 30.dp).padding(bottom = 14.dp))
+
+
             }
         }
     }
