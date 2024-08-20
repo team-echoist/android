@@ -471,7 +471,7 @@ fun MyProfile(item: UserInfo, onClick: () -> Unit) {
                         Text(text = " 아무개", color = Color.White)
                     }
                     Spacer(modifier = Modifier.height(7.dp))
-                    Text(text = "${calculateDaysDifference(item.createdDate!!)}일째 링크드 아웃!", color = Color(0xFF686868), fontSize = 12.sp)
+                    //Text(text = "${calculateDaysDifference(item.createdDate!!)}일째 링크드 아웃!", color = Color(0xFF686868), fontSize = 12.sp)
                 }
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
