@@ -40,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -50,6 +51,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.echoist.linkedout.Routes
+import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.home.LogoutBox
 import com.echoist.linkedout.ui.theme.LinkedInColor
@@ -59,6 +61,7 @@ import com.echoist.linkedout.viewModels.SettingsViewModel
 @Composable
 fun AccountPage(navController: NavController, viewModel: SettingsViewModel = hiltViewModel()) {
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
     LinkedOutTheme {
         Scaffold(
             topBar = {
@@ -138,10 +141,11 @@ fun AccountPage(navController: NavController, viewModel: SettingsViewModel = hil
                             isCancelClicked = { isLogoutClicked = false },
                             isLogoutClicked = {
                                 isLogoutClicked = false
-                                navController.popBackStack(
-                                    "LoginPage",
-                                    true
-                                ) //home 까지 삭제 inclusive - 포함
+                                //로컬 자동로그인, id pw 값 초기화
+                                SharedPreferencesUtil.saveClickedAutoLogin(context,false)
+                                SharedPreferencesUtil.saveLocalAccountInfo(context, SharedPreferencesUtil.LocalAccountInfo("",""))
+
+                                navController.popBackStack("LoginPage", true) //home 까지 삭제 inclusive - 포함
                                 navController.navigate("LoginPage")
                             }
                         )

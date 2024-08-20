@@ -87,6 +87,7 @@ import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
+import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.TUTORIAL_BULB
 import com.echoist.linkedout.UserStatus
 import com.echoist.linkedout.api.EssayApi
@@ -267,14 +268,11 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewMo
         }
         }
 
-
-
-
-
 @Composable
 fun ModalBottomSheetContent(viewModel: HomeViewModel,navController: NavController){
     var isLogoutClicked by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
 
     ModalDrawerSheet(
         modifier = Modifier.fillMaxWidth(0.9f),
@@ -313,8 +311,13 @@ fun ModalBottomSheetContent(viewModel: HomeViewModel,navController: NavControlle
     ){
         LogoutBox(
             isCancelClicked = { isLogoutClicked = false
-                              navController.navigate("LoginPage")
-                              navController.popBackStack("LoginPage",false)},
+                navController.navigate("LoginPage")
+                //로컬 자동로그인, id pw 값 초기화
+                SharedPreferencesUtil.saveClickedAutoLogin(context,false)
+                SharedPreferencesUtil.saveLocalAccountInfo(context,SharedPreferencesUtil.LocalAccountInfo("",""))
+
+                navController.popBackStack("LoginPage",false)
+                              },
             isLogoutClicked = { isLogoutClicked = false
                 navController.navigate("LoginPage")
                 navController.popBackStack("LoginPage",false)}

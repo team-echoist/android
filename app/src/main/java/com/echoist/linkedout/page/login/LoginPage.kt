@@ -82,6 +82,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -183,7 +184,6 @@ class LoginPage : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val homeViewModel: HomeViewModel by viewModels()
-        val viewModel: SocialLoginViewModel by viewModels()
         val writingViewModel: WritingViewModel by viewModels()
         val signUpViewModel: SignUpViewModel by viewModels()
         val myLogViewModel: MyLogViewModel by viewModels()
@@ -203,7 +203,7 @@ class LoginPage : ComponentActivity() {
                     OnBoardingPage(navController)
                 }
                 composable(Routes.LoginPage) {
-                    LoginPage(navController = navController, viewModel = viewModel)
+                    LoginPage(navController = navController)
                 }
                 composable(Routes.SignUp) {
                     SignUpPage(navController, signUpViewModel)
@@ -492,7 +492,7 @@ fun AppleLoginBtn(navController: NavController, viewModel: SocialLoginViewModel)
 @Composable
 fun LoginPage(
     navController: NavController,
-    viewModel: SocialLoginViewModel
+    viewModel: SocialLoginViewModel = hiltViewModel()
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val scrollState = rememberScrollState()
@@ -502,7 +502,7 @@ fun LoginPage(
 
     //앱버전 체크 후 최신버전 아닌경우 마켓업데이트.
     LaunchedEffect(key1 = Unit) {
-        viewModel.requestAppVersion()
+        viewModel.requestAppVersion(context)
 
         //자동로그인 체크시 로그인.
         if (SharedPreferencesUtil.getClickedAutoLogin(context = context)){
@@ -602,7 +602,7 @@ fun LoginPage(
                                 color = Color(0xFF919191),
                                 modifier = Modifier
                                     .padding(end = 25.dp)
-                                    .clickable(enabled = false) {  }
+                                    .clickable(enabled = false) { }
                             )
                         }
                         UnderlineText(text = "비밀번호 재설정") { navController.navigate("ResetPwPageWithEmail") } //비밀번호 재설정 페이지 이동

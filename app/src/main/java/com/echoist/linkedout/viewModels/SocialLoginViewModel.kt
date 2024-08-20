@@ -6,6 +6,8 @@ import android.app.Activity.RESULT_OK
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import android.os.Bundle
 import android.util.Log
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.result.ActivityResult
@@ -17,6 +19,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
@@ -83,8 +86,6 @@ class SocialLoginViewModel @Inject constructor(
 
     var clickedAutoLogin by  mutableStateOf(false)
 
-
-
     var userId by mutableStateOf("")
     var userPw by mutableStateOf("")
 
@@ -131,25 +132,25 @@ class SocialLoginViewModel @Inject constructor(
                     loginStatusCode = response.code()
                     navController.popBackStack("OnBoarding", false) //onboarding까지 전부 삭제.
 
-                    if (clickedAutoLogin){ //자동로그인 클릭 + 로그인 성공 시 로컬계정 저장
-                        saveLocalAccount(navController.context, SharedPreferencesUtil.LocalAccountInfo(userId, userPw))
-                    }
-                    else{ //자동로그인 클릭x 시 빈 값 저장
-                        saveLocalAccount(navController.context, SharedPreferencesUtil.LocalAccountInfo("", ""))
-                    }
-
-                    if (response.code() == 202) // 탈퇴유저. 정보읽지않고 홈으로이동.
-                    {
-                        Log.d("유저 상태코드", "${response.code()} 탈퇴 신청 유저 입니다. ")
-                        navController.navigate("HOME/${response.code()}")
+                    when{
+                        //자동로그인 클릭 + 로그인 성공 시 로컬계정 저장
+                        clickedAutoLogin -> saveLocalAccount(navController.context, SharedPreferencesUtil.LocalAccountInfo(userId, userPw))
+                        //자동로그인 클릭x 시 빈 값 저장
+                        !clickedAutoLogin -> saveLocalAccount(navController.context, SharedPreferencesUtil.LocalAccountInfo("", ""))
                     }
 
-                    else readMyInfo(navController)// 첫 회원가입 여부 확인하고 화면이동
+                    when(response.code()){
+                        202 -> { // 탈퇴유저. 정보 읽지 않고 홈으로 이동.
+                            Log.d("유저 상태코드", "${response.code()} 탈퇴 신청 유저 입니다. ")
+                            navController.navigate("HOME/${response.code()}")
+                        }
+                        else -> readMyInfo(navController)// 첫 회원가입 여부 확인하고 화면이동
+                    }
+
                 } else {
                     loginStatusCode = response.code()
                     Log.e("login_failed", "$loginStatusCode")
                     Log.e("login_failed", response.message())
-
                 }
 
             } catch (e: Exception) {
@@ -159,7 +160,7 @@ class SocialLoginViewModel @Inject constructor(
         }
     }
     //앱 버전 확인
-    fun requestAppVersion(){
+    fun requestAppVersion(context: Context){
         viewModelScope.launch {
             try {
                 val response = supportApi.requestAppVersion()
@@ -167,13 +168,18 @@ class SocialLoginViewModel @Inject constructor(
                     val currentVersion = BuildConfig.VERSION_NAME
                     val latestVersion = response.body()!!.data.versions.android_mobile
 
-                    //현재 지금은 테스트중. 둘다 1.0.0이다
-
+                    //현재 지금은 테스트중. 둘다 1.0.0
                     if (currentVersion == latestVersion)
                         Log.d("버전 일치 확인", "버전 일치. 최신 버전 : $latestVersion\n현재 버전 : $currentVersion")
-                    else
+                    else{
+                        //버전 불일치 시 플레이 스토어로 이동
                         Log.e("버전 일치 확인", "버전 불일치. 최신 버전 : $latestVersion\n현재 버전 : $currentVersion")
-                    //todo 버전 업데이트 하라는 모달 필요
+                        val playStoreIntent = Intent(Intent.ACTION_VIEW).apply {
+                            data = Uri.parse("https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}")
+                            setPackage("com.android.vending")
+                        }
+                        startActivity(context,playStoreIntent, Bundle.EMPTY)
+                    }
                 }
                 else{
                     Log.e("앱 버전 체크 실패", "${response.code()}")
