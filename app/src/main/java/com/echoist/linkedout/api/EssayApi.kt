@@ -28,6 +28,7 @@ interface EssayApi{
     @POST("api/essays")
     suspend fun writeEssay(
         @Header("Authorization") accessToken: String,
+        @Header("x-refresh-token") refreshToken: String,
         @Body essayData: WritingEssayItem
     ): Response<SingleEssayResponse>
 
@@ -35,6 +36,7 @@ interface EssayApi{
     @PUT("api/essays/{essayId}") //바디로 바꿔야함
     suspend fun modifyEssay(
         @Header("Authorization") accessToken: String,
+        @Header("x-refresh-token") refreshToken: String,
         @Path("essayId") essayId: Int,
         @Body essayData: WritingEssayItem
     ): Response<SingleEssayResponse>
@@ -43,6 +45,7 @@ interface EssayApi{
     @DELETE("api/essays/{essayId}")
     suspend fun deleteEssay(
         @Header("Authorization") accessToken: String,
+        @Header("x-refresh-token") refreshToken: String,
         @Path("essayId") essayId: Int
     ): Response<Unit>
 
@@ -50,6 +53,7 @@ interface EssayApi{
     @Multipart
     suspend fun uploadThumbnail(
         @Header("Authorization") accessToken: String,
+        @Header("x-refresh-token") refreshToken: String,
         @Part image: MultipartBody.Part,
         @Part("essayId") essayId : Int? = null
     ): Response<UserApi.ImageUrlResponse>
@@ -57,6 +61,7 @@ interface EssayApi{
     @GET("api/essays")
     suspend fun readMyEssay(
         @Header("Authorization") accessToken: String,
+        @Header("x-refresh-token") refreshToken: String,
         @Query("published") published: Boolean? = null,
         @Query("storyId") storyId: Int? = null,
         @Query("limit") limit: Int = 100, //이 값은 기본 10 수정가능
@@ -65,18 +70,21 @@ interface EssayApi{
     @GET("api/essays/recommend")
     suspend fun readRandomEssays(
         @Header("Authorization") accessToken: String,
+        @Header("x-refresh-token") refreshToken: String,
         @Query("limit") limit: Int = 20, //이 값은 기본 10 수정가능
     ): Response<EssayListResponse>
 
     @GET("api/essays/followings")
     suspend fun readFollowingEssays(
         @Header("Authorization") accessToken: String,
+        @Header("x-refresh-token") refreshToken: String,
         @Query("limit") limit: Int = 20, //이 값은 기본 10 수정가능
     ): Response<EssayListResponse>
 
     @GET("api/essays/sentence")
     suspend fun readOneSentences(
         @Header("Authorization") accessToken: String,
+        @Header("x-refresh-token") refreshToken: String,
         @Query("type") type : String,
         @Query("limit") limit: Int = 30, //이 값은 기본 10 수정가능
     ): Response<EssayListResponse>
@@ -84,6 +92,7 @@ interface EssayApi{
     @GET("api/essays/{essayId}")
     suspend fun readDetailEssay(
         @Header("Authorization") accessToken: String,
+        @Header("x-refresh-token") refreshToken: String,
         @Path("essayId") essayId: Int = 0,
         @Query("type") type : String,
     ): Response<DetailEssayResponse>
@@ -91,6 +100,7 @@ interface EssayApi{
     @GET("api/essays/recent")
     suspend fun readRecentEssays(
         @Header("Authorization") accessToken: String,
+        @Header("x-refresh-token") refreshToken: String,
         @Query("page") page: Int = 1,
         @Query("limit") limit: Int = 10
 
@@ -99,6 +109,7 @@ interface EssayApi{
     @GET("api/essays/search")
     suspend fun readSearchingEssays(
         @Header("Authorization") accessToken: String,
+        @Header("x-refresh-token") refreshToken: String,
         @Query("keyword") keyword: String,
         @Query("page") page: Int = 1,
         @Query("limit") limit: Int = 10
@@ -112,6 +123,7 @@ interface EssayApi{
     @POST("api/reports/{essayId}")
     suspend fun reportEssay(
         @Header("Authorization") accessToken: String,
+        @Header("x-refresh-token") refreshToken: String,
         @Path("essayId") essayId: Int,
         @Body reason : ReportRequest
     ): Response<Unit>

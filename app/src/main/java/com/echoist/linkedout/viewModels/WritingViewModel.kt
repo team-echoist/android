@@ -18,6 +18,7 @@ import androidx.navigation.NavController
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.page.myLog.Token
+import com.echoist.linkedout.page.myLog.Token.bearerAccessToken
 import com.echoist.linkedout.room.EssayStoreDao
 import com.mohamedrejeb.richeditor.model.RichTextState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -202,13 +203,8 @@ class WritingViewModel @Inject constructor(
                     location = locationText.ifEmpty { null },
                     tags = hashTagList
                 )
-                val response = essayApi.writeEssay(
-                    Token.accessToken,
-                    essayData = essayData
-                )
+                val response = essayApi.writeEssay(bearerAccessToken, Token.refreshToken,essayData = essayData)
                 if (response.isSuccessful) {
-                    accessToken = (response.headers()["authorization"].toString())
-                    Token.accessToken = accessToken
                     exampleItems.detailEssay = response.body()!!.data!!
                     exampleItems.detailEssayBackStack.push(exampleItems.detailEssay)
 
@@ -233,9 +229,9 @@ class WritingViewModel @Inject constructor(
                     navController.navigate("CompletedEssayPage")
                     initialize()
                 } else {
-
-                    Log.e("writeEssayErr", "writeEssayErr: ${response.code()}", )
-                    Log.e("writeEssayErr", "writeEssayErr: ${Token.accessToken}", )
+                    Log.e("에세이 작성 에러", "${response.code()}", )
+                    Log.e("에러 헤더 엑세스 토큰", Token.accessToken, )
+                    Log.e("에러 헤더 리프레시 토큰", Token.refreshToken, )
 
                 }
 
@@ -266,13 +262,9 @@ class WritingViewModel @Inject constructor(
                     tags = hashTagList
                 )
                 Log.d(TAG, "modifyEssay: $modifyEssayid")
-                val response = essayApi.modifyEssay( Token.accessToken, modifyEssayid, essayData = essayData)
+                val response = essayApi.modifyEssay(bearerAccessToken,Token.refreshToken, modifyEssayid, essayData = essayData)
                 if (response.isSuccessful){
                     Log.e("수정 성공", "수정 성공!: ${response.code()}", )
-
-                     accessToken = (response.headers()["authorization"].toString())
-                    Token.accessToken = accessToken
-
 
                     navController.navigate("HOME/200")
                     navController.popBackStack("OnBoarding", false) //onboarding까지 전부 삭제.
@@ -326,7 +318,7 @@ class WritingViewModel @Inject constructor(
                 val body = MultipartBody.Part.createFormData("image", file.name, requestFile)
 
                 // 서버로 업로드 요청 보내기
-                val response = essayApi.uploadThumbnail(Token.accessToken, body, exampleItems.detailEssay.id)
+                val response = essayApi.uploadThumbnail(bearerAccessToken,Token.refreshToken, body, exampleItems.detailEssay.id)
 
                 if (response.isSuccessful){
                     imageUrl = response.body()!!.data.imageUrl

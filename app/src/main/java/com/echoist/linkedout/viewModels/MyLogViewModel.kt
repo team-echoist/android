@@ -22,6 +22,7 @@ import com.echoist.linkedout.data.RelatedEssayResponse
 import com.echoist.linkedout.data.Story
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.myLog.Token
+import com.echoist.linkedout.page.myLog.Token.bearerAccessToken
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import retrofit2.Response
@@ -137,11 +138,11 @@ class MyLogViewModel @Inject constructor(
             _isLoading.emit(true)
 
             try {
-                val response = essayApi.readMyEssay(accessToken = Token.accessToken, published = true)
+                val response = essayApi.readMyEssay(accessToken = bearerAccessToken, Token.refreshToken,published = true)
                 Log.d("essaylist data", response.body()!!.path + response.body()!!.data)
 
                 if (response.isSuccessful) {
-                    Token.accessToken = (response.headers()["authorization"].toString())
+                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
 
                     response.body()!!.data.essays.forEach { essay ->
                         // publishedEssayList에 이미 해당 essay가 존재하는지 확인
@@ -180,12 +181,12 @@ class MyLogViewModel @Inject constructor(
             _isLoading.emit(true)
 
             try {
-                val response = essayApi.readMyEssay(accessToken = Token.accessToken, published = false)
+                val response = essayApi.readMyEssay(accessToken = bearerAccessToken,Token.refreshToken, published = false)
                 Log.d("essaylist data", response.body()!!.path + response.body()!!.data)
 
                 if (response.isSuccessful) {
                     Log.d("TAG", "readMyEssay: ${response.body()!!.data.essays}")
-                    Token.accessToken = (response.headers()["authorization"].toString())
+                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
 
 
                     response.body()!!.data.essays.forEach { essay ->
@@ -219,10 +220,10 @@ class MyLogViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val item = exampleItems.detailEssay.toWritingEssayItem().copy(status = "published")
-                val response = essayApi.modifyEssay(Token.accessToken,exampleItems.detailEssay.id!!,item)
+                val response = essayApi.modifyEssay(bearerAccessToken,Token.refreshToken,exampleItems.detailEssay.id!!,item)
                 if (response.isSuccessful){
                     isActionClicked = false
-                    Token.accessToken = (response.headers()["authorization"].toString())
+                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                     navController.navigate("MYLOG/0")
                 }
             } catch (e: Exception) {
@@ -234,10 +235,10 @@ class MyLogViewModel @Inject constructor(
             viewModelScope.launch {
                 try {
                     val item = exampleItems.detailEssay.toWritingEssayItem().copy(status = "linkedout")
-                    val response = essayApi.modifyEssay(Token.accessToken,exampleItems.detailEssay.id!!,item)
+                    val response = essayApi.modifyEssay(bearerAccessToken,Token.refreshToken,exampleItems.detailEssay.id!!,item)
                     if (response.isSuccessful){
                         isActionClicked = false
-                        Token.accessToken = (response.headers()["authorization"].toString())
+                                            Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                         navController.navigate("MYLOG/0")
                     }
                 } catch (e: Exception) {
@@ -249,14 +250,14 @@ class MyLogViewModel @Inject constructor(
     fun deleteEssay(navController: NavController,id: Int) {
         viewModelScope.launch {
             try {
-                val response = essayApi.deleteEssay(Token.accessToken, id)
+                val response = essayApi.deleteEssay(bearerAccessToken,Token.refreshToken, id)
 
                 Log.d("writeEssayApiSuccess2", "writeEssayApiSuccess: ${response.isSuccessful}")
                 Log.d("writeEssayApiFailed", "deleteEssaytoken: ${Token.accessToken}")
 
 
                 if (response.isSuccessful) {
-                    Token.accessToken = (response.headers()["authorization"].toString())
+                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                     Log.e("writeEssayApiSuccess", "${response.code()}")
                     isActionClicked = false
                     navController.navigate("MYLOG/0") {
@@ -275,10 +276,10 @@ class MyLogViewModel @Inject constructor(
     fun readMyStory() {
         viewModelScope.launch {
             try {
-                val response = storyApi.readMyStories(accessToken = Token.accessToken)
+                val response = storyApi.readMyStories(accessToken = bearerAccessToken,Token.refreshToken)
 
                 if (response.isSuccessful) {
-                    Token.accessToken = (response.headers()["authorization"].toString())
+                    Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                     storyList = response.body()!!.data.stories.toMutableStateList()
 
                     Log.e("writeEssayApiSuccess", "${response.headers()}")
@@ -300,9 +301,9 @@ class MyLogViewModel @Inject constructor(
     fun deleteMyStory(storyId: Int, navController: NavController) {
         viewModelScope.launch {
             try {
-                val response = storyApi.deleteStory(Token.accessToken, storyId)
+                val response = storyApi.deleteStory(bearerAccessToken,Token.refreshToken,storyId)
                 if (response.isSuccessful) {
-                    Token.accessToken = (response.headers()["authorization"].toString())
+                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                     navController.navigate("MYLOG/2")
 
                     Log.e("writeEssayApiSuccess", "${response.headers()}")
@@ -326,10 +327,10 @@ class MyLogViewModel @Inject constructor(
             try {
                 val storyData = StoryApi.StoryData(storyTextFieldTitle,essayidList)
 
-                val response = storyApi.createStory(Token.accessToken,storyData)
+                val response = storyApi.createStory(bearerAccessToken,Token.refreshToken,storyData)
 
                 if (response.isSuccessful) {
-                    Token.accessToken = (response.headers()["authorization"].toString())
+                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                     navController.navigate("MYLOG/2")
                     storyTextFieldTitle = ""
                     essayIdList.clear()
@@ -356,10 +357,10 @@ class MyLogViewModel @Inject constructor(
             try {
                 val storyData = StoryApi.StoryData(storyTextFieldTitle,essayidList)
 
-                val response = storyApi.modifyStory(Token.accessToken,getSelectedStory().id!!,storyData)
+                val response = storyApi.modifyStory(bearerAccessToken,Token.refreshToken,getSelectedStory().id!!,storyData)
 
                 if (response.isSuccessful) {
-                    Token.accessToken = (response.headers()["authorization"].toString())
+                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                     Log.d("스토리 수정 성공", "스토리 이름 - ${getSelectedStory().name}")
                     Log.d("스토리 수정 성공", "수정할 스토리 제목 - $storyTextFieldTitle")
                     Log.d("스토리 수정 성공", "수정할 에세이 id 리스트 - $essayIdList")
@@ -388,10 +389,10 @@ class MyLogViewModel @Inject constructor(
         viewModelScope.launch {
             try {
 
-                val response = storyApi.modifyEssayInStory(Token.accessToken,detailEssay.id!!,getSelectedStory().id!!)
+                val response = storyApi.modifyEssayInStory(bearerAccessToken,Token.refreshToken,detailEssay.id!!,getSelectedStory().id!!)
 
                 if (response.isSuccessful) {
-                    Token.accessToken = (response.headers()["authorization"].toString())
+                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                     isActionClicked = false
                     navController.navigate("MYLOG/0")
 
@@ -416,10 +417,10 @@ class MyLogViewModel @Inject constructor(
         viewModelScope.launch {
             try {
 
-                val response = storyApi.deleteEssayInStory(Token.accessToken,detailEssay.id!!)
+                val response = storyApi.deleteEssayInStory(bearerAccessToken,Token.refreshToken,detailEssay.id!!)
 
                 if (response.isSuccessful) {
-                    Token.accessToken = (response.headers()["authorization"].toString())
+                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                     isActionClicked = false
                     navController.navigate("MYLOG/2")
                     storyTextFieldTitle = ""
@@ -445,7 +446,7 @@ class MyLogViewModel @Inject constructor(
     override fun readDetailEssay(id: Int, navController: NavController,type: String) {
         viewModelScope.launch {
             try {
-                val response = essayApi.readDetailEssay(Token.accessToken,id,type = type)
+                val response = essayApi.readDetailEssay(bearerAccessToken,Token.refreshToken,id,type = type)
                 exampleItems.detailEssay = response.body()!!.data.essay
                 detailEssay = exampleItems.detailEssay
                 Log.d(TAG, "readdetailEssay: 성공인데요${response.body()!!.data}")
@@ -476,7 +477,7 @@ class MyLogViewModel @Inject constructor(
     fun readDetailEssayInStory(id: Int, navController: NavController,number : Int,type: String) {
         viewModelScope.launch {
             try {
-                val response = essayApi.readDetailEssay(Token.accessToken,id, type)
+                val response = essayApi.readDetailEssay(bearerAccessToken,Token.refreshToken,id, type)
                 exampleItems.detailEssay = response.body()!!.data.essay
                 detailEssay = exampleItems.detailEssay
                 Log.d(TAG, "readdetailEssay: 성공인데요${response.body()!!.data}")
@@ -509,14 +510,14 @@ class MyLogViewModel @Inject constructor(
                 var response : Response<RelatedEssayResponse>? = null
                 Log.d(TAG, "readStoryEssayList: ${getSelectedStory().name},${getSelectedStory().id}")
                 response = if (!isCreateStory) { //스토리 편집하기를 누른경우 selectedStory가 존재할것.
-                    storyApi.readStoryEssayList(Token.accessToken, getSelectedStory().id,limit = limit)
+                    storyApi.readStoryEssayList(bearerAccessToken,Token.refreshToken, getSelectedStory().id,limit = limit)
                 } else{
-                    storyApi.readStoryEssayList(Token.accessToken, limit=limit)
+                    storyApi.readStoryEssayList(bearerAccessToken,Token.refreshToken, limit=limit)
                 }
 
                 if (response.isSuccessful) {
+                    Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
 
-                    Token.accessToken = response.headers()["authorization"].toString()
                     Log.d(TAG, "readStoryEssayList: ${getSelectedStory()}")
 
                     //스토리 생성을 누른경우
@@ -548,11 +549,11 @@ class MyLogViewModel @Inject constructor(
     fun readEssayListInStory(){
         viewModelScope.launch {
             try {
-                var response = essayApi.readMyEssay(Token.accessToken, storyId = getSelectedStory().id!!)
+                var response = essayApi.readMyEssay(bearerAccessToken,Token.refreshToken, storyId = getSelectedStory().id!!)
 
                 if (response.isSuccessful) {
+                    Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
 
-                    Token.accessToken = response.headers()["authorization"].toString()
                     essayListInStroy = response.body()!!.data.essays.toMutableStateList()
 
                 } else {
@@ -572,7 +573,7 @@ class MyLogViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                val response = supportApi.readUnreadAlerts(Token.accessToken)
+                val response = supportApi.readUnreadAlerts(bearerAccessToken,Token.refreshToken)
                 if (response.isSuccessful){
                     isExistUnreadAlerts =
                         response.body()!!.data

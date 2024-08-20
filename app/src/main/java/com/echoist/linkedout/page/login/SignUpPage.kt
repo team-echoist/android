@@ -1,5 +1,6 @@
 package com.echoist.linkedout.page.login
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
@@ -48,6 +49,7 @@ import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -82,6 +84,8 @@ fun SignUpPage(
     navController: NavController,
     viewModel: SignUpViewModel
 ) {
+
+    var authentiCode : MutableList<Int> = mutableListOf()
 
     val passwordFocusRequester = remember { FocusRequester() }
 
@@ -120,9 +124,12 @@ fun SignUpPage(
                 Box{
                     Authentication_6_BottomModal(
                         { viewModel.getUserEmailCheck(viewModel.userEmail, navController) }, //재요청 인증
-                        isError = false,
-                        isTypedLastNumber = {
+                        isError = viewModel.isErr,
+                        isTypedLastNumber = { list->
+                            viewModel.requestRegister("")
                             keyboardController?.hide()
+                            Log.d("6자리 코드 ", list.joinToString(""))
+                            viewModel.requestRegister(list.joinToString(""))
                         }
                     )
                     if (viewModel.isLoading) {
@@ -469,15 +476,24 @@ fun SendSignUpFinishedAlert(isClicked : ()->Unit,text1 : String, text2 : String)
     }
 }
 @Composable
-fun Authentication_6_BottomModal(reAuthentication : ()->Unit, isError: Boolean,isTypedLastNumber : ()->Unit) {
+fun Authentication_6_BottomModal(
+    reAuthentication: () -> Unit,
+    isError: Boolean,
+    isTypedLastNumber: (List<String>) -> Unit,
+) {
+    // MutableStateList로 6자리 입력 값을 저장
+    val codeDigits = remember { mutableStateListOf("", "", "", "", "", "") }
+
     val focusRequesters = List(6) { FocusRequester() }
 
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
-        .imePadding()
-        .padding(bottom = 20.dp)
-        .navigationBarsPadding()) {
-        Column(modifier = Modifier
-            .padding(horizontal = 20.dp)) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .imePadding()
+            .padding(bottom = 20.dp)
+            .navigationBarsPadding()
+    ) {
+        Column(modifier = Modifier.padding(horizontal = 20.dp)) {
             Spacer(modifier = Modifier.height(37.dp))
             Text(text = "인증번호 입력하기", fontSize = 20.sp, color = Color.White)
             Spacer(modifier = Modifier.height(6.dp))
@@ -487,28 +503,36 @@ fun Authentication_6_BottomModal(reAuthentication : ()->Unit, isError: Boolean,i
             )
             Spacer(modifier = Modifier.height(41.dp))
 
-            Row (Modifier.horizontalScroll(rememberScrollState())){
+            Row(Modifier.horizontalScroll(rememberScrollState())) {
                 (0..5).forEach { index ->
                     Authentication_TextField(
+                        text = codeDigits[index], // 해당 인덱스의 값을 전달
+                        onValueChange = { newValue ->
+                            codeDigits[index] = newValue
+                        },
                         focusRequester = focusRequesters[index],
                         onNextFocus = {
                             if (index < focusRequesters.size - 1) {
                                 focusRequesters[index + 1].requestFocus()
                             }
-                            if (index == 5){ //todo 마지막 인증번호를 입력했을 경우 액션
-                                isTypedLastNumber()
+                            if (index == 5) { // 마지막 인증번호를 입력했을 경우 액션
+                                isTypedLastNumber(codeDigits)
                             }
-                        }
-                    ,isError)
+                        },
+                        isError = isError
+                    )
                     if (index < 5) {
                         Spacer(modifier = Modifier.width(7.dp))
                     }
                 }
             }
-            if (isError){
+            if (isError) {
                 Spacer(modifier = Modifier.height(16.dp))
-                Text(text = "*인증번호를 잘못 입력하셨습니다.", color = Color(0xFFE43446), fontSize = 12.sp)
-                
+                Text(
+                    text = "*인증번호를 잘못 입력하셨습니다.",
+                    color = Color(0xFFE43446),
+                    fontSize = 12.sp
+                )
             }
             Spacer(modifier = Modifier.height(56.dp))
         }
@@ -538,20 +562,21 @@ fun Authentication_6_BottomModal(reAuthentication : ()->Unit, isError: Boolean,i
     }
 }
 
+
 @Composable
 fun Authentication_TextField(
+    text: String,
+    onValueChange: (String) -> Unit,
     focusRequester: FocusRequester,
     onNextFocus: () -> Unit,
     isError: Boolean
 ) {
-    var text by remember { mutableStateOf("") }
-
     OutlinedTextField(
         value = text,
         onValueChange = {
             if (it.length <= 1) {
-                text = it
-                if (text.isNotEmpty()) {
+                onValueChange(it) // 상위 컴포저블로 값 전달
+                if (it.isNotEmpty()) {
                     onNextFocus()
                 }
             }
@@ -566,10 +591,11 @@ fun Authentication_TextField(
             unfocusedContainerColor = Color(0xFF252525),
             focusedContainerColor = Color(0xFF252525),
             errorBorderColor = Color(0xFFE43446),
-            unfocusedBorderColor = if (text.isNotEmpty()&& !isError) LinkedInColor else Color.Transparent,
+            unfocusedBorderColor = if (text.isNotEmpty() && !isError) LinkedInColor else Color.Transparent,
             focusedBorderColor = LinkedInColor
         ),
         singleLine = true,
         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
     )
 }
+

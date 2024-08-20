@@ -115,7 +115,15 @@ import kotlinx.coroutines.delay
 
 object Token {
     var accessToken: String = "EMPTYTOKEN"
+        set(value) {
+            field = value
+            bearerAccessToken = "Bearer $value"
+        }
+    var bearerAccessToken: String = "Bearer $accessToken"
+        private set // 외부에서 직접 설정할 수 없도록 private으로 설정
+    var refreshToken: String = "EMPTYTOKEN"
 }
+
 
 @Preview
 @Composable

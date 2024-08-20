@@ -497,13 +497,22 @@ fun LoginPage(
     val keyboardController = LocalSoftwareKeyboardController.current
     val scrollState = rememberScrollState()
     Log.d("현재 사용중인 안드로이드 앱 버전", BuildConfig.VERSION_NAME)
-    viewModel.clickedAutoLogin = SharedPreferencesUtil.getClickedAutoLogin(LocalContext.current)
+    val context = LocalContext.current
+    viewModel.clickedAutoLogin = SharedPreferencesUtil.getClickedAutoLogin(context)
 
     //앱버전 체크 후 최신버전 아닌경우 마켓업데이트.
     LaunchedEffect(key1 = Unit) {
         viewModel.requestAppVersion()
+
+        //자동로그인 체크시 로그인.
+        if (SharedPreferencesUtil.getClickedAutoLogin(context = context)){
+            viewModel.userId = SharedPreferencesUtil.getLocalAccountInfo(context).id
+            viewModel.userPw = SharedPreferencesUtil.getLocalAccountInfo(context).pw
+            viewModel.login(navController)
+        }
     }
 
+    //로그인 상태코드로 인한 에러처리.
     LaunchedEffect(key1 = viewModel.loginStatusCode) {
         delay(1000)
         viewModel.loginStatusCode = 200

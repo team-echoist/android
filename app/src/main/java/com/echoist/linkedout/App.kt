@@ -33,6 +33,7 @@ class App : Application() {
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
+
     @Provides
     @Singleton
     fun provideRetrofit() : Retrofit{
@@ -40,8 +41,17 @@ object AppModule {
             .addLast(KotlinJsonAdapterFactory())
             .build()
 
+//        val logging = HttpLoggingInterceptor()
+//        logging.setLevel(HttpLoggingInterceptor.Level.BODY) // BODY는 요청과 응답의 모든 정보를 로그로 남깁니다.
+//
+//        // OkHttpClient에 인터셉터를 추가
+//        val httpClient = OkHttpClient.Builder()
+//            .addInterceptor(logging)
+//            .build()
+
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
+            //.client(httpClient) //로그 확인가능한 클라이언트 추가
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
     }

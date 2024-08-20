@@ -29,6 +29,7 @@ import com.echoist.linkedout.data.NotificationSettings
 import com.echoist.linkedout.data.Release
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.myLog.Token
+import com.echoist.linkedout.page.myLog.Token.bearerAccessToken
 import com.google.firebase.messaging.FirebaseMessaging
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -76,7 +77,8 @@ class HomeViewModel @Inject constructor(
     suspend fun requestMyInfo(){
         try {
 
-            val response = userApi.getMyInfo(Token.accessToken)
+            val response = userApi.getMyInfo(bearerAccessToken,Token.refreshToken)
+
             Log.d("헤더 토큰", Token.accessToken)
             exampleItems.myProfile = response.data.user
             exampleItems.myProfile.essayStats = response.data.essayStats
@@ -131,7 +133,7 @@ class HomeViewModel @Inject constructor(
                 val body = SignUpApiImpl.RegisterDeviceRequest(ssaid, token)
                 viewModelScope.launch {
                     try {
-                        supportApi.requestRegisterDevice(Token.accessToken, body)
+                        supportApi.requestRegisterDevice(bearerAccessToken,Token.refreshToken, body)
                         Log.i("FCM Token", "ssaid 값 : $ssaid \n FCM token 값 : $token")
 
                     } catch (e: Exception) {
@@ -154,7 +156,7 @@ class HomeViewModel @Inject constructor(
     fun readUserNotification() {
         viewModelScope.launch {
             try {
-                val response = supportApi.readUserNotification(Token.accessToken)
+                val response = supportApi.readUserNotification(bearerAccessToken,Token.refreshToken)
                 Log.d(TAG, "readUserNotification: ${response.body()?.data!!}")
 
                 if (response.isSuccessful) {
@@ -187,11 +189,11 @@ class HomeViewModel @Inject constructor(
         val body = NotificationSettings(viewedNotification, reportNotification,marketingNotification)
         viewModelScope.launch {
             try {
-                supportApi.updateUserNotification(Token.accessToken,  body)
+                supportApi.updateUserNotification(bearerAccessToken,Token.refreshToken,  body)
                 Log.d(TAG, "updateUserNotification success: $body")
 
                     val userInfo = UserInfo(locationConsent = locationAgreement)
-                    val response = userApi.userUpdate(Token.accessToken,userInfo)
+                    val response = userApi.userUpdate(bearerAccessToken,Token.refreshToken,userInfo)
                     Log.d(TAG, "위치서비스 동의 저장 성공: ${response.code()}")
                     Log.d(TAG, "위치서비스 동의 저장 성공: $locationNotification")
 
@@ -291,7 +293,7 @@ class HomeViewModel @Inject constructor(
     fun requestLatestNotice(){
         viewModelScope.launch {
             try {
-                val response = supportApi.requestLatestNotice(Token.accessToken)
+                val response = supportApi.requestLatestNotice(bearerAccessToken,Token.refreshToken)
                 if (response.isSuccessful){
                     //공지가 있을경우 true, 없을경우 Null
                     latestNoticeId = response.body()!!.data.newNotice
@@ -313,10 +315,13 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 isLoading = true
-                val response = supportApi.readUpdatedHistories(Token.accessToken)
+                val response = supportApi.readUpdatedHistories(bearerAccessToken,Token.refreshToken)
                 if (response.isSuccessful){
                     updateHistory = response.body()!!.data.releases.toMutableStateList()
-                    Token.accessToken = (response.headers()["authorization"].toString())
+
+                    //empty라면 가져오지않음. not empty라면 token으로, null이라면 이전 token.accesstoken값으로
+                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+
 
                 }
             }catch (e:Exception){
@@ -335,7 +340,7 @@ class HomeViewModel @Inject constructor(
     fun requestUserGraphSummaryResponse(){
         viewModelScope.launch {
             try {
-                val response = userApi.requestUserGraphSummary(Token.accessToken)
+                val response = userApi.requestUserGraphSummary(bearerAccessToken,Token.refreshToken)
                 if (response.isSuccessful){
 
                     repeat(5){
@@ -355,7 +360,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val isNotFirst = UserInfo(isFirst = false)
-                val response = userApi.userUpdate(Token.accessToken,isNotFirst)
+                val response = userApi.userUpdate(Token.accessToken,Token.refreshToken,isNotFirst)
                 Log.d(TAG, "setFirstUserToExistUser: ${response.code()} ${isNotFirst.isFirst}")
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -371,7 +376,7 @@ class HomeViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                val response = supportApi.readUnreadAlerts(Token.accessToken)
+                val response = supportApi.readUnreadAlerts(bearerAccessToken,Token.refreshToken)
                 if (response.isSuccessful){
                     isExistUnreadAlerts =
                         response.body()!!.data
@@ -388,7 +393,7 @@ class HomeViewModel @Inject constructor(
     fun requestGuleRoquis(){
         viewModelScope.launch {
             try {
-                val response = supportApi.readGeulroquis(Token.accessToken)
+                val response = supportApi.readGeulroquis(bearerAccessToken,Token.refreshToken)
                 if (response.isSuccessful){
                     Log.d("글로키 api", "성공: ${response.body()!!.data.url}")
                     geulRoquisUrl = response.body()!!.data.url
@@ -408,7 +413,7 @@ class HomeViewModel @Inject constructor(
     fun requestUserReActivate(){
         viewModelScope.launch {
             try {
-                val response = userApi.requestReactivate(Token.accessToken)
+                val response = userApi.requestReactivate(bearerAccessToken,Token.refreshToken)
                 if (response.isSuccessful){
                     Log.d("유저 탈퇴 취소", "성공: ${response.body()}")
                 }
@@ -425,7 +430,7 @@ class HomeViewModel @Inject constructor(
     fun requestUserDelete(navController: NavController){
         viewModelScope.launch {
             try {
-                val response = userApi.requestDeleteUser(Token.accessToken)
+                val response = userApi.requestDeleteUser(bearerAccessToken,Token.refreshToken)
                 if (response.isSuccessful){
                     Log.d("유저 즉시 탈퇴", "성공: ${response.body()}")
                     navController.popBackStack(Routes.OnBoarding,false)
@@ -445,9 +450,9 @@ class HomeViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                val response = supportApi.readNoticeDetail(Token.accessToken,noticeId)
+                val response = supportApi.readNoticeDetail(Token.accessToken,Token.refreshToken,noticeId)
                 if (response.isSuccessful){
-                    Token.accessToken = (response.headers()["authorization"].toString())
+                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                     Log.d("공지사항 디테일 확인", "성공 공지 내용 : ${response.body()!!.data.content}")
 
                     val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()

@@ -30,6 +30,7 @@ import com.echoist.linkedout.api.SupportApi
 import com.echoist.linkedout.api.UserApi
 import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.page.myLog.Token
+import com.echoist.linkedout.page.myLog.Token.bearerAccessToken
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -88,9 +89,11 @@ class SocialLoginViewModel @Inject constructor(
     var userPw by mutableStateOf("")
 
     private suspend fun readMyInfo(navController: NavController){
-        try {
 
-            val response = userApi.getMyInfo(Token.accessToken)
+        try {
+            Log.d("헤더 토큰 여부", Token.accessToken)
+            val response = userApi.getMyInfo(bearerAccessToken,Token.refreshToken)
+
             Log.d(TAG, "readMyInfo: suc1")
             Log.d("헤더 토큰", Token.accessToken)
             Log.i("본인 유저 정보 + 에세이", "readMyInfo: ${response.data.user}")
@@ -107,10 +110,8 @@ class SocialLoginViewModel @Inject constructor(
                 navController.navigate("${Routes.Home}/200")
             }
         }catch (e: Exception){
-            Log.d(TAG, "readMyInfo: error err")
+            Log.e("내 정보 요청 에러", "readMyInfo: error")
             e.printStackTrace()
-            Log.d(TAG, e.message.toString())
-            Log.d(TAG, e.cause.toString())
         }
     }
 
@@ -123,8 +124,10 @@ class SocialLoginViewModel @Inject constructor(
                 val response = signUpApi.login(userAccount)
 
                 if (response.isSuccessful) {
-                    Log.i("server header token", response.headers()["authorization"].toString())
-                    Token.accessToken = (response.headers()["authorization"].toString())
+                    Log.d("유저 상태코드", "${response.code()}")
+                    Token.accessToken = response.body()!!.data.accessToken
+                    Token.refreshToken = response.body()!!.data.refreshToken
+
                     loginStatusCode = response.code()
                     navController.popBackStack("OnBoarding", false) //onboarding까지 전부 삭제.
 
@@ -133,11 +136,13 @@ class SocialLoginViewModel @Inject constructor(
                     }
                     else{ //자동로그인 클릭x 시 빈 값 저장
                         saveLocalAccount(navController.context, SharedPreferencesUtil.LocalAccountInfo("", ""))
-
                     }
 
-                    if (response.code() == 202) // 탈퇴유저. 첫유저일리 없고 정보읽지않고 홈으로이동.
+                    if (response.code() == 202) // 탈퇴유저. 정보읽지않고 홈으로이동.
+                    {
+                        Log.d("유저 상태코드", "${response.code()} 탈퇴 신청 유저 입니다. ")
                         navController.navigate("HOME/${response.code()}")
+                    }
 
                     else readMyInfo(navController)// 첫 회원가입 여부 확인하고 화면이동
                 } else {
@@ -185,7 +190,6 @@ class SocialLoginViewModel @Inject constructor(
     ) {
         isSocialLoginLoading = true
         val token = BuildConfig.google_native_api_key //토큰값 -> local.properties 통해 git ignore
-        Token.accessToken = token
         // Google 로그인을 구성합니다.
         val gso = GoogleSignInOptions
             .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -242,8 +246,12 @@ class SocialLoginViewModel @Inject constructor(
                 val response = socialSignUpApi.requestGoogleLogin(userAccount)
 
                 if (response.isSuccessful) {
-                    Token.accessToken = (response.headers()["authorization"].toString())
-                    Log.i("server header token(구글)", Token.accessToken)
+                    Token.accessToken = response.body()!!.data.accessToken
+                    Token.refreshToken = response.body()!!.data.refreshToken
+
+                    Log.i("server header access token(구글)", Token.accessToken)
+                    Log.i("server refresh token(구글)", Token.refreshToken)
+
                     Log.d("응답코드로 탈퇴/밴 사용자 여부파악 202 -> 탈퇴신청유저 ", response.code().toString())
                     loginStatusCode = response.code()
                     if (response.code() == 202) // 탈퇴유저. 첫유저일리 없고 정보읽지않고 홈으로이동.
@@ -338,8 +346,13 @@ class SocialLoginViewModel @Inject constructor(
                 val response = socialSignUpApi.requestKakaoLogin(userAccount)
 
                 if (response.isSuccessful) {
-                    Log.i("server header token(카카오)", response.headers()["authorization"].toString())
-                    Token.accessToken = (response.headers()["authorization"].toString())
+
+                    Token.accessToken = response.body()!!.data.accessToken
+                    Token.refreshToken = response.body()!!.data.refreshToken
+
+                    Log.i("server header access token(카카오)", Token.accessToken)
+                    Log.i("server refresh token(카카오)", Token.refreshToken)
+
                     Log.d(TAG, "requestKakaoLogin: ${response.code()}")
                     loginStatusCode = response.code()
 
@@ -463,10 +476,10 @@ class SocialLoginViewModel @Inject constructor(
                 val response = socialSignUpApi.requestNaverLogin(userAccount)
 
                 if (response.isSuccessful) {
-                    Log.d(TAG, "requestNaverLogin: 로그인 성공")
-                    Log.i("server header token(네이버)", response.headers()["authorization"].toString())
-                    Token.accessToken = (response.headers()["authorization"].toString())
-                    Log.d(TAG, "requestNaverLogin: ${response.code()}")
+                    Token.accessToken = response.body()!!.data.accessToken
+                    Token.refreshToken = response.body()!!.data.refreshToken
+                    Log.i("server header access token(네이버)", Token.accessToken)
+                    Log.i("server refresh token(네이버)", Token.refreshToken)
                     loginStatusCode = response.code()
 
                     if (response.code() == 202) // 탈퇴유저. 첫유저일리 없고 정보읽지않고 홈으로이동.
@@ -568,13 +581,16 @@ class SocialLoginViewModel @Inject constructor(
 
                 if (response.isSuccessful) {
                     Log.d(TAG, "requestAppleLogin: 로그인 성공")
-                    Log.i("server header token(애플)", response.headers()["authorization"].toString())
-                    Token.accessToken = (response.headers()["authorization"].toString())
+                    Token.accessToken = response.body()!!.data.accessToken
+                    Token.refreshToken = response.body()!!.data.refreshToken
+
+                    Log.i("server header access token(애플)", Token.accessToken)
+                    Log.i("server refresh token(애플)", Token.refreshToken)
+
                     Log.d(TAG, "requestAppleLogin: ${response.code()}")
                     loginStatusCode = response.code()
                     if (response.code() == 202) // 탈퇴유저. 첫유저일리 없고 정보읽지않고 홈으로이동.
                         navController.navigate("HOME/${response.code()}")
-
 
                     else readMyInfo(navController)// 첫 회원가입 여부 확인하고 화면이동
 

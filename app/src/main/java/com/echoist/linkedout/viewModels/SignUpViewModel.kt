@@ -17,8 +17,10 @@ import com.echoist.linkedout.api.SupportApi
 import com.echoist.linkedout.api.UserApi
 import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.data.NotificationSettings
+import com.echoist.linkedout.data.RegisterCode
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.myLog.Token
+import com.echoist.linkedout.page.myLog.Token.bearerAccessToken
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -57,7 +59,8 @@ class SignUpViewModel @Inject constructor(
 
     private suspend fun readMyInfo(){
         try {
-            val response = userApi.getMyInfo(Token.accessToken)
+            val response = userApi.getMyInfo(bearerAccessToken,Token.refreshToken)
+
             exampleItems.myProfile = response.data.user
             exampleItems.myProfile.essayStats = response.data.essayStats
 
@@ -100,6 +103,32 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
+    fun requestRegister(code : String){ //6자리 코드
+        viewModelScope.launch {
+            isLoading = true
+            try {
+                val registerCode = RegisterCode(code)
+                val response = signUpApi.requestRegister(registerCode)
+                Log.d("6자리 요청 코드", code)
+
+                if (response.isSuccessful) {
+                    Token.accessToken = response.body()!!.data.accessToken
+                    Token.refreshToken = response.body()!!.data.refreshToken
+                } else {
+                    isErr = true
+                    Log.e("회원가입 요청 실패", "Failed: ${response.code()}")
+                }
+
+            } catch (e: Exception) {
+                isErr = true
+                // api 요청 실패
+                Log.e("회원가입 요청 실패", "Failed: ${e.printStackTrace()}")
+
+            }
+            finally { isLoading = false }
+        }
+    }
+
 
     //이메일 중복검사 2차
     private suspend fun emailVerify(navController: NavController) { //코루틴스코프에서 순차적으로 수행된다. 뷰모델스코프는 위에걸로
@@ -120,7 +149,7 @@ class SignUpViewModel @Inject constructor(
                 isSignUpApiFinished = true
 
                 Log.d("tokentoken", response.headers()["authorization"].toString())
-                Token.accessToken = (response.headers()["authorization"].toString())
+                                    Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
             } else {
                 isErr = true
                 Log.e("authApiFailed2", "Failed : ${response.headers()}")
@@ -147,13 +176,13 @@ class SignUpViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val userEmail = SignUpApi.EmailRequest(email)
-                val response = signUpApi.sendEmailVerificationForChange(Token.accessToken,userEmail)
+                val response = signUpApi.sendEmailVerificationForChange(bearerAccessToken,Token.refreshToken,userEmail)
 
                 if (response.isSuccessful) {
                     Log.e("authApiSuccess2", "${response.headers()}")
                     Log.e("authApiSuccess2", "${response.code()}")
 
-                    Token.accessToken = (response.headers()["authorization"].toString())
+                    Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                     //todo 회원가입 비밀번호 특수문자 대소문자 필요한거 Ui 변경해야함. 그리고 확인로딩시 대기표시 띄워줘야함.
                     readMyInfo()
                     isSendEmailVerifyApiFinished = true
@@ -179,13 +208,13 @@ class SignUpViewModel @Inject constructor(
         viewModelScope.launch {
             isLoading = true
             val userEmail = SignUpApi.EmailRequest(email)
-            val response = signUpApi.requestChangePw(Token.accessToken,userEmail)
+            val response = signUpApi.requestChangePw(bearerAccessToken,Token.refreshToken,userEmail)
 
             if (response.code() == 201) { //성공
                 Log.d("requestChangePw api header", "${response.headers()}")
                 Log.d("requestChangePw api code", "${response.code()}")
                 //헤더에 토큰이 없다.
-                //Token.accessToken = (response.headers()["authorization"].toString())
+                //                    Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                 isSendEmailVerifyApiFinished = true
 
 
@@ -204,7 +233,7 @@ class SignUpViewModel @Inject constructor(
     fun verifyChangePw(token : String,newPw: String){
         viewModelScope.launch {
 
-            val response = signUpApi.verifyChangePw(Token.accessToken,token)
+            val response = signUpApi.verifyChangePw(bearerAccessToken,Token.refreshToken,token)
 
             if (response.code() == 304) { //성공
                 Log.e("authApiSuccess2", "${response.headers()}")
@@ -227,7 +256,7 @@ class SignUpViewModel @Inject constructor(
     {
 
             val body = SignUpApi.ResetPwRequest(newPw,token)
-            val response = signUpApi.resetPw(Token.accessToken,body)
+            val response = signUpApi.resetPw(bearerAccessToken,Token.refreshToken,body)
 
             if (response.code() == 200) { //성공
                 Log.e("authApiSuccess2", "${response.headers()}")
@@ -267,7 +296,7 @@ class SignUpViewModel @Inject constructor(
                 Log.d("위치서비스 동의 등록 ", "2")
                 if (locationAgreement) {
                     val userInfo = UserInfo(locationConsent = true)
-                    val response = userApi.userUpdate(Token.accessToken, userInfo)
+                    val response = userApi.userUpdate(bearerAccessToken,Token.refreshToken, userInfo)
 
                     if (response.isSuccessful) {
                         Log.d(TAG, "위치서비스 동의 저장 성공: ${response.code()}")
@@ -278,7 +307,7 @@ class SignUpViewModel @Inject constructor(
 
                 // 사용자의 마케팅 동의
                 Log.d("약관 동의 저장시작", "3")
-                val response = supportApi.updateUserNotification(Token.accessToken, option)
+                val response = supportApi.updateUserNotification(bearerAccessToken,Token.refreshToken, option)
                 if (response.isSuccessful) {
                     Log.d(TAG, "마케팅 동의 저장 성공: ${response.code()}")
 
@@ -302,7 +331,7 @@ class SignUpViewModel @Inject constructor(
             // 서버에 토큰값 보내기 등의 작업을 여기서 처리할 수 있습니다.
             val body = SignUpApiImpl.RegisterDeviceRequest(ssaid, token)
             try {
-                val response = supportApi.requestRegisterDevice(Token.accessToken, body)
+                val response = supportApi.requestRegisterDevice(bearerAccessToken,Token.refreshToken, body)
                 if (response.isSuccessful) {
                     Log.i("FCM Token", "ssaid 값 : $ssaid \n FCM token 값 : $token")
                     Log.d("기기 등록 성공입니다.", "success: ")

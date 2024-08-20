@@ -50,6 +50,7 @@ data class UserResponse(
 data class UserEssayStatsResponse(
     val data: UserWithEssay,
     val path: String,
+    val statusCode: Int,
     val success: Boolean,
     val timestamp: String
 )

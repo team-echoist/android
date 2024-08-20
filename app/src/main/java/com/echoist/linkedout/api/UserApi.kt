@@ -25,26 +25,31 @@ interface UserApi {
     @GET("api/users/profile/my") // 에세이통계 까지 조회
     suspend fun getMyInfo(
         @Header("Authorization") accessToken: String,
+        @Header("x-refresh-token") refreshToken: String,
     ): UserEssayStatsResponse
     @GET("api/badges")
     suspend fun readBadgeList(
-        @Header("Authorization") accessToken: String
+        @Header("Authorization") accessToken: String,
+        @Header("x-refresh-token") refreshToken: String,
     ): Response<BadgeSimpleResponse>
 
     @GET("api/badges/detail")
     suspend fun readBadgeWithTagsList(
-        @Header("Authorization") accessToken: String
+        @Header("Authorization") accessToken: String,
+        @Header("x-refresh-token") refreshToken: String,
     ): Response<BadgeDetailResponse>
 
     @POST("api/badges/level")
     suspend fun requestBadgeLevelUp(
         @Header("Authorization") accessToken: String,
+        @Header("x-refresh-token") refreshToken: String,
         @Query("badgeId") badgeId: Int,
     ): Response<BasicResponse>
 
     @PUT("api/users")
     suspend fun userUpdate(
         @Header("Authorization") accessToken: String,
+        @Header("x-refresh-token") refreshToken: String,
         @Body userInfo: UserInfo
     ): Response<UserResponse>
 
@@ -53,6 +58,7 @@ interface UserApi {
     @Multipart
     suspend fun userImageUpload(
         @Header("Authorization") accessToken: String,
+        @Header("x-refresh-token") refreshToken: String,
         @Part image: MultipartBody.Part
     ): Response<ImageUrlResponse>
 
@@ -71,6 +77,7 @@ interface UserApi {
     @POST("api/users/deactivate") //회원 탈퇴 요청 유예 기간 부여
     suspend fun requestDeactivate(
         @Header("Authorization") accessToken: String,
+        @Header("x-refresh-token") refreshToken: String,
         @Body deactivate: RequestDeactivate,
     ): Response<Unit>
 
@@ -78,12 +85,14 @@ interface UserApi {
 
     @POST("api/users/reactivate") //회원 탈퇴 요청 취소
     suspend fun requestReactivate(
-        @Header("Authorization") accessToken: String
+        @Header("Authorization") accessToken: String,
+        @Header("x-refresh-token") refreshToken: String,
     ): Response<Unit>
 
     @DELETE("api/users") //회원 탈퇴 바로 진행
     suspend fun requestDeleteUser(
-        @Header("Authorization") accessToken: String
+        @Header("Authorization") accessToken: String,
+        @Header("x-refresh-token") refreshToken: String,
     ): Response<Unit>
 
 
@@ -92,12 +101,14 @@ interface UserApi {
     @GET("api/users/summary")
     suspend fun requestUserGraphSummary(
         @Header("Authorization") accessToken: String,
+        @Header("x-refresh-token") refreshToken: String,
     ): Response<UserGraphSummaryResponse>
 
     //닉네임 중복체크
     @POST("api/auth/check/nickname")
     suspend fun requestNicknameDuplicated(
         @Header("Authorization") accessToken: String,
+        @Header("x-refresh-token") refreshToken: String,
         @Body nickname: NickName,
     ):Response<NicknameCheckResponse>
     data class NickName(val nickname: String)

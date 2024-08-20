@@ -22,6 +22,7 @@ import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.data.toBadgeBoxItem
 import com.echoist.linkedout.page.myLog.Token
+import com.echoist.linkedout.page.myLog.Token.bearerAccessToken
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -81,7 +82,7 @@ class SettingsViewModel @Inject constructor(
                 val body = MultipartBody.Part.createFormData("image", file.name, requestFile)
 
                 // 서버로 업로드 요청 보내기
-                val response = userApi.userImageUpload(Token.accessToken, body)
+                val response = userApi.userImageUpload(bearerAccessToken,Token.refreshToken, body)
 
                 if (response.isSuccessful){
                     newProfile.profileImage = response.body()!!.data.imageUrl
@@ -107,7 +108,8 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             try {
 
-                val response = userApi.getMyInfo(Token.accessToken)
+                val response = userApi.getMyInfo(bearerAccessToken,Token.refreshToken)
+
                 Log.d(TAG, "readMyInfo: suc1")
                 exampleItems.myProfile = response.data.user
                 exampleItems.myProfile.essayStats = response.data.essayStats
@@ -137,14 +139,13 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 //readMyInfo()
-                val response = userApi.readBadgeList( Token.accessToken)
+                val response = userApi.readBadgeList( bearerAccessToken,Token.refreshToken)
                 Log.d(TAG, "readSimpleBadgeList: ${response.body()!!.data.badges}")
                 response.body()?.data?.badges!!.let{badges ->
                     exampleItems.simpleBadgeList = badges.map { it.toBadgeBoxItem() }.toMutableStateList()
                 }
                 Log.d(TAG, "readSimpleBadgeList: ${exampleItems.simpleBadgeList}")
-
-                Token.accessToken = (response.headers()["authorization"].toString())
+                Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
 
 
             } catch (e: Exception) {
@@ -164,14 +165,14 @@ class SettingsViewModel @Inject constructor(
     fun readDetailBadgeList(navController: NavController) {
         viewModelScope.launch {
             try {
-                val response = userApi.readBadgeWithTagsList(Token.accessToken)
+                val response = userApi.readBadgeWithTagsList(bearerAccessToken,Token.refreshToken)
                 response.body()?.data?.badges?.let { badges ->
                     // badges 리스트를 SnapshotStateList로 변환
                     exampleItems.detailBadgeList = badges.map { it.toBadgeBoxItem() }.toMutableStateList() as SnapshotStateList<BadgeBoxItemWithTag>
                 }
                 Log.d(TAG, "readdetailList: ${exampleItems.detailBadgeList}")
+                Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
 
-                Token.accessToken = response.headers()["authorization"].toString()
 
                 navController.navigate("BadgePage")
             } catch (e: Exception) {
@@ -190,10 +191,10 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             try {
 
-                val response = userApi.requestBadgeLevelUp(Token.accessToken, badgeId)
+                val response = userApi.requestBadgeLevelUp(bearerAccessToken,Token.refreshToken, badgeId)
                 Log.d(TAG, "requestBadgeLevelUp: ${Token.accessToken}")
 
-                Token.accessToken = (response.headers()["authorization"].toString())
+                                    Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                 if (response.body()!!.success){
                     isLevelUpSuccess = true
                     delay(1000)
@@ -213,11 +214,10 @@ class SettingsViewModel @Inject constructor(
             isLoading = true
             try {
 
-                val response = userApi.userUpdate(Token.accessToken, userInfo)
+                val response = userApi.userUpdate(bearerAccessToken,Token.refreshToken, userInfo)
 
-                Log.d(TAG, "requestBadgeLevelUp: ${Token.accessToken}")
                 if (response.isSuccessful){
-                    Token.accessToken = (response.headers()["authorization"].toString())
+                    Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
 
                     Log.d("업데이트 요청 성공", "updateMyInfo: ${newProfile.profileImage}")
 
@@ -253,10 +253,10 @@ class SettingsViewModel @Inject constructor(
             isLoading = true
 
             try {
-                val response = essayApi.readRecentEssays(Token.accessToken)
+                val response = essayApi.readRecentEssays(bearerAccessToken,Token.refreshToken)
 
                 if (response.isSuccessful){
-                    Token.accessToken = (response.headers()["authorization"].toString())
+                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                     exampleItems.recentViewedEssayList = response.body()!!.data.essays.toMutableStateList()
                     isApiFinished = true
                 }
@@ -277,21 +277,20 @@ class SettingsViewModel @Inject constructor(
             try {
 
                 val body = UserApi.RequestDeactivate(reasons)
-                val response = userApi.requestDeactivate(Token.accessToken,body)
+                val response = userApi.requestDeactivate(bearerAccessToken,Token.refreshToken,body)
                 Log.d(TAG, "requestWithdrawal: $reasons")
 
                 if (response.isSuccessful){
-                    Token.accessToken = (response.headers()["authorization"].toString())
+                    Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                     navController.navigate("LoginPage")
                 }
                 else{
-                    Log.e("탈퇴 실패", "Failed to write essay: ${response.code()}")
-
+                    Log.e("탈퇴 실패", "코드 :  ${response.code()}")
                 }
-            } catch (e: Exception) {
+            }catch (e: Exception) {
                 e.printStackTrace()
                 // api 요청 실패
-                Log.e("ApiFailed", "Failed to write essay: ${e.message}")
+                Log.e("탈퇴 요청 실패", "${e.message}")
             }
             finally {
                 isLoading = false
@@ -305,11 +304,11 @@ class SettingsViewModel @Inject constructor(
             try {
 
                 val nickname = UserApi.NickName(nickname)
-                val response = userApi.requestNicknameDuplicated(Token.accessToken,nickname)
+                val response = userApi.requestNicknameDuplicated(bearerAccessToken,Token.refreshToken,nickname)
                 Log.d("닉네임 중복검사", "requestNicknameDuplicated: $nickname")
 
                 if (response.isSuccessful){ //실시간요청이기때문에 토큰사용 x
-                    //Token.accessToken = (response.headers()["authorization"].toString())
+                    //                    Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                     Log.d("닉네임 중복검사 성공", "코드: ${response.code()}")
                     nicknameCheckCode = response.code()
                 }
