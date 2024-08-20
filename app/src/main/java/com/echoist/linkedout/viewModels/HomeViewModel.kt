@@ -360,8 +360,9 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val isNotFirst = UserInfo(isFirst = false)
-                val response = userApi.userUpdate(Token.accessToken,Token.refreshToken,isNotFirst)
-                Log.d(TAG, "setFirstUserToExistUser: ${response.code()} ${isNotFirst.isFirst}")
+                val response = userApi.userUpdate(bearerAccessToken,Token.refreshToken,isNotFirst)
+                if (response.isSuccessful) Log.d("첫유저 ->기존유저", "성공")
+                else Log.e("첫유저 ->기존유저", "실패 ${response.code()}")
             } catch (e: Exception) {
                 e.printStackTrace()
                 Log.e("error","set user first to exist error ")

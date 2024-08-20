@@ -107,11 +107,17 @@ fun SignUpPage(
         }
     }
 
-    LaunchedEffect(key1 = viewModel.isErr) {
-        if (viewModel.isErr){
+    LaunchedEffect(key1 = viewModel.errorCode) {
+        if (viewModel.errorCode >= 400){
             delay(2000)
-            viewModel.isErr = false
+            viewModel.errorCode = 200
         }
+    }
+    val errorText = when(viewModel.errorCode){
+        500 -> "서버 에러입니다."
+        400 -> "잘못된 요청입니다."
+        409 -> "중복된 이메일입니다."
+        else -> "잘못된 요청입니다."
     }
 
 
@@ -124,12 +130,11 @@ fun SignUpPage(
                 Box{
                     Authentication_6_BottomModal(
                         { viewModel.getUserEmailCheck(viewModel.userEmail, navController) }, //재요청 인증
-                        isError = viewModel.isErr,
+                        isError = viewModel.errorCode >= 400,
                         isTypedLastNumber = { list->
-                            viewModel.requestRegister("")
                             keyboardController?.hide()
                             Log.d("6자리 코드 ", list.joinToString(""))
-                            viewModel.requestRegister(list.joinToString(""))
+                            viewModel.requestRegister(list.joinToString(""),navController)
                         }
                     )
                     if (viewModel.isLoading) {
@@ -256,7 +261,7 @@ fun SignUpPage(
                     }
 
                     AnimatedVisibility(
-                        visible = viewModel.isErr,
+                        visible = viewModel.errorCode >= 400,
                         enter = fadeIn(
                             animationSpec = tween(
                                 durationMillis = 500,
@@ -282,9 +287,9 @@ fun SignUpPage(
                                 contentAlignment = Alignment.BottomCenter
                             ) {
                                 SendSignUpFinishedAlert(
-                                    { viewModel.isErr = false },
-                                    "에러가 발생했습니다.",
-                                    "사용중인 이메일이거나 비밀번호 조합 오류입니다."
+                                    { viewModel.errorCode = 200 },
+                                    errorText,
+                                    viewModel.errorCode.toString()
                                 )
 
                             }

@@ -48,7 +48,7 @@ class SignUpViewModel @Inject constructor(
     var agreement_serviceAlert by mutableStateOf(false)
 
     var isLoading by mutableStateOf(false)
-    var isErr by mutableStateOf(false)
+    var errorCode by mutableStateOf(200)
 
     fun getMyInfo() : UserInfo{
         return exampleItems.myProfile
@@ -85,7 +85,7 @@ class SignUpViewModel @Inject constructor(
 
                     emailVerify(navController)
                 } else {
-                    isErr = true
+                    errorCode = response.code()
                     Log.e("authApiFailed1", "Failed : ${response.errorBody()}")
 
                     Log.e("authApiSuccess", "${response.code()}")
@@ -93,7 +93,8 @@ class SignUpViewModel @Inject constructor(
                 }
 
             } catch (e: Exception) {
-                isErr = true
+                errorCode = 500
+
                 // api 요청 실패
                 Log.e("writeEssayApiFailed1", "Failed: ${e.message}")
             }
@@ -103,7 +104,7 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    fun requestRegister(code : String){ //6자리 코드
+    fun requestRegister(code : String,navController: NavController){ //6자리 코드
         viewModelScope.launch {
             isLoading = true
             try {
@@ -114,13 +115,17 @@ class SignUpViewModel @Inject constructor(
                 if (response.isSuccessful) {
                     Token.accessToken = response.body()!!.data.accessToken
                     Token.refreshToken = response.body()!!.data.refreshToken
+
+                    readMyInfo()
+                    navController.navigate("SignUpComplete")
                 } else {
-                    isErr = true
+                    errorCode = response.code()
+
                     Log.e("회원가입 요청 실패", "Failed: ${response.code()}")
                 }
 
             } catch (e: Exception) {
-                isErr = true
+                errorCode = 500
                 // api 요청 실패
                 Log.e("회원가입 요청 실패", "Failed: ${e.printStackTrace()}")
 
@@ -139,25 +144,18 @@ class SignUpViewModel @Inject constructor(
 
             if (response.isSuccessful) {
 
-                if (response.code() == 400) isErr = true
-                else if (response.code() == 200) isErr = true
-                Log.e("authApiSuccess2", "${response.raw()}")
-                Log.e("authApiSuccess2", "${response.headers()}")
-                Log.e("authApiSuccess2", "${response.code()}")
-                Log.e("authApiSuccess2", "$isErr")
-
                 isSignUpApiFinished = true
 
                 Log.d("tokentoken", response.headers()["authorization"].toString())
-                                    Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
             } else {
-                isErr = true
+                errorCode = response.code()
                 Log.e("authApiFailed2", "Failed : ${response.headers()}")
                 Log.e("authApiSuccess2", "${response.code()}")
             }
 
         } catch (e: Exception) {
-            isErr = true
+            errorCode = 500
             // api 요청 실패
             Log.e("writeEssayApiFailed2", "Failed: ${e.message}")
         }
@@ -336,7 +334,7 @@ class SignUpViewModel @Inject constructor(
                     Log.i("FCM Token", "ssaid 값 : $ssaid \n FCM token 값 : $token")
                     Log.d("기기 등록 성공입니다.", "success: ")
                 } else {
-                    Log.e("기기등록 실패", "Failed")
+                    Log.e("기기등록 실패", "Failed ${response.code()}")
                 }
             } catch (e: Exception) {
                 Log.e("FCM Token", "Failed to fetch token")

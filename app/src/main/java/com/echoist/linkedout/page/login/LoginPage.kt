@@ -521,7 +521,8 @@ fun LoginPage(
         400, 401 -> "이메일 또는 비밀번호가 잘못되었습니다."
         403 -> "정지된 계정입니다."
         409 -> "중복된 이메일 계정이 존재합니다."
-        else -> viewModel.loginStatusCode.toString()
+        500 -> "예기치 못한 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."
+        else -> "예기치 못한 오류가 발생했습니다. 잠시 후 다시 시도해 주세요. ${viewModel.loginStatusCode}"
     }
 
     LinkedOutTheme {
@@ -670,7 +671,7 @@ fun LoginPage(
                             Text(
                                 text = errorText,
                                 color = Color.White,
-                                modifier = Modifier.align(
+                                modifier = Modifier.padding(horizontal = 20.dp).align(
                                     Alignment.Center
                                 )
                             )
@@ -857,7 +858,7 @@ fun LoginBtn(
                 .height(55.dp)
                 .padding(start = 16.dp, end = 16.dp)
         ) {
-            Text(text = "로그인", color = Color.Black)
+            Text(text = "로그인", color = if (error)Color(0xFF919191) else Color.Black)
         }
 
 

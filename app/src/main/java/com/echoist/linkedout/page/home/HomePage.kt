@@ -87,6 +87,7 @@ import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
+import com.echoist.linkedout.Routes
 import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.TUTORIAL_BULB
 import com.echoist.linkedout.UserStatus
@@ -310,17 +311,15 @@ fun ModalBottomSheetContent(viewModel: HomeViewModel,navController: NavControlle
         )
     ){
         LogoutBox(
-            isCancelClicked = { isLogoutClicked = false
-                navController.navigate("LoginPage")
-                //로컬 자동로그인, id pw 값 초기화
-                SharedPreferencesUtil.saveClickedAutoLogin(context,false)
-                SharedPreferencesUtil.saveLocalAccountInfo(context,SharedPreferencesUtil.LocalAccountInfo("",""))
-
-                navController.popBackStack("LoginPage",false)
-                              },
+            isCancelClicked = { isLogoutClicked = false},
             isLogoutClicked = { isLogoutClicked = false
-                navController.navigate("LoginPage")
-                navController.popBackStack("LoginPage",false)}
+                navController.navigate(Routes.LoginPage) {
+                    // 기존의 모든 백스택을 제거하고 login 루트로 설정
+                    popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                    launchSingleTop = true
+                }
+                //로컬 자동로그인, id pw 값 초기화
+                SharedPreferencesUtil.saveClickedAutoLogin(context,false)}
         )
     }
 }
@@ -474,7 +473,7 @@ fun MyProfile(item: UserInfo, onClick: () -> Unit) {
                         Text(text = " 아무개", color = Color.White)
                     }
                     Spacer(modifier = Modifier.height(7.dp))
-                    Text(text = "${calculateDaysDifference(item.createdDate!!)}일째 링크드 아웃!", color = Color(0xFF686868), fontSize = 12.sp)
+                    Text(text = "${calculateDaysDifference(item.createdDate ?: "2024-08-19T19:31:18.945+09:00")}일째 링크드 아웃!", color = Color(0xFF686868), fontSize = 12.sp)
                 }
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
