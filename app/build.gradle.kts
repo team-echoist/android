@@ -218,7 +218,7 @@ dependencies {
 
     implementation ("com.google.accompanist:accompanist-webview:0.30.0")
 
-
+    implementation("com.github.skydoves:balloon-compose:1.6.6")
 
 
 }
