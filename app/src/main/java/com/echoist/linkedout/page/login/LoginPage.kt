@@ -193,12 +193,16 @@ class LoginPage : ComponentActivity() {
         //top,bottom 시스템 바 등의 설정
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
+        //온보딩을 한번 진행했다면 다음부턴 안나오게.
+        val isOnboardingFinished = SharedPreferencesUtil.getIsOnboardingFinished(this)
+        val startDestination = if (isOnboardingFinished) Routes.LoginPage else Routes.OnBoarding
+
         setContent {
             val keyHash = Utility.getKeyHash(this)
             Log.d("Hash", keyHash)
             val navController = rememberNavController()
 
-            NavHost(navController = navController, startDestination = Routes.OnBoarding) {
+            NavHost(navController = navController, startDestination = startDestination) {
                 composable(Routes.OnBoarding) {
                     OnBoardingPage(navController)
                 }
@@ -503,6 +507,8 @@ fun LoginPage(
     //앱버전 체크 후 최신버전 아닌경우 마켓업데이트.
     LaunchedEffect(key1 = Unit) {
         viewModel.requestAppVersion(context)
+        //온보딩 확인했다는 체크
+        SharedPreferencesUtil.saveIsOnboardingFinished(context,true)
 
         //자동로그인 체크시 로그인.
         if (SharedPreferencesUtil.getClickedAutoLogin(context = context)){

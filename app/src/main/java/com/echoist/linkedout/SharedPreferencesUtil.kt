@@ -21,6 +21,7 @@ object SharedPreferencesUtil {
     private val minuteMap = (0..5).associateWith { (it * 10).toString().padStart(2, '0') }
 
     data class LocalAccountInfo(val id: String, val pw: String)
+    //셀프알림 리마인드 true, false 설정
     fun saveWritingRemindNotification(context: Context, writingRemindNotification: Boolean) {
         val sharedPreferences: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         with(sharedPreferences.edit()) {
@@ -35,6 +36,7 @@ object SharedPreferencesUtil {
         return displayInfo
     }
 
+    //디스플레이 화이트, 다크 버전
     fun saveDisplayInfo(context: Context, displayInfo: String) {
         val sharedPreferences: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         with(sharedPreferences.edit()) {
@@ -43,6 +45,13 @@ object SharedPreferencesUtil {
         }
     }
 
+    fun getDisplayInfo(context: Context) : String{
+        val sharedPreferences: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val displayInfo = sharedPreferences.getString(DISPLAY_INFO, "")
+        return displayInfo!!
+    }
+
+    //자동로그인 아이디 비밀번호 저장
     fun getLocalAccountInfo(context: Context) : LocalAccountInfo{
         val sharedPreferences: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val accountInfoId = sharedPreferences.getString(ID_LOCAL_STORAGE, "")
@@ -59,6 +68,7 @@ object SharedPreferencesUtil {
         }
     }
 
+    //자동로그인 클릭 변수저장
     fun saveClickedAutoLogin(context: Context, isClickedAutoLogin: Boolean) {
         val sharedPreferences: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         with(sharedPreferences.edit()) {
@@ -73,12 +83,20 @@ object SharedPreferencesUtil {
         return isClickedAutoLogin
     }
 
-    fun getDisplayInfo(context: Context) : String{
+    //온보딩 일회성
+    fun saveIsOnboardingFinished(context: Context, isOnboardingFinished: Boolean) {
         val sharedPreferences: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        val displayInfo = sharedPreferences.getString(DISPLAY_INFO, "")
-        return displayInfo!!
+        with(sharedPreferences.edit()) {
+            putBoolean("isOnboardingFinished", isOnboardingFinished)
+            apply()
+        }
     }
-
+    fun getIsOnboardingFinished(context: Context) : Boolean{
+        val sharedPreferences: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val isOnboardingFinished = sharedPreferences.getBoolean("isOnboardingFinished", false)
+        return isOnboardingFinished
+    }
+    //알림 시간 저장
     fun saveTimeSelection(context: Context, timeSelection: TimeSelectionIndex) {
         val sharedPreferences: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         with(sharedPreferences.edit()) {
