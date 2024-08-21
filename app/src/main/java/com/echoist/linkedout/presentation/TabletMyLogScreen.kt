@@ -11,7 +11,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,7 +25,6 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -49,15 +47,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.echoist.linkedout.components.EssayChips
 import com.echoist.linkedout.components.EssayPager
-import com.echoist.linkedout.components.Essaychip
 import com.echoist.linkedout.components.ModifyStoryBox
 import com.echoist.linkedout.components.MyLogTopAppBar
 import com.echoist.linkedout.page.community.SearchingPage
-import com.echoist.linkedout.page.home.MyBottomNavigation
-import com.echoist.linkedout.page.home.WriteFTB
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.HomeViewModel
 import com.echoist.linkedout.viewModels.MyLogViewModel
 import com.echoist.linkedout.viewModels.WritingViewModel
@@ -98,7 +91,6 @@ fun TabletMyLogRoute(
     TabletMyLogScreen(
         drawerState = drawerState,
         pagerState = pagerState,
-        contentPadding = contentPadding,
         navController = navController,
         homeViewModel = homeViewModel,
         writingViewModel = writingViewModel,
@@ -111,7 +103,6 @@ fun TabletMyLogRoute(
 internal fun TabletMyLogScreen(
     drawerState: DrawerState,
     pagerState: PagerState,
-    contentPadding: Int,
     navController: NavController,
     homeViewModel: HomeViewModel,
     writingViewModel: WritingViewModel,
@@ -126,35 +117,28 @@ internal fun TabletMyLogScreen(
             },
             content = {
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-                    LinkedOutTheme {
-                        Scaffold(
-                            topBar = {
-                                TopBarSection(
-                                    scope = scope,
-                                    drawerState = drawerState,
-                                    contentPadding = contentPadding,
-                                    viewModel = viewModel,
-                                    pagerState = pagerState,
-                                    navController = navController
-                                )
-                            },
-                            bottomBar = { MyBottomNavigation(navController) },
-                            floatingActionButton = {
-                                WriteFTB(navController, homeViewModel, writingViewModel)
-                            },
-                            content = { padding ->
-                                ContentSection(
-                                    pagerState = pagerState,
-                                    padding = padding,
-                                    contentPadding = contentPadding,
-                                    viewModel = viewModel,
-                                    navController = navController,
-                                    writingViewModel = writingViewModel
-                                )
-                            }
+                    Column {
+                        TopBarSection(
+                            scope = scope,
+                            drawerState = drawerState,
+                            viewModel = viewModel,
+                            pagerState = pagerState,
+                            navController = navController
                         )
-                        ModifyStoryOverlay(viewModel, navController)
+                        TabletMyLogTabView(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            pagerState = pagerState,
+                            viewModel = viewModel
+                        )
+                        ContentSection(
+                            pagerState = pagerState,
+                            viewModel = viewModel,
+                            navController = navController,
+                            writingViewModel = writingViewModel
+                        )
                     }
+                    ModifyStoryOverlay(viewModel, navController)
                 }
             }
         )
@@ -178,7 +162,6 @@ fun DrawerContent(navController: NavController, drawerState: DrawerState) {
 fun TopBarSection(
     scope: CoroutineScope,
     drawerState: DrawerState,
-    contentPadding: Int,
     viewModel: MyLogViewModel,
     pagerState: PagerState,
     navController: NavController
@@ -196,32 +179,17 @@ fun TopBarSection(
             { navController.navigate("NotificationPage") },
             viewModel.isExistUnreadAlerts
         )
-        Spacer(modifier = Modifier.height(10.dp))
-        Spacer(modifier = Modifier.height(10.dp))
-        TabletMyLogTabView(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = contentPadding.dp),
-            pagerState = pagerState,
-            viewModel = viewModel
-        )
     }
 }
 
 @Composable
 fun ContentSection(
     pagerState: PagerState,
-    padding: PaddingValues,
-    contentPadding: Int,
     viewModel: MyLogViewModel,
     navController: NavController,
     writingViewModel: WritingViewModel
 ) {
-    Box(
-        Modifier
-            .padding(padding)
-            .padding(horizontal = contentPadding.dp)
-    ) {
+    Box {
         EssayPager(
             pagerState = pagerState,
             viewModel = viewModel,
@@ -234,7 +202,6 @@ fun ContentSection(
 @Composable
 fun TabletMyLogTabView(modifier: Modifier, pagerState: PagerState, viewModel: MyLogViewModel) {
     val coroutineScope = rememberCoroutineScope()
-
     Box(
         modifier = modifier.height(30.dp)
     ) {

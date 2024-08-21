@@ -17,7 +17,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -37,16 +36,11 @@ import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
-import com.echoist.linkedout.page.home.CustomTopAppBar
 import com.echoist.linkedout.page.home.LineChartExample
 import com.echoist.linkedout.page.home.LogoutBtn
-import com.echoist.linkedout.page.home.MyBottomNavigation
-import com.echoist.linkedout.page.home.MyDrawableItem
 import com.echoist.linkedout.page.home.MyLinkedOutBar
 import com.echoist.linkedout.page.home.MyProfile
 import com.echoist.linkedout.page.home.ShopDrawerItem
-import com.echoist.linkedout.page.home.WriteFTB
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.HomeViewModel
 import com.echoist.linkedout.viewModels.WritingViewModel
 import kotlinx.coroutines.launch
@@ -154,37 +148,30 @@ fun TabletHomeRoute(
             }
         }
     ) {
-        LinkedOutTheme {
-            Scaffold(
-                topBar = {
-                    CustomTopAppBar({
-                        scope.launch {
-                            drawerState.apply {
-                                selectedMenu = "Default"
-                                if (isClosed) open() else close()
-                            }
-                        }
-                    }, { navController.navigate("NotificationPage") },
-                        viewModel.isExistUnreadAlerts
-                    )
-                    {
-                        viewModel.isFirstUser = true //튜토리얼 화면띄우기위함
-                    }
-                },
-                bottomBar = { MyBottomNavigation(navController) },
-                floatingActionButton = { WriteFTB(navController, viewModel, writingViewModel) },
-                content = {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        GlideImage(
-                            model = R.drawable.home_basic_tablet,
-                            contentDescription = "home_img",
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.FillWidth
-                        )
+        Column {
+            TabletMainTopBar({
+                scope.launch {
+                    drawerState.apply {
+                        selectedMenu = "Default"
+                        if (isClosed) open() else close()
                     }
                 }
+            }, { navController.navigate("NotificationPage") },
+                viewModel.isExistUnreadAlerts
             )
+            {
+                viewModel.isFirstUser = true //튜토리얼 화면띄우기위함
+            }
+            Box(modifier = Modifier.fillMaxSize()) {
+                GlideImage(
+                    model = R.drawable.home_basic_tablet,
+                    contentDescription = "home_img",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.FillWidth
+                )
+            }
         }
+
     }
 }
 

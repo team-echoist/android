@@ -74,117 +74,104 @@ fun TabletMyInfoRoute(
         bottomSheetState = bottomSheetState
     )
 
-    LinkedOutTheme {
-        BottomSheetScaffold(
-            sheetContainerColor = Color(0xFF111111),
-            scaffoldState = scaffoldState,
-            sheetContent = {
-                //이미지 수정시
-                AnimatedVisibility(
-                    visible = viewModel.isClickedModifyImage,
-                    enter = fadeIn(
-                        animationSpec = tween(
-                            durationMillis = 500,
-                            easing = LinearEasing
-                        )
-                    ),
-                    exit = fadeOut(
-                        animationSpec = tween(
-                            durationMillis = 500,
-                            easing = LinearEasing
-                        )
+    BottomSheetScaffold(
+        sheetContainerColor = Color(0xFF111111),
+        scaffoldState = scaffoldState,
+        sheetContent = {
+            //이미지 수정시
+            AnimatedVisibility(
+                visible = viewModel.isClickedModifyImage,
+                enter = fadeIn(
+                    animationSpec = tween(
+                        durationMillis = 500,
+                        easing = LinearEasing
                     )
-                ) {
-                    Log.d(ContentValues.TAG, "MyPage: ${viewModel.newProfile}")
-                    SelectProfileIconBottomSheet(viewModel)
-                }
-                //기본
-
-                AnimatedVisibility(
-                    visible = !viewModel.isClickedModifyImage,
-                    enter = fadeIn(
-                        animationSpec = tween(
-                            durationMillis = 500,
-                            easing = LinearEasing
-                        )
-                    ),
-                    exit = fadeOut(
-                        animationSpec = tween(
-                            durationMillis = 500,
-                            easing = LinearEasing
-                        )
+                ),
+                exit = fadeOut(
+                    animationSpec = tween(
+                        durationMillis = 500,
+                        easing = LinearEasing
                     )
-                ) {
-                    ModifyMyProfileBottomSheet(
-                        onClickComplete = {
-                            viewModel.updateMyInfo(viewModel.newProfile, navController)
-                        },
-                        onClickCancel = {
-                            scope.launch {
-                                bottomSheetState.hide()
+                )
+            ) {
+                Log.d(ContentValues.TAG, "MyPage: ${viewModel.newProfile}")
+                SelectProfileIconBottomSheet(viewModel)
+            }
+            //기본
 
-                            }
-                        }, viewModel
+            AnimatedVisibility(
+                visible = !viewModel.isClickedModifyImage,
+                enter = fadeIn(
+                    animationSpec = tween(
+                        durationMillis = 500,
+                        easing = LinearEasing
                     )
-                }
+                ),
+                exit = fadeOut(
+                    animationSpec = tween(
+                        durationMillis = 500,
+                        easing = LinearEasing
+                    )
+                )
+            ) {
+                ModifyMyProfileBottomSheet(
+                    onClickComplete = {
+                        viewModel.updateMyInfo(viewModel.newProfile, navController)
+                    },
+                    onClickCancel = {
+                        scope.launch {
+                            bottomSheetState.hide()
+
+                        }
+                    }, viewModel
+                )
+            }
 
 
-            },
-            sheetPeekHeight = 0.dp
+        },
+        sheetPeekHeight = 0.dp
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(it)
+                .verticalScroll(scrollState)
+
         ) {
-            Scaffold(
-                topBar = {
-                    Text(
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        text = "MY",
-                        color = Color.White,
-                        modifier = Modifier
-                            .padding(start = 20.dp, top = 10.dp)
-                            .safeDrawingPadding()
-                    )
-                },
-                bottomBar = { MyBottomNavigation(navController) },
-                content = {
-                    Column(
-                        modifier = Modifier
-                            .padding(it)
-                            .verticalScroll(scrollState)
-
-                    ) {
-                        MySettings(item = viewModel.getMyInfo()) {
-                            Log.d(ContentValues.TAG, "MyPage: ${viewModel.getMyInfo()}")
-                            scope.launch {
-                                bottomSheetState.expand()
-                            }
-                        }
-                        if (viewModel.isApiFinished) {
-                            SettingBar("링크드아웃 배지") { viewModel.readDetailBadgeList(navController) }
-                            LinkedOutBadgeGrid(viewModel)
-                            SettingBar("최근 본 글") { navController.navigate("RecentViewedEssayPage") }
-                            RecentEssayList(
-                                itemList = viewModel.getRecentViewedEssayList(),
-                                navController
-                            )
-                            MembershipSettingBar("멤버십 관리") {}
-                            SettingBar("계정 관리") { navController.navigate("AccountPage") }
-                        }
-
-
-                    }
-
-                    if (viewModel.isBadgeClicked) {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            BadgeDescriptionBox(viewModel.badgeBoxItem!!, viewModel)
-                        }
-                    }
-
-
-                }
+            Text(
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                text = "MY",
+                color = Color.White,
+                modifier = Modifier
+                    .padding(start = 20.dp, top = 10.dp)
+                    .safeDrawingPadding()
             )
+            MySettings(item = viewModel.getMyInfo()) {
+                Log.d(ContentValues.TAG, "MyPage: ${viewModel.getMyInfo()}")
+                scope.launch {
+                    bottomSheetState.expand()
+                }
+            }
+            if (viewModel.isApiFinished) {
+                SettingBar("링크드아웃 배지") { viewModel.readDetailBadgeList(navController) }
+                LinkedOutBadgeGrid(viewModel)
+                SettingBar("최근 본 글") { navController.navigate("RecentViewedEssayPage") }
+                RecentEssayList(
+                    itemList = viewModel.getRecentViewedEssayList(),
+                    navController
+                )
+                MembershipSettingBar("멤버십 관리") {}
+                SettingBar("계정 관리") { navController.navigate("AccountPage") }
+            }
+        }
+
+        if (viewModel.isBadgeClicked) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                BadgeDescriptionBox(viewModel.badgeBoxItem!!, viewModel)
+            }
         }
     }
 }

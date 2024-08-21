@@ -60,90 +60,66 @@ fun TabletCommunityRoute(
             drawerState = drawerState,
             drawerContent = {
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-
                     ModalDrawerSheet(
                         modifier = Modifier.fillMaxSize(),
                         drawerShape = RectangleShape,
                         drawerContainerColor = Color.Black
                     ) {
-
                         SearchingPage(drawerState, navController)
-
-
                         // ...other drawer items
                     }
                 }
             },
             content = {
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                    val isRefreshing by viewModel.isRefreshing.collectAsState()
 
-                    LinkedOutTheme {
-                        Scaffold(
-                            modifier = Modifier.background(color),
-                            topBar = {
-                                Column(Modifier.background(color)) {
-                                    CommunityTopAppBar(
-                                        "커뮤니티",
-                                        pagerstate,
-                                        onSearchClick =
-                                        {
-                                            scope.launch {
-                                                drawerState.apply {
-                                                    if (isClosed) open() else close()
-                                                }
-                                            }
-                                        },
-                                        onClickBookMarked =
-                                        {
-                                            viewModel.readMyBookMarks(navController)
-                                        }
-                                    )
-
-                                    CommunityChips(pagerstate)
-                                }
-                            },
-                            bottomBar = { MyBottomNavigation(navController) },
-                            content = {
-                                val isRefreshing by viewModel.isRefreshing.collectAsState()
-
-                                SwipeRefresh(
-                                    modifier = Modifier,
-                                    indicatorPadding = PaddingValues(top = 70.dp),
-                                    state = rememberSwipeRefreshState(isRefreshing = isRefreshing),
-                                    onRefresh = { viewModel.refresh() }) {
-                                    if (viewModel.isApifinished) {
-                                        Box(
-                                            modifier = Modifier
-                                                .padding(it) // topbar 만큼의 패딩을 갖는다  아마 bottombar 만큼의 패딩값도 함께
-                                        ) {
-                                            CommunityPager(
-                                                viewModel = viewModel,
-                                                pagerState = pagerstate,
-                                                navController = navController
-                                            )
-
-                                        }
-
-
-                                        if (isLoading) {
-                                            Box(
-                                                modifier = Modifier.fillMaxSize(),
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                CircularProgressIndicator(color = LinkedInColor)
-                                            }
-                                        }
-                                    } else {
-                                        Box(
-                                            modifier = Modifier.fillMaxSize(),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            CircularProgressIndicator(color = LinkedInColor)
-                                        }
+                    Column {
+                        CommunityTopAppBar(
+                            "커뮤니티",
+                            pagerstate,
+                            onSearchClick = {
+                                scope.launch {
+                                    drawerState.apply {
+                                        if (isClosed) open() else close()
                                     }
                                 }
+                            },
+                            onClickBookMarked = {
+                                viewModel.readMyBookMarks(navController)
                             }
                         )
+                        CommunityChips(pagerstate)
+                        SwipeRefresh(
+                            modifier = Modifier,
+                            indicatorPadding = PaddingValues(top = 70.dp),
+                            state = rememberSwipeRefreshState(isRefreshing = isRefreshing),
+                            onRefresh = { viewModel.refresh() }) {
+                            if (viewModel.isApifinished) {
+                                Box {
+                                    CommunityPager(
+                                        viewModel = viewModel,
+                                        pagerState = pagerstate,
+                                        navController = navController
+                                    )
+                                }
+                                if (isLoading) {
+                                    Box(
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        CircularProgressIndicator(color = LinkedInColor)
+                                    }
+                                }
+                            } else {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator(color = LinkedInColor)
+                                }
+                            }
+                        }
                     }
                 }
             }
