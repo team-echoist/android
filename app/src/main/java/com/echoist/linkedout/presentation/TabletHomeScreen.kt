@@ -149,19 +149,6 @@ fun TabletHomeRoute(
         }
     ) {
         Column {
-            TabletMainTopBar({
-                scope.launch {
-                    drawerState.apply {
-                        selectedMenu = "Default"
-                        if (isClosed) open() else close()
-                    }
-                }
-            }, { navController.navigate("NotificationPage") },
-                viewModel.isExistUnreadAlerts
-            )
-            {
-                viewModel.isFirstUser = true //튜토리얼 화면띄우기위함
-            }
             Box(modifier = Modifier.fillMaxSize()) {
                 GlideImage(
                     model = R.drawable.home_basic_tablet,
@@ -169,9 +156,21 @@ fun TabletHomeRoute(
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.FillWidth
                 )
+                TabletMainTopBar({
+                    scope.launch {
+                        drawerState.apply {
+                            selectedMenu = "Default"
+                            if (isClosed) open() else close()
+                        }
+                    }
+                }, { navController.navigate("NotificationPage") },
+                    viewModel.isExistUnreadAlerts
+                )
+                {
+                    viewModel.isFirstUser = true //튜토리얼 화면띄우기위함
+                }
             }
         }
-
     }
 }
 
