@@ -218,7 +218,9 @@ internal fun TabletResetPwScreen(
                             .clickable(enabled = false) {},
                         contentAlignment = Alignment.BottomCenter
                     ) {
-                        SendEmailFinishedAlert { onAlertDismiss() }
+                        SendEmailFinishedAlert("이메일 주소로 인증메일이 발송됐습니다.") {
+                            onAlertDismiss()
+                        }
                     }
                 }
             }
