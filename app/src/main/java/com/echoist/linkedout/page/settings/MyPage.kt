@@ -133,11 +133,8 @@ fun MyPage(
         isApiFinished = false
     }
 
-
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
-
-
 
     val bottomSheetState =
         rememberStandardBottomSheetState(initialValue = SheetValue.Hidden, skipHiddenState = false)

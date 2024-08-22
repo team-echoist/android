@@ -22,8 +22,8 @@ android {
         applicationId = "com.echoist.linkedout"
         minSdk = 26
         targetSdk = 34
-        versionCode = 3 //todo 릴리즈 생성마다 +1
-        versionName = "1.0.0"
+        versionCode = 4 //todo 릴리즈 생성마다 +1
+        versionName = "1.0.1" //1번수정
         //git ignore 용입니다.
         //구글 네이티브 앱 키
         buildConfigField(

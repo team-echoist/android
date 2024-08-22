@@ -21,6 +21,7 @@ import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.data.Story
 import com.echoist.linkedout.page.myLog.Token
+import com.echoist.linkedout.page.myLog.Token.bearerAccessToken
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -167,21 +168,23 @@ open class CommunityViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _isLoading.emit(true)
-                val response = essayApi.readRandomEssays(Token.accessToken, limit = limit)
+                val response = essayApi.readRandomEssays(bearerAccessToken,Token.refreshToken, limit = limit)
 
                 if (response.isSuccessful){
                     exampleItems.randomList = response.body()!!.data.essays.toMutableStateList()
                     _randomList.emit(response.body()!!.data.essays.toMutableStateList())
                     //_randomList.emit(response.body()!!.data.essays.toMutableStateList())
+
                     response.body()!!.data.essays.forEach{it->
-                        randomEssayList.add(it)
+                        if (it !in randomEssayList){ //id 가 set에 없다면 추가.
+                            randomEssayList.add(it)
+                        }
                     }
 
-                    Log.d(TAG, "readRandomEssays: 성공인데요${response.body()!!.data.essays.toMutableStateList()}")
-                    Log.d(TAG, "readRandomEssays: 성공입니다 아니면 예시 ${exampleItems.randomList}")
+
+                    Log.d("랜덤에세이 호출성공", "전체 호출하는 limit 사이즈 ${randomEssayList.size}")
+                    Log.d("랜덤에세이 호출성공", "실제 랜덤 에세이 사이즈  ${exampleItems.randomList.size}")
                 }
-
-
 
                 // API 호출 결과 처리 (예: response 데이터 사용)
             } catch (e: Exception) {
@@ -204,23 +207,23 @@ open class CommunityViewModel @Inject constructor(
     fun readFollowingEssays() {
         viewModelScope.launch {
             try {
-                val response = essayApi.readFollowingEssays(Token.accessToken)
-                exampleItems.followingList = response.body()!!.data.essays.toMutableStateList()
+                val response = essayApi.readFollowingEssays(bearerAccessToken,Token.refreshToken)
+                if (response.isSuccessful){
+                    exampleItems.followingList = response.body()!!.data.essays.toMutableStateList()
 
-                Log.d(TAG, "readRandomEssaysfollow: ${response.body()!!.data.essays.toMutableStateList()}")
-                Log.d(TAG, "readRandomEssaysfollow: 성공입니다 아니면 예시 ${exampleItems.randomList}")
+                    Log.d("글 읽기", " ${response.body()!!.data.essays.toMutableStateList()}")
+                    Log.d("글 읽기", "성공입니다 아니면 예시 ${exampleItems.randomList}")
 
-                followingList = exampleItems.followingList
-
+                    followingList = exampleItems.followingList
+                }
+                else{
+                    Log.d("글 읽기 실패", "${response.body()}")
+                }
 
                 // API 호출 결과 처리 (예: response 데이터 사용)
             } catch (e: Exception) {
-
                 // 예외 처리
                 e.printStackTrace()
-                Log.d(TAG, "readRandomEssaysfollow2: ${e.message}")
-                Log.d(TAG, "readRandomEssaysfollow3: ${e.cause}")
-                Log.d(TAG, "readRandomEssaysfollow4: ${e.localizedMessage}")
 
             }
 
@@ -232,17 +235,21 @@ open class CommunityViewModel @Inject constructor(
     fun readOneSentences(type: String) {
         viewModelScope.launch {
             try {
-                val response = essayApi.readOneSentences(Token.accessToken, type = type)
+                val response = essayApi.readOneSentences(bearerAccessToken,Token.refreshToken, type = type)
 
-                if (type == "first") exampleItems.firstSentences =
-                    response.body()!!.data.essays.toMutableStateList()
-                else exampleItems.lastSentences = response.body()!!.data.essays.toMutableStateList()
+                if (response.isSuccessful){
+                    if (type == "first") exampleItems.firstSentences =
+                        response.body()!!.data.essays.toMutableStateList()
+                    else exampleItems.lastSentences = response.body()!!.data.essays.toMutableStateList()
 
-                Log.d(TAG, "첫문장 request api: 첫문장 개수${response.body()!!.data.essays.size} \n 마지막문장 ${exampleItems.lastSentences}")
+                    Log.d(TAG, "첫문장 request api: 첫문장 개수${response.body()!!.data.essays.size} \n 마지막문장 ${exampleItems.lastSentences}")
 
-                _firstSentences.emit(exampleItems.firstSentences)
-                _lastSentences.emit(exampleItems.lastSentences)
-
+                    _firstSentences.emit(exampleItems.firstSentences)
+                    _lastSentences.emit(exampleItems.lastSentences)
+                }
+                else{
+                    Log.e("첫문장 요청", "실패: ${response.body()!!.data} ", )
+                }
 
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -258,7 +265,7 @@ open class CommunityViewModel @Inject constructor(
             try {
                 _isLoading.emit(true)
 
-                val response = essayApi.readDetailEssay(Token.accessToken, id,type = type, )
+                val response = essayApi.readDetailEssay(bearerAccessToken,Token.refreshToken, id,type = type, )
                 Log.d("상세 조회 성공", "readDetailEssay: 성공 ${response.body()!!}")
                 exampleItems.detailEssay = response.body()!!.data.essay
                 detailEssay = exampleItems.detailEssay
@@ -292,7 +299,7 @@ open class CommunityViewModel @Inject constructor(
     fun readDetailRecentEssay(id: Int, navController: NavController,type: String) {
         viewModelScope.launch {
             try {
-                val response = essayApi.readDetailEssay(Token.accessToken,id,type)
+                val response = essayApi.readDetailEssay(bearerAccessToken,Token.refreshToken,id,type)
                 exampleItems.detailEssay = response.body()!!.data.essay
 
                 Log.d(TAG, "readdetailEssay: 성공인데요${response.body()!!.data}")
@@ -319,7 +326,7 @@ open class CommunityViewModel @Inject constructor(
                 _isLoading.emit(true)
 
                 Log.d(TAG, "readMyBookMarks: $isLoading")
-                val response = bookMarkApi.readMyBookMark(Token.accessToken)
+                val response = bookMarkApi.readMyBookMark(bearerAccessToken,Token.refreshToken)
                 if(response.success){
                     bookMarkEssayList = response.data.essays.toMutableStateList()
                     navController.navigate("CommunitySavedEssayPage")
@@ -347,7 +354,7 @@ open class CommunityViewModel @Inject constructor(
     fun addBookMark(essayId: Int){
         viewModelScope.launch {
             try {
-                bookMarkApi.addBookMark(Token.accessToken,essayId)
+                bookMarkApi.addBookMark(bearerAccessToken,Token.refreshToken,essayId)
 
                 Log.d(TAG, "bookMarkEssayList: 성공입니다  ${detailEssay.title}")
 
@@ -367,7 +374,7 @@ open class CommunityViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val deleteEssayId = listOf(essayId)
-                val response = bookMarkApi.deleteBookMarks(Token.accessToken,BookMarkApi.RequestDeleteBookMarks(deleteEssayId))
+                val response = bookMarkApi.deleteBookMarks(bearerAccessToken,Token.refreshToken,BookMarkApi.RequestDeleteBookMarks(deleteEssayId))
                 if (response.isSuccessful){
                     Log.d(TAG, "bookMarkEssayList: 단일 북마크삭제 성공 ${detailEssay.title}")
                     Log.d(TAG, "bookMarkEssayList: 북마크삭제 성공 $deleteEssayId")
@@ -398,7 +405,7 @@ open class CommunityViewModel @Inject constructor(
                     deleteEssayId.add(it.id!!)
                 }
 
-                val response = bookMarkApi.deleteBookMarks(Token.accessToken,BookMarkApi.RequestDeleteBookMarks(deleteEssayId))
+                val response = bookMarkApi.deleteBookMarks(bearerAccessToken,Token.refreshToken,BookMarkApi.RequestDeleteBookMarks(deleteEssayId))
                 if (response.isSuccessful){
                     //삭제하고 다시 북마크 로딩
                     readMyBookMarks(navController = navController)
@@ -427,7 +434,7 @@ open class CommunityViewModel @Inject constructor(
             try {
 
 
-                val response = essayApi.reportEssay(Token.accessToken, essayId, EssayApi.ReportRequest(reportReason))
+                val response = essayApi.reportEssay(bearerAccessToken,Token.refreshToken, essayId, EssayApi.ReportRequest(reportReason))
                 if (response.isSuccessful){
                     Log.d(TAG, "reportEssay: 성공입니다 아니면 예시 ${detailEssay.title}")
                     isReportCleared = true

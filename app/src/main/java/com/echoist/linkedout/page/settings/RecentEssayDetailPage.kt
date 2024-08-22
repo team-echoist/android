@@ -39,6 +39,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -253,8 +256,34 @@ fun RecentEssayListItem(
     viewModel: CommunityViewModel,
     navController: NavController
 ) {
-    val color =
-        Color.White
+    val color = Color.White
+
+    val annotatedTitleString = buildAnnotatedString {
+        // 첫 번째 텍스트 (title)
+        append(item.title ?: "")
+        addStyle(
+            style = SpanStyle(
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Normal,
+                color = color
+            ),
+            start = 0,
+            end = item.title?.length ?: 0
+        )
+
+        // 두 번째 텍스트 ( "   • ${formatElapsedTime(item.createdDate!!)}" )
+        val bulletText = "   • ${formatElapsedTime(item.createdDate!!)}"
+        append(bulletText)
+        addStyle(
+            style = SpanStyle(
+                fontSize = 10.sp,
+                color = Color(0xFF686868)
+            ),
+            start = item.title?.length ?: 0,
+            end = item.title?.length?.plus(bulletText.length) ?: bulletText.length
+        )
+    }
+
     Box(modifier = Modifier
         .fillMaxWidth()
         .background(Color.Black)
@@ -273,18 +302,13 @@ fun RecentEssayListItem(
             ) {
                 Row(
                     Modifier.padding(top = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        modifier = Modifier,
-                        text = item.title!!,
-                        color = color,
+                        text = annotatedTitleString,
                         maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
+                        overflow = TextOverflow.Ellipsis
                     )
-                    Text(text = "   • ${formatElapsedTime(item.createdDate!!)}", fontSize = 10.sp, color = Color(0xFF686868))
-
                 }
 
 

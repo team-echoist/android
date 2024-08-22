@@ -16,6 +16,7 @@ interface BookMarkApi{
     @GET("api/bookmarks")
     suspend fun readMyBookMark(
         @Header("Authorization") accessToken: String,
+        @Header("x-refresh-token") refreshToken: String,
         @Query("page") page : Int? = null,
         @Query("limit") limit: Int? = null
     ): EssayListResponse
@@ -23,12 +24,14 @@ interface BookMarkApi{
     @POST("api/bookmarks/{essayId}")
     suspend fun addBookMark(
         @Header("Authorization") accessToken: String,
+        @Header("x-refresh-token") refreshToken: String,
         @Path("essayId") essayId: Int
     ): Response<Unit>
 
     @PUT("api/bookmarks")
     suspend fun deleteBookMarks(
         @Header("Authorization") accessToken: String,
+        @Header("x-refresh-token") refreshToken: String,
         @Body essayIds : RequestDeleteBookMarks
     ): Response<Unit>
 
@@ -36,7 +39,8 @@ interface BookMarkApi{
 
     @DELETE("api/bookmarks/reset")
     suspend fun deleteAllBookMarks(
-        @Header("Authorization") accessToken: String
+        @Header("Authorization") accessToken: String,
+        @Header("x-refresh-token") refreshToken: String,
     ): Response<Unit>
 
 

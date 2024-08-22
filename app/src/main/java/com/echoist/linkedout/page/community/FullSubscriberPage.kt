@@ -47,6 +47,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.echoist.linkedout.PROFILE_IMAGE_01
 import com.echoist.linkedout.components.CommuTopAppBar
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.home.MyBottomNavigation
@@ -189,7 +190,7 @@ fun SubscriberSimpleItem(
             ) {
 
                 GlideImage(
-                    model = item.profileImage,
+                    model = item.profileImage ?: PROFILE_IMAGE_01,
                     contentDescription = "profileimage",
                     modifier = Modifier.size(60.dp)
                 )

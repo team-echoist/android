@@ -1,5 +1,7 @@
 package com.echoist.linkedout.api
 
+import com.echoist.linkedout.data.RegisterCode
+import com.echoist.linkedout.data.TokensResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Header
@@ -7,15 +9,13 @@ import retrofit2.http.POST
 import retrofit2.http.Query
 
 interface SignUpApi {
-
     @POST("api/auth/check/email")
     suspend fun emailDuplicateConfirm(
         @Body email: EmailRequest
-
     ): Response<Unit>
 
     data class EmailRequest(val email : String,val id : Int? = null)
-    @POST("api/auth/verify")
+    @POST("api/auth/sign")
     suspend fun emailVerify(
         @Body userAccount : UserAccount
     ): Response<Unit>
@@ -29,9 +29,10 @@ interface SignUpApi {
     )
 
     //이메일 재설정
-    @POST("api/auth/verify/email")
+    @POST("api/auth/email/verify")
     suspend fun sendEmailVerificationForChange(
         @Header("Authorization") accessToken: String,
+        @Header("x-refresh-token") refreshToken: String,
         @Body email : EmailRequest
     ): Response<Unit>
 
@@ -39,18 +40,21 @@ interface SignUpApi {
     @POST("api/auth/password/reset-req")
     suspend fun requestChangePw(
         @Header("Authorization") accessToken: String,
+        @Header("x-refresh-token") refreshToken: String,
         @Body email : EmailRequest
     ): Response<Unit>
 
     @POST("api/auth/password/reset-verify")
     suspend fun verifyChangePw(
         @Header("Authorization") accessToken: String,
+        @Header("x-refresh-token") refreshToken: String,
         @Query("token") token : String
     ): Response<Unit>
 
     @POST("api/auth/password/reset")
     suspend fun resetPw(
         @Header("Authorization") accessToken: String,
+        @Header("x-refresh-token") refreshToken: String,
         @Body resetPwRequest : ResetPwRequest
     ): Response<Unit>
 
@@ -59,13 +63,13 @@ interface SignUpApi {
     @POST("api/auth/login")
     suspend fun login(
         @Body userAccount : UserAccount
-    ): Response<LoginResponse>
+    ): Response<TokensResponse>
 
-    data class LoginResponse(
-        val success: Boolean,
-        val timestamp: String,
-        val path: String
-    )
+    //6자리 코드 인증 후 회원가입 요청
+    @POST("api/auth/register")
+    suspend fun requestRegister(
+        @Body code : RegisterCode
+    ): Response<TokensResponse>
 
 
 

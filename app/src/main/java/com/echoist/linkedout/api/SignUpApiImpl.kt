@@ -1,6 +1,8 @@
 package com.echoist.linkedout.api
 import android.content.ContentValues.TAG
 import android.util.Log
+import com.echoist.linkedout.data.RegisterCode
+import com.echoist.linkedout.data.TokensResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Header
@@ -21,29 +23,46 @@ class SignUpApiImpl : SignUpApi {
         return TODO()
     }
 
-    override suspend fun sendEmailVerificationForChange(accessToken: String, email: SignUpApi.EmailRequest): Response<Unit> {
-        // Implement sendEmailVerificationForChange API call
-        return TODO()
+    override suspend fun sendEmailVerificationForChange(
+        accessToken: String,
+        refreshToken: String,
+        email: SignUpApi.EmailRequest
+    ): Response<Unit> {
+        TODO("Not yet implemented")
     }
 
-    override suspend fun requestChangePw(accessToken: String, email: SignUpApi.EmailRequest): Response<Unit> {
-        // Implement requestChangePw API call
-        return TODO()
+    override suspend fun requestChangePw(
+        accessToken: String,
+        refreshToken: String,
+        email: SignUpApi.EmailRequest
+    ): Response<Unit> {
+        TODO("Not yet implemented")
     }
 
-    override suspend fun verifyChangePw(accessToken: String, token: String): Response<Unit> {
-        // Implement verifyChangePw API call
-        return TODO()
+    override suspend fun verifyChangePw(
+        accessToken: String,
+        refreshToken: String,
+        token: String
+    ): Response<Unit> {
+        TODO("Not yet implemented")
     }
 
-    override suspend fun resetPw(accessToken: String, resetPwRequest: SignUpApi.ResetPwRequest): Response<Unit> {
-        // Implement resetPw API call
-        return TODO()
+    override suspend fun resetPw(
+        accessToken: String,
+        refreshToken: String,
+        resetPwRequest: SignUpApi.ResetPwRequest
+    ): Response<Unit> {
+        TODO("Not yet implemented")
     }
 
-    override suspend fun login(userAccount: SignUpApi.UserAccount): Response<SignUpApi.LoginResponse> {
+    override suspend fun login(userAccount: SignUpApi.UserAccount): Response<TokensResponse> {
         // Implement login API call
         return TODO()
+    }
+
+    override suspend fun requestRegister(code: RegisterCode): Response<TokensResponse> {
+        return TODO()
+
     }
 
     @POST("api/support/devices/register")

@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -45,13 +46,11 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -64,6 +63,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
@@ -115,7 +115,15 @@ import kotlinx.coroutines.delay
 
 object Token {
     var accessToken: String = "EMPTYTOKEN"
+        set(value) {
+            field = value
+            bearerAccessToken = "Bearer $value"
+        }
+    var bearerAccessToken: String = "Bearer $accessToken"
+        private set // 외부에서 직접 설정할 수 없도록 private으로 설정
+    var refreshToken: String = "EMPTYTOKEN"
 }
+
 
 @Preview
 @Composable
@@ -197,7 +205,7 @@ fun WritingPage(
                             contentAlignment = Alignment.Center,
                         ) {
                             Box{
-                                GlideImage(model = viewModel.imageUri ?: viewModel.imageUrl , contentDescription = "uri")
+                                GlideImage(model = viewModel.imageUri ?: viewModel.imageUrl , contentDescription = "uri", contentScale = ContentScale.Crop)
                                 Log.d(TAG, "WritingPage: ${viewModel.imageUri}, ${viewModel.imageUrl}")
                                 if (viewModel.imageUri != null || (viewModel.imageUrl != null && viewModel.imageUrl!!.startsWith("https"))){ //image url 주소가 널이 아니고 https값으로 시작해야 제대로된 Url link
                                     Row( //변경버튼 클릭 시 화면이동
@@ -325,7 +333,7 @@ fun WritingPage(
                                     else textState.removeSpanStyle(SpanStyle(textDecoration = TextDecoration.LineThrough))
 
                                     isTextSettingSelected = false
-                                })
+                                }, textState)
 
                             KeyboardLocationFunc(viewModel, navController,textState)
 
@@ -531,6 +539,7 @@ fun ContentTextField(viewModel: WritingViewModel,textState: RichTextState) {
             RichTextEditor(
                 state = textState,
                 modifier = Modifier
+                    .imePadding()
                     .offset(x = 0.dp, y = ydp)
                     .onFocusChanged { focusState.value = it.isFocused }
                     .fillMaxWidth()
@@ -785,6 +794,7 @@ fun TextEditBar(
     onTextUnderLineSelected: (Boolean) -> Unit,
     isTextMiddleLineSelected: Boolean,
     onTextMiddleLineSelected: (Boolean) -> Unit,
+    textState: RichTextState
 ) {
 
     var isOpened by remember { mutableStateOf(true) }
@@ -881,6 +891,7 @@ fun TextEditBar(
                         icon = R.drawable.editbar_more,
                         if (viewModel.isTextFeatOpened.value) LinkedInColor else Color.White
                     ) {
+                        viewModel.content = textState.toHtml()
                         isKeyboardAppeared = !isKeyboardAppeared
                         if (isKeyboardAppeared) keyboardController?.show() else keyboardController?.hide()
                         viewModel.isTextFeatOpened.value = !viewModel.isTextFeatOpened.value
