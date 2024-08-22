@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -49,16 +50,19 @@ import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -66,13 +70,16 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
@@ -86,6 +93,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.core.view.WindowCompat
 import androidx.navigation.NavController
 import androidx.navigation.NavType
@@ -95,6 +103,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.BuildConfig
 import com.echoist.linkedout.DeviceId
 import com.echoist.linkedout.R
@@ -111,12 +121,17 @@ import com.echoist.linkedout.page.community.FullSubscriberPage
 import com.echoist.linkedout.page.home.DarkModeSettingPage
 import com.echoist.linkedout.page.home.HomePage
 import com.echoist.linkedout.page.home.InquiryPage
+import com.echoist.linkedout.page.home.LineChartExample
 import com.echoist.linkedout.page.home.LinkedOutSupportPage
+import com.echoist.linkedout.page.home.LogoutBtn
 import com.echoist.linkedout.page.home.MyBottomNavigation
+import com.echoist.linkedout.page.home.MyLinkedOutBar
+import com.echoist.linkedout.page.home.MyProfile
 import com.echoist.linkedout.page.home.NoticeDetailPage
 import com.echoist.linkedout.page.home.NoticePage
 import com.echoist.linkedout.page.home.NotificationPage
 import com.echoist.linkedout.page.home.NotificationSettingPage
+import com.echoist.linkedout.page.home.ShopDrawerItem
 import com.echoist.linkedout.page.home.SupportPage
 import com.echoist.linkedout.page.home.UpdateHistoryPage
 import com.echoist.linkedout.page.home.legal_Notice.FontCopyRight
@@ -144,6 +159,14 @@ import com.echoist.linkedout.page.settings.RecentEssayDetailPage
 import com.echoist.linkedout.page.settings.RecentViewedEssayPage
 import com.echoist.linkedout.page.settings.ResetPwPage
 import com.echoist.linkedout.page.settings.ResetPwPageWithEmail
+import com.echoist.linkedout.presentation.TabletDrawableItems
+import com.echoist.linkedout.presentation.TabletInquiryScreen
+import com.echoist.linkedout.presentation.TabletLinkedOutSupportRoute
+import com.echoist.linkedout.presentation.TabletSettingRoute
+import com.echoist.linkedout.presentation.TabletSupportRoute
+import com.echoist.linkedout.presentation.TabletThemeModeScreen
+import com.echoist.linkedout.presentation.TabletUpdateHistoryRoute
+import com.echoist.linkedout.presentation.TopBarForRoute
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
@@ -183,6 +206,7 @@ class LoginPage : ComponentActivity() {
         Log.d("SSAID", "SSAID: ${DeviceId.ssaid}") //고유식별자
     }
 
+    @OptIn(ExperimentalGlideComposeApi::class)
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -216,6 +240,12 @@ class LoginPage : ComponentActivity() {
                         navBackStackEntry?.destination?.route?.startsWith(Routes.MyLog) == true ||
                         navBackStackEntry?.destination?.route == Routes.Settings
 
+            val drawerState = rememberDrawerState(DrawerValue.Closed)
+            val scope = rememberCoroutineScope()
+            var selectedMenu by remember { mutableStateOf("Default") }
+            var isLogoutClicked by remember { mutableStateOf(false) }
+            val scrollState = rememberScrollState()
+
             val isTablet = ((resources.configuration.screenLayout
                     and Configuration.SCREENLAYOUT_SIZE_MASK)
                     >= Configuration.SCREENLAYOUT_SIZE_LARGE)
@@ -226,38 +256,155 @@ class LoginPage : ComponentActivity() {
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background
                     ) {
-                        Scaffold(
-                            floatingActionButton = {
-                                if (navBackStackEntry?.destination?.route?.startsWith(Routes.Home) == true ||
-                                    navBackStackEntry?.destination?.route?.startsWith(Routes.MyLog) == true
-                                ) {
-                                    FloatingActionButton(
-                                        modifier = Modifier.padding(end = 25.dp, bottom = 25.dp),
-                                        onClick = {
-                                            navController.navigate(Routes.WritingPage)
-                                            homeViewModel.initializeDetailEssay()
-                                            homeViewModel.setStorageEssay(EssayApi.EssayItem())
-                                        },
-                                        shape = RoundedCornerShape(100.dp),
-                                        containerColor = Color.White
+                        ModalNavigationDrawer(
+                            drawerState = drawerState,
+                            drawerContent = {
+                                Row {
+                                    Column(
+                                        Modifier
+                                            .width(360.dp)
+                                            .fillMaxHeight()
+                                            .background(Color(0xFF121212))
+                                            .verticalScroll(scrollState),
                                     ) {
-                                        Icon(
-                                            painter = painterResource(id = R.drawable.ftb_edit),
-                                            contentDescription = "edit",
-                                            modifier = Modifier.size(20.dp),
-                                            tint = Color.Black
+                                        MyProfile(item = homeViewModel.getMyInfo()) { }
+                                        HorizontalDivider(
+                                            thickness = 6.dp,
+                                            color = Color(0xFF191919)
                                         )
+                                        MyLinkedOutBar()
+                                        LineChartExample(essayCounts = homeViewModel.essayCount)
+                                        Spacer(modifier = Modifier.height(10.dp))
+                                        HorizontalDivider(
+                                            thickness = 6.dp,
+                                            color = Color(0xFF191919)
+                                        )
+                                        ShopDrawerItem()
+                                        HorizontalDivider(
+                                            thickness = 6.dp,
+                                            color = Color(0xFF191919)
+                                        )
+                                        TabletDrawableItems("화면 설정", selectedMenu == "화면 설정") {
+                                            selectedMenu = "화면 설정"
+                                        }
+                                        TabletDrawableItems("환경 설정", selectedMenu == "환경 설정") {
+                                            selectedMenu = "환경 설정"
+                                        }
+                                        TabletDrawableItems("고객지원", selectedMenu == "고객지원") {
+                                            selectedMenu = "고객지원"
+                                        }
+                                        TabletDrawableItems("업데이트 기록", selectedMenu == "업데이트 기록") {
+                                            selectedMenu = "업데이트 기록"
+                                        }
+
+                                        LogoutBtn { isLogoutClicked = true } //todo logout 기능 만들기
+                                    }
+                                    Box(Modifier.fillMaxSize()) {
+                                        when (selectedMenu) {
+                                            "Default" -> {
+                                                Box(
+                                                    Modifier
+                                                        .fillMaxSize()
+                                                        .alpha(0.0f)
+                                                )
+                                            }
+
+                                            "화면 설정" -> {
+                                                TabletThemeModeScreen {
+                                                    selectedMenu = "Default"
+                                                }
+                                            }
+
+                                            "환경 설정" -> {
+                                                TabletSettingRoute(navController = navController) {
+                                                    selectedMenu = "Default"
+                                                }
+                                            }
+
+                                            "고객지원" -> {
+                                                TabletSupportRoute(onCloseClick = {
+                                                    selectedMenu = "Default"
+                                                }, onClickSupport = {
+                                                    selectedMenu = "링크드아웃 고객센터"
+                                                })
+                                            }
+
+                                            "업데이트 기록" -> {
+                                                TabletUpdateHistoryRoute {
+                                                    selectedMenu = "Default"
+                                                }
+                                            }
+
+                                            "링크드아웃 고객센터" -> {
+                                                TabletLinkedOutSupportRoute(onBackPressed = {
+                                                    selectedMenu = "고객지원"
+                                                }, onClickInquiry = {
+                                                    selectedMenu = "1:1 문의하기"
+                                                })
+                                            }
+
+                                            "1:1 문의하기" -> {
+                                                TabletInquiryScreen {
+                                                    selectedMenu = "링크드아웃 고객센터"
+                                                }
+                                            }
+                                        }
                                     }
                                 }
-                            },
-                            bottomBar = {
-                                if (showBottomBar) {
-                                    MyBottomNavigation(navController = navController)
-                                }
-                            }) { _ ->
-                            TabletNavHost(
-                                navController = navController
-                            )
+                            }
+                        ) {
+                            Scaffold(
+                                topBar = {
+                                    val currentRoute = navBackStackEntry?.destination?.route
+
+                                    TopBarForRoute(
+                                        currentRoute = currentRoute,
+                                        navController = navController,
+                                        drawerState = drawerState,
+                                        scope = scope,
+                                        homeViewModel = homeViewModel,
+                                        myLogViewModel = myLogViewModel,
+                                        onSearchClick = {
+                                            navController.navigate(Routes.Search)
+                                        }
+                                    )
+                                },
+                                floatingActionButton = {
+                                    if (navBackStackEntry?.destination?.route?.startsWith(Routes.Home) == true ||
+                                        navBackStackEntry?.destination?.route?.startsWith(Routes.MyLog) == true
+                                    ) {
+                                        FloatingActionButton(
+                                            modifier = Modifier.padding(
+                                                end = 25.dp,
+                                                bottom = 25.dp
+                                            ),
+                                            onClick = {
+                                                navController.navigate(Routes.WritingPage)
+                                                homeViewModel.initializeDetailEssay()
+                                                homeViewModel.setStorageEssay(EssayApi.EssayItem())
+                                            },
+                                            shape = RoundedCornerShape(100.dp),
+                                            containerColor = Color.White
+                                        ) {
+                                            Icon(
+                                                painter = painterResource(id = R.drawable.ftb_edit),
+                                                contentDescription = "edit",
+                                                modifier = Modifier.size(20.dp),
+                                                tint = Color.Black
+                                            )
+                                        }
+                                    }
+                                },
+                                bottomBar = {
+                                    if (showBottomBar) {
+                                        MyBottomNavigation(navController = navController)
+                                    }
+                                }) { contentPadding ->
+                                TabletNavHost(
+                                    navController = navController,
+                                    contentPadding = contentPadding
+                                )
+                            }
                         }
                     }
                 }

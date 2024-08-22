@@ -43,9 +43,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import com.echoist.linkedout.page.login.EmailTextField
-import com.echoist.linkedout.page.login.PwTextField
 import com.echoist.linkedout.page.login.SendSignUpFinishedAlert
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
@@ -76,6 +75,7 @@ fun TabletSignUpRoute(
     }
 
     TabletSignUpScreen(
+        navController = navController,
         viewModel = viewModel,
         horizontalPadding = if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 350 else 100,
         detectTapGestures = { keyboardController?.hide() },
@@ -90,6 +90,7 @@ fun TabletSignUpRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun TabletSignUpScreen(
+    navController: NavController,
     viewModel: SignUpViewModel,
     horizontalPadding: Int,
     detectTapGestures: () -> Unit,
@@ -149,8 +150,9 @@ internal fun TabletSignUpScreen(
                             modifier = Modifier.padding(start = 16.dp, bottom = 32.dp),
                             color = Color(0xFF919191)
                         )
-                        EmailTextField(viewModel)
-                        PwTextField(viewModel)
+
+                        LoginTextFields(navController = navController)
+
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = "*비밀번호는 영문(대소문자), 특수문자, 숫자 포함 8~12자를 조합해 주세요.",

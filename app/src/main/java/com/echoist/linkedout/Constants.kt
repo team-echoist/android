@@ -54,6 +54,7 @@ object DeviceType {
     const val TABLET = "Tablet"
     const val UNKNOWN = "Unknown"
 }
+
 object Routes {
     const val OnBoarding = "OnBoarding"
     const val LoginPage = "LoginPage"
@@ -99,10 +100,11 @@ object Routes {
     const val PrivacyPolicyPage = "PrivacyPolicyPage"
     const val LocationPolicyPage = "LocationPolicyPage"
     const val FontCopyRight = "FontCopyRight"
+    const val Search = "Search"
 }
 
 enum class UserStatus {
-    Activated,Monitored,Banned,DeActivated
+    Activated, Monitored, Banned, DeActivated
 }
 
 

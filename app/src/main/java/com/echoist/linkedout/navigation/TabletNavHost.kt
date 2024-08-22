@@ -1,7 +1,16 @@
 package com.echoist.linkedout.navigation
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -18,15 +27,18 @@ import com.echoist.linkedout.presentation.TabletMyInfoRoute
 import com.echoist.linkedout.presentation.TabletMyLogRoute
 import com.echoist.linkedout.presentation.TabletOnBoardingRoute
 import com.echoist.linkedout.presentation.TabletResetPwRoute
+import com.echoist.linkedout.presentation.TabletSearchScreen
 import com.echoist.linkedout.presentation.TabletSettingRoute
 import com.echoist.linkedout.presentation.TabletSignUpCompleteRoute
 import com.echoist.linkedout.presentation.TabletSignUpRoute
+import okhttp3.Route
 
 @Composable
 fun TabletNavHost(
     navController: NavHostController,
+    contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
-    startDestination: String = Routes.Home
+    startDestination: String = Routes.LoginPage
 ) {
     NavHost(
         navController = navController,
@@ -58,26 +70,41 @@ fun TabletNavHost(
             }
         }
         composable(
-            Routes.Home,
+            route = "${Routes.Home}/{statusCode}",
         ) { backStackEntry ->
             val statusCode = backStackEntry.arguments?.getInt("statusCode") ?: 200
-            TabletHomeRoute(navController = navController, statusCode = 200)
+            TabletHomeRoute(
+                statusCode = statusCode
+            )
         }
         composable(
             route = "${Routes.MyLog}/{page}",
             arguments = listOf(navArgument("page") { type = NavType.IntType })
         ) { backStackEntry ->
             val page = backStackEntry.arguments?.getInt("page") ?: 0
-            TabletMyLogRoute(navController = navController, page = page)
+            TabletMyLogRoute(
+                navController = navController,
+                page = page,
+                modifier = Modifier.padding(contentPadding)
+            )
         }
         composable(Routes.Community) {
-            TabletCommunityRoute(navController = navController)
+            TabletCommunityRoute(
+                navController = navController,
+                modifier = Modifier.padding(contentPadding)
+            )
         }
         composable(Routes.Settings) {
-            TabletMyInfoRoute(navController = navController)
+            TabletMyInfoRoute(
+                navController = navController,
+                modifier = Modifier.padding(contentPadding)
+            )
         }
         composable(Routes.WritingPage) {
             TabletEssayWriteRoute(navController = navController)
+        }
+        composable(Routes.Search) {
+            TabletSearchScreen(navController)
         }
     }
 }

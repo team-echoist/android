@@ -27,18 +27,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.components.CommunityChips
 import com.echoist.linkedout.components.CommunityPager
-import com.echoist.linkedout.components.CommunityTopAppBar
 import com.echoist.linkedout.page.community.SearchingPage
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.viewModels.CommunityViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import kotlinx.coroutines.launch
 
 @Composable
 fun TabletCommunityRoute(
     navController: NavController,
-    viewModel: CommunityViewModel = hiltViewModel()
+    viewModel: CommunityViewModel = hiltViewModel(),
+    modifier: Modifier = Modifier
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -70,24 +69,9 @@ fun TabletCommunityRoute(
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                     val isRefreshing by viewModel.isRefreshing.collectAsState()
 
-                    Column(modifier = Modifier.background(color)) {
-                        CommunityTopAppBar(
-                            "커뮤니티",
-                            pagerstate,
-                            onSearchClick = {
-                                scope.launch {
-                                    drawerState.apply {
-                                        if (isClosed) open() else close()
-                                    }
-                                }
-                            },
-                            onClickBookMarked = {
-                                viewModel.readMyBookMarks(navController)
-                            }
-                        )
+                    Column(modifier = modifier.background(color)) {
                         CommunityChips(pagerstate)
                         SwipeRefresh(
-                            modifier = Modifier,
                             indicatorPadding = PaddingValues(top = 70.dp),
                             state = rememberSwipeRefreshState(isRefreshing = isRefreshing),
                             onRefresh = { viewModel.refresh() }) {

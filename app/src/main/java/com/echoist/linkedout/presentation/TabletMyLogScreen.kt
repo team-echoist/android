@@ -1,6 +1,5 @@
 package com.echoist.linkedout.presentation
 
-import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
@@ -39,7 +38,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
@@ -49,7 +47,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.components.EssayPager
 import com.echoist.linkedout.components.ModifyStoryBox
-import com.echoist.linkedout.components.MyLogTopAppBar
 import com.echoist.linkedout.page.community.SearchingPage
 import com.echoist.linkedout.viewModels.HomeViewModel
 import com.echoist.linkedout.viewModels.MyLogViewModel
@@ -60,6 +57,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun TabletMyLogRoute(
     navController: NavController,
+    modifier: Modifier = Modifier,
     viewModel: MyLogViewModel = hiltViewModel(),
     writingViewModel: WritingViewModel = hiltViewModel(),
     page: Int = 0
@@ -70,9 +68,6 @@ fun TabletMyLogRoute(
     val pagerState = rememberPagerState { 3 }
     val hasCalledApi = remember { mutableStateOf(false) }
     val isLoading by viewModel.isLoading.collectAsState()
-    val configuration = LocalConfiguration.current
-    val contentPadding =
-        if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 250 else 100
 
     LaunchedEffect(key1 = Unit) {
         pagerState.animateScrollToPage(page)
@@ -89,6 +84,7 @@ fun TabletMyLogRoute(
     }
 
     TabletMyLogScreen(
+        modifier = modifier,
         drawerState = drawerState,
         pagerState = pagerState,
         navController = navController,
@@ -101,6 +97,7 @@ fun TabletMyLogRoute(
 
 @Composable
 internal fun TabletMyLogScreen(
+    modifier: Modifier,
     drawerState: DrawerState,
     pagerState: PagerState,
     navController: NavController,
@@ -117,18 +114,10 @@ internal fun TabletMyLogScreen(
             },
             content = {
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-                    Column {
-                        TopBarSection(
-                            scope = scope,
-                            drawerState = drawerState,
-                            viewModel = viewModel,
-                            pagerState = pagerState,
-                            navController = navController
-                        )
+                    Column(modifier = modifier.padding(horizontal = 250.dp)) {
                         TabletMyLogTabView(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 250.dp),
+                                .fillMaxWidth(),
                             pagerState = pagerState,
                             viewModel = viewModel
                         )
@@ -157,30 +146,6 @@ fun DrawerContent(navController: NavController, drawerState: DrawerState) {
         ) {
             SearchingPage(drawerState = drawerState, navController = navController)
         }
-    }
-}
-
-@Composable
-fun TopBarSection(
-    scope: CoroutineScope,
-    drawerState: DrawerState,
-    viewModel: MyLogViewModel,
-    pagerState: PagerState,
-    navController: NavController
-) {
-    Column {
-        MyLogTopAppBar(
-            {
-                scope.launch {
-                    drawerState.apply {
-                        if (isClosed) open() else close()
-                    }
-                }
-            },
-            viewModel.getUserInfo().nickname!!,
-            { navController.navigate("NotificationPage") },
-            viewModel.isExistUnreadAlerts
-        )
     }
 }
 
