@@ -10,8 +10,12 @@ import androidx.navigation.navArgument
 import com.echoist.linkedout.Routes
 import com.echoist.linkedout.page.home.HomePage
 import com.echoist.linkedout.page.login.OnBoardingPage
+import com.echoist.linkedout.presentation.TabletCommunityRoute
+import com.echoist.linkedout.presentation.TabletEssayWriteRoute
 import com.echoist.linkedout.presentation.TabletHomeRoute
 import com.echoist.linkedout.presentation.TabletLoginRoute
+import com.echoist.linkedout.presentation.TabletMyInfoRoute
+import com.echoist.linkedout.presentation.TabletMyLogRoute
 import com.echoist.linkedout.presentation.TabletOnBoardingRoute
 import com.echoist.linkedout.presentation.TabletResetPwRoute
 import com.echoist.linkedout.presentation.TabletSettingRoute
@@ -58,6 +62,22 @@ fun TabletNavHost(
         ) { backStackEntry ->
             val statusCode = backStackEntry.arguments?.getInt("statusCode") ?: 200
             TabletHomeRoute(navController = navController, statusCode = 200)
+        }
+        composable(
+            route = "${Routes.MyLog}/{page}",
+            arguments = listOf(navArgument("page") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val page = backStackEntry.arguments?.getInt("page") ?: 0
+            TabletMyLogRoute(navController = navController, page = page)
+        }
+        composable(Routes.Community) {
+            TabletCommunityRoute(navController = navController)
+        }
+        composable(Routes.Settings) {
+            TabletMyInfoRoute(navController = navController)
+        }
+        composable(Routes.WritingPage) {
+            TabletEssayWriteRoute(navController = navController)
         }
     }
 }

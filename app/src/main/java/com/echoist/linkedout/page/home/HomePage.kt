@@ -81,6 +81,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -323,7 +324,7 @@ fun ModalBottomSheetContent(viewModel: HomeViewModel,navController: NavControlle
 }
 
 @Composable
-fun WriteFTB(navController: NavController,viewModel: HomeViewModel,writingViewModel: WritingViewModel) {
+fun WriteFTB(navController: NavController,viewModel: HomeViewModel = hiltViewModel(),writingViewModel: WritingViewModel = hiltViewModel()) {
 
 
     FloatingActionButton(
@@ -543,7 +544,7 @@ fun createLineData(essayCounts: List<Int>): LineData {
         setDrawCircles(true)
         setDrawValues(false)
         setDrawIcons(false)
-        
+
 
     }
 
@@ -570,7 +571,7 @@ fun MyLinkedOutBar(){
         }
     }
 
-    
+
 }
 
 @Composable
@@ -811,7 +812,7 @@ fun TutorialPage(isCloseClicked: () -> Unit,isSkipClicked : ()->Unit){
         }
     }
 }
-    
+
 
 
 @OptIn(ExperimentalGlideComposeApi::class)

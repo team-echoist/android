@@ -127,11 +127,13 @@ internal fun TabletMyLogScreen(
                         )
                         TabletMyLogTabView(
                             modifier = Modifier
-                                .fillMaxWidth(),
+                                .fillMaxWidth()
+                                .padding(horizontal = 250.dp),
                             pagerState = pagerState,
                             viewModel = viewModel
                         )
                         ContentSection(
+                            modifier = Modifier.padding(horizontal = 250.dp),
                             pagerState = pagerState,
                             viewModel = viewModel,
                             navController = navController,
@@ -184,12 +186,13 @@ fun TopBarSection(
 
 @Composable
 fun ContentSection(
+    modifier: Modifier,
     pagerState: PagerState,
     viewModel: MyLogViewModel,
     navController: NavController,
     writingViewModel: WritingViewModel
 ) {
-    Box {
+    Box(modifier = modifier) {
         EssayPager(
             pagerState = pagerState,
             viewModel = viewModel,
