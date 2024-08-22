@@ -363,7 +363,10 @@ class LoginPage : ComponentActivity() {
                                         drawerState = drawerState,
                                         scope = scope,
                                         homeViewModel = homeViewModel,
-                                        myLogViewModel = myLogViewModel
+                                        myLogViewModel = myLogViewModel,
+                                        onSearchClick = {
+                                            navController.navigate(Routes.Search)
+                                        }
                                     )
                                 },
                                 floatingActionButton = {
