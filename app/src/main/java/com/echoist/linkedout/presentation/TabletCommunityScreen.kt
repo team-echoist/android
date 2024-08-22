@@ -38,7 +38,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun TabletCommunityRoute(
     navController: NavController,
-    viewModel: CommunityViewModel = hiltViewModel()
+    viewModel: CommunityViewModel = hiltViewModel(),
+    modifier: Modifier = Modifier
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -70,24 +71,9 @@ fun TabletCommunityRoute(
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                     val isRefreshing by viewModel.isRefreshing.collectAsState()
 
-                    Column(modifier = Modifier.background(color)) {
-                        CommunityTopAppBar(
-                            "커뮤니티",
-                            pagerstate,
-                            onSearchClick = {
-                                scope.launch {
-                                    drawerState.apply {
-                                        if (isClosed) open() else close()
-                                    }
-                                }
-                            },
-                            onClickBookMarked = {
-                                viewModel.readMyBookMarks(navController)
-                            }
-                        )
+                    Column(modifier = modifier.background(color)) {
                         CommunityChips(pagerstate)
                         SwipeRefresh(
-                            modifier = Modifier,
                             indicatorPadding = PaddingValues(top = 70.dp),
                             state = rememberSwipeRefreshState(isRefreshing = isRefreshing),
                             onRefresh = { viewModel.refresh() }) {
