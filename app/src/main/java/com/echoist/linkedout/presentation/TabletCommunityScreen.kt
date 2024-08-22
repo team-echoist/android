@@ -27,13 +27,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.components.CommunityChips
 import com.echoist.linkedout.components.CommunityPager
-import com.echoist.linkedout.components.CommunityTopAppBar
 import com.echoist.linkedout.page.community.SearchingPage
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.viewModels.CommunityViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import kotlinx.coroutines.launch
 
 @Composable
 fun TabletCommunityRoute(
