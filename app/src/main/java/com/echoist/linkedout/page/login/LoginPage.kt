@@ -2,6 +2,7 @@ package com.echoist.linkedout.page.login
 
 import android.app.Activity
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.Rect
 import android.os.Bundle
 import android.provider.Settings
@@ -30,6 +31,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -48,13 +50,19 @@ import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -62,9 +70,11 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -88,6 +98,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
@@ -96,10 +107,12 @@ import com.echoist.linkedout.DeviceId
 import com.echoist.linkedout.R
 import com.echoist.linkedout.Routes
 import com.echoist.linkedout.SharedPreferencesUtil
+import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.components.CropImagePage
 import com.echoist.linkedout.components.ExitAppErrorBox
 import com.echoist.linkedout.data.Notice
 import com.echoist.linkedout.isDateAfterToday
+import com.echoist.linkedout.navigation.TabletNavHost
 import com.echoist.linkedout.page.community.CommunityDetailPage
 import com.echoist.linkedout.page.community.CommunityPage
 import com.echoist.linkedout.page.community.CommunitySavedEssayPage
@@ -107,11 +120,17 @@ import com.echoist.linkedout.page.community.FullSubscriberPage
 import com.echoist.linkedout.page.home.DarkModeSettingPage
 import com.echoist.linkedout.page.home.HomePage
 import com.echoist.linkedout.page.home.InquiryPage
+import com.echoist.linkedout.page.home.LineChartExample
 import com.echoist.linkedout.page.home.LinkedOutSupportPage
+import com.echoist.linkedout.page.home.LogoutBtn
+import com.echoist.linkedout.page.home.MyBottomNavigation
+import com.echoist.linkedout.page.home.MyLinkedOutBar
+import com.echoist.linkedout.page.home.MyProfile
 import com.echoist.linkedout.page.home.NoticeDetailPage
 import com.echoist.linkedout.page.home.NoticePage
 import com.echoist.linkedout.page.home.NotificationPage
 import com.echoist.linkedout.page.home.NotificationSettingPage
+import com.echoist.linkedout.page.home.ShopDrawerItem
 import com.echoist.linkedout.page.home.SupportPage
 import com.echoist.linkedout.page.home.UpdateHistoryPage
 import com.echoist.linkedout.page.home.legal_Notice.FontCopyRight
@@ -139,6 +158,13 @@ import com.echoist.linkedout.page.settings.RecentEssayDetailPage
 import com.echoist.linkedout.page.settings.RecentViewedEssayPage
 import com.echoist.linkedout.page.settings.ResetPwPage
 import com.echoist.linkedout.page.settings.ResetPwPageWithEmail
+import com.echoist.linkedout.presentation.TabletDrawableItems
+import com.echoist.linkedout.presentation.TabletInquiryScreen
+import com.echoist.linkedout.presentation.TabletLinkedOutSupportRoute
+import com.echoist.linkedout.presentation.TabletSettingRoute
+import com.echoist.linkedout.presentation.TabletSupportRoute
+import com.echoist.linkedout.presentation.TabletThemeModeScreen
+import com.echoist.linkedout.presentation.TabletUpdateHistoryRoute
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
@@ -157,6 +183,7 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 
@@ -228,6 +255,28 @@ class LoginPage : ComponentActivity() {
             }
 
             val navController = rememberNavController()
+
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val showBottomBar =
+                navBackStackEntry?.destination?.route?.startsWith(Routes.Home) == true ||
+                        navBackStackEntry?.destination?.route == Routes.Community ||
+                        navBackStackEntry?.destination?.route?.startsWith(Routes.MyLog) == true ||
+                        navBackStackEntry?.destination?.route == Routes.Settings
+
+            val drawerState = rememberDrawerState(DrawerValue.Closed)
+            val scope = rememberCoroutineScope()
+            var selectedMenu by remember { mutableStateOf("Default") }
+            var isLogoutClicked by remember { mutableStateOf(false) }
+            val scrollState = rememberScrollState()
+            var isNotificationClicked by remember { mutableStateOf(false) }
+
+            val isOnboardingFinished = SharedPreferencesUtil.getIsOnboardingFinished(this)
+            val startDestination = if (isOnboardingFinished) Routes.LoginPage else Routes.OnBoarding
+
+            val isTablet = ((resources.configuration.screenLayout
+                    and Configuration.SCREENLAYOUT_SIZE_MASK)
+                    >= Configuration.SCREENLAYOUT_SIZE_LARGE)
+
             LinkedOutTheme(navController = navController) {
 
                 BackHandler { // 백키 이벤트 핸들링
@@ -241,216 +290,445 @@ class LoginPage : ComponentActivity() {
                     }
                 }
 
-                NavHost(navController = navController, startDestination = startDestination) {
+                if (isTablet) {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+                        ModalNavigationDrawer(
+                            drawerState = drawerState,
+                            drawerContent = {
+                                Row {
+                                    Column(
+                                        Modifier
+                                            .width(360.dp)
+                                            .fillMaxHeight()
+                                            .background(Color(0xFF121212))
+                                            .verticalScroll(scrollState),
+                                    ) {
+                                        MyProfile(item = homeViewModel.getMyInfo()) {
+                                            scope.launch {
+                                                drawerState.close()
+                                            }
+                                            navController.navigate(Routes.Settings)
+                                        }
+                                        HorizontalDivider(
+                                            thickness = 6.dp,
+                                            color = Color(0xFF191919)
+                                        )
+                                        MyLinkedOutBar()
+                                        LineChartExample(essayCounts = homeViewModel.essayCount)
+                                        Spacer(modifier = Modifier.height(10.dp))
+                                        HorizontalDivider(
+                                            thickness = 6.dp,
+                                            color = Color(0xFF191919)
+                                        )
+                                        ShopDrawerItem()
+                                        HorizontalDivider(
+                                            thickness = 6.dp,
+                                            color = Color(0xFF191919)
+                                        )
+                                        TabletDrawableItems("화면 설정", selectedMenu == "화면 설정") {
+                                            selectedMenu = "화면 설정"
+                                        }
+                                        TabletDrawableItems("환경 설정", selectedMenu == "환경 설정") {
+                                            selectedMenu = "환경 설정"
+                                        }
+                                        TabletDrawableItems("고객지원", selectedMenu == "고객지원") {
+                                            selectedMenu = "고객지원"
+                                        }
+                                        TabletDrawableItems("업데이트 기록", selectedMenu == "업데이트 기록") {
+                                            selectedMenu = "업데이트 기록"
+                                        }
 
-                    composable(Routes.OnBoarding) {
-                        OnBoardingPage(navController)
-                    }
-                    composable(Routes.LoginPage) {
-                        LoginPage(navController = navController)
-                    }
-                    composable(Routes.SignUp) {
-                        SignUpPage(navController, signUpViewModel)
-                    }
-                    composable(Routes.AgreeOfProvisionsPage) {
-                        AgreeOfProvisionsPage(navController, signUpViewModel)
-                    }
-                    composable(Routes.SignUpComplete) {
-                        SignUpCompletePage(homeViewModel, navController)
-                    }
-                    composable(
-                        "${Routes.Home}/{statusCode}",
-                        arguments = listOf(navArgument("statusCode") { type = NavType.IntType })
-                    ) { backStackEntry ->
-                        val statusCode = backStackEntry.arguments?.getInt("statusCode") ?: 200
-                        HomePage(navController, homeViewModel, writingViewModel, statusCode)
-                    }
-                    composable(Routes.DarkModeSettingPage) {
-                        DarkModeSettingPage(navController)
-                    }
-                    composable(Routes.NotificationPage) {
-                        NotificationPage(navController)
-                    }
-                    composable(Routes.NotificationSettingPage) {
-                        NotificationSettingPage(navController)
-                    }
-                    composable(Routes.SupportPage) {
-                        SupportPage(navController)
-                    }
-                    composable(Routes.LinkedOutSupportPage) {
-                        LinkedOutSupportPage(navController)
-                    }
-                    composable(Routes.InquiryPage) {
-                        InquiryPage(navController)
-                    }
-                    composable(Routes.NoticePage) {
-                        NoticePage(navController, supportViewModel)
-                    }
-                    composable(
-                        route = "${Routes.NoticeDetailPage}/{noticeJson}",
-                        arguments = listOf(navArgument("noticeJson") { type = NavType.StringType })
-                    ) { backStackEntry ->
-                        val noticeJson = backStackEntry.arguments?.getString("noticeJson")
-                        val decodedJson =
-                            noticeJson?.let { URLDecoder.decode(it, StandardCharsets.UTF_8.name()) }
-                        val notice = jsonAdapter.fromJson(decodedJson!!)
+                                        LogoutBtn { isLogoutClicked = true } //todo logout 기능 만들기
+                                    }
+                                    Box(Modifier.fillMaxSize()) {
+                                        when (selectedMenu) {
+                                            "Default" -> {
+                                                Box(
+                                                    Modifier
+                                                        .fillMaxSize()
+                                                        .alpha(0.0f)
+                                                )
+                                            }
 
-                        NoticeDetailPage(
-                            navController,
-                            notice ?: Notice(0, "no title", "no content", "2024 08 03")
-                        )
-                    }
-                    composable(Routes.UpdateHistoryPage) {
-                        UpdateHistoryPage(navController)
-                    }
-                    composable(
-                        route = "${Routes.MyLog}/{page}",
-                        arguments = listOf(navArgument("page") { type = NavType.IntType })
-                    ) { backStackEntry ->
-                        val page = backStackEntry.arguments?.getInt("page") ?: 0
-                        MyLogPage(navController, myLogViewModel, writingViewModel, page)
+                                            "화면 설정" -> {
+                                                TabletThemeModeScreen {
+                                                    selectedMenu = "Default"
+                                                }
+                                            }
 
+                                            "환경 설정" -> {
+                                                TabletSettingRoute(navController = navController) {
+                                                    selectedMenu = "Default"
+                                                }
+                                            }
+
+                                            "고객지원" -> {
+                                                TabletSupportRoute(onCloseClick = {
+                                                    selectedMenu = "Default"
+                                                }, onClickSupport = {
+                                                    selectedMenu = "링크드아웃 고객센터"
+                                                })
+                                            }
+
+                                            "업데이트 기록" -> {
+                                                TabletUpdateHistoryRoute {
+                                                    selectedMenu = "Default"
+                                                }
+                                            }
+
+                                            "링크드아웃 고객센터" -> {
+                                                TabletLinkedOutSupportRoute(onBackPressed = {
+                                                    selectedMenu = "고객지원"
+                                                }, onClickInquiry = {
+                                                    selectedMenu = "1:1 문의하기"
+                                                })
+                                            }
+
+                                            "1:1 문의하기" -> {
+                                                TabletInquiryScreen {
+                                                    selectedMenu = "링크드아웃 고객센터"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        ) {
+                            Scaffold(
+                                topBar = {
+                                    val currentRoute = navBackStackEntry?.destination?.route
+
+                                    TopBarForRoute(
+                                        modifier = Modifier
+                                            .fillMaxWidth(if (isNotificationClicked) 0.7f else 1f),
+                                        currentRoute = currentRoute,
+                                        drawerState = drawerState,
+                                        scope = scope,
+                                        homeViewModel = homeViewModel,
+                                        myLogViewModel = myLogViewModel,
+                                        onClickSearch = {
+                                            navController.navigate(Routes.Search)
+                                        },
+                                        onClickNotification = {
+                                            isNotificationClicked = !isNotificationClicked
+                                        },
+                                        onBackPress = { navController.popBackStack() }
+                                    )
+                                },
+                                floatingActionButton = {
+                                    if ((navBackStackEntry?.destination?.route?.startsWith(Routes.Home) == true ||
+                                                navBackStackEntry?.destination?.route?.startsWith(
+                                                    Routes.MyLog
+                                                ) == true) && !isNotificationClicked
+                                    ) {
+                                        FloatingActionButton(
+                                            modifier = Modifier.padding(
+                                                end = 25.dp,
+                                                bottom = 25.dp
+                                            ),
+                                            onClick = {
+                                                navController.navigate(Routes.WritingPage)
+                                                homeViewModel.initializeDetailEssay()
+                                                homeViewModel.setStorageEssay(EssayApi.EssayItem())
+                                            },
+                                            shape = RoundedCornerShape(100.dp),
+                                            containerColor = Color.White
+                                        ) {
+                                            Icon(
+                                                painter = painterResource(id = R.drawable.ftb_edit),
+                                                contentDescription = "edit",
+                                                modifier = Modifier.size(20.dp),
+                                                tint = Color.Black
+                                            )
+                                        }
+                                    }
+                                },
+                                bottomBar = {
+                                    if (showBottomBar) {
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth(if (isNotificationClicked) 0.7f else 1f)
+                                        ) {
+                                            MyBottomNavigation(navController = navController) {
+                                                if (!it.startsWith(Routes.Home) && !it.startsWith(
+                                                        Routes.MyLog
+                                                    )
+                                                )
+                                                    isNotificationClicked = false
+                                            }
+                                        }
+                                    }
+                                }) { contentPadding ->
+                                Row(
+                                    modifier = Modifier.fillMaxSize()
+                                ) {
+                                    // Left Side: TabletNavHost
+                                    Box(
+                                        modifier = Modifier
+                                            .weight(1f) // Remaining space if notification view is shown
+                                            .fillMaxHeight()
+                                    ) {
+                                        TabletNavHost(
+                                            startDestination = startDestination,
+                                            navController = navController,
+                                            contentPadding = contentPadding
+                                        )
+                                    }
+
+                                    if (isNotificationClicked) {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth(0.3f)
+                                                .fillMaxHeight()
+                                        ) {
+                                            TabletNotificationScreen(
+                                                navController = navController,
+                                                onBackPress = { isNotificationClicked = false }
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
-                    composable(Routes.StoryPage,
-                        enterTransition = {
-                            slideInVertically(
-                                initialOffsetY = { 2000 },
-                                animationSpec = tween(durationMillis = 500)
-                            )
-                        },
-                        exitTransition = {
-                            slideOutVertically(
-                                targetOffsetY = { 2000 },
-                                animationSpec = tween(durationMillis = 500)
+                } else {
+                    NavHost(
+                        navController = navController,
+                        startDestination = startDestination
+                    ) {
+
+                        composable(Routes.OnBoarding) {
+                            OnBoardingPage(navController)
+                        }
+                        composable(Routes.LoginPage) {
+                            LoginPage(navController = navController)
+                        }
+                        composable(Routes.SignUp) {
+                            SignUpPage(navController, signUpViewModel)
+                        }
+                        composable(Routes.AgreeOfProvisionsPage) {
+                            AgreeOfProvisionsPage(navController, signUpViewModel)
+                        }
+                        composable(Routes.SignUpComplete) {
+                            SignUpCompletePage(homeViewModel, navController)
+                        }
+                        composable(
+                            "${Routes.Home}/{statusCode}",
+                            arguments = listOf(navArgument("statusCode") {
+                                type = NavType.IntType
+                            })
+                        ) { backStackEntry ->
+                            val statusCode =
+                                backStackEntry.arguments?.getInt("statusCode") ?: 200
+                            HomePage(navController, homeViewModel, writingViewModel, statusCode)
+                        }
+                        composable(Routes.DarkModeSettingPage) {
+                            DarkModeSettingPage(navController)
+                        }
+                        composable(Routes.NotificationPage) {
+                            NotificationPage(navController)
+                        }
+                        composable(Routes.NotificationSettingPage) {
+                            NotificationSettingPage(navController)
+                        }
+                        composable(Routes.SupportPage) {
+                            SupportPage(navController)
+                        }
+                        composable(Routes.LinkedOutSupportPage) {
+                            LinkedOutSupportPage(navController)
+                        }
+                        composable(Routes.InquiryPage) {
+                            InquiryPage(navController)
+                        }
+                        composable(Routes.NoticePage) {
+                            NoticePage(navController, supportViewModel)
+                        }
+                        composable(
+                            route = "${Routes.NoticeDetailPage}/{noticeJson}",
+                            arguments = listOf(navArgument("noticeJson") {
+                                type = NavType.StringType
+                            })
+                        ) { backStackEntry ->
+                            val noticeJson = backStackEntry.arguments?.getString("noticeJson")
+                            val decodedJson =
+                                noticeJson?.let {
+                                    URLDecoder.decode(
+                                        it,
+                                        StandardCharsets.UTF_8.name()
+                                    )
+                                }
+                            val notice = jsonAdapter.fromJson(decodedJson!!)
+
+                            NoticeDetailPage(
+                                navController,
+                                notice ?: Notice(0, "no title", "no content", "2024 08 03")
                             )
                         }
-                    ) {
-                        StoryPage(myLogViewModel, navController)
-                    }
-                    composable(Routes.StoryDetailPage) {
-                        StoryDetailPage(myLogViewModel, navController)
-                    }
-                    composable(Routes.DetailEssayInStoryPage) {
-                        DetailEssayInStoryPage(navController, myLogViewModel, writingViewModel)
-                    }
-                    composable(Routes.MyLogDetailPage) {
-                        MyLogDetailPage(
-                            navController = navController,
-                            myLogViewModel,
-                            writingViewModel
-                        )
-                    }
-                    composable(Routes.CompletedEssayPage) {
-                        CompletedEssayPage(
-                            navController = navController,
-                            myLogViewModel,
-                            writingViewModel
-                        )
-                    }
-                    composable(Routes.Community) {
-                        CommunityPage(navController = navController, communityViewModel)
-                    }
-                    composable(Routes.CommunityDetailPage) {
-                        CommunityDetailPage(navController, communityViewModel)
-                    }
-                    composable(Routes.CommunitySavedEssayPage) {
-                        CommunitySavedEssayPage(navController, communityViewModel)
-                    }
-                    composable(Routes.SubscriberPage) {
-                        ProfilePage(viewModel = communityViewModel, navController = navController)
-                    }
-                    composable(Routes.FullSubscriberPage) {
-                        FullSubscriberPage(communityViewModel, navController)
-                    }
-                    composable(Routes.Settings) {
-                        MyPage(navController)
-                    }
-                    composable(Routes.RecentViewedEssayPage) {
-                        RecentViewedEssayPage(navController, communityViewModel)
-                    }
-                    composable(Routes.RecentEssayDetailPage) {
-                        RecentEssayDetailPage(navController, communityViewModel)
-                    }
-                    composable(
-                        Routes.AccountPage,
-                        deepLinks = listOf(navDeepLink {
-                            uriPattern = "https://linkedoutapp.com/${Routes.AccountPage}"
-                        })
-                    ) {
-                        AccountPage(navController)
-                    }
-                    composable(Routes.ChangeEmailPage) {
-                        ChangeEmailPage(navController)
-                    }
-                    composable(Routes.ChangePwPage) {
-                        ChangePwPage(navController)
-                    }
-                    composable(Routes.ResetPwPageWithEmail) {
-                        ResetPwPageWithEmail(navController)
-                    }
-                    composable(
-                        Routes.ResetPwPage,
-                        deepLinks = listOf(navDeepLink {
-                            uriPattern =
-                                "https://linkedoutapp.com/${Routes.ResetPwPage}?token={token}"
-                        }),
-
-                        arguments = listOf(navArgument("token") {
-                            type = NavType.StringType
-                            defaultValue = ""
-                        })
-                    ) {
-                        if (it.arguments?.getString("token").toString().isNotEmpty()) {
-                            Token.accessToken = it.arguments?.getString("token").toString()
-                            Log.i("header token by deepLink:", " ${Token.accessToken}")
+                        composable(Routes.UpdateHistoryPage) {
+                            UpdateHistoryPage(navController)
                         }
-                        ResetPwPage(navController, it.arguments?.getString("token").toString())
-                    }
-                    composable(Routes.AccountWithdrawalPage) {
-                        AccountWithdrawalPage(navController)
-                    }
-                    composable(Routes.BadgePage) {
-                        BadgePage(navController, settingsViewModel)
-                    }
-                    composable(
-                        Routes.WritingPage,
-                        enterTransition = {
-                            slideInVertically(
-                                initialOffsetY = { 2000 },
-                                animationSpec = tween(durationMillis = 500)
-                            )
-                        },
-                        exitTransition = {
-                            slideOutVertically(
-                                targetOffsetY = { 2000 },
-                                animationSpec = tween(durationMillis = 500)
+                        composable(
+                            route = "${Routes.MyLog}/{page}",
+                            arguments = listOf(navArgument("page") { type = NavType.IntType })
+                        ) { backStackEntry ->
+                            val page = backStackEntry.arguments?.getInt("page") ?: 0
+                            MyLogPage(navController, myLogViewModel, writingViewModel, page)
+
+                        }
+                        composable(Routes.StoryPage,
+                            enterTransition = {
+                                slideInVertically(
+                                    initialOffsetY = { 2000 },
+                                    animationSpec = tween(durationMillis = 500)
+                                )
+                            },
+                            exitTransition = {
+                                slideOutVertically(
+                                    targetOffsetY = { 2000 },
+                                    animationSpec = tween(durationMillis = 500)
+                                )
+                            }
+                        ) {
+                            StoryPage(myLogViewModel, navController)
+                        }
+                        composable(Routes.StoryDetailPage) {
+                            StoryDetailPage(myLogViewModel, navController)
+                        }
+                        composable(Routes.DetailEssayInStoryPage) {
+                            DetailEssayInStoryPage(
+                                navController,
+                                myLogViewModel,
+                                writingViewModel
                             )
                         }
-                    ) {
-                        WritingPage(navController, writingViewModel)
-                    }
-                    composable(Routes.WritingCompletePage) {
-                        WritingCompletePage(navController, writingViewModel)
-                    }
-                    composable(Routes.TemporaryStoragePage) {
-                        TemporaryStoragePage(navController, writingViewModel)
-                    }
-                    composable(Routes.CropImagePage) {
-                        CropImagePage(navController, writingViewModel)
-                    }
-                    composable(Routes.TermsAndConditionsPage) {
-                        TermsAndConditionsPage(navController)
-                    }
-                    composable(Routes.PrivacyPolicyPage) {
-                        PrivacyPolicyPage(navController)
-                    }
-                    composable(Routes.LocationPolicyPage) {
-                        LocationPolicyPage(navController)
-                    }
-                    composable(Routes.FontCopyRight) {
-                        FontCopyRight(navController)
-                    }
+                        composable(Routes.MyLogDetailPage) {
+                            MyLogDetailPage(
+                                navController = navController,
+                                myLogViewModel,
+                                writingViewModel
+                            )
+                        }
+                        composable(Routes.CompletedEssayPage) {
+                            CompletedEssayPage(
+                                navController = navController,
+                                myLogViewModel,
+                                writingViewModel
+                            )
+                        }
+                        composable(Routes.Community) {
+                            CommunityPage(navController = navController, communityViewModel)
+                        }
+                        composable(Routes.CommunityDetailPage) {
+                            CommunityDetailPage(navController, communityViewModel)
+                        }
+                        composable(Routes.CommunitySavedEssayPage) {
+                            CommunitySavedEssayPage(navController, communityViewModel)
+                        }
+                        composable(Routes.SubscriberPage) {
+                            ProfilePage(
+                                viewModel = communityViewModel,
+                                navController = navController
+                            )
+                        }
+                        composable(Routes.FullSubscriberPage) {
+                            FullSubscriberPage(communityViewModel, navController)
+                        }
+                        composable(Routes.Settings) {
+                            MyPage(navController)
+                        }
+                        composable(Routes.RecentViewedEssayPage) {
+                            RecentViewedEssayPage(navController, communityViewModel)
+                        }
+                        composable(Routes.RecentEssayDetailPage) {
+                            RecentEssayDetailPage(navController, communityViewModel)
+                        }
+                        composable(
+                            Routes.AccountPage,
+                            deepLinks = listOf(navDeepLink {
+                                uriPattern = "https://linkedoutapp.com/${Routes.AccountPage}"
+                            })
+                        ) {
+                            AccountPage(navController)
+                        }
+                        composable(Routes.ChangeEmailPage) {
+                            ChangeEmailPage(navController)
+                        }
+                        composable(Routes.ChangePwPage) {
+                            ChangePwPage(navController)
+                        }
+                        composable(Routes.ResetPwPageWithEmail) {
+                            ResetPwPageWithEmail(navController)
+                        }
+                        composable(
+                            Routes.ResetPwPage,
+                            deepLinks = listOf(navDeepLink {
+                                uriPattern =
+                                    "https://linkedoutapp.com/${Routes.ResetPwPage}?token={token}"
+                            }),
 
+                            arguments = listOf(navArgument("token") {
+                                type = NavType.StringType
+                                defaultValue = ""
+                            })
+                        ) {
+                            if (it.arguments?.getString("token").toString().isNotEmpty()) {
+                                Token.accessToken = it.arguments?.getString("token").toString()
+                                Log.i("header token by deepLink:", " ${Token.accessToken}")
+                            }
+                            ResetPwPage(
+                                navController,
+                                it.arguments?.getString("token").toString()
+                            )
+                        }
+                        composable(Routes.AccountWithdrawalPage) {
+                            AccountWithdrawalPage(navController)
+                        }
+                        composable(Routes.BadgePage) {
+                            BadgePage(navController, settingsViewModel)
+                        }
+                        composable(
+                            Routes.WritingPage,
+                            enterTransition = {
+                                slideInVertically(
+                                    initialOffsetY = { 2000 },
+                                    animationSpec = tween(durationMillis = 500)
+                                )
+                            },
+                            exitTransition = {
+                                slideOutVertically(
+                                    targetOffsetY = { 2000 },
+                                    animationSpec = tween(durationMillis = 500)
+                                )
+                            }
+                        ) {
+                            WritingPage(navController, writingViewModel)
+                        }
+                        composable(Routes.WritingCompletePage) {
+                            WritingCompletePage(navController, writingViewModel)
+                        }
+                        composable(Routes.TemporaryStoragePage) {
+                            TemporaryStoragePage(navController, writingViewModel)
+                        }
+                        composable(Routes.CropImagePage) {
+                            CropImagePage(navController, writingViewModel)
+                        }
+                        composable(Routes.TermsAndConditionsPage) {
+                            TermsAndConditionsPage(navController)
+                        }
+                        composable(Routes.PrivacyPolicyPage) {
+                            PrivacyPolicyPage(navController)
+                        }
+                        composable(Routes.LocationPolicyPage) {
+                            LocationPolicyPage(navController)
+                        }
+                        composable(Routes.FontCopyRight) {
+                            FontCopyRight(navController)
+                        }
+
+                    }
                 }
                 if (isClickedExit) {
                     Box(
