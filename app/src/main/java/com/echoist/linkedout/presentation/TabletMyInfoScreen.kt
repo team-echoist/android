@@ -51,6 +51,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TabletMyInfoRoute(
+    modifier: Modifier = Modifier,
     navController: NavController,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
@@ -132,20 +133,10 @@ fun TabletMyInfoRoute(
         sheetPeekHeight = 0.dp
     ) {
         Column(
-            modifier = Modifier
-                .padding(it)
+            modifier = modifier
                 .verticalScroll(scrollState)
 
         ) {
-            Text(
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                text = "MY",
-                color = Color.White,
-                modifier = Modifier
-                    .padding(start = 20.dp, top = 10.dp)
-                    .safeDrawingPadding()
-            )
             MySettings(item = viewModel.getMyInfo()) {
                 Log.d(ContentValues.TAG, "MyPage: ${viewModel.getMyInfo()}")
                 scope.launch {

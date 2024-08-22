@@ -60,6 +60,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun TabletMyLogRoute(
     navController: NavController,
+    modifier: Modifier = Modifier,
     viewModel: MyLogViewModel = hiltViewModel(),
     writingViewModel: WritingViewModel = hiltViewModel(),
     page: Int = 0
@@ -70,9 +71,6 @@ fun TabletMyLogRoute(
     val pagerState = rememberPagerState { 3 }
     val hasCalledApi = remember { mutableStateOf(false) }
     val isLoading by viewModel.isLoading.collectAsState()
-    val configuration = LocalConfiguration.current
-    val contentPadding =
-        if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 250 else 100
 
     LaunchedEffect(key1 = Unit) {
         pagerState.animateScrollToPage(page)
@@ -89,6 +87,7 @@ fun TabletMyLogRoute(
     }
 
     TabletMyLogScreen(
+        modifier = modifier,
         drawerState = drawerState,
         pagerState = pagerState,
         navController = navController,
@@ -101,6 +100,7 @@ fun TabletMyLogRoute(
 
 @Composable
 internal fun TabletMyLogScreen(
+    modifier: Modifier,
     drawerState: DrawerState,
     pagerState: PagerState,
     navController: NavController,
@@ -117,18 +117,10 @@ internal fun TabletMyLogScreen(
             },
             content = {
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-                    Column {
-                        TopBarSection(
-                            scope = scope,
-                            drawerState = drawerState,
-                            viewModel = viewModel,
-                            pagerState = pagerState,
-                            navController = navController
-                        )
+                    Column(modifier = modifier.padding(horizontal = 250.dp)) {
                         TabletMyLogTabView(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 250.dp),
+                                .fillMaxWidth(),
                             pagerState = pagerState,
                             viewModel = viewModel
                         )
@@ -157,30 +149,6 @@ fun DrawerContent(navController: NavController, drawerState: DrawerState) {
         ) {
             SearchingPage(drawerState = drawerState, navController = navController)
         }
-    }
-}
-
-@Composable
-fun TopBarSection(
-    scope: CoroutineScope,
-    drawerState: DrawerState,
-    viewModel: MyLogViewModel,
-    pagerState: PagerState,
-    navController: NavController
-) {
-    Column {
-        MyLogTopAppBar(
-            {
-                scope.launch {
-                    drawerState.apply {
-                        if (isClosed) open() else close()
-                    }
-                }
-            },
-            viewModel.getUserInfo().nickname!!,
-            { navController.navigate("NotificationPage") },
-            viewModel.isExistUnreadAlerts
-        )
     }
 }
 
