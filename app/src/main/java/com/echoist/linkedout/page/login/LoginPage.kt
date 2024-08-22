@@ -1,5 +1,6 @@
 package com.echoist.linkedout.page.login
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.res.Configuration
@@ -48,10 +49,13 @@ import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -87,6 +91,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
@@ -95,6 +100,7 @@ import com.echoist.linkedout.DeviceId
 import com.echoist.linkedout.R
 import com.echoist.linkedout.Routes
 import com.echoist.linkedout.SharedPreferencesUtil
+import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.components.CropImagePage
 import com.echoist.linkedout.data.Notice
 import com.echoist.linkedout.navigation.TabletNavHost
@@ -106,6 +112,7 @@ import com.echoist.linkedout.page.home.DarkModeSettingPage
 import com.echoist.linkedout.page.home.HomePage
 import com.echoist.linkedout.page.home.InquiryPage
 import com.echoist.linkedout.page.home.LinkedOutSupportPage
+import com.echoist.linkedout.page.home.MyBottomNavigation
 import com.echoist.linkedout.page.home.NoticeDetailPage
 import com.echoist.linkedout.page.home.NoticePage
 import com.echoist.linkedout.page.home.NotificationPage
@@ -159,7 +166,6 @@ import kotlinx.coroutines.delay
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 
-
 @AndroidEntryPoint
 class LoginPage : ComponentActivity() {
     private fun getSSAID(context: Context) {
@@ -177,6 +183,7 @@ class LoginPage : ComponentActivity() {
         Log.d("SSAID", "SSAID: ${DeviceId.ssaid}") //고유식별자
     }
 
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
 
         val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
@@ -195,17 +202,65 @@ class LoginPage : ComponentActivity() {
         //top,bottom 시스템 바 등의 설정
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
+
         setContent {
             val keyHash = Utility.getKeyHash(this)
             Log.d("Hash", keyHash)
             val navController = rememberNavController()
+
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            Log.d("navBackStackEntry", navBackStackEntry.toString())
+            val showBottomBar =
+                navBackStackEntry?.destination?.route?.startsWith(Routes.Home) == true ||
+                        navBackStackEntry?.destination?.route == Routes.Community ||
+                        navBackStackEntry?.destination?.route?.startsWith(Routes.MyLog) == true ||
+                        navBackStackEntry?.destination?.route == Routes.Settings
 
             val isTablet = ((resources.configuration.screenLayout
                     and Configuration.SCREENLAYOUT_SIZE_MASK)
                     >= Configuration.SCREENLAYOUT_SIZE_LARGE)
 
             if (isTablet) {
-                TabletNavHost(navController = navController)
+                LinkedOutTheme {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+                        Scaffold(
+                            floatingActionButton = {
+                                if (navBackStackEntry?.destination?.route?.startsWith(Routes.Home) == true ||
+                                    navBackStackEntry?.destination?.route?.startsWith(Routes.MyLog) == true
+                                ) {
+                                    FloatingActionButton(
+                                        modifier = Modifier.padding(end = 25.dp, bottom = 25.dp),
+                                        onClick = {
+                                            navController.navigate(Routes.WritingPage)
+                                            homeViewModel.initializeDetailEssay()
+                                            homeViewModel.setStorageEssay(EssayApi.EssayItem())
+                                        },
+                                        shape = RoundedCornerShape(100.dp),
+                                        containerColor = Color.White
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.ftb_edit),
+                                            contentDescription = "edit",
+                                            modifier = Modifier.size(20.dp),
+                                            tint = Color.Black
+                                        )
+                                    }
+                                }
+                            },
+                            bottomBar = {
+                                if (showBottomBar) {
+                                    MyBottomNavigation(navController = navController)
+                                }
+                            }) { _ ->
+                            TabletNavHost(
+                                navController = navController
+                            )
+                        }
+                    }
+                }
             } else {
                 NavHost(navController = navController, startDestination = Routes.OnBoarding) {
                     composable(Routes.OnBoarding) {

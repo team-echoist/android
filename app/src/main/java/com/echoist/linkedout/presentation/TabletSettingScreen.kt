@@ -52,7 +52,6 @@ import com.echoist.linkedout.page.home.WritingNotificationBox
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.HomeViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TabletSettingRoute(
     navController: NavController,
