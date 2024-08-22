@@ -47,6 +47,7 @@ fun TopBarForRoute(
     scope: CoroutineScope,
     homeViewModel: HomeViewModel = hiltViewModel(),
     myLogViewModel: MyLogViewModel = hiltViewModel(),
+    onSearchClick: () -> Unit,
     pagerState: PagerState = rememberPagerState { 1 }
 ) {
     when {
@@ -64,10 +65,9 @@ fun TopBarForRoute(
 
         currentRoute?.contains(Routes.MyLog) == true -> {
             TabletMyLogTopBar(
-                scope = scope,
-                drawerState = drawerState,
                 viewModel = myLogViewModel,
-                navController = navController
+                navController = navController,
+                onSearchClick = { onSearchClick() }
             )
         }
 
@@ -76,7 +76,7 @@ fun TopBarForRoute(
                 modifier = Modifier.background(Color(0xFFD9D9D9)),
                 text = "Community", // 원하는 제목으로 변경 가능
                 pagerState = pagerState,
-                onSearchClick = { /* 검색 클릭 시 동작 */ },
+                onSearchClick = { onSearchClick() },
                 onClickBookMarked = { /* 북마크 클릭 시 동작 */ }
             )
         }
@@ -141,21 +141,13 @@ fun TabletHomeTopBar(
 
 @Composable
 fun TabletMyLogTopBar(
-    modifier: Modifier = Modifier,
-    scope: CoroutineScope,
-    drawerState: DrawerState,
     viewModel: MyLogViewModel,
-    navController: NavController
+    navController: NavController,
+    onSearchClick: () -> Unit
 ) {
     Column {
         MyLogTopAppBar(
-            {
-                scope.launch {
-                    drawerState.apply {
-                        if (isClosed) open() else close()
-                    }
-                }
-            },
+            { onSearchClick() },
             viewModel.getUserInfo().nickname!!,
             { navController.navigate("NotificationPage") },
             viewModel.isExistUnreadAlerts
