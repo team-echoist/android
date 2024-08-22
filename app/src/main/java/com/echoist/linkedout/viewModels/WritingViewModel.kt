@@ -204,6 +204,8 @@ class WritingViewModel @Inject constructor(
                     tags = hashTagList
                 )
                 val response = essayApi.writeEssay(bearerAccessToken, Token.refreshToken,essayData = essayData)
+                Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+
                 if (response.isSuccessful) {
                     exampleItems.detailEssay = response.body()!!.data!!
                     exampleItems.detailEssayBackStack.push(exampleItems.detailEssay)

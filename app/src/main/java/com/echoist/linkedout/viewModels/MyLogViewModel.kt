@@ -142,7 +142,7 @@ class MyLogViewModel @Inject constructor(
                 Log.d("essaylist data", response.body()!!.path + response.body()!!.data)
 
                 if (response.isSuccessful) {
-                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                    Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
 
                     response.body()!!.data.essays.forEach { essay ->
                         // publishedEssayList에 이미 해당 essay가 존재하는지 확인

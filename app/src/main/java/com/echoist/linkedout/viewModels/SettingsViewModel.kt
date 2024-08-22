@@ -194,7 +194,8 @@ class SettingsViewModel @Inject constructor(
                 val response = userApi.requestBadgeLevelUp(bearerAccessToken,Token.refreshToken, badgeId)
                 Log.d(TAG, "requestBadgeLevelUp: ${Token.accessToken}")
 
-                                    Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+
                 if (response.body()!!.success){
                     isLevelUpSuccess = true
                     delay(1000)

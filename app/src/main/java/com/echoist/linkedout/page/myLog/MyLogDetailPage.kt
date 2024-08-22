@@ -846,7 +846,6 @@ fun WriteCompleteBox(type: String) {
                     GlideImage(
                         model = imageUrl, contentDescription = "", modifier = Modifier
                             .weight(2f)
-                            .height(210.dp)
                     )
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
