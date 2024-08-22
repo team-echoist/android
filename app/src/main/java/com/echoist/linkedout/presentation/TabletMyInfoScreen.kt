@@ -10,15 +10,11 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetValue
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,12 +26,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.echoist.linkedout.page.home.MyBottomNavigation
 import com.echoist.linkedout.page.settings.BadgeDescriptionBox
 import com.echoist.linkedout.page.settings.LinkedOutBadgeGrid
 import com.echoist.linkedout.page.settings.MembershipSettingBar
@@ -44,7 +37,6 @@ import com.echoist.linkedout.page.settings.MySettings
 import com.echoist.linkedout.page.settings.RecentEssayList
 import com.echoist.linkedout.page.settings.SelectProfileIconBottomSheet
 import com.echoist.linkedout.page.settings.SettingBar
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.SettingsViewModel
 import kotlinx.coroutines.launch
 
