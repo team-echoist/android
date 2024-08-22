@@ -79,6 +79,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
@@ -92,6 +93,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.core.view.WindowCompat
 import androidx.navigation.NavController
 import androidx.navigation.NavType
@@ -101,6 +103,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.BuildConfig
 import com.echoist.linkedout.DeviceId
 import com.echoist.linkedout.R
@@ -158,11 +162,11 @@ import com.echoist.linkedout.page.settings.ResetPwPageWithEmail
 import com.echoist.linkedout.presentation.TabletDrawableItems
 import com.echoist.linkedout.presentation.TabletInquiryScreen
 import com.echoist.linkedout.presentation.TabletLinkedOutSupportRoute
-import com.echoist.linkedout.presentation.TabletMainTopBar
 import com.echoist.linkedout.presentation.TabletSettingRoute
 import com.echoist.linkedout.presentation.TabletSupportRoute
 import com.echoist.linkedout.presentation.TabletThemeModeScreen
 import com.echoist.linkedout.presentation.TabletUpdateHistoryRoute
+import com.echoist.linkedout.presentation.TopBarForRoute
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
@@ -182,7 +186,6 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 
@@ -203,6 +206,7 @@ class LoginPage : ComponentActivity() {
         Log.d("SSAID", "SSAID: ${DeviceId.ssaid}") //고유식별자
     }
 
+    @OptIn(ExperimentalGlideComposeApi::class)
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -351,19 +355,16 @@ class LoginPage : ComponentActivity() {
                         ) {
                             Scaffold(
                                 topBar = {
-                                    TabletMainTopBar({
-                                        scope.launch {
-                                            drawerState.apply {
-                                                selectedMenu = "Default"
-                                                if (isClosed) open() else close()
-                                            }
-                                        }
-                                    }, { navController.navigate("NotificationPage") },
-                                        homeViewModel.isExistUnreadAlerts
+                                    val currentRoute = navBackStackEntry?.destination?.route
+
+                                    TopBarForRoute(
+                                        currentRoute = currentRoute,
+                                        navController = navController,
+                                        drawerState = drawerState,
+                                        scope = scope,
+                                        homeViewModel = homeViewModel,
+                                        myLogViewModel = myLogViewModel
                                     )
-                                    {
-                                        homeViewModel.isFirstUser = true
-                                    }
                                 },
                                 floatingActionButton = {
                                     if (navBackStackEntry?.destination?.route?.startsWith(Routes.Home) == true ||
@@ -395,9 +396,10 @@ class LoginPage : ComponentActivity() {
                                     if (showBottomBar) {
                                         MyBottomNavigation(navController = navController)
                                     }
-                                }) { _ ->
+                                }) { contentPadding ->
                                 TabletNavHost(
-                                    navController = navController
+                                    navController = navController,
+                                    contentPadding = contentPadding
                                 )
                             }
                         }
