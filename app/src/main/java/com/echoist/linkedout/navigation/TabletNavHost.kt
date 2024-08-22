@@ -27,9 +27,11 @@ import com.echoist.linkedout.presentation.TabletMyInfoRoute
 import com.echoist.linkedout.presentation.TabletMyLogRoute
 import com.echoist.linkedout.presentation.TabletOnBoardingRoute
 import com.echoist.linkedout.presentation.TabletResetPwRoute
+import com.echoist.linkedout.presentation.TabletSearchScreen
 import com.echoist.linkedout.presentation.TabletSettingRoute
 import com.echoist.linkedout.presentation.TabletSignUpCompleteRoute
 import com.echoist.linkedout.presentation.TabletSignUpRoute
+import okhttp3.Route
 
 @Composable
 fun TabletNavHost(
@@ -80,16 +82,29 @@ fun TabletNavHost(
             arguments = listOf(navArgument("page") { type = NavType.IntType })
         ) { backStackEntry ->
             val page = backStackEntry.arguments?.getInt("page") ?: 0
-            TabletMyLogRoute(navController = navController, page = page, modifier = Modifier.padding(contentPadding))
+            TabletMyLogRoute(
+                navController = navController,
+                page = page,
+                modifier = Modifier.padding(contentPadding)
+            )
         }
         composable(Routes.Community) {
-            TabletCommunityRoute(navController = navController, modifier = Modifier.padding(contentPadding))
+            TabletCommunityRoute(
+                navController = navController,
+                modifier = Modifier.padding(contentPadding)
+            )
         }
         composable(Routes.Settings) {
-            TabletMyInfoRoute(navController = navController, modifier = Modifier.padding(contentPadding))
+            TabletMyInfoRoute(
+                navController = navController,
+                modifier = Modifier.padding(contentPadding)
+            )
         }
         composable(Routes.WritingPage) {
             TabletEssayWriteRoute(navController = navController)
+        }
+        composable(Routes.Search) {
+            TabletSearchScreen(navController)
         }
     }
 }
