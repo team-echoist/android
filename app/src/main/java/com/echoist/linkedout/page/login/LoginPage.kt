@@ -5,15 +5,18 @@ import android.app.Activity
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Rect
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import android.view.View
 import android.view.ViewTreeObserver
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
@@ -79,7 +82,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
@@ -104,7 +106,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.BuildConfig
 import com.echoist.linkedout.DeviceId
 import com.echoist.linkedout.R
@@ -162,6 +163,7 @@ import com.echoist.linkedout.page.settings.ResetPwPageWithEmail
 import com.echoist.linkedout.presentation.TabletDrawableItems
 import com.echoist.linkedout.presentation.TabletInquiryScreen
 import com.echoist.linkedout.presentation.TabletLinkedOutSupportRoute
+import com.echoist.linkedout.presentation.TabletNotificationScreen
 import com.echoist.linkedout.presentation.TabletSettingRoute
 import com.echoist.linkedout.presentation.TabletSupportRoute
 import com.echoist.linkedout.presentation.TabletThemeModeScreen
@@ -206,6 +208,7 @@ class LoginPage : ComponentActivity() {
         Log.d("SSAID", "SSAID: ${DeviceId.ssaid}") //고유식별자
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
     @OptIn(ExperimentalGlideComposeApi::class)
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -225,7 +228,12 @@ class LoginPage : ComponentActivity() {
         val supportViewModel: SupportViewModel by viewModels()
         //top,bottom 시스템 바 등의 설정
         WindowCompat.setDecorFitsSystemWindows(window, false)
-
+        window.decorView.systemUiVisibility = (
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        or View.SYSTEM_UI_FLAG_FULLSCREEN
+                        or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                )
 
         setContent {
             val keyHash = Utility.getKeyHash(this)
@@ -245,6 +253,13 @@ class LoginPage : ComponentActivity() {
             var selectedMenu by remember { mutableStateOf("Default") }
             var isLogoutClicked by remember { mutableStateOf(false) }
             val scrollState = rememberScrollState()
+            var isNotificationClicked by remember { mutableStateOf(false) }
+
+            var isNotificationVisible = navBackStackEntry?.destination?.route?.startsWith(
+                Routes.Home
+            ) == true && navBackStackEntry?.destination?.route?.startsWith(
+                Routes.MyLog
+            ) == true && isNotificationClicked
 
             val isTablet = ((resources.configuration.screenLayout
                     and Configuration.SCREENLAYOUT_SIZE_MASK)
@@ -358,14 +373,18 @@ class LoginPage : ComponentActivity() {
                                     val currentRoute = navBackStackEntry?.destination?.route
 
                                     TopBarForRoute(
+                                        modifier = Modifier
+                                            .fillMaxWidth(if (isNotificationClicked) 0.7f else 1f),
                                         currentRoute = currentRoute,
-                                        navController = navController,
                                         drawerState = drawerState,
                                         scope = scope,
                                         homeViewModel = homeViewModel,
                                         myLogViewModel = myLogViewModel,
-                                        onSearchClick = {
+                                        onClickSearch = {
                                             navController.navigate(Routes.Search)
+                                        },
+                                        onClickNotification = {
+                                            isNotificationClicked = !isNotificationClicked
                                         }
                                     )
                                 },
@@ -397,13 +416,45 @@ class LoginPage : ComponentActivity() {
                                 },
                                 bottomBar = {
                                     if (showBottomBar) {
-                                        MyBottomNavigation(navController = navController)
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth(if (isNotificationClicked) 0.7f else 1f)
+                                        ) {
+                                            MyBottomNavigation(navController = navController) {
+                                                isNotificationClicked = false
+                                            }
+                                        }
                                     }
                                 }) { contentPadding ->
-                                TabletNavHost(
-                                    navController = navController,
-                                    contentPadding = contentPadding
-                                )
+                                Row(
+                                    modifier = Modifier.fillMaxSize()
+                                ) {
+                                    // Left Side: TabletNavHost
+                                    Box(
+                                        modifier = Modifier
+                                            .weight(1f) // Remaining space if notification view is shown
+                                            .fillMaxHeight()
+                                    ) {
+                                        TabletNavHost(
+                                            navController = navController,
+                                            contentPadding = contentPadding
+                                        )
+                                    }
+
+                                    // Right Side: Notification View (conditionally shown)
+                                    if (isNotificationClicked) {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth(0.3f)
+                                                .fillMaxHeight()
+                                        ) {
+                                            TabletNotificationScreen(
+                                                navController = navController,
+                                                onBackPress = { isNotificationClicked = false }
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
