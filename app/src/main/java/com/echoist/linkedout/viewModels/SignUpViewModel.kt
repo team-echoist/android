@@ -181,7 +181,6 @@ class SignUpViewModel @Inject constructor(
                     Log.e("authApiSuccess2", "${response.code()}")
 
                     Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
-                    //todo 회원가입 비밀번호 특수문자 대소문자 필요한거 Ui 변경해야함. 그리고 확인로딩시 대기표시 띄워줘야함.
                     readMyInfo()
                     isSendEmailVerifyApiFinished = true
 
@@ -212,10 +211,8 @@ class SignUpViewModel @Inject constructor(
                 Log.d("requestChangePw api header", "${response.headers()}")
                 Log.d("requestChangePw api code", "${response.code()}")
                 //헤더에 토큰이 없다.
-                //                    Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                 isSendEmailVerifyApiFinished = true
-
-
             }
             else{
                 // code == 400 잘못된 이메일주소
@@ -236,10 +233,7 @@ class SignUpViewModel @Inject constructor(
             if (response.code() == 304) { //성공
                 Log.e("authApiSuccess2", "${response.headers()}")
                 Log.e("authApiSuccess2", "${response.code()}")
-
-                //Token.accessToken = (response.headers()["authorization"].toString()) 여기도 마찬가지일것
                 resetPw(token,newPw)
-
             }
             else{
                 // code == 404 유효하지 않은토큰. 토큰을 못받았거나 10분이 지났거나
@@ -252,22 +246,13 @@ class SignUpViewModel @Inject constructor(
 
     private suspend fun resetPw(token : String, newPw : String)
     {
-
             val body = SignUpApi.ResetPwRequest(newPw,token)
             val response = signUpApi.resetPw(bearerAccessToken,Token.refreshToken,body)
 
             if (response.code() == 200) { //성공
-                Log.e("authApiSuccess2", "${response.headers()}")
                 Log.e("authApiSuccess2", "${response.code()}")
-
-
-                // Token.accessToken = (response.headers()["authorization"].toString()) 여기도마찬가지
-                //변경 완료!
-
             }
             else{
-                // code == 404 유효하지 않은토큰. 토큰을 못받았거나 10분이 지났거나
-                Log.e("authApiFailed2", "Failed : ${response.headers()}")
                 Log.e("authApiFailed2", "${response.code()}")
             }
     }
@@ -321,7 +306,7 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    private suspend fun requestRegisterDevice(context: Context) {
+    suspend fun requestRegisterDevice(context: Context) {
         val ssaid = getSSAID(context)
         val token = getFCMToken() // Suspend 함수로 호출
 

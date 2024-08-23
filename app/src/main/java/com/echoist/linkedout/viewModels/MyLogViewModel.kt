@@ -10,6 +10,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.echoist.linkedout.Routes
+import com.echoist.linkedout.TYPE_STORY
 import com.echoist.linkedout.api.BookMarkApi
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.api.StoryApi
@@ -138,7 +140,7 @@ class MyLogViewModel @Inject constructor(
             _isLoading.emit(true)
 
             try {
-                val response = essayApi.readMyEssay(accessToken = bearerAccessToken, Token.refreshToken,published = true)
+                val response = essayApi.readMyEssay(accessToken = bearerAccessToken, Token.refreshToken,pageType = "public")
                 Log.d("essaylist data", response.body()!!.path + response.body()!!.data)
 
                 if (response.isSuccessful) {
@@ -181,7 +183,7 @@ class MyLogViewModel @Inject constructor(
             _isLoading.emit(true)
 
             try {
-                val response = essayApi.readMyEssay(accessToken = bearerAccessToken,Token.refreshToken, published = false)
+                val response = essayApi.readMyEssay(accessToken = bearerAccessToken,Token.refreshToken, pageType = "private")
                 Log.d("essaylist data", response.body()!!.path + response.body()!!.data)
 
                 if (response.isSuccessful) {
@@ -212,6 +214,36 @@ class MyLogViewModel @Inject constructor(
             }
             finally {
                 _isLoading.emit(false)
+            }
+        }
+    }
+
+    fun readNextEssay(currentEssayId : Int,pageType : String,navController: NavController,storyId: Int){
+        viewModelScope.launch {
+            try {
+                val response = essayApi.readNextEssay(
+                    accessToken = bearerAccessToken,
+                    Token.refreshToken,
+                    currentEssayId,
+                    pageType = pageType,
+                    storyId = if (pageType == TYPE_STORY) storyId else null
+                )
+
+                if (response.body()!!.data != null){
+                    exampleItems.detailEssay = response.body()!!.data!!.essay
+                    detailEssay = exampleItems.detailEssay
+                    Log.d(TAG, "readdetailEssay: 성공인데요${response.body()!!.data}")
+
+                    if (response.body()!!.data!!.anotherEssays != null) {
+                        exampleItems.previousEssayList = response.body()!!.data!!.anotherEssays!!.essays.toMutableStateList()
+                        previousEssayList = exampleItems.previousEssayList
+                    }
+                    if (pageType == TYPE_STORY) navController.navigate(Routes.DetailEssayInStoryPage)
+                    else navController.navigate(Routes.MyLogDetailPage)
+                }
+
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }
@@ -449,17 +481,13 @@ class MyLogViewModel @Inject constructor(
                 val response = essayApi.readDetailEssay(bearerAccessToken,Token.refreshToken,id,type = type)
                 exampleItems.detailEssay = response.body()!!.data.essay
                 detailEssay = exampleItems.detailEssay
-                Log.d(TAG, "readdetailEssay: 성공인데요${response.body()!!.data}")
-                Log.d(TAG, "readdetailEssay: 성공인데요${exampleItems.detailEssay.id}")
+                Log.d(TAG, "디테일 에세이 타입 : ${detailEssay.status}")
+                Log.d(TAG, "readdetailEssay: 성공인데요${response.body()!!.data.essay.title}")
 
                 if (response.body()!!.data.anotherEssays != null) {
                     exampleItems.previousEssayList = response.body()!!.data.anotherEssays!!.essays.toMutableStateList()
                     previousEssayList = exampleItems.previousEssayList
                 }
-                Log.d(TAG, "readDetailEssay ${exampleItems.detailEssay}")
-
-                Log.d(TAG, "readDetailEssay: previouse ${exampleItems.previousEssayList}")
-
                 //여기서 차이를 둔다.
                 navController.navigate("MyLogDetailPage")
 
@@ -474,10 +502,10 @@ class MyLogViewModel @Inject constructor(
         }
     }
 
-    fun readDetailEssayInStory(id: Int, navController: NavController,number : Int,type: String) {
+    fun readDetailEssayInStory(id: Int, navController: NavController,number : Int,type: String,storyId: Int) {
         viewModelScope.launch {
             try {
-                val response = essayApi.readDetailEssay(bearerAccessToken,Token.refreshToken,id, type)
+                val response = essayApi.readDetailEssay(bearerAccessToken,Token.refreshToken,id, type,storyId)
                 exampleItems.detailEssay = response.body()!!.data.essay
                 detailEssay = exampleItems.detailEssay
                 Log.d(TAG, "readdetailEssay: 성공인데요${response.body()!!.data}")
@@ -489,11 +517,9 @@ class MyLogViewModel @Inject constructor(
 
                 // API 호출 결과 처리 (예: response 데이터 사용)
             } catch (e: Exception) {
-
                 // 예외 처리
                 e.printStackTrace()
                 Log.d(TAG, "readRandomEssays: ${e.message}")
-
             }
         }
     }
@@ -549,11 +575,10 @@ class MyLogViewModel @Inject constructor(
     fun readEssayListInStory(){
         viewModelScope.launch {
             try {
-                var response = essayApi.readMyEssay(bearerAccessToken,Token.refreshToken, storyId = getSelectedStory().id!!)
+                var response = essayApi.readMyEssay(bearerAccessToken,Token.refreshToken, pageType = "story", storyId = getSelectedStory().id!!)
 
                 if (response.isSuccessful) {
                     Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
-
                     essayListInStroy = response.body()!!.data.essays.toMutableStateList()
 
                 } else {

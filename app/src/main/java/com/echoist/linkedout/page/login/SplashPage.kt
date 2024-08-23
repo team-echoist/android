@@ -13,13 +13,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.media3.exoplayer.ExoPlayer
 
 
 class SplashPage : AppCompatActivity() {
     private var keepSplash = true
     private val delay = 1200L
-    lateinit var player : ExoPlayer
+    override fun onStart() {
+        super.onStart()
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

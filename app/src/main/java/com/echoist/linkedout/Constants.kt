@@ -1,5 +1,6 @@
 package com.echoist.linkedout
 
+import androidx.navigation.NavController
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -8,8 +9,9 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
 const val TYPE_RECOMMEND = "recommend"
-const val TYPE_PUBLISHED = "publish"
+const val TYPE_PUBLISHED = "public"
 const val TYPE_PRIVATE = "private"
+const val TYPE_STORY = "story"
 
 
 const val MAX_TITLE_SIZE = 26
@@ -105,6 +107,18 @@ enum class UserStatus {
     Activated,Monitored,Banned,DeActivated
 }
 
+fun navigateWithClearBackStack(
+    navController: NavController,
+    route: String,
+    launchSingleTop: Boolean = true
+) {
+    navController.navigate(route) {
+        popUpTo(navController.graph.startDestinationId) {
+            inclusive = true
+        }
+        this.launchSingleTop = launchSingleTop
+    }
+}
 
 //2024-07-01T14:22:46.803+09:00 to 2024.07.01
 fun formatDateTime(input: String): String {

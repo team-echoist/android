@@ -1,7 +1,6 @@
 package com.echoist.linkedout.page.login
 
 import android.content.ContentValues.TAG
-import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -22,7 +20,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,24 +29,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.media3.common.MediaItem
-import androidx.media3.common.Player
-import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.ui.AspectRatioFrameLayout
-import androidx.media3.ui.PlayerView
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import kotlinx.coroutines.delay
 
 @Preview
@@ -71,8 +59,6 @@ fun OnBoardingPage(navController: NavController) {
             Log.d(TAG, "OnBoardingPage: fucking")
         }
     }
-
-    LinkedOutTheme {
 
         Box(
             modifier = Modifier
@@ -195,7 +181,7 @@ fun OnBoardingPage(navController: NavController) {
     }
 
 
-}
+
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -204,7 +190,6 @@ fun OnBoardingPager(
     subText: String,
     resId: Int
 ) {
-    LinkedOutTheme {
         Box(modifier = Modifier.fillMaxSize()){
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
 //            VideoPlayer(resId)
@@ -227,73 +212,6 @@ fun OnBoardingPager(
         }
     }
 
-
-}
-
-@androidx.annotation.OptIn(UnstableApi::class)
-@Composable
-fun VideoPlayer(resId: Int) {
-    val context = LocalContext.current
-
-    val eventListener = remember {
-        object : Player.Listener {
-            override fun onPlaybackStateChanged(playbackState: Int) {
-                super.onPlaybackStateChanged(playbackState)
-                when (playbackState) {
-                    Player.STATE_IDLE -> {
-                        // ExoPlayer가 아무것도 하지 않는 상태
-                    }
-
-                    Player.STATE_BUFFERING -> {
-                        Log.d(TAG, "onPlaybackStateChanged: 버퍼링입니다")
-                        // 미디어 버퍼링 중
-                    }
-
-                    Player.STATE_READY -> {
-
-                        // 미디어 재생이 준비된 상태
-                    }
-
-                    Player.STATE_ENDED -> {
-                        // 미디어 재생이 완료된 상태
-                    }
-                }
-            }
-        }
-    }
-    val exoPlayer = remember { ExoPlayer.Builder(context).build() }
-    exoPlayer.repeatMode = ExoPlayer.REPEAT_MODE_ALL
-    exoPlayer.addListener(eventListener)
-
-    val uri = Uri.parse("android.resource://${context.packageName}/$resId")
-    val mediaItem = MediaItem.fromUri(uri)
-    exoPlayer.setMediaItem(mediaItem)
-    exoPlayer.prepare()
-    exoPlayer.playWhenReady = true
-
-
-    AndroidView(
-        factory = { context ->
-            PlayerView(context).apply {
-                player = exoPlayer
-                useController = false
-                resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
-            }
-        },
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(100.dp) // 원하는 높이 설정
-
-
-    )
-
-    DisposableEffect(Unit) {
-        onDispose {
-            exoPlayer.release()
-        }
-    }
-
-}
 
 
 

@@ -190,6 +190,10 @@ class LoginPage : ComponentActivity() {
         val communityViewModel: CommunityViewModel by viewModels()
         val settingsViewModel: SettingsViewModel by viewModels()
         val supportViewModel: SupportViewModel by viewModels()
+
+//        lifecycleScope.launch {
+//            signUpViewModel.requestRegisterDevice(context = applicationContext)
+//        }
         //top,bottom 시스템 바 등의 설정
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
@@ -203,6 +207,8 @@ class LoginPage : ComponentActivity() {
             val navController = rememberNavController()
 
             NavHost(navController = navController, startDestination = startDestination) {
+
+
                 composable(Routes.OnBoarding) {
                     OnBoardingPage(navController)
                 }
@@ -492,7 +498,6 @@ fun AppleLoginBtn(navController: NavController, viewModel: SocialLoginViewModel)
     }
 }
 
-
 @Composable
 fun LoginPage(
     navController: NavController,
@@ -518,20 +523,20 @@ fun LoginPage(
         }
     }
 
-    //로그인 상태코드로 인한 에러처리.
-    LaunchedEffect(key1 = viewModel.loginStatusCode) {
-        delay(1000)
-        viewModel.loginStatusCode = 200
-    }
-    val errorText = when (viewModel.loginStatusCode) { //todo 유형 별 코드 파악
-        400, 401 -> "이메일 또는 비밀번호가 잘못되었습니다."
-        403 -> "정지된 계정입니다."
-        409 -> "중복된 이메일 계정이 존재합니다."
-        500 -> "예기치 못한 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."
-        else -> "예기치 못한 오류가 발생했습니다. 잠시 후 다시 시도해 주세요. ${viewModel.loginStatusCode}"
-    }
-
     LinkedOutTheme {
+        //로그인 상태코드로 인한 에러처리.
+        LaunchedEffect(key1 = viewModel.loginStatusCode) {
+            delay(1000)
+            viewModel.loginStatusCode = 200
+        }
+        val errorText = when (viewModel.loginStatusCode) { //todo 유형 별 코드 파악
+            400, 401 -> "이메일 또는 비밀번호가 잘못되었습니다."
+            403 -> "정지된 계정입니다."
+            409 -> "중복된 이메일 계정이 존재합니다."
+            500 -> "예기치 못한 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."
+            else -> "예기치 못한 오류가 발생했습니다. 잠시 후 다시 시도해 주세요. ${viewModel.loginStatusCode}"
+        }
+
         Scaffold(
             modifier = Modifier.pointerInput(Unit) { //배경 터치 시 키보드 숨김
                 detectTapGestures(onTap = {
@@ -677,9 +682,11 @@ fun LoginPage(
                             Text(
                                 text = errorText,
                                 color = Color.White,
-                                modifier = Modifier.padding(horizontal = 20.dp).align(
-                                    Alignment.Center
-                                )
+                                modifier = Modifier
+                                    .padding(horizontal = 20.dp)
+                                    .align(
+                                        Alignment.Center
+                                    )
                             )
                         }
 
@@ -688,7 +695,9 @@ fun LoginPage(
             }
         )
     }
-}
+
+    }
+
 
 @Composable
 fun LoginTextFields(viewModel: SocialLoginViewModel, navController: NavController) {
@@ -780,7 +789,6 @@ fun PwTextField(
     viewModel.userPw = text
     var passwordVisible by remember { mutableStateOf(false) }
 
-    LinkedOutTheme {
         TextField(
             value = text,
             onValueChange = { new ->
@@ -824,10 +832,8 @@ fun PwTextField(
                             painter = painterResource(id = if (passwordVisible) R.drawable.pw_eye_on else R.drawable.pw_eye_off),
                             contentDescription = "pw_eye"
                         )
-
                     }
                 }
-
             },
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier
@@ -836,7 +842,6 @@ fun PwTextField(
                 .focusRequester(passwordFocusRequester)
         )
     }
-}
 
 @Composable
 fun LoginBtn(
@@ -844,11 +849,8 @@ fun LoginBtn(
     viewModel: SocialLoginViewModel
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    // val isPressed by interactionSource.collectIsPressedAsState()
     val error = viewModel.userId.isEmpty() || viewModel.userPw.isEmpty()
 
-
-    LinkedOutTheme {
         Button(
             shape = RoundedCornerShape(10.dp),
             enabled = !error,
@@ -869,14 +871,13 @@ fun LoginBtn(
 
 
     }
-}
+
 
 @Composable
 fun UnderlineText(
     text: String,
     onClick: () -> Unit
 ) {
-    LinkedOutTheme {
         Text(
             text = text,
             fontSize = 12.sp,
@@ -887,7 +888,7 @@ fun UnderlineText(
                 .clickable { onClick() }
         )
     }
-}
+
 
 enum class Keyboard {
     Opened, Closed

@@ -91,10 +91,6 @@ class HomeViewModel @Inject constructor(
         }catch (e: Exception){
             Log.d(TAG, "readMyInfo: error err")
             e.printStackTrace()
-            Log.d(TAG, e.message.toString())
-            Log.d(TAG, e.cause.toString())
-
-
         }
     }
 
@@ -121,7 +117,6 @@ class HomeViewModel @Inject constructor(
             // Get new FCM registration token
             val token = task.result
             callback(token)
-
         }
     }
 
@@ -138,12 +133,8 @@ class HomeViewModel @Inject constructor(
 
                     } catch (e: Exception) {
                         Log.e("FCM Token", "Failed to fetch token")
-
-                    } finally {
                     }
-
                 }
-
             } else {
                 Log.e("FCM Token", "Failed to fetch token")
                 //토큰없으면 기기등록도 안됨
@@ -169,14 +160,11 @@ class HomeViewModel @Inject constructor(
                 } else {
                     Log.e(TAG, "readUserNotification: err${response.code()}")
                     Log.e(TAG, "readUserNotification: err device id${DeviceId.ssaid}")
-
                 }
-
             } catch (e: Exception) {
                 e.printStackTrace()
                 Log.e(TAG, "readUserNotification: error ${e.message}")
                 Log.e(TAG, "readUserNotification: error device id :  ${DeviceId.ssaid}\n token : ${Token.accessToken}")
-
             }
             finally {
                 isApifinished = true
@@ -202,8 +190,6 @@ class HomeViewModel @Inject constructor(
                 e.printStackTrace()
                 Log.d(TAG, "noti update failed: ${e.message}")
 
-                TODO("Not yet implemented")
-            } finally {
             }
         }
     }
@@ -264,7 +250,6 @@ class HomeViewModel @Inject constructor(
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
 
         )
-
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         alarmManager.cancel(pendingIntent)
 
@@ -305,10 +290,8 @@ class HomeViewModel @Inject constructor(
             }catch (e:Exception){
                 Log.e("최신공지 확인", "확인 실패 ${e.message}")
                 e.printStackTrace()
-
             }
         }
-
     }
 
     fun readUpdateHistory(){
@@ -320,19 +303,15 @@ class HomeViewModel @Inject constructor(
                     updateHistory = response.body()!!.data.releases.toMutableStateList()
 
                     //empty라면 가져오지않음. not empty라면 token으로, null이라면 이전 token.accesstoken값으로
-                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
-
-
+                    Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                 }
             }catch (e:Exception){
                 e.printStackTrace()
-
             }
             finally {
                 isLoading = false
             }
         }
-
     }
 
     var essayCount by mutableStateOf(mutableListOf(0,0,0,0,0))
@@ -351,7 +330,6 @@ class HomeViewModel @Inject constructor(
             } catch (e: Exception) {
                 e.printStackTrace()
                 Log.e(TAG, "유저 주간 링크드아웃 지수: ${e.message}", )
-            } finally {
             }
         }
     }
@@ -374,7 +352,6 @@ class HomeViewModel @Inject constructor(
     var isCheckFinished by mutableStateOf(false)
     var isExistUnreadAlerts by mutableStateOf(false)
     fun requestUnreadAlerts(){
-
         viewModelScope.launch {
             try {
                 val response = supportApi.readUnreadAlerts(bearerAccessToken,Token.refreshToken)
@@ -399,7 +376,6 @@ class HomeViewModel @Inject constructor(
                     Log.d("글로키 api", "성공: ${response.body()!!.data.url}")
                     geulRoquisUrl = response.body()!!.data.url
                     Log.d("글로키 api", "성공: $geulRoquisUrl")
-
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -419,7 +395,7 @@ class HomeViewModel @Inject constructor(
                     Log.d("유저 탈퇴 취소", "성공: ${response.body()}")
                 }
                 else{
-                    Log.e("유저 탈퇴 취소", "실패: ${response.code()}", )
+                    Log.e("유저 탈퇴 취소", "실패: ${response.code()}")
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -453,7 +429,8 @@ class HomeViewModel @Inject constructor(
             try {
                 val response = supportApi.readNoticeDetail(Token.accessToken,Token.refreshToken,noticeId)
                 if (response.isSuccessful){
-                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+
+                    Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                     Log.d("공지사항 디테일 확인", "성공 공지 내용 : ${response.body()!!.data.content}")
 
                     val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
@@ -461,7 +438,6 @@ class HomeViewModel @Inject constructor(
                     val json = jsonAdapter.toJson(response.body()!!.data)
 
                     navController.navigate("${Routes.NoticeDetailPage}/$json")
-
                 }
                 else{
                     Log.e("공지사항 디테일 확인", "실패: ${response.code()}")

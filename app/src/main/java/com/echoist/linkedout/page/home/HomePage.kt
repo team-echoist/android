@@ -110,14 +110,14 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
-
-
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewModel : WritingViewModel, statusCode : Int) {
 
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp // 화면의 높이를 DP 단위로 가져옴
+    val context = LocalContext.current
+
 
     Log.d("유저의 상태코드", statusCode.toString())
     var userStatus by remember { mutableStateOf(UserStatus.Activated) }
@@ -134,6 +134,7 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewMo
         viewModel.requestGuleRoquis()
         viewModel.requestUnreadAlerts()
         viewModel.requestLatestNotice()
+        viewModel.requestRegisterDevice(context) //로그인 후 홈 진입 시 한번만 회원정보 등록
 
     }
 
@@ -146,11 +147,8 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewMo
 
             ModalBottomSheetContent(viewModel = viewModel,navController)
         },
-
     ) {
-        val context = LocalContext.current
-        viewModel.requestRegisterDevice(context) //로그인 후 홈 진입 시 회원정보등록
-            LinkedOutTheme {
+            LinkedOutTheme(navController = navController) {
 
                 Scaffold(
                     topBar = {

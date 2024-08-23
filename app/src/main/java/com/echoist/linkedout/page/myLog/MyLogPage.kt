@@ -85,10 +85,7 @@ fun MyLogPage(navController: NavController, viewModel: MyLogViewModel,writingVie
                         drawerShape = RectangleShape,
                         drawerContainerColor = Color.Black
                     ) {
-
                         SearchingPage(drawerState = drawerState, navController = navController)
-
-
                         // ...other drawer items
                     }
                 }
@@ -109,8 +106,6 @@ fun MyLogPage(navController: NavController, viewModel: MyLogViewModel,writingVie
                                                     if (isClosed) open() else close()
                                                 }
                                             }
-
-
                                         },
                                         viewModel.getUserInfo().nickname!!,
                                         { navController.navigate("NotificationPage") },

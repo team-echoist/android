@@ -112,13 +112,11 @@ open class CommunityViewModel @Inject constructor(
             _isRefreshing.emit(false)
             _isLoading.emit(false)
 
-
         }
     }
     fun textSizeUp(){
         titleTextSize = if (titleTextSize.value <= MAX_TITLE_SIZE) titleTextSize.value.plus(1).sp else titleTextSize
         contentTextSize = if (contentTextSize.value <= MAX_CONTENT_SIZE) contentTextSize.value.plus(1).sp else contentTextSize
-
     }
 
     fun textSizeDown(){
@@ -180,28 +178,20 @@ open class CommunityViewModel @Inject constructor(
                             randomEssayList.add(it)
                         }
                     }
-
-
                     Log.d("랜덤에세이 호출성공", "전체 호출하는 limit 사이즈 ${randomEssayList.size}")
                     Log.d("랜덤에세이 호출성공", "실제 랜덤 에세이 사이즈  ${exampleItems.randomList.size}")
                 }
 
                 // API 호출 결과 처리 (예: response 데이터 사용)
             } catch (e: Exception) {
-
                 // 예외 처리
                 e.printStackTrace()
                 Log.d(TAG, "readRandomEssays: ${e.message}")
-                Log.d(TAG, "readRandomEssays: ${e.cause}")
-                Log.d(TAG, "readRandomEssays: ${e.localizedMessage}")
-
             }
             finally {
                 _isLoading.emit(false)
             }
-
         }
-
     }
 
     fun readFollowingEssays() {
@@ -219,16 +209,12 @@ open class CommunityViewModel @Inject constructor(
                 else{
                     Log.d("글 읽기 실패", "${response.body()}")
                 }
-
                 // API 호출 결과 처리 (예: response 데이터 사용)
             } catch (e: Exception) {
                 // 예외 처리
                 e.printStackTrace()
-
             }
-
         }
-
     }
 
     var isApifinished by mutableStateOf(false)
@@ -250,7 +236,6 @@ open class CommunityViewModel @Inject constructor(
                 else{
                     Log.e("첫문장 요청", "실패: ${response.body()!!.data} ", )
                 }
-
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -281,18 +266,12 @@ open class CommunityViewModel @Inject constructor(
 
                 // API 호출 결과 처리 (예: response 데이터 사용)
             } catch (e: Exception) {
-
                 // 예외 처리
                 e.printStackTrace()
                 Log.e(TAG, "readRandomEssays: ${e.message}")
-                Log.e(TAG, "readRandomEssays: ${e.cause}")
-                Log.e(TAG, "readRandomEssays: ${e.localizedMessage}")
-
             }
             finally {
                 _isLoading.emit(false)
-
-
             }
         }
     }
@@ -306,18 +285,14 @@ open class CommunityViewModel @Inject constructor(
                 Log.d(TAG, "readdetailEssay: 성공인데요${response.body()!!.data.essay.title}")
                 exampleItems.detailEssayBackStack.push(exampleItems.detailEssay)
 
-
                 navController.navigate("RecentEssayDetailPage")
 
                 // API 호출 결과 처리 (예: response 데이터 사용)
             } catch (e: Exception) {
-
                 // 예외 처리
                 e.printStackTrace()
                 Log.d(TAG, "readRandomEssays: ${e.message}")
-
             }
-
         }
     }
     fun readMyBookMarks(navController: NavController) {
@@ -331,43 +306,32 @@ open class CommunityViewModel @Inject constructor(
                     bookMarkEssayList = response.data.essays.toMutableStateList()
                     navController.navigate("CommunitySavedEssayPage")
                 }
-
                 Log.d(TAG, "bookMarkEssayList: 성공입니다 아니면 예시 ${exampleItems.randomList}")
 
                 // API 호출 결과 처리 (예: response 데이터 사용)
             } catch (e: Exception) {
-
                 // 예외 처리
                 e.printStackTrace()
                 Log.d(TAG, "bookMarkEssayList: ${e.message}")
-
             }
             finally {
                 _isLoading.emit(false)
-
                 Log.d(TAG, "readMyBookMarks: $isLoading")
-
             }
         }
     }
-
     fun addBookMark(essayId: Int){
         viewModelScope.launch {
             try {
                 bookMarkApi.addBookMark(bearerAccessToken,Token.refreshToken,essayId)
-
                 Log.d(TAG, "bookMarkEssayList: 성공입니다  ${detailEssay.title}")
-
                 // API 호출 결과 처리 (예: response 데이터 사용)
             } catch (e: Exception) {
-
                 // 예외 처리
                 e.printStackTrace()
                 Log.d(TAG, "bookMarkEssayList: ${e.message}")
-
             }
         }
-
     }
 
     fun deleteBookMark(essayId : Int){
@@ -379,21 +343,13 @@ open class CommunityViewModel @Inject constructor(
                     Log.d(TAG, "bookMarkEssayList: 단일 북마크삭제 성공 ${detailEssay.title}")
                     Log.d(TAG, "bookMarkEssayList: 북마크삭제 성공 $deleteEssayId")
                 }
-
-
                 // API 호출 결과 처리 (예: response 데이터 사용)
             } catch (e: Exception) {
-
                 // 예외 처리
                 e.printStackTrace()
                 Log.d(TAG, "bookMarkEssayList: ${e.message}")
-
-            }
-            finally {
-
             }
         }
-
     }
 
     fun deleteBookMarks(deleteItems : List<EssayApi.EssayItem>, navController: NavController){
@@ -413,42 +369,29 @@ open class CommunityViewModel @Inject constructor(
                 Log.d(TAG, "bookMarkEssayList: 북마크삭제 성공 $deleteEssayId")
                 Log.d(TAG, "bookMarkEssayList: 북마크삭제 성공 $deleteEssayId")
 
-
                 // API 호출 결과 처리 (예: response 데이터 사용)
             } catch (e: Exception) {
-
                 // 예외 처리
                 e.printStackTrace()
                 Log.d(TAG, "bookMarkEssayList: ${e.message}")
-                Log.d(TAG, "bookMarkEssayList: ${e.cause}")
-                Log.d(TAG, "bookMarkEssayList: ${e.localizedMessage}")
-
             }
         }
-
     }
 
     var isReportCleared by mutableStateOf(false)
     fun reportEssay(essayId: Int, reportReason : String){
         viewModelScope.launch {
             try {
-
-
                 val response = essayApi.reportEssay(bearerAccessToken,Token.refreshToken, essayId, EssayApi.ReportRequest(reportReason))
                 if (response.isSuccessful){
                     Log.d(TAG, "reportEssay: 성공입니다 아니면 예시 ${detailEssay.title}")
                     isReportCleared = true
                 }
-
                 // API 호출 결과 처리 (예: response 데이터 사용)
             } catch (e: Exception) {
-
                 // 예외 처리
                 e.printStackTrace()
                 Log.d(TAG, "reportEssay: ${e.message}")
-                Log.d(TAG, "reportEssay: ${e.cause}")
-                Log.d(TAG, "reportEssay: ${e.localizedMessage}")
-
             }
         }
     }

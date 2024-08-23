@@ -220,12 +220,6 @@ fun StoryEssayListScreen(viewModel: MyLogViewModel, navController: NavController
             }.toAnnotatedString()
         }
 
-        Log.d(TAG, "StoryEssayListScreen: $selectedItems")
-        Log.d(TAG, "StoryEssayListScreen: ${viewModel.createStoryEssayItems}")
-        Log.d(TAG, "StoryEssayListScreen: ${viewModel.modifyStoryEssayItems}")
-
-
-
         Column(Modifier.padding(horizontal = 20.dp)) {
             Spacer(modifier = Modifier.height(20.dp))
             Box(modifier = Modifier.fillMaxWidth()) {

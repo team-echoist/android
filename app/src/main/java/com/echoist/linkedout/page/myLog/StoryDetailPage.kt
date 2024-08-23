@@ -40,13 +40,13 @@ import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
-import com.echoist.linkedout.TYPE_RECOMMEND
-import com.echoist.linkedout.TYPE_PRIVATE
-import com.echoist.linkedout.TYPE_PUBLISHED
+import com.echoist.linkedout.Routes
+import com.echoist.linkedout.TYPE_STORY
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.components.ModifyStoryBox
 import com.echoist.linkedout.data.Story
 import com.echoist.linkedout.formatDateTime
+import com.echoist.linkedout.navigateWithClearBackStack
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.MyLogViewModel
@@ -88,7 +88,9 @@ fun StoryDetailTopAppBar(navController: NavController, viewModel: MyLogViewModel
                         .height(30.dp)
                 ) {
                     //StoryChip()
-                    GlideImage(model = R.drawable.storychip_icon, contentDescription = "", modifier = Modifier.padding(top = 1.dp).size(45.dp,18.dp))
+                    GlideImage(model = R.drawable.storychip_icon, contentDescription = "", modifier = Modifier
+                        .padding(top = 1.dp)
+                        .size(45.dp, 18.dp))
                     Spacer(modifier = Modifier.width(10.dp))
                     Text(text = viewModel.getSelectedStory().name, fontWeight = FontWeight.Normal, textAlign = TextAlign.Center, fontSize = 16.sp)
                     Spacer(modifier = Modifier.width(10.dp))
@@ -106,7 +108,7 @@ fun StoryDetailTopAppBar(navController: NavController, viewModel: MyLogViewModel
                     .size(30.dp)
 
                     .clickable {
-                        navController.popBackStack()
+                        navigateWithClearBackStack(navController,"${Routes.MyLog}/2")
                         viewModel.modifyStoryEssayItems
                             .toMutableList()
                             .clear()
@@ -155,7 +157,6 @@ fun StoryDetailItem(essayItem: EssayApi.EssayItem, num : Int,isItemClicked : ()-
             }
             if (essayItem.status == "published"){
                 Icon(painter = painterResource(id = R.drawable.option_link), tint = Color(0xFF3E415B), contentDescription = "", modifier = Modifier.size(24.dp))
-
             }
         }
     }
@@ -167,13 +168,10 @@ fun StoryDetailList(viewModel: MyLogViewModel,navController : NavController){
         items(viewModel.modifyStoryEssayItems){
         }
         itemsIndexed(viewModel.essayListInStroy){i,essay->
-            val type = when(essay.status){ //리스트조회시 나오는 아이템의 status의 종류에 따라 세부에세이요청의 type, another 에세이 달라짐.
-                "published" -> TYPE_PUBLISHED
-                "private" -> TYPE_PRIVATE
-                else -> TYPE_RECOMMEND
+            StoryDetailItem(essay,i+1){
+                viewModel.readDetailEssayInStory(essay.id!! ,navController,i+1,
+                    TYPE_STORY,viewModel.getSelectedStory().id!!)
             }
-            StoryDetailItem(essay,i+1){viewModel.readDetailEssayInStory(essay.id!! ,navController,i+1,type)}
-
         }
     }
 }

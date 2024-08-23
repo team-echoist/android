@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.echoist.linkedout.data.DetailEssayResponse
 import com.echoist.linkedout.data.EssayListResponse
+import com.echoist.linkedout.data.NextEssayResponse
 import com.echoist.linkedout.data.SingleEssayResponse
 import com.echoist.linkedout.data.Story
 import com.echoist.linkedout.data.UserInfo
@@ -62,7 +63,7 @@ interface EssayApi{
     suspend fun readMyEssay(
         @Header("Authorization") accessToken: String,
         @Header("x-refresh-token") refreshToken: String,
-        @Query("published") published: Boolean? = null,
+        @Query("pageType") pageType: String? = null,
         @Query("storyId") storyId: Int? = null,
         @Query("limit") limit: Int = 100, //이 값은 기본 10 수정가능
     ): Response<EssayListResponse>
@@ -94,7 +95,8 @@ interface EssayApi{
         @Header("Authorization") accessToken: String,
         @Header("x-refresh-token") refreshToken: String,
         @Path("essayId") essayId: Int = 0,
-        @Query("type") type : String,
+        @Query("pageType") type : String,
+        @Query("storyId") storyId : Int? = null
     ): Response<DetailEssayResponse>
 
     @GET("api/essays/recent")
@@ -115,6 +117,15 @@ interface EssayApi{
         @Query("limit") limit: Int = 10
 
     ): EssayListResponse
+
+    @GET("api/essays/next/{essayId}")
+    suspend fun readNextEssay(
+        @Header("Authorization") accessToken: String,
+        @Header("x-refresh-token") refreshToken: String,
+        @Path("essayId") essayId: Int,
+        @Query("pageType") pageType: String,
+        @Query("storyId") storyId: Int? = null,
+    ):Response<NextEssayResponse>
 
     data class ReportRequest(
         val reason: String

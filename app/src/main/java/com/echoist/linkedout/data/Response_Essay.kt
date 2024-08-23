@@ -17,6 +17,11 @@ data class Essays(
     val essays: List<EssayApi.EssayItem>,
     val total: Int? = null,
 )
+data class NextEssayResponse(
+    val data: EssaysWithRandom?,
+    val path: String,
+    val success: Boolean,
+    val timestamp: String)
 
 data class DetailEssayResponse(
     val data: EssaysWithRandom,
