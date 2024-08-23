@@ -255,6 +255,9 @@ class LoginPage : ComponentActivity() {
             val scrollState = rememberScrollState()
             var isNotificationClicked by remember { mutableStateOf(false) }
 
+            val isOnboardingFinished = SharedPreferencesUtil.getIsOnboardingFinished(this)
+            val startDestination = if (isOnboardingFinished) Routes.LoginPage else Routes.OnBoarding
+
             val isTablet = ((resources.configuration.screenLayout
                     and Configuration.SCREENLAYOUT_SIZE_MASK)
                     >= Configuration.SCREENLAYOUT_SIZE_LARGE)
@@ -384,7 +387,9 @@ class LoginPage : ComponentActivity() {
                                 },
                                 floatingActionButton = {
                                     if ((navBackStackEntry?.destination?.route?.startsWith(Routes.Home) == true ||
-                                        navBackStackEntry?.destination?.route?.startsWith(Routes.MyLog) == true) && !isNotificationClicked
+                                                navBackStackEntry?.destination?.route?.startsWith(
+                                                    Routes.MyLog
+                                                ) == true) && !isNotificationClicked
                                     ) {
                                         FloatingActionButton(
                                             modifier = Modifier.padding(
@@ -434,6 +439,7 @@ class LoginPage : ComponentActivity() {
                                             .fillMaxHeight()
                                     ) {
                                         TabletNavHost(
+                                            startDestination = startDestination,
                                             navController = navController,
                                             contentPadding = contentPadding
                                         )
