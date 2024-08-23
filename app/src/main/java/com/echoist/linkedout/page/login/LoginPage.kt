@@ -255,12 +255,6 @@ class LoginPage : ComponentActivity() {
             val scrollState = rememberScrollState()
             var isNotificationClicked by remember { mutableStateOf(false) }
 
-            var isNotificationVisible = navBackStackEntry?.destination?.route?.startsWith(
-                Routes.Home
-            ) == true && navBackStackEntry?.destination?.route?.startsWith(
-                Routes.MyLog
-            ) == true && isNotificationClicked
-
             val isTablet = ((resources.configuration.screenLayout
                     and Configuration.SCREENLAYOUT_SIZE_MASK)
                     >= Configuration.SCREENLAYOUT_SIZE_LARGE)
@@ -389,8 +383,8 @@ class LoginPage : ComponentActivity() {
                                     )
                                 },
                                 floatingActionButton = {
-                                    if (navBackStackEntry?.destination?.route?.startsWith(Routes.Home) == true ||
-                                        navBackStackEntry?.destination?.route?.startsWith(Routes.MyLog) == true
+                                    if ((navBackStackEntry?.destination?.route?.startsWith(Routes.Home) == true ||
+                                        navBackStackEntry?.destination?.route?.startsWith(Routes.MyLog) == true) && !isNotificationClicked
                                     ) {
                                         FloatingActionButton(
                                             modifier = Modifier.padding(
@@ -421,7 +415,11 @@ class LoginPage : ComponentActivity() {
                                                 .fillMaxWidth(if (isNotificationClicked) 0.7f else 1f)
                                         ) {
                                             MyBottomNavigation(navController = navController) {
-                                                isNotificationClicked = false
+                                                if (!it.startsWith(Routes.Home) && !it.startsWith(
+                                                        Routes.MyLog
+                                                    )
+                                                )
+                                                    isNotificationClicked = false
                                             }
                                         }
                                     }

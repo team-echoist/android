@@ -396,7 +396,7 @@ fun PrevBottomNav() {
 }
 
 @Composable
-fun MyBottomNavigation(navController: NavController) {
+fun MyBottomNavigation(navController: NavController, onClick: (String) -> Unit = {}) {
     val items = listOf(
         BottomNavItem.Home,
         BottomNavItem.MyLog,
@@ -414,6 +414,7 @@ fun MyBottomNavigation(navController: NavController) {
                 selected = isRouteSelected(currentRoute, item.screenRoute),
                 onClick = {
                     navController.navigate(item.screenRoute)
+                    onClick(item.screenRoute)
                 },
                 icon = {
                     Icon(
