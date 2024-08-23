@@ -114,15 +114,17 @@ internal fun TabletMyLogScreen(
             },
             content = {
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-                    Column(modifier = modifier.padding(horizontal = 250.dp)) {
+                    Column(
+                        modifier = modifier,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
                         TabletMyLogTabView(
-                            modifier = Modifier
-                                .fillMaxWidth(),
+                            modifier = modifier,
                             pagerState = pagerState,
                             viewModel = viewModel
                         )
                         ContentSection(
-                            modifier = Modifier.padding(horizontal = 250.dp),
+                            modifier = modifier,
                             pagerState = pagerState,
                             viewModel = viewModel,
                             navController = navController,
@@ -151,7 +153,7 @@ fun DrawerContent(navController: NavController, drawerState: DrawerState) {
 
 @Composable
 fun ContentSection(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     pagerState: PagerState,
     viewModel: MyLogViewModel,
     navController: NavController,

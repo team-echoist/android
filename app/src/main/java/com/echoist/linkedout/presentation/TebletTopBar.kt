@@ -2,7 +2,6 @@ package com.echoist.linkedout.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -30,10 +29,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.echoist.linkedout.R
 import com.echoist.linkedout.Routes
-import com.echoist.linkedout.components.MyLogTopAppBar
 import com.echoist.linkedout.viewModels.HomeViewModel
 import com.echoist.linkedout.viewModels.MyLogViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -41,23 +38,24 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun TopBarForRoute(
+    modifier: Modifier = Modifier,
     currentRoute: String?,
-    navController: NavController,
     drawerState: DrawerState,
     scope: CoroutineScope,
     homeViewModel: HomeViewModel = hiltViewModel(),
     myLogViewModel: MyLogViewModel = hiltViewModel(),
-    onSearchClick: () -> Unit,
+    onClickSearch: () -> Unit,
+    onClickNotification: () -> Unit,
     pagerState: PagerState = rememberPagerState { 1 }
 ) {
     when {
         currentRoute?.contains(Routes.Home) == true -> {
             TabletHomeTopBar(
-                modifier = Modifier.background(Color.Transparent),
+                modifier = modifier.background(Color.Transparent),
                 onClick = {
                     scope.launch { drawerState.open() }
                 },
-                onClickNotification = { navController.navigate("NotificationPage") },
+                onClickNotification = { onClickNotification() },
                 isExistUnreadAlerts = homeViewModel.isExistUnreadAlerts,
                 isClickedTutorial = { homeViewModel.isFirstUser = true }
             )
@@ -65,18 +63,19 @@ fun TopBarForRoute(
 
         currentRoute?.contains(Routes.MyLog) == true -> {
             TabletMyLogTopBar(
+                modifier = modifier.background(Color.Black),
                 viewModel = myLogViewModel,
-                navController = navController,
-                onSearchClick = { onSearchClick() }
+                onClickSearch = { onClickSearch() },
+                onClickNotification = { onClickNotification() }
             )
         }
 
         currentRoute == Routes.Community -> {
             TabletCommunityTopBar(
-                modifier = Modifier.background(Color(0xFFD9D9D9)),
+                modifier = modifier.background(Color(0xFFD9D9D9)),
                 text = "Community", // 원하는 제목으로 변경 가능
                 pagerState = pagerState,
-                onSearchClick = { onSearchClick() },
+                onSearchClick = { onClickSearch() },
                 onClickBookMarked = { /* 북마크 클릭 시 동작 */ }
             )
         }
@@ -139,20 +138,42 @@ fun TabletHomeTopBar(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TabletMyLogTopBar(
+    modifier: Modifier = Modifier,
     viewModel: MyLogViewModel,
-    navController: NavController,
-    onSearchClick: () -> Unit
+    onClickNotification: () -> Unit,
+    onClickSearch: () -> Unit
 ) {
-    Column {
-        MyLogTopAppBar(
-            { onSearchClick() },
-            viewModel.getUserInfo().nickname!!,
-            { navController.navigate("NotificationPage") },
-            viewModel.isExistUnreadAlerts
-        )
-    }
+    val img =
+        if (viewModel.isExistUnreadAlerts) R.drawable.icon_noti_on else R.drawable.icon_noti_off
+
+    TopAppBar(
+        modifier = modifier,
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
+        title = {
+            Text(text = "${viewModel.getUserInfo().nickname} 님", fontWeight = FontWeight.Bold)
+        },
+        actions = {
+            Icon(imageVector = Icons.Default.Search, contentDescription = "",
+                Modifier
+                    .padding(start = 10.dp)
+                    .size(30.dp)
+                    .clickable { onClickSearch() })
+            Spacer(modifier = Modifier.width(13.dp))
+            Icon(
+                painter = painterResource(id = img),
+                tint = Color.Unspecified,
+                contentDescription = "",
+                modifier = Modifier
+                    .padding(end = 10.dp)
+                    .size(30.dp)
+                    .clickable { onClickNotification() }
+            )
+
+        }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
