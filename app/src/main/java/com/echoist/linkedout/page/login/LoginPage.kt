@@ -158,6 +158,7 @@ import com.echoist.linkedout.page.settings.ResetPwPageWithEmail
 import com.echoist.linkedout.presentation.TabletDrawableItems
 import com.echoist.linkedout.presentation.TabletInquiryScreen
 import com.echoist.linkedout.presentation.TabletLinkedOutSupportRoute
+import com.echoist.linkedout.presentation.TabletNotificationScreen
 import com.echoist.linkedout.presentation.TabletSettingRoute
 import com.echoist.linkedout.presentation.TabletSupportRoute
 import com.echoist.linkedout.presentation.TabletThemeModeScreen

@@ -171,7 +171,6 @@ fun TabletMyLogTopBar(
                     .size(30.dp)
                     .clickable { onClickNotification() }
             )
-
         }
     )
 }
