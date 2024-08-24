@@ -129,20 +129,22 @@ fun ImageSwitch(
 
 
 }
+
 @Preview
 @Composable
 fun PrevImageSwitch() {
-        ImageSwitch(
-            height = 26.dp,
-            width = 50.dp,
-            outerBackgroundOnResource = R.drawable.switch_true,
-            outerBackgroundOffResource = R.drawable.switch_false,
-            circleBackgroundOnResource = R.drawable.switch_ball,
-            circleBackgroundOffResource = R.drawable.switch_ball,
-            onCheckedChanged = { checked ->
-                if (checked) Log.d("checked test", "true")
-                else Log.d("checked test","false")}
-        )
+    ImageSwitch(
+        height = 26.dp,
+        width = 50.dp,
+        outerBackgroundOnResource = R.drawable.switch_true,
+        outerBackgroundOffResource = R.drawable.switch_false,
+        circleBackgroundOnResource = R.drawable.switch_ball,
+        circleBackgroundOffResource = R.drawable.switch_ball,
+        onCheckedChanged = { checked ->
+            if (checked) Log.d("checked test", "true")
+            else Log.d("checked test", "false")
+        }
+    )
 
-    }
+}
 

@@ -8,6 +8,7 @@ import android.provider.Settings
 import android.util.Log
 import android.view.ViewTreeObserver
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -96,6 +97,7 @@ import com.echoist.linkedout.R
 import com.echoist.linkedout.Routes
 import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.components.CropImagePage
+import com.echoist.linkedout.components.ExitAppErrorBox
 import com.echoist.linkedout.data.Notice
 import com.echoist.linkedout.isDateAfterToday
 import com.echoist.linkedout.page.community.CommunityDetailPage
@@ -202,232 +204,265 @@ class LoginPage : ComponentActivity() {
         val isAutoLoginClicked = SharedPreferencesUtil.getClickedAutoLogin(this)
         val tokenValidTime = SharedPreferencesUtil.getRefreshTokenValidTime(this)
         val tokens = SharedPreferencesUtil.getTokensInfo(this)
-        Log.d("TAG", "onCreate: ${isAutoLoginClicked}")
-        val startDestination = when
-        { //자동로그인 + 토큰만료 전까지 home으로
+
+        val startDestination = when { //자동로그인 + 토큰만료 전까지 home으로
             isAutoLoginClicked && isDateAfterToday(tokenValidTime) -> {
                 Token.accessToken = tokens.accessToken
                 Token.refreshToken = tokens.refreshToken
                 "${Routes.Home}/200"
             }
+
             isOnboardingFinished -> Routes.LoginPage
             else -> Routes.OnBoarding
         }
 
         setContent {
-            val navController = rememberNavController()
-
-            NavHost(navController = navController, startDestination = startDestination) {
-
-
-                composable(Routes.OnBoarding) {
-                    OnBoardingPage(navController)
-                }
-                composable(Routes.LoginPage) {
-                    LoginPage(navController = navController)
-                }
-                composable(Routes.SignUp) {
-                    SignUpPage(navController, signUpViewModel)
-                }
-                composable(Routes.AgreeOfProvisionsPage) {
-                    AgreeOfProvisionsPage(navController, signUpViewModel)
-                }
-                composable(Routes.SignUpComplete) {
-                    SignUpCompletePage(homeViewModel, navController)
-                }
-                composable(
-                    "${Routes.Home}/{statusCode}",
-                    arguments = listOf(navArgument("statusCode") { type = NavType.IntType })
-                ) { backStackEntry ->
-                    val statusCode = backStackEntry.arguments?.getInt("statusCode") ?: 200
-                    HomePage(navController, homeViewModel, writingViewModel, statusCode)
-                }
-                composable(Routes.DarkModeSettingPage) {
-                    DarkModeSettingPage(navController)
-                }
-                composable(Routes.NotificationPage) {
-                    NotificationPage(navController)
-                }
-                composable(Routes.NotificationSettingPage) {
-                    NotificationSettingPage(navController)
-                }
-                composable(Routes.SupportPage) {
-                    SupportPage(navController)
-                }
-                composable(Routes.LinkedOutSupportPage) {
-                    LinkedOutSupportPage(navController)
-                }
-                composable(Routes.InquiryPage) {
-                    InquiryPage(navController)
-                }
-                composable(Routes.NoticePage) {
-                    NoticePage(navController, supportViewModel)
-                }
-                composable(
-                    route = "${Routes.NoticeDetailPage}/{noticeJson}",
-                    arguments = listOf(navArgument("noticeJson") { type = NavType.StringType })
-                ) { backStackEntry ->
-                    val noticeJson = backStackEntry.arguments?.getString("noticeJson")
-                    val decodedJson =
-                        noticeJson?.let { URLDecoder.decode(it, StandardCharsets.UTF_8.name()) }
-                    val notice = jsonAdapter.fromJson(decodedJson!!)
-
-                    NoticeDetailPage(
-                        navController,
-                        notice ?: Notice(0, "no title", "no content", "2024 08 03")
-                    )
-                }
-                composable(Routes.UpdateHistoryPage) {
-                    UpdateHistoryPage(navController)
-                }
-                composable(
-                    route = "${Routes.MyLog}/{page}",
-                    arguments = listOf(navArgument("page") { type = NavType.IntType })
-                ) { backStackEntry ->
-                    val page = backStackEntry.arguments?.getInt("page") ?: 0
-                    MyLogPage(navController, myLogViewModel, writingViewModel, page)
-
-                }
-                composable(Routes.StoryPage,
-                    enterTransition = {
-                        slideInVertically(
-                            initialOffsetY = { 2000 },
-                            animationSpec = tween(durationMillis = 500)
-                        )
-                    },
-                    exitTransition = {
-                        slideOutVertically(
-                            targetOffsetY = { 2000 },
-                            animationSpec = tween(durationMillis = 500)
-                        )
-                    }
-                ) {
-                    StoryPage(myLogViewModel, navController)
-                }
-                composable(Routes.StoryDetailPage) {
-                    StoryDetailPage(myLogViewModel, navController)
-                }
-                composable(Routes.DetailEssayInStoryPage) {
-                    DetailEssayInStoryPage(navController, myLogViewModel, writingViewModel)
-                }
-                composable(Routes.MyLogDetailPage) {
-                    MyLogDetailPage(
-                        navController = navController,
-                        myLogViewModel,
-                        writingViewModel
-                    )
-                }
-                composable(Routes.CompletedEssayPage) {
-                    CompletedEssayPage(
-                        navController = navController,
-                        myLogViewModel,
-                        writingViewModel
-                    )
-                }
-                composable(Routes.Community) {
-                    CommunityPage(navController = navController, communityViewModel)
-                }
-                composable(Routes.CommunityDetailPage) {
-                    CommunityDetailPage(navController, communityViewModel)
-                }
-                composable(Routes.CommunitySavedEssayPage) {
-                    CommunitySavedEssayPage(navController, communityViewModel)
-                }
-                composable(Routes.SubscriberPage) {
-                    ProfilePage(viewModel = communityViewModel, navController = navController)
-                }
-                composable(Routes.FullSubscriberPage) {
-                    FullSubscriberPage(communityViewModel, navController)
-                }
-                composable(Routes.Settings) {
-                    MyPage(navController)
-                }
-                composable(Routes.RecentViewedEssayPage) {
-                    RecentViewedEssayPage(navController, communityViewModel)
-                }
-                composable(Routes.RecentEssayDetailPage) {
-                    RecentEssayDetailPage(navController, communityViewModel)
-                }
-                composable(
-                    Routes.AccountPage,
-                    deepLinks = listOf(navDeepLink {
-                        uriPattern = "https://linkedoutapp.com/${Routes.AccountPage}"
-                    })
-                ) {
-                    AccountPage(navController)
-                }
-                composable(Routes.ChangeEmailPage) {
-                    ChangeEmailPage(navController)
-                }
-                composable(Routes.ChangePwPage) {
-                    ChangePwPage(navController)
-                }
-                composable(Routes.ResetPwPageWithEmail) {
-                    ResetPwPageWithEmail(navController)
-                }
-                composable(
-                    Routes.ResetPwPage,
-                    deepLinks = listOf(navDeepLink {
-                        uriPattern =
-                            "https://linkedoutapp.com/${Routes.ResetPwPage}?token={token}"
-                    }),
-
-                    arguments = listOf(navArgument("token") {
-                        type = NavType.StringType
-                        defaultValue = ""
-                    })
-                ) {
-                    if (it.arguments?.getString("token").toString().isNotEmpty()) {
-                        Token.accessToken = it.arguments?.getString("token").toString()
-                        Log.i("header token by deepLink:", " ${Token.accessToken}")
-                    }
-                    ResetPwPage(navController, it.arguments?.getString("token").toString())
-                }
-                composable(Routes.AccountWithdrawalPage) {
-                    AccountWithdrawalPage(navController)
-                }
-                composable(Routes.BadgePage) {
-                    BadgePage(navController, settingsViewModel)
-                }
-                composable(
-                    Routes.WritingPage,
-                    enterTransition = {
-                        slideInVertically(
-                            initialOffsetY = { 2000 },
-                            animationSpec = tween(durationMillis = 500)
-                        )
-                    },
-                    exitTransition = {
-                        slideOutVertically(
-                            targetOffsetY = { 2000 },
-                            animationSpec = tween(durationMillis = 500)
-                        )
-                    }
-                ) {
-                    WritingPage(navController, writingViewModel)
-                }
-                composable(Routes.WritingCompletePage) {
-                    WritingCompletePage(navController, writingViewModel)
-                }
-                composable(Routes.TemporaryStoragePage) {
-                    TemporaryStoragePage(navController, writingViewModel)
-                }
-                composable(Routes.CropImagePage) {
-                    CropImagePage(navController, writingViewModel)
-                }
-                composable(Routes.TermsAndConditionsPage) {
-                    TermsAndConditionsPage(navController)
-                }
-                composable(Routes.PrivacyPolicyPage) {
-                    PrivacyPolicyPage(navController)
-                }
-                composable(Routes.LocationPolicyPage) {
-                    LocationPolicyPage(navController)
-                }
-                composable(Routes.FontCopyRight) {
-                    FontCopyRight(navController)
+            var isClickedExit by remember {
+                mutableStateOf(false)
+            }
+            LaunchedEffect(key1 = isClickedExit) {
+                if (isClickedExit) {
+                    delay(2000)
+                    isClickedExit = false
                 }
             }
+
+            val navController = rememberNavController()
+            LinkedOutTheme(navController = navController) {
+
+                BackHandler { // 백키 이벤트 핸들링
+                    if (navController.previousBackStackEntry == null) {
+                        if (isClickedExit) {
+                            this.finish() //두번클릭 시 앱종료
+                        } else isClickedExit = true //한번클릭시 경고
+                        // 추가적으로 원하는 동작 수행
+                    } else {
+                        navController.popBackStack() // 백 스택이 있다면 일반적으로 뒤로 가기
+                    }
+                }
+
+                NavHost(navController = navController, startDestination = startDestination) {
+
+                    composable(Routes.OnBoarding) {
+                        OnBoardingPage(navController)
+                    }
+                    composable(Routes.LoginPage) {
+                        LoginPage(navController = navController)
+                    }
+                    composable(Routes.SignUp) {
+                        SignUpPage(navController, signUpViewModel)
+                    }
+                    composable(Routes.AgreeOfProvisionsPage) {
+                        AgreeOfProvisionsPage(navController, signUpViewModel)
+                    }
+                    composable(Routes.SignUpComplete) {
+                        SignUpCompletePage(homeViewModel, navController)
+                    }
+                    composable(
+                        "${Routes.Home}/{statusCode}",
+                        arguments = listOf(navArgument("statusCode") { type = NavType.IntType })
+                    ) { backStackEntry ->
+                        val statusCode = backStackEntry.arguments?.getInt("statusCode") ?: 200
+                        HomePage(navController, homeViewModel, writingViewModel, statusCode)
+                    }
+                    composable(Routes.DarkModeSettingPage) {
+                        DarkModeSettingPage(navController)
+                    }
+                    composable(Routes.NotificationPage) {
+                        NotificationPage(navController)
+                    }
+                    composable(Routes.NotificationSettingPage) {
+                        NotificationSettingPage(navController)
+                    }
+                    composable(Routes.SupportPage) {
+                        SupportPage(navController)
+                    }
+                    composable(Routes.LinkedOutSupportPage) {
+                        LinkedOutSupportPage(navController)
+                    }
+                    composable(Routes.InquiryPage) {
+                        InquiryPage(navController)
+                    }
+                    composable(Routes.NoticePage) {
+                        NoticePage(navController, supportViewModel)
+                    }
+                    composable(
+                        route = "${Routes.NoticeDetailPage}/{noticeJson}",
+                        arguments = listOf(navArgument("noticeJson") { type = NavType.StringType })
+                    ) { backStackEntry ->
+                        val noticeJson = backStackEntry.arguments?.getString("noticeJson")
+                        val decodedJson =
+                            noticeJson?.let { URLDecoder.decode(it, StandardCharsets.UTF_8.name()) }
+                        val notice = jsonAdapter.fromJson(decodedJson!!)
+
+                        NoticeDetailPage(
+                            navController,
+                            notice ?: Notice(0, "no title", "no content", "2024 08 03")
+                        )
+                    }
+                    composable(Routes.UpdateHistoryPage) {
+                        UpdateHistoryPage(navController)
+                    }
+                    composable(
+                        route = "${Routes.MyLog}/{page}",
+                        arguments = listOf(navArgument("page") { type = NavType.IntType })
+                    ) { backStackEntry ->
+                        val page = backStackEntry.arguments?.getInt("page") ?: 0
+                        MyLogPage(navController, myLogViewModel, writingViewModel, page)
+
+                    }
+                    composable(Routes.StoryPage,
+                        enterTransition = {
+                            slideInVertically(
+                                initialOffsetY = { 2000 },
+                                animationSpec = tween(durationMillis = 500)
+                            )
+                        },
+                        exitTransition = {
+                            slideOutVertically(
+                                targetOffsetY = { 2000 },
+                                animationSpec = tween(durationMillis = 500)
+                            )
+                        }
+                    ) {
+                        StoryPage(myLogViewModel, navController)
+                    }
+                    composable(Routes.StoryDetailPage) {
+                        StoryDetailPage(myLogViewModel, navController)
+                    }
+                    composable(Routes.DetailEssayInStoryPage) {
+                        DetailEssayInStoryPage(navController, myLogViewModel, writingViewModel)
+                    }
+                    composable(Routes.MyLogDetailPage) {
+                        MyLogDetailPage(
+                            navController = navController,
+                            myLogViewModel,
+                            writingViewModel
+                        )
+                    }
+                    composable(Routes.CompletedEssayPage) {
+                        CompletedEssayPage(
+                            navController = navController,
+                            myLogViewModel,
+                            writingViewModel
+                        )
+                    }
+                    composable(Routes.Community) {
+                        CommunityPage(navController = navController, communityViewModel)
+                    }
+                    composable(Routes.CommunityDetailPage) {
+                        CommunityDetailPage(navController, communityViewModel)
+                    }
+                    composable(Routes.CommunitySavedEssayPage) {
+                        CommunitySavedEssayPage(navController, communityViewModel)
+                    }
+                    composable(Routes.SubscriberPage) {
+                        ProfilePage(viewModel = communityViewModel, navController = navController)
+                    }
+                    composable(Routes.FullSubscriberPage) {
+                        FullSubscriberPage(communityViewModel, navController)
+                    }
+                    composable(Routes.Settings) {
+                        MyPage(navController)
+                    }
+                    composable(Routes.RecentViewedEssayPage) {
+                        RecentViewedEssayPage(navController, communityViewModel)
+                    }
+                    composable(Routes.RecentEssayDetailPage) {
+                        RecentEssayDetailPage(navController, communityViewModel)
+                    }
+                    composable(
+                        Routes.AccountPage,
+                        deepLinks = listOf(navDeepLink {
+                            uriPattern = "https://linkedoutapp.com/${Routes.AccountPage}"
+                        })
+                    ) {
+                        AccountPage(navController)
+                    }
+                    composable(Routes.ChangeEmailPage) {
+                        ChangeEmailPage(navController)
+                    }
+                    composable(Routes.ChangePwPage) {
+                        ChangePwPage(navController)
+                    }
+                    composable(Routes.ResetPwPageWithEmail) {
+                        ResetPwPageWithEmail(navController)
+                    }
+                    composable(
+                        Routes.ResetPwPage,
+                        deepLinks = listOf(navDeepLink {
+                            uriPattern =
+                                "https://linkedoutapp.com/${Routes.ResetPwPage}?token={token}"
+                        }),
+
+                        arguments = listOf(navArgument("token") {
+                            type = NavType.StringType
+                            defaultValue = ""
+                        })
+                    ) {
+                        if (it.arguments?.getString("token").toString().isNotEmpty()) {
+                            Token.accessToken = it.arguments?.getString("token").toString()
+                            Log.i("header token by deepLink:", " ${Token.accessToken}")
+                        }
+                        ResetPwPage(navController, it.arguments?.getString("token").toString())
+                    }
+                    composable(Routes.AccountWithdrawalPage) {
+                        AccountWithdrawalPage(navController)
+                    }
+                    composable(Routes.BadgePage) {
+                        BadgePage(navController, settingsViewModel)
+                    }
+                    composable(
+                        Routes.WritingPage,
+                        enterTransition = {
+                            slideInVertically(
+                                initialOffsetY = { 2000 },
+                                animationSpec = tween(durationMillis = 500)
+                            )
+                        },
+                        exitTransition = {
+                            slideOutVertically(
+                                targetOffsetY = { 2000 },
+                                animationSpec = tween(durationMillis = 500)
+                            )
+                        }
+                    ) {
+                        WritingPage(navController, writingViewModel)
+                    }
+                    composable(Routes.WritingCompletePage) {
+                        WritingCompletePage(navController, writingViewModel)
+                    }
+                    composable(Routes.TemporaryStoragePage) {
+                        TemporaryStoragePage(navController, writingViewModel)
+                    }
+                    composable(Routes.CropImagePage) {
+                        CropImagePage(navController, writingViewModel)
+                    }
+                    composable(Routes.TermsAndConditionsPage) {
+                        TermsAndConditionsPage(navController)
+                    }
+                    composable(Routes.PrivacyPolicyPage) {
+                        PrivacyPolicyPage(navController)
+                    }
+                    composable(Routes.LocationPolicyPage) {
+                        LocationPolicyPage(navController)
+                    }
+                    composable(Routes.FontCopyRight) {
+                        FontCopyRight(navController)
+                    }
+
+                }
+                if (isClickedExit) {
+                    Box(
+                        Modifier
+                            .fillMaxSize()
+                            .navigationBarsPadding()
+                            .padding(bottom = 40.dp), contentAlignment = Alignment.BottomCenter
+                    ) { ExitAppErrorBox() }
+                }
+            }
+
+
         }
     }
 }
@@ -520,186 +555,178 @@ fun LoginPage(
     val context = LocalContext.current
     viewModel.clickedAutoLogin = SharedPreferencesUtil.getClickedAutoLogin(context)
 
-    //앱버전 체크 후 최신버전 아닌경우 마켓업데이트.
+    // 앱버전 체크 후 최신버전 아닌경우 마켓업데이트.
     LaunchedEffect(key1 = Unit) {
         viewModel.requestAppVersion(context)
-        //온보딩 확인했다는 체크
-        SharedPreferencesUtil.saveIsOnboardingFinished(context,true)
-
+        // 온보딩 확인했다는 체크
+        SharedPreferencesUtil.saveIsOnboardingFinished(context, true)
     }
 
-    LinkedOutTheme {
-        //로그인 상태코드로 인한 에러처리.
-        LaunchedEffect(key1 = viewModel.loginStatusCode) {
-            delay(1000)
-            viewModel.loginStatusCode = 200
-        }
-        val errorText = when (viewModel.loginStatusCode) { //todo 유형 별 코드 파악
-            400, 401 -> "이메일 또는 비밀번호가 잘못되었습니다."
-            403 -> "정지된 계정입니다."
-            409 -> "중복된 이메일 계정이 존재합니다."
-            500 -> "예기치 못한 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."
-            else -> "예기치 못한 오류가 발생했습니다. 잠시 후 다시 시도해 주세요. ${viewModel.loginStatusCode}"
-        }
+    // 로그인 상태코드로 인한 에러처리.
+    LaunchedEffect(key1 = viewModel.loginStatusCode) {
+        delay(1000)
+        viewModel.loginStatusCode = 200
+    }
 
-        Scaffold(
-            modifier = Modifier.pointerInput(Unit) { //배경 터치 시 키보드 숨김
-                detectTapGestures(onTap = {
-                    keyboardController?.hide()
-                })
-            },
-            content = {
-                Column(
+    val errorText = when (viewModel.loginStatusCode) { // todo 유형 별 코드 파악
+        400, 401 -> "이메일 또는 비밀번호가 잘못되었습니다."
+        403 -> "정지된 계정입니다."
+        409 -> "중복된 이메일 계정이 존재합니다."
+        500 -> "예기치 못한 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."
+        else -> "예기치 못한 오류가 발생했습니다. 잠시 후 다시 시도해 주세요. ${viewModel.loginStatusCode}"
+    }
+
+    Scaffold(
+        modifier = Modifier.pointerInput(Unit) { // 배경 터치 시 키보드 숨김
+            detectTapGestures(onTap = {
+                keyboardController?.hide()
+            })
+        },
+        content = {
+            Column(
+                modifier = Modifier
+                    .padding(it)
+                    .verticalScroll(scrollState)
+            ) {
+                Spacer(modifier = Modifier.height(20.dp))
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "arrowback",
+                    tint = Color.White,
                     modifier = Modifier
-                        .padding(it)
-                        .verticalScroll(scrollState)
-                ) {
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "arrowback",
-
-                        tint = Color.White,
-                        modifier = Modifier
-                            .size(30.dp)
-                            .padding(16.dp)
-                            .clickable { navController.popBackStack() } //뒤로가기
-                    )
-                    Spacer(modifier = Modifier.height(30.dp))
-                    Text(
-                        text = "안녕하세요!",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(start = 16.dp),
-                        color = Color.White,
-                    )
-                    Text(
-                        text = "링크드아웃에 오신 것을 환영합니다",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(start = 16.dp, bottom = 32.dp),
-                        color = Color.White,
-                    )
-
-                    LoginTextFields(viewModel, navController)
-
-                    val autoLoginColor =
-                        if (viewModel.clickedAutoLogin) LinkedInColor else Color.Gray
-
-                    Row(
-                        modifier = Modifier.padding(horizontal = 20.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Check,
-                            tint = autoLoginColor,
-                            contentDescription = "check",
-                            modifier = Modifier
-                                .clickable {
-                                    viewModel.clickedAutoLogin = !viewModel.clickedAutoLogin
-                                }
-                        )
-                        Text(text = "자동 로그인", fontSize = 14.sp, color = autoLoginColor)
-                    }
-                    Spacer(modifier = Modifier.height(10.dp))
-                    LoginBtn(navController = navController, viewModel)
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 32.dp),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        // UnderlineText(text = "아이디 찾기") { } //아이디찾기 페이지 이동
-                        //임시 아이디 찾기 닫아둠.
-                        LinkedOutTheme {
-                            Text(
-                                text = "아이디 찾기",
-                                fontSize = 12.sp,
-                                style = TextStyle(textDecoration = TextDecoration.LineThrough),
-                                color = Color(0xFF919191),
-                                modifier = Modifier
-                                    .padding(end = 25.dp)
-                                    .clickable(enabled = false) { }
-                            )
-                        }
-                        UnderlineText(text = "비밀번호 재설정") { navController.navigate("ResetPwPageWithEmail") } //비밀번호 재설정 페이지 이동
-                        UnderlineText(text = "회원가입") { navController.navigate("SIGNUP") } // 회원가입 페이지 이동
-                    }
-                    Spacer(modifier = Modifier.height(150.dp))
-
-                    Row(
-                        modifier = Modifier.padding(bottom = 24.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        HorizontalDivider(
-                            thickness = 1.dp,
-                            color = Color.White,
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(12.dp)
-                        )
-                        Spacer(modifier = Modifier.width(12.dp)) // 공간을 만듭니다
-                        Text(
-                            text = "간편 회원가입/로그인",
-                            color = Color.White,
-                            fontSize = 12.sp
-                        )
-                        Spacer(modifier = Modifier.width(12.dp)) // 공간을 만듭니다
-                        HorizontalDivider(
-                            thickness = 1.dp,
-                            color = Color.White,
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(12.dp)
-                        )
-                    }
-                    SocialLoginBar(navController, viewModel)
-                    Spacer(modifier = Modifier.height(20.dp))
-                }
-                //에러 박스
-                AnimatedVisibility(
-                    visible = viewModel.loginStatusCode >= 400,
-                    enter = fadeIn(
-                        animationSpec = tween(
-                            durationMillis = 500,
-                            easing = FastOutSlowInEasing
-                        )
-                    ),
-                    exit = fadeOut(animationSpec = tween(durationMillis = 0, easing = LinearEasing))
+                        .size(30.dp)
+                        .padding(16.dp)
+                        .clickable { navController.popBackStack() } // 뒤로가기
                 )
-                {
+                Spacer(modifier = Modifier.height(30.dp))
+                Text(
+                    text = "안녕하세요!",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(start = 16.dp),
+                    color = Color.White
+                )
+                Text(
+                    text = "링크드아웃에 오신 것을 환영합니다",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(start = 16.dp, bottom = 32.dp),
+                    color = Color.White
+                )
+
+                LoginTextFields(viewModel, navController)
+
+                val autoLoginColor =
+                    if (viewModel.clickedAutoLogin) LinkedInColor else Color.Gray
+
+                Row(
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        tint = autoLoginColor,
+                        contentDescription = "check",
+                        modifier = Modifier
+                            .clickable {
+                                viewModel.clickedAutoLogin = !viewModel.clickedAutoLogin
+                            }
+                    )
+                    Text(text = "자동 로그인", fontSize = 14.sp, color = autoLoginColor)
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+                LoginBtn(navController = navController, viewModel)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 32.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    // UnderlineText(text = "아이디 찾기") { } //아이디찾기 페이지 이동
+                    // 임시 아이디 찾기 닫아둠.
+                    Text(
+                        text = "아이디 찾기",
+                        fontSize = 12.sp,
+                        style = TextStyle(textDecoration = TextDecoration.LineThrough),
+                        color = Color(0xFF919191),
+                        modifier = Modifier
+                            .padding(end = 25.dp)
+                            .clickable(enabled = false) { }
+                    )
+                    UnderlineText(text = "비밀번호 재설정") { navController.navigate("ResetPwPageWithEmail") } // 비밀번호 재설정 페이지 이동
+                    UnderlineText(text = "회원가입") { navController.navigate("SIGNUP") } // 회원가입 페이지 이동
+                }
+                Spacer(modifier = Modifier.height(150.dp))
+
+                Row(
+                    modifier = Modifier.padding(bottom = 24.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    HorizontalDivider(
+                        thickness = 1.dp,
+                        color = Color.White,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(12.dp)
+                    )
+                    Spacer(modifier = Modifier.width(12.dp)) // 공간을 만듭니다
+                    Text(
+                        text = "간편 회원가입/로그인",
+                        color = Color.White,
+                        fontSize = 12.sp
+                    )
+                    Spacer(modifier = Modifier.width(12.dp)) // 공간을 만듭니다
+                    HorizontalDivider(
+                        thickness = 1.dp,
+                        color = Color.White,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(12.dp)
+                    )
+                }
+                SocialLoginBar(navController, viewModel)
+                Spacer(modifier = Modifier.height(20.dp))
+            }
+
+            // 에러 박스
+            AnimatedVisibility(
+                visible = viewModel.loginStatusCode >= 400,
+                enter = fadeIn(
+                    animationSpec = tween(
+                        durationMillis = 500,
+                        easing = FastOutSlowInEasing
+                    )
+                ),
+                exit = fadeOut(animationSpec = tween(durationMillis = 0, easing = LinearEasing))
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(0.7f))
+                ) {
                     Box(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.Black.copy(0.7f))
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .align(Alignment.Center)
-                                .height(60.dp)
-                                .padding(horizontal = 20.dp)
-                                .background(
-                                    Color(0xFFE43446),
-                                    shape = RoundedCornerShape(10)
-                                )
-                        ) {
-                            Text(
-                                text = errorText,
-                                color = Color.White,
-                                modifier = Modifier
-                                    .padding(horizontal = 20.dp)
-                                    .align(
-                                        Alignment.Center
-                                    )
+                            .fillMaxWidth()
+                            .align(Alignment.Center)
+                            .height(60.dp)
+                            .padding(horizontal = 20.dp)
+                            .background(
+                                Color(0xFFE43446),
+                                shape = RoundedCornerShape(10)
                             )
-                        }
-
+                    ) {
+                        Text(
+                            text = errorText,
+                            color = Color.White,
+                            modifier = Modifier
+                                .padding(horizontal = 20.dp)
+                                .align(Alignment.Center)
+                        )
                     }
                 }
             }
-        )
-    }
+        }
+    )
 }
 
 
@@ -793,59 +820,59 @@ fun PwTextField(
     viewModel.userPw = text
     var passwordVisible by remember { mutableStateOf(false) }
 
-        TextField(
-            value = text,
-            onValueChange = { new ->
-                text = new
-                viewModel.userPw = text
-            },
-            singleLine = true,
-            label = { Text("비밀번호", color = Color(0xFF919191), fontSize = 14.sp) }, // 힌트를 라벨로 설정합니다.
-            colors = TextFieldDefaults.colors(
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                focusedTextColor = Color.White,
-                unfocusedTextColor = Color.White,
-                focusedContainerColor = Color(0xFF252525),
-                unfocusedContainerColor = Color(0xFF252525)
-            ),
-            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    viewModel.login(navController)
+    TextField(
+        value = text,
+        onValueChange = { new ->
+            text = new
+            viewModel.userPw = text
+        },
+        singleLine = true,
+        label = { Text("비밀번호", color = Color(0xFF919191), fontSize = 14.sp) }, // 힌트를 라벨로 설정합니다.
+        colors = TextFieldDefaults.colors(
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            focusedTextColor = Color.White,
+            unfocusedTextColor = Color.White,
+            focusedContainerColor = Color(0xFF252525),
+            unfocusedContainerColor = Color(0xFF252525)
+        ),
+        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Password,
+            imeAction = ImeAction.Done
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = {
+                viewModel.login(navController)
+            }
+        ),
+        trailingIcon = { // 비밀번호 표시 여부입니다.
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (text.isNotEmpty())
+                    Icon(
+                        imageVector = Icons.Default.Cancel,
+                        contentDescription = "cancel",
+                        modifier = Modifier.clickable {
+                            text = ""
+                            viewModel.userPw = ""
+                        }
+                    )
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    Icon(
+                        modifier = Modifier.size(24.dp),
+                        painter = painterResource(id = if (passwordVisible) R.drawable.pw_eye_on else R.drawable.pw_eye_off),
+                        contentDescription = "pw_eye"
+                    )
                 }
-            ),
-            trailingIcon = { // 비밀번호 표시 여부입니다.
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    if (text.isNotEmpty())
-                        Icon(
-                            imageVector = Icons.Default.Cancel,
-                            contentDescription = "cancel",
-                            modifier = Modifier.clickable {
-                                text = ""
-                                viewModel.userPw = ""
-                            }
-                        )
-                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                        Icon(
-                            modifier = Modifier.size(24.dp),
-                            painter = painterResource(id = if (passwordVisible) R.drawable.pw_eye_on else R.drawable.pw_eye_off),
-                            contentDescription = "pw_eye"
-                        )
-                    }
-                }
-            },
-            shape = RoundedCornerShape(8.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, bottom = 13.dp)
-                .focusRequester(passwordFocusRequester)
-        )
-    }
+            }
+        },
+        shape = RoundedCornerShape(8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp, bottom = 13.dp)
+            .focusRequester(passwordFocusRequester)
+    )
+}
 
 @Composable
 fun LoginBtn(
@@ -855,26 +882,26 @@ fun LoginBtn(
     val interactionSource = remember { MutableInteractionSource() }
     val error = viewModel.userId.isEmpty() || viewModel.userPw.isEmpty()
 
-        Button(
-            shape = RoundedCornerShape(10.dp),
-            enabled = !error,
-            onClick = {
-                viewModel.login(navController)
-            },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = if (error) Color.Gray else LinkedInColor
-            ),
-            interactionSource = interactionSource,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(55.dp)
-                .padding(start = 16.dp, end = 16.dp)
-        ) {
-            Text(text = "로그인", color = if (error)Color(0xFF919191) else Color.Black)
-        }
-
-
+    Button(
+        shape = RoundedCornerShape(10.dp),
+        enabled = !error,
+        onClick = {
+            viewModel.login(navController)
+        },
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (error) Color.Gray else LinkedInColor
+        ),
+        interactionSource = interactionSource,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(55.dp)
+            .padding(start = 16.dp, end = 16.dp)
+    ) {
+        Text(text = "로그인", color = if (error) Color(0xFF919191) else Color.Black)
     }
+
+
+}
 
 
 @Composable
@@ -882,16 +909,16 @@ fun UnderlineText(
     text: String,
     onClick: () -> Unit
 ) {
-        Text(
-            text = text,
-            fontSize = 12.sp,
-            style = TextStyle(textDecoration = TextDecoration.Underline),
-            color = Color(0xFF919191),
-            modifier = Modifier
-                .padding(end = 25.dp)
-                .clickable { onClick() }
-        )
-    }
+    Text(
+        text = text,
+        fontSize = 12.sp,
+        style = TextStyle(textDecoration = TextDecoration.Underline),
+        color = Color(0xFF919191),
+        modifier = Modifier
+            .padding(end = 25.dp)
+            .clickable { onClick() }
+    )
+}
 
 
 enum class Keyboard {

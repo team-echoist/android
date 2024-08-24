@@ -12,12 +12,11 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import com.echoist.linkedout.LOCATION_POLICY_URL
 import com.echoist.linkedout.page.settings.SettingTopAppBar
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun LocationPolicyPage(navController : NavController){
-    LinkedOutTheme {
+    
         Scaffold(topBar = {
             SettingTopAppBar("위치 기반 서비스 이용 약관",navController)
         }) {
@@ -40,4 +39,3 @@ fun LocationPolicyPage(navController : NavController){
             }
         }
     }
-}

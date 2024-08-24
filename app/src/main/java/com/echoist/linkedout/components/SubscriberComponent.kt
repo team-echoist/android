@@ -94,7 +94,7 @@ fun CommuTopAppBar(
             Icon(imageVector = Icons.Default.Search, contentDescription = "",
                 Modifier
                     .size(30.dp)
-                    .padding(start=10.dp)
+                    .padding(start = 10.dp)
 
                     .clickable {
                         onClick()
@@ -103,7 +103,9 @@ fun CommuTopAppBar(
             Icon(
                 imageVector = Icons.Default.Bookmark,
                 contentDescription = "",
-                Modifier.size(30.dp).padding(end=10.dp),
+                Modifier
+                    .size(30.dp)
+                    .padding(end = 10.dp),
             )
             Spacer(modifier = Modifier.width(15.dp))
         }
@@ -204,7 +206,7 @@ fun Profile(userInfo: UserInfo) {
 
 
 @Composable
-fun ProfilePage(viewModel: CommunityViewModel,navController : NavController){
+fun ProfilePage(viewModel: CommunityViewModel, navController: NavController) {
     val pagerState = androidx.compose.foundation.pager.rememberPagerState { 2 }
 
     Column {
@@ -212,19 +214,26 @@ fun ProfilePage(viewModel: CommunityViewModel,navController : NavController){
         ProfileChips(pagerState = pagerState)
         Spacer(modifier = Modifier.height(20.dp))
 
-        ProfilePager(pagerState = pagerState, communityViewModel = viewModel, navController = navController)
+        ProfilePager(
+            pagerState = pagerState,
+            communityViewModel = viewModel,
+            navController = navController
+        )
 
     }
-
 
 
 }
 
 @Composable
-fun ProfilePager(pagerState: PagerState, communityViewModel: CommunityViewModel, navController: NavController){
+fun ProfilePager(
+    pagerState: PagerState,
+    communityViewModel: CommunityViewModel,
+    navController: NavController
+) {
     HorizontalPager(state = pagerState) { page ->
         when (page) {
-            0-> LazyColumn {
+            0 -> LazyColumn {
                 items(items = communityViewModel.previousEssayList) {   //랜덤리스트 말고 수정할것. 그사람의 리스트로
                     EssayListItem(
                         item = it,
@@ -233,8 +242,9 @@ fun ProfilePager(pagerState: PagerState, communityViewModel: CommunityViewModel,
                     )
                 }
             }
-            1-> LazyColumn {
-                if (communityViewModel.storyList.isNotEmpty()){
+
+            1 -> LazyColumn {
+                if (communityViewModel.storyList.isNotEmpty()) {
                     items(items = communityViewModel.storyList) {   //랜덤리스트 말고 수정할것. 그사람의 리스트로
                         ProfileStoryItem(it)
                     }
@@ -244,7 +254,6 @@ fun ProfilePager(pagerState: PagerState, communityViewModel: CommunityViewModel,
         }
     }
 }
-
 
 
 @Composable
@@ -338,21 +347,25 @@ fun ProfileChips(pagerState: PagerState) {
 }
 
 @Composable
-fun ProfileStoryItem(story: Story){
-        Box(modifier = Modifier
-            .padding(horizontal = 20.dp)
-            .fillMaxWidth()
-            .clickable { }
-            .height(60.dp)){
-            Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
-                StoryCountIcon(story.essaysCount!!)
-                Spacer(modifier = Modifier.width(30.dp))
-                Column(verticalArrangement = Arrangement.Center) {
-                    Text(text = story.name, fontSize = 20.sp)
-                    Text(text = formatDateTime(story.createdDate), fontSize = 10.sp, color = Color(0xFF686868))
-                }
+fun ProfileStoryItem(story: Story) {
+    Box(modifier = Modifier
+        .padding(horizontal = 20.dp)
+        .fillMaxWidth()
+        .clickable { }
+        .height(60.dp)) {
+        Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
+            StoryCountIcon(story.essaysCount!!)
+            Spacer(modifier = Modifier.width(30.dp))
+            Column(verticalArrangement = Arrangement.Center) {
+                Text(text = story.name, fontSize = 20.sp)
+                Text(
+                    text = formatDateTime(story.createdDate),
+                    fontSize = 10.sp,
+                    color = Color(0xFF686868)
+                )
             }
-            
         }
-    
+
+    }
+
 }

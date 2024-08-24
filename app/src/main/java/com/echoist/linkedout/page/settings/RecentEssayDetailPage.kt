@@ -59,7 +59,6 @@ import com.echoist.linkedout.page.community.ReportMenuBottomSheet
 import com.echoist.linkedout.page.community.ReportOption
 import com.echoist.linkedout.page.community.SequenceBottomBar
 import com.echoist.linkedout.page.community.SubscriberSimpleItem
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -87,164 +86,165 @@ fun RecentEssayDetailPage(navController: NavController, viewModel: CommunityView
             bottomSheetState.partialExpand()
         }
     }
-    LinkedOutTheme {
-        BottomSheetScaffold(
-            sheetContainerColor = Color(0xFF191919),
-            scaffoldState = scaffoldState,
-            sheetContent = {
 
-                //신고하기 요청보냄.
-                if (!viewModel.isReportCleared) {
-                    ReportMenuBottomSheet(viewModel)
+    BottomSheetScaffold(
+        sheetContainerColor = Color(0xFF191919),
+        scaffoldState = scaffoldState,
+        sheetContent = {
 
-                } else { //신고 하기 버튼 눌렀을때 제대로 요청이 들어가고 접수가되었다면. 완료버튼 클릭시
-                    ReportComplete {
-                        viewModel.isReportCleared = false
-                        viewModel.isReportClicked = false
-                        viewModel.isOptionClicked = false
-                        scope.launch {
-                            bottomSheetState.hide()
-                        }
+            //신고하기 요청보냄.
+            if (!viewModel.isReportCleared) {
+                ReportMenuBottomSheet(viewModel)
 
+            } else { //신고 하기 버튼 눌렀을때 제대로 요청이 들어가고 접수가되었다면. 완료버튼 클릭시
+                ReportComplete {
+                    viewModel.isReportCleared = false
+                    viewModel.isReportClicked = false
+                    viewModel.isOptionClicked = false
+                    scope.launch {
+                        bottomSheetState.hide()
                     }
-                }
 
+                }
+            }
+
+
+        },
+
+        sheetPeekHeight = peekHeight
+    ) {
+        Scaffold(
+            topBar = {
+
+                CommunityTopAppBar(navController = navController, viewModel, Color(0xFF0E0E0E))
 
             },
+            content = {
+                Box(
+                    Modifier
+                        .clickable { isClicked = !isClicked }
+                        .padding(it)
+                        .fillMaxSize(), contentAlignment = Alignment.TopCenter
+                ) {
+                    LazyColumn {
+                        item {
 
-            sheetPeekHeight = peekHeight
-        ) {
-            Scaffold(
-                topBar = {
-
-                    CommunityTopAppBar(navController = navController, viewModel, Color(0xFF0E0E0E))
-
-                },
-                content = {
-                    Box(
-                        Modifier
-                            .clickable { isClicked = !isClicked }
-                            .padding(it)
-                            .fillMaxSize(), contentAlignment = Alignment.TopCenter
-                    ) {
-                        LazyColumn {
-                            item {
-
-                                DetailEssay(
-                                    item = viewModel.readDetailEssay(),
-                                    viewModel,
-                                    navController
-                                )
-                                Spacer(modifier = Modifier.height(28.dp))
-                                val userinfo = viewModel.readDetailEssay().author ?: UserInfo()
-
-                                SubscriberSimpleItem(
-                                    item = userinfo,
-                                    viewModel = viewModel,
-                                    navController = navController
-                                )
-                                Spacer(modifier = Modifier.height(36.dp))
-                                Box(
-                                    modifier = Modifier
-                                        .height(12.dp)
-                                        .fillMaxWidth()
-                                        .background(Color(0xFF1A1A1A))
-                                )
-                                Box(
-                                    modifier = Modifier
-                                        .height(56.dp)
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 20.dp),
-                                    contentAlignment = Alignment.CenterStart
-                                )
-                                {
-                                    Text(
-                                        text = "최근 본 다른 글",
-                                        fontSize = 14.sp,
-                                        color = Color(0xFF616FED)
-                                    )
-
-                                }
-                            }
-                            //todo 글쓴이의 최근 본 리스트중 다른글 띄우기
-                            items(items = viewModel.getFilteredRecentEssayList()) { it -> //랜덤리스트 말고 수정할것. 그사람의 리스트로
-                                RecentEssayListItem(
-                                    item = it,
-                                    viewModel = viewModel,
-                                    navController = navController
-                                )
-                            }
-
-
-                        }
-
-                        //신고 옵션
-                        AnimatedVisibility(
-                            visible = viewModel.isOptionClicked,
-                            enter = fadeIn(
-                                animationSpec = tween(
-                                    durationMillis = 1000,
-                                    easing = FastOutSlowInEasing
-                                )
-                            ),
-                            exit = fadeOut(
-                                animationSpec = tween(
-                                    durationMillis = 500,
-                                    easing = LinearEasing
-                                )
+                            DetailEssay(
+                                item = viewModel.readDetailEssay(),
+                                viewModel,
+                                navController
                             )
-                        ) {
+                            Spacer(modifier = Modifier.height(28.dp))
+                            val userinfo = viewModel.readDetailEssay().author ?: UserInfo()
+
+                            SubscriberSimpleItem(
+                                item = userinfo,
+                                viewModel = viewModel,
+                                navController = navController
+                            )
+                            Spacer(modifier = Modifier.height(36.dp))
                             Box(
                                 modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(end = 23.dp),
-                                contentAlignment = Alignment.TopEnd
-                            ) {
-                                ReportOption({
-                                    viewModel.isReportClicked = !viewModel.isReportClicked
-                                }, viewModel)
+                                    .height(12.dp)
+                                    .fillMaxWidth()
+                                    .background(Color(0xFF1A1A1A))
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .height(56.dp)
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 20.dp),
+                                contentAlignment = Alignment.CenterStart
+                            )
+                            {
+                                Text(
+                                    text = "최근 본 다른 글",
+                                    fontSize = 14.sp,
+                                    color = Color(0xFF616FED)
+                                )
+
                             }
                         }
-
-                    }
-
-                    Box(
-                        modifier = Modifier.fillMaxSize().navigationBarsPadding(),
-                        contentAlignment = Alignment.BottomCenter
-                    ) {
-                        LaunchedEffect(isClicked) {
-                            delay(3000)
-                            isClicked = false
-                        }
-
-                        AnimatedVisibility(
-                            visible = isClicked,
-                            enter = fadeIn(
-                                animationSpec = tween(
-                                    durationMillis = 500,
-                                    easing = FastOutSlowInEasing
-                                )
-                            ),
-                            exit = fadeOut(
-                                animationSpec = tween(
-                                    durationMillis = 500,
-                                    easing = LinearEasing
-                                )
+                        //todo 글쓴이의 최근 본 리스트중 다른글 띄우기
+                        items(items = viewModel.getFilteredRecentEssayList()) { it -> //랜덤리스트 말고 수정할것. 그사람의 리스트로
+                            RecentEssayListItem(
+                                item = it,
+                                viewModel = viewModel,
+                                navController = navController
                             )
+                        }
+
+
+                    }
+
+                    //신고 옵션
+                    AnimatedVisibility(
+                        visible = viewModel.isOptionClicked,
+                        enter = fadeIn(
+                            animationSpec = tween(
+                                durationMillis = 1000,
+                                easing = FastOutSlowInEasing
+                            )
+                        ),
+                        exit = fadeOut(
+                            animationSpec = tween(
+                                durationMillis = 500,
+                                easing = LinearEasing
+                            )
+                        )
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(end = 23.dp),
+                            contentAlignment = Alignment.TopEnd
                         ) {
-                            SequenceBottomBar(viewModel.readDetailEssay(), viewModel, navController)
+                            ReportOption({
+                                viewModel.isReportClicked = !viewModel.isReportClicked
+                            }, viewModel)
                         }
                     }
-                    if (viewModel.isReportClicked)
-                        Box(modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.Black.copy(0.7f))
-                            .clickable { viewModel.isReportClicked = false })
 
                 }
 
-            )
-        }
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .navigationBarsPadding(),
+                    contentAlignment = Alignment.BottomCenter
+                ) {
+                    LaunchedEffect(isClicked) {
+                        delay(3000)
+                        isClicked = false
+                    }
+
+                    AnimatedVisibility(
+                        visible = isClicked,
+                        enter = fadeIn(
+                            animationSpec = tween(
+                                durationMillis = 500,
+                                easing = FastOutSlowInEasing
+                            )
+                        ),
+                        exit = fadeOut(
+                            animationSpec = tween(
+                                durationMillis = 500,
+                                easing = LinearEasing
+                            )
+                        )
+                    ) {
+                        SequenceBottomBar(viewModel.readDetailEssay(), viewModel, navController)
+                    }
+                }
+                if (viewModel.isReportClicked)
+                    Box(modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(0.7f))
+                        .clickable { viewModel.isReportClicked = false })
+
+            }
+
+        )
     }
 }
 
@@ -340,7 +340,11 @@ fun RecentEssayListItem(
                 .fillMaxSize()
                 .padding(start = 20.dp, bottom = 10.dp)
         ) {
-            Text(text = if (item.author?.nickname != null) item.author!!.nickname!! else "", fontSize = 10.sp, color = Color(0xFF686868))
+            Text(
+                text = if (item.author?.nickname != null) item.author!!.nickname!! else "",
+                fontSize = 10.sp,
+                color = Color(0xFF686868)
+            )
         }
         Box(
             contentAlignment = Alignment.BottomEnd, modifier = Modifier
@@ -348,7 +352,7 @@ fun RecentEssayListItem(
         ) {
             HorizontalDivider(color = Color(0xFF686868))
         }
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
 
         }
 

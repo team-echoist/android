@@ -18,10 +18,6 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 class SplashPage : AppCompatActivity() {
     private var keepSplash = true
     private val delay = 1200L
-    override fun onStart() {
-        super.onStart()
-
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +34,7 @@ class SplashPage : AppCompatActivity() {
         startActivity(intent)
         finish()
     }
+
     private fun setupSplashScreen(splashScreen: SplashScreen) {
         // Replace this timer with your logic to load data on the splash screen.
         splashScreen.setKeepOnScreenCondition { keepSplash }
@@ -45,6 +42,7 @@ class SplashPage : AppCompatActivity() {
             keepSplash = false
         }, delay)
     }
+
     // Declare the launcher at the top of your Activity/Fragment:
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission(),

@@ -43,58 +43,61 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.components.EssayListItem
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.SearchingViewModel
 import kotlinx.coroutines.launch
 
 
 @Composable
-fun SearchingPage(drawerState: DrawerState,navController: NavController){
+fun SearchingPage(drawerState: DrawerState, navController: NavController) {
     val pagerState = rememberPagerState { 2 }
 
     val scope = rememberCoroutineScope()
 
-    val searchingViewModel : SearchingViewModel = hiltViewModel()
-    LinkedOutTheme {
+    val searchingViewModel: SearchingViewModel = hiltViewModel()
 
-        Scaffold(
-            topBar = {
-                Column {
-                    SearchingBar(
-                        viewModel = searchingViewModel,
-                        onClick = {
-                            scope.launch {
-                                drawerState.apply {
-                                    if (isClosed) open() else close()
-                                }
+
+    Scaffold(
+        topBar = {
+            Column {
+                SearchingBar(
+                    viewModel = searchingViewModel,
+                    onClick = {
+                        scope.launch {
+                            drawerState.apply {
+                                if (isClosed) open() else close()
                             }
-                        },
-                        drawerState = drawerState
-                    )
-                    SearchingChips(pagerState = pagerState)
-                }
-            },
-        ) {
-
-            //todo 검색할 리스트 뷰모델에서 재정의필요.
-            Column(Modifier.padding(it)) {
-                Spacer(modifier = Modifier.height(20.dp))
-                SearchingPager(pagerState = pagerState,searchingViewModel = searchingViewModel,navController = navController)
+                        }
+                    },
+                    drawerState = drawerState
+                )
+                SearchingChips(pagerState = pagerState)
             }
+        },
+    ) {
+
+        //todo 검색할 리스트 뷰모델에서 재정의필요.
+        Column(Modifier.padding(it)) {
+            Spacer(modifier = Modifier.height(20.dp))
+            SearchingPager(
+                pagerState = pagerState,
+                searchingViewModel = searchingViewModel,
+                navController = navController
+            )
         }
     }
-
-
-
 }
 
 @Composable
-fun SearchingPager(pagerState: PagerState,searchingViewModel: SearchingViewModel,navController: NavController){
+fun SearchingPager(
+    pagerState: PagerState,
+    searchingViewModel: SearchingViewModel,
+    navController: NavController
+) {
     HorizontalPager(state = pagerState) { page ->
         when (page) {
-            0-> LazyColumn {
+            0 -> LazyColumn {
                 Log.d(TAG, "SearchingPager: ${searchingViewModel.searchingEssayList}")
-                items(items = searchingViewModel.searchingEssayList) {  
+                items(items = searchingViewModel.searchingEssayList) {
                     EssayListItem(
                         item = it,
                         viewModel = searchingViewModel,
@@ -102,12 +105,14 @@ fun SearchingPager(pagerState: PagerState,searchingViewModel: SearchingViewModel
                     )
                 }
             }
-            1-> LazyColumn {
+
+            1 -> LazyColumn {
                 items(items = searchingViewModel.previousEssayList) {   //랜덤리스트 말고 수정할것. 그사람의 리스트로
                     EssayListItem(
                         item = it,
                         viewModel = searchingViewModel,
-                        navController = navController)
+                        navController = navController
+                    )
                 }
             }
         }
@@ -115,25 +120,27 @@ fun SearchingPager(pagerState: PagerState,searchingViewModel: SearchingViewModel
 }
 
 @Composable
-fun SearchingBar(viewModel: SearchingViewModel, onClick: () -> Unit, drawerState: DrawerState){
+fun SearchingBar(viewModel: SearchingViewModel, onClick: () -> Unit, drawerState: DrawerState) {
 
 
     val keyboardController = LocalSoftwareKeyboardController.current
     //if (drawerState.isOpen) keyboardController?.show() else keyboardController?.hide()
 
-    Row (modifier = Modifier
-        .fillMaxWidth()
-        .padding(20.dp), verticalAlignment = Alignment.CenterVertically){
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(20.dp), verticalAlignment = Alignment.CenterVertically
+    ) {
         Icon(
-            imageVector =Icons.AutoMirrored.Filled.ArrowBack,
+            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
             contentDescription = "back",
             tint = Color.White,
-            modifier = Modifier.
-            size(30.dp).
-            clickable {
-                keyboardController?.hide()
-                onClick()
-            }
+            modifier = Modifier
+                .size(30.dp)
+                .clickable {
+                    keyboardController?.hide()
+                    onClick()
+                }
         )
         TextField(
             shape = RoundedCornerShape(42),
@@ -144,15 +151,22 @@ fun SearchingBar(viewModel: SearchingViewModel, onClick: () -> Unit, drawerState
             onValueChange = {
                 viewModel.searchingText = it
             },
-            placeholder = { Text(text = "검색어를 입력하세요", color = Color(0xFF686868), fontSize = 16.sp) },
+            placeholder = {
+                Text(
+                    text = "검색어를 입력하세요",
+                    color = Color(0xFF686868),
+                    fontSize = 16.sp
+                )
+            },
             singleLine = true,
-            trailingIcon = { if (viewModel.searchingText.isNotEmpty()) Icon(
-                imageVector = Icons.Default.Cancel,
-                contentDescription = "cancel",
-                modifier = Modifier.clickable {
-                    viewModel.searchingText = ""
-                }
-            )
+            trailingIcon = {
+                if (viewModel.searchingText.isNotEmpty()) Icon(
+                    imageVector = Icons.Default.Cancel,
+                    contentDescription = "cancel",
+                    modifier = Modifier.clickable {
+                        viewModel.searchingText = ""
+                    }
+                )
             },
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Done

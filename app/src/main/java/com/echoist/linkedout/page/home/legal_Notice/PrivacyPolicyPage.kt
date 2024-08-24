@@ -12,12 +12,11 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import com.echoist.linkedout.PRIVACY_POLICY_URL
 import com.echoist.linkedout.page.settings.SettingTopAppBar
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun PrivacyPolicyPage(navController : NavController){
-    LinkedOutTheme {
+    
         Scaffold(topBar = {
             SettingTopAppBar("개인정보처리방침",navController)
         }) {
@@ -38,4 +37,3 @@ fun PrivacyPolicyPage(navController : NavController){
             }
         }
     }
-}

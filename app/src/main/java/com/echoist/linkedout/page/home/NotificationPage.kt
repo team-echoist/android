@@ -54,7 +54,6 @@ import com.echoist.linkedout.R
 import com.echoist.linkedout.data.Alert
 import com.echoist.linkedout.page.settings.SettingTopAppBar
 import com.echoist.linkedout.ui.theme.LinkedInColor
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.SupportViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -75,72 +74,89 @@ fun NotificationPage(navController: NavController, viewModel: SupportViewModel =
         withStyle(style = SpanStyle(color = LinkedInColor)) { append("을 시작했어요!") }
     }.toAnnotatedString()
 
-    LinkedOutTheme {
-        Scaffold(
-            topBar = {
-                SettingTopAppBar("알림", navController)
-            },
+
+    Scaffold(
+        topBar = {
+            SettingTopAppBar("알림", navController)
+        },
+    ) {
+        Column(
+            Modifier
+                .fillMaxSize()
+                .padding(it)
+                .padding(horizontal = 20.dp)
+                .verticalScroll(rememberScrollState())
         ) {
-            Column(
-                Modifier
-                    .fillMaxSize()
-                    .padding(it)
-                    .padding(horizontal = 20.dp)
-                    .verticalScroll(rememberScrollState())
-            ) {
-                if (viewModel.alertList.isNotEmpty()) {
-                    val groupedAlerts =
-                        viewModel.alertList.groupBy { it -> it.createdDate.split("T")[0] }
-                    groupedAlerts.forEach { (date, alerts) ->
-                        NotificationDate(date)
-                        Spacer(modifier = Modifier.height(5.dp))
-                        alerts.forEach { alert ->
-                            NotificationItem(viewModel.readMyProfile().nickname ?: "",alert) {
-                                viewModel.readAlert(alert.id)
+            if (viewModel.alertList.isNotEmpty()) {
+                val groupedAlerts =
+                    viewModel.alertList.groupBy { it -> it.createdDate.split("T")[0] }
+                groupedAlerts.forEach { (date, alerts) ->
+                    NotificationDate(date)
+                    Spacer(modifier = Modifier.height(5.dp))
+                    alerts.forEach { alert ->
+                        NotificationItem(viewModel.readMyProfile().nickname ?: "", alert) {
+                            viewModel.readAlert(alert.id)
 
-                                when(alert.type){
-                                    "published" -> viewModel.readDetailEssay(alert.essay.id ?: 0,navController)
-                                    else -> { //링크드아웃, 고객지원 모두 오픈테러
-                                        isAlertClicked = true
-                                        clickedAlert = alert
-                                    }
+                            when (alert.type) {
+                                "published" -> viewModel.readDetailEssay(
+                                    alert.essay.id ?: 0,
+                                    navController
+                                )
+
+                                else -> { //링크드아웃, 고객지원 모두 오픈테러
+                                    isAlertClicked = true
+                                    clickedAlert = alert
                                 }
-
                             }
-                            Spacer(modifier = Modifier.height(10.dp))
+
                         }
+                        Spacer(modifier = Modifier.height(10.dp))
                     }
                 }
             }
-            if (viewModel.alertList.isEmpty()){
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Row(modifier = Modifier.border(width = 1.dp, color = Color(0xFF191919), shape = RoundedCornerShape(size = 10.dp))
+        }
+        if (viewModel.alertList.isEmpty()) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Row(
+                    modifier = Modifier
+                        .border(
+                            width = 1.dp,
+                            color = Color(0xFF191919),
+                            shape = RoundedCornerShape(size = 10.dp)
+                        )
                         .width(350.dp)
                         .height(119.dp)
                         .background(
                             color = Color(0xFF000000),
                             shape = RoundedCornerShape(size = 10.dp)
-                        ), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
-                        Text(
-                            text = annotatedString
-                        )
-                    }
-
+                        ),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = annotatedString
+                    )
                 }
-            }
 
-            AnimatedVisibility(
-                visible = isAlertClicked,
-                enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)),
-                exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
-            ){
-                NotificationOpenLetter(
-                    clickedAlert!!,
-                    isOkClicked = { isAlertClicked = false },
-                    isCancelClicked = { isAlertClicked = false }
+            }
+        }
+
+        AnimatedVisibility(
+            visible = isAlertClicked,
+            enter = fadeIn(
+                animationSpec = tween(
+                    durationMillis = 500,
+                    easing = FastOutSlowInEasing
                 )
+            ),
+            exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
+        ) {
+            NotificationOpenLetter(
+                clickedAlert!!,
+                isOkClicked = { isAlertClicked = false },
+                isCancelClicked = { isAlertClicked = false }
+            )
 
-            }
         }
     }
 }
@@ -167,13 +183,15 @@ fun NotificationIcon(alert: Alert) {
     val text = when (alert.type) {
         "published" -> "발행한 글"
         "linkedout" -> "Linked-out"
-        else ->  "고객지원"
+        else -> "고객지원"
     }
 
     val imageResource = when (alert.type) {
         "published" -> R.drawable.alarm_publish_small
         "linkedout" -> R.drawable.alarm_linkedout_small
-        else -> {R.drawable.social_googlebtn}
+        else -> {
+            R.drawable.social_googlebtn
+        }
     }
 
     Box(modifier = Modifier.size(75.dp, 90.dp)) {
@@ -211,7 +229,7 @@ fun NotificationIcon(alert: Alert) {
 }
 
 @Composable
-fun NotificationItem(nickName : String,alert: Alert, isAlertClicked: () -> Unit) {
+fun NotificationItem(nickName: String, alert: Alert, isAlertClicked: () -> Unit) {
 
     val annotatedString = remember {
         AnnotatedString.Builder().apply {
@@ -268,7 +286,7 @@ fun NotificationItem(nickName : String,alert: Alert, isAlertClicked: () -> Unit)
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun NotificationOpenLetter(alert: Alert, isOkClicked: () -> Unit,isCancelClicked :()->Unit) {
+fun NotificationOpenLetter(alert: Alert, isOkClicked: () -> Unit, isCancelClicked: () -> Unit) {
 
     Box(
         modifier = Modifier
@@ -277,9 +295,11 @@ fun NotificationOpenLetter(alert: Alert, isOkClicked: () -> Unit,isCancelClicked
             .clickable { isCancelClicked() }
     ) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Box(modifier = Modifier
-                .size(320.dp, 400.dp)
-                .padding(bottom = 30.dp)) {
+            Box(
+                modifier = Modifier
+                    .size(320.dp, 400.dp)
+                    .padding(bottom = 30.dp)
+            ) {
                 Image(
                     modifier = Modifier.fillMaxSize(),
                     painter = painterResource(id = R.drawable.alarm_textbox),
@@ -325,13 +345,17 @@ fun NotificationOpenLetter(alert: Alert, isOkClicked: () -> Unit,isCancelClicked
                     Spacer(modifier = Modifier.height(30.dp))
 
                 }
-                Box(modifier = Modifier
-                    .fillMaxSize()
-                    .padding(bottom = 20.dp)
-                    .padding(horizontal = 20.dp), contentAlignment = Alignment.BottomCenter){
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(bottom = 20.dp)
+                        .padding(horizontal = 20.dp), contentAlignment = Alignment.BottomCenter
+                ) {
                     Button(
                         onClick = { isOkClicked() },
-                        modifier = Modifier.fillMaxWidth().height(50.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
                         shape = RoundedCornerShape(20)
                     ) {
                         Text(text = "확인", color = Color.Black, fontWeight = FontWeight.SemiBold)
@@ -339,12 +363,11 @@ fun NotificationOpenLetter(alert: Alert, isOkClicked: () -> Unit,isCancelClicked
                 }
 
             }
-            if (alert.type == "linkedout"){
+            if (alert.type == "linkedout") {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
                     GlideImage(model = R.drawable.alarm_linkedout, contentDescription = "")
                 }
-            }
-            else{
+            } else {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
                     GlideImage(model = R.drawable.alarm_pending, contentDescription = "")
                 }

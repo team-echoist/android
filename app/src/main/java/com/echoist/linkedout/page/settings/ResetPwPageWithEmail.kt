@@ -48,7 +48,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.page.login.Authentication_6_BottomModal
 import com.echoist.linkedout.ui.theme.LinkedInColor
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.SignUpViewModel
 import kotlinx.coroutines.delay
 
@@ -82,139 +81,141 @@ fun ResetPwPageWithEmail(navController: NavController) {
         }
     }
 
-    LinkedOutTheme {
-        BottomSheetScaffold(
-            sheetContainerColor = Color(0xFF191919),
-            scaffoldState = scaffoldState,
-            sheetContent = {
-                Box {
-                    Authentication_6_BottomModal(reAuthentication =
-                        {
-                            viewModel.requestChangePw(email)
-                        }, //재요청 인증
-                        isError = false,
-                        isTypedLastNumber = {
-                            keyboardController?.hide()
-                        }
-                    )
-                    if (viewModel.isLoading) {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator(color = LinkedInColor)
-                        }
+
+    BottomSheetScaffold(
+        sheetContainerColor = Color(0xFF191919),
+        scaffoldState = scaffoldState,
+        sheetContent = {
+            Box {
+                Authentication_6_BottomModal(reAuthentication =
+                {
+                    viewModel.requestChangePw(email)
+                }, //재요청 인증
+                    isError = false,
+                    isTypedLastNumber = {
+                        keyboardController?.hide()
+                    }
+                )
+                if (viewModel.isLoading) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(color = LinkedInColor)
                     }
                 }
+            }
 
 
+        },
+        sheetPeekHeight = (0.8 * screenHeightDp).dp
+    ) {
+        Scaffold(
+            topBar = {
+                SettingTopAppBar("비밀번호 재설정", navController)
             },
-            sheetPeekHeight = (0.8 * screenHeightDp).dp
-        ) {
-            Scaffold(
-                topBar = {
-                    SettingTopAppBar("비밀번호 재설정", navController)
-                },
-                content = {
-                    if (viewModel.isLoading) {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator(color = LinkedInColor)
-                        }
-                    }
-                    Column(
-                        Modifier
-                            .verticalScroll(scrollState)
-                            .padding(it)
-                            .padding(horizontal = 20.dp)
+            content = {
+                if (viewModel.isLoading) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Spacer(modifier = Modifier.height(42.dp))
-                        Text(
-                            text = "가입 시 사용한 이메일 주소를 입력해주세요. \n" +
-                                    "비밀번호를 다시 설정할 수 있는 링크를 보내드릴게요.",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        CustomOutlinedTextField(
-                            email,
-                            { newText ->
-                                email = newText
-                                isError = !viewModel.isEmailValid(email)
-                            },
-
-                            isError = isError,
-                            hint = "이메일"
-                        )
-                        if (isError) {
-                            Text(
-                                text = "*이메일 주소를 정확하게 입력해주세요.",
-                                color = Color.Red,
-                                fontSize = 12.sp
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(40.dp))
-
-                        val enabled = !(isError || email.isEmpty())
-                        val focusManager = LocalFocusManager.current
-
-
-                        Button(
-                            //비번 변경 이메일요청
-                            onClick = {
-                                viewModel.requestChangePw(email)
-                                focusManager.clearFocus()
-                            },
-                            enabled = enabled,
-                            shape = RoundedCornerShape(20),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(61.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = LinkedInColor,
-                                disabledContainerColor = Color(0xFF868686),
-
-                                )
-                        ) {
-                            Text(text = "이메일 보내기", color = Color.Black)
-                        }
+                        CircularProgressIndicator(color = LinkedInColor)
                     }
-                    AnimatedVisibility(
-                        visible = viewModel.isSendEmailVerifyApiFinished,
-                        enter = fadeIn(
-                            animationSpec = tween(
-                                durationMillis = 500,
-                                easing = FastOutSlowInEasing
-                            )
-                        ),
-                        exit = fadeOut(
-                            animationSpec = tween(
-                                durationMillis = 500,
-                                easing = LinearEasing
-                            )
-                        )
-                    ) {
-                        Box(modifier = Modifier
-                            .fillMaxSize().navigationBarsPadding()
-                            .background(Color.Black.copy(0.7f))
-                            .clickable(enabled = false) { }) {
-                            Box(
-                                modifier = Modifier.fillMaxSize().padding(bottom = (0.8 * screenHeightDp).dp),
-                                contentAlignment = Alignment.BottomCenter
-                            ) {
-                                SendEmailFinishedAlert("이메일 주소로 인증메일이 발송됐습니다.") {
-                                    viewModel.isSendEmailVerifyApiFinished = false
-                                }
-
-                            }
-                        }
-                    }
-
                 }
-            )
-        }
+                Column(
+                    Modifier
+                        .verticalScroll(scrollState)
+                        .padding(it)
+                        .padding(horizontal = 20.dp)
+                ) {
+                    Spacer(modifier = Modifier.height(42.dp))
+                    Text(
+                        text = "가입 시 사용한 이메일 주소를 입력해주세요. \n" +
+                                "비밀번호를 다시 설정할 수 있는 링크를 보내드릴게요.",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    CustomOutlinedTextField(
+                        email,
+                        { newText ->
+                            email = newText
+                            isError = !viewModel.isEmailValid(email)
+                        },
+
+                        isError = isError,
+                        hint = "이메일"
+                    )
+                    if (isError) {
+                        Text(
+                            text = "*이메일 주소를 정확하게 입력해주세요.",
+                            color = Color.Red,
+                            fontSize = 12.sp
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(40.dp))
+
+                    val enabled = !(isError || email.isEmpty())
+                    val focusManager = LocalFocusManager.current
+
+
+                    Button(
+                        //비번 변경 이메일요청
+                        onClick = {
+                            viewModel.requestChangePw(email)
+                            focusManager.clearFocus()
+                        },
+                        enabled = enabled,
+                        shape = RoundedCornerShape(20),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(61.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = LinkedInColor,
+                            disabledContainerColor = Color(0xFF868686),
+
+                            )
+                    ) {
+                        Text(text = "이메일 보내기", color = Color.Black)
+                    }
+                }
+                AnimatedVisibility(
+                    visible = viewModel.isSendEmailVerifyApiFinished,
+                    enter = fadeIn(
+                        animationSpec = tween(
+                            durationMillis = 500,
+                            easing = FastOutSlowInEasing
+                        )
+                    ),
+                    exit = fadeOut(
+                        animationSpec = tween(
+                            durationMillis = 500,
+                            easing = LinearEasing
+                        )
+                    )
+                ) {
+                    Box(modifier = Modifier
+                        .fillMaxSize()
+                        .navigationBarsPadding()
+                        .background(Color.Black.copy(0.7f))
+                        .clickable(enabled = false) { }) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(bottom = (0.8 * screenHeightDp).dp),
+                            contentAlignment = Alignment.BottomCenter
+                        ) {
+                            SendEmailFinishedAlert("이메일 주소로 인증메일이 발송됐습니다.") {
+                                viewModel.isSendEmailVerifyApiFinished = false
+                            }
+
+                        }
+                    }
+                }
+
+            }
+        )
     }
 }

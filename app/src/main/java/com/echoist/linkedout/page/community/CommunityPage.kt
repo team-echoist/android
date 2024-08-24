@@ -31,7 +31,6 @@ import com.echoist.linkedout.components.CommunityPager
 import com.echoist.linkedout.components.CommunityTopAppBar
 import com.echoist.linkedout.page.home.MyBottomNavigation
 import com.echoist.linkedout.ui.theme.LinkedInColor
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -73,62 +72,54 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
             content = {
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
 
-                    LinkedOutTheme {
-                        Scaffold(
-                            modifier = Modifier.background(color),
-                            topBar = {
-                                Column(Modifier.background(color)) {
-                                    CommunityTopAppBar(
-                                        "커뮤니티",
-                                        pagerstate,
-                                        onSearchClick =
-                                        {
-                                            scope.launch {
-                                                drawerState.apply {
-                                                    if (isClosed) open() else close()
-                                                }
-                                            }
-                                        },
-                                        onClickBookMarked =
-                                        {
-                                            viewModel.readMyBookMarks(navController)
-                                        }
-                                    )
 
-                                    CommunityChips(pagerstate)
-                                }
-                            },
-                            bottomBar = { MyBottomNavigation(navController) },
-                            content = {
-                                val isRefreshing by viewModel.isRefreshing.collectAsState()
-
-                                SwipeRefresh(
-                                    indicatorPadding = PaddingValues(top = 70.dp),
-                                    state = rememberSwipeRefreshState(isRefreshing = isRefreshing),
-                                    onRefresh = { viewModel.refresh() }) {
-                                    if (viewModel.isApifinished) {
-                                        Box(
-                                            modifier = Modifier
-                                                .padding(it) // topbar 만큼의 패딩을 갖는다  아마 bottombar 만큼의 패딩값도 함께
-                                        ) {
-                                            CommunityPager(
-                                                viewModel = viewModel,
-                                                pagerState = pagerstate,
-                                                navController = navController
-                                            )
-
-                                        }
-
-
-                                        if (isLoading) {
-                                            Box(
-                                                modifier = Modifier.fillMaxSize(),
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                CircularProgressIndicator(color = LinkedInColor)
+                    Scaffold(
+                        modifier = Modifier.background(color),
+                        topBar = {
+                            Column(Modifier.background(color)) {
+                                CommunityTopAppBar(
+                                    "커뮤니티",
+                                    pagerstate,
+                                    onSearchClick =
+                                    {
+                                        scope.launch {
+                                            drawerState.apply {
+                                                if (isClosed) open() else close()
                                             }
                                         }
-                                    } else {
+                                    },
+                                    onClickBookMarked =
+                                    {
+                                        viewModel.readMyBookMarks(navController)
+                                    }
+                                )
+
+                                CommunityChips(pagerstate)
+                            }
+                        },
+                        bottomBar = { MyBottomNavigation(navController) },
+                        content = {
+                            val isRefreshing by viewModel.isRefreshing.collectAsState()
+
+                            SwipeRefresh(
+                                indicatorPadding = PaddingValues(top = 70.dp),
+                                state = rememberSwipeRefreshState(isRefreshing = isRefreshing),
+                                onRefresh = { viewModel.refresh() }) {
+                                if (viewModel.isApifinished) {
+                                    Box(
+                                        modifier = Modifier
+                                            .padding(it) // topbar 만큼의 패딩을 갖는다  아마 bottombar 만큼의 패딩값도 함께
+                                    ) {
+                                        CommunityPager(
+                                            viewModel = viewModel,
+                                            pagerState = pagerstate,
+                                            navController = navController
+                                        )
+
+                                    }
+
+
+                                    if (isLoading) {
                                         Box(
                                             modifier = Modifier.fillMaxSize(),
                                             contentAlignment = Alignment.Center
@@ -136,18 +127,26 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
                                             CircularProgressIndicator(color = LinkedInColor)
                                         }
                                     }
+                                } else {
+                                    Box(
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        CircularProgressIndicator(color = LinkedInColor)
+                                    }
                                 }
-
-
                             }
 
-                        )
-                    }
+
+                        }
+
+                    )
                 }
-            }
-        )
+            })
     }
+
 }
+
 
 
 

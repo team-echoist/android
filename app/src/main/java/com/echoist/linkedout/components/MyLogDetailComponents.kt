@@ -43,20 +43,20 @@ import com.echoist.linkedout.TYPE_PUBLISHED
 import com.echoist.linkedout.TYPE_RECOMMEND
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.formatDateTime
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.MyLogViewModel
 import kotlinx.coroutines.delay
 
 @Preview
 @Composable
-fun pre(){
-    val viewModel : MyLogViewModel = viewModel()
+fun pre() {
+    val viewModel: MyLogViewModel = viewModel()
     Column {
 
-        LastEssayItem(item = viewModel.detailEssay,viewModel, rememberNavController())
+        LastEssayItem(item = viewModel.detailEssay, viewModel, rememberNavController())
         LastEssayPager(viewModel, rememberNavController())
     }
 }
+
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun LastEssayItem(
@@ -65,89 +65,93 @@ fun LastEssayItem(
     navController: NavController
 ) {
     val color = Color.White
-    val type = when(item.status){ //리스트조회시 나오는 아이템의 status의 종류에 따라 세부에세이요청의 type, another 에세이 달라짐.
+    val type = when (item.status) { //리스트조회시 나오는 아이템의 status의 종류에 따라 세부에세이요청의 type, another 에세이 달라짐.
         "published" -> TYPE_PUBLISHED
         "private" -> TYPE_PRIVATE
         else -> TYPE_RECOMMEND
     }
-    LinkedOutTheme {
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .clickable {
 
-                viewModel.readDetailEssay(item.id!!, navController, type)
-                viewModel.detailEssayBackStack.push(item)
-                Log.d(TAG, "pushpush: ${viewModel.detailEssayBackStack}")
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .clickable {
 
-            }
-            .height(140.dp)) {
-            //타이틀
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = 20.dp, start = 20.dp, end = 20.dp)
-                        .weight(7f) // Column 비율 조정
-                ) {
-                    Row {
-                        Text(
-                            modifier = Modifier.fillMaxWidth(0.7f),
-                            text = item.title!!,
-                            color = color,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            fontSize = 20.sp,
-                        )
-                    }
-
-
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Text(
-                        text = item.content!!,
-                        lineHeight = 27.2.sp,
-                        maxLines = 2,
-                        color = color,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                }
-
-                if (item.thumbnail != null) {
-                    GlideImage(
-                        model = item.thumbnail,
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .size(135.dp)
-                            .padding(vertical = 10.dp, horizontal = 10.dp)
-                            .clip(RoundedCornerShape(10.dp)) // 둥근 모서리 적용
-                    )
-                }
-            }
-
-
-            Box(
-                contentAlignment = Alignment.BottomStart, modifier = Modifier
-                    .fillMaxSize()
-                    .padding(start = 20.dp, bottom = 10.dp)
-            ) {
-                Text(text = formatDateTime(item.createdDate!!), fontSize = 10.sp, color = Color(0xFF686868))
-            }
-            Box(
-                contentAlignment = Alignment.BottomEnd, modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                HorizontalDivider(color = Color(0xFF686868))
-            }
+            viewModel.readDetailEssay(item.id!!, navController, type)
+            viewModel.detailEssayBackStack.push(item)
+            Log.d(TAG, "pushpush: ${viewModel.detailEssayBackStack}")
 
         }
+        .height(140.dp)) {
+        //타이틀
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 20.dp, start = 20.dp, end = 20.dp)
+                    .weight(7f) // Column 비율 조정
+            ) {
+                Row {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(0.7f),
+                        text = item.title!!,
+                        color = color,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        fontSize = 20.sp,
+                    )
+                }
+
+
+                Spacer(modifier = Modifier.height(10.dp))
+                Text(
+                    text = item.content!!,
+                    lineHeight = 27.2.sp,
+                    maxLines = 2,
+                    color = color,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Spacer(modifier = Modifier.height(20.dp))
+
+            }
+
+            if (item.thumbnail != null) {
+                GlideImage(
+                    model = item.thumbnail,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(135.dp)
+                        .padding(vertical = 10.dp, horizontal = 10.dp)
+                        .clip(RoundedCornerShape(10.dp)) // 둥근 모서리 적용
+                )
+            }
+        }
+
+
+        Box(
+            contentAlignment = Alignment.BottomStart, modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 20.dp, bottom = 10.dp)
+        ) {
+            Text(
+                text = formatDateTime(item.createdDate!!),
+                fontSize = 10.sp,
+                color = Color(0xFF686868)
+            )
+        }
+        Box(
+            contentAlignment = Alignment.BottomEnd, modifier = Modifier
+                .fillMaxSize()
+        ) {
+            HorizontalDivider(color = Color(0xFF686868))
+        }
+
     }
 }
 
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun LastEssayPager(viewModel: MyLogViewModel, navController: NavController){
+fun LastEssayPager(viewModel: MyLogViewModel, navController: NavController) {
     var hasCalledApi by remember { mutableStateOf(false) }
     LaunchedEffect(key1 = Unit) {
         if (!hasCalledApi) {
@@ -158,7 +162,8 @@ fun LastEssayPager(viewModel: MyLogViewModel, navController: NavController){
         }
     }
 
-    val pageCount = if (viewModel.detailEssay.status == "published") viewModel.publishedEssayList.size/4 +1 else viewModel.myEssayList.size/4 +1
+    val pageCount =
+        if (viewModel.detailEssay.status == "published") viewModel.publishedEssayList.size / 4 + 1 else viewModel.myEssayList.size / 4 + 1
     val pagerstate = rememberPagerState { pageCount }
     val lastEssayList = viewModel.previousEssayList
 //        when (viewModel.readDetailEssay().status){
@@ -172,10 +177,12 @@ fun LastEssayPager(viewModel: MyLogViewModel, navController: NavController){
 
     Column {
         Spacer(modifier = Modifier.height(20.dp))
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .height(12.dp)
-            .background(Color(0xFF1A1A1A)))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(12.dp)
+                .background(Color(0xFF1A1A1A))
+        )
         Text(
             text = "이전 글",
             Modifier.padding(start = 20.dp, top = 16.dp, bottom = 16.dp),
@@ -184,15 +191,17 @@ fun LastEssayPager(viewModel: MyLogViewModel, navController: NavController){
         HorizontalDivider(color = Color(0xFF1A1A1A))
 
         //저장된 글 리스트가 비어있다면
-        if (lastEssayList.isEmpty()){
-            Box(modifier = Modifier
-                .fillMaxWidth()
-                .height(140.dp), contentAlignment = Alignment.Center){
+        if (lastEssayList.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(140.dp), contentAlignment = Alignment.Center
+            ) {
                 Text(text = "글이 존재하지 않습니다.", color = Color(0xFF424242), fontSize = 16.sp)
             }
         }
         //이전 글이 존재한다면
-        else{
+        else {
             Column {
                 viewModel.previousEssayList.forEach {
                     LastEssayItem(
@@ -203,7 +212,7 @@ fun LastEssayPager(viewModel: MyLogViewModel, navController: NavController){
                 }
             }
 
-        //4개씩 글을 나누어 이전글을 보여주는 형식
+            //4개씩 글을 나누어 이전글을 보여주는 형식
 
 //            HorizontalPager(state = pagerstate) { page ->
 //                val startIndex = page * 4
@@ -270,7 +279,6 @@ fun LastEssayPager(viewModel: MyLogViewModel, navController: NavController){
 //                }
 //            }
         }
-
 
 
     }

@@ -47,7 +47,6 @@ import com.echoist.linkedout.data.Inquiry
 import com.echoist.linkedout.formatDateTime
 import com.echoist.linkedout.page.settings.SettingTopAppBar
 import com.echoist.linkedout.ui.theme.LinkedInColor
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.SupportViewModel
 import kotlinx.coroutines.launch
 
@@ -61,70 +60,73 @@ fun LinkedOutSupportPage(
     val inquiryList by viewModel.inquiryList.collectAsState()
 
     // 테마 적용
-    LinkedOutTheme {
 
-        Scaffold(
-            topBar = {
-                SettingTopAppBar("링크드아웃 고객센터", navController)
-            }
-        ) { paddingValues ->
-            Column(
-                Modifier
-                    .padding(paddingValues)
-                    .verticalScroll(rememberScrollState())
-                    .fillMaxHeight()
+
+    Scaffold(
+        topBar = {
+            SettingTopAppBar("링크드아웃 고객센터", navController)
+        }
+    ) { paddingValues ->
+        Column(
+            Modifier
+                .padding(paddingValues)
+                .verticalScroll(rememberScrollState())
+                .fillMaxHeight()
+        ) {
+
+            // 상단 텍스트와 스페이서
+            Text(
+                text = "1:1 문의 내역",
+                modifier = Modifier.padding(horizontal = 20.dp),
+                fontSize = 18.sp
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+
+
+
+            LazyColumn(
+                modifier = Modifier.height(400.dp),
             ) {
-
-                // 상단 텍스트와 스페이서
-                Text(
-                    text = "1:1 문의 내역",
-                    modifier = Modifier.padding(horizontal = 20.dp),
-                    fontSize = 18.sp
-                )
-                Spacer(modifier = Modifier.height(20.dp))
-
-
-
-                LazyColumn(
-                        modifier = Modifier.height(400.dp),
-                    ) {
-                        items(inquiryList) { inquiry ->
-                            InquiryBox(inquiry, viewModel)
-                        }
-                    }
-
-
-                Spacer(modifier = Modifier.height(20.dp)) // 상단 내용과 하단 버튼 사이의 간격
-                // 하단 버튼
-
-            }
-            // LazyColumn을 담은 Box로 수정
-            if (inquiryList.isEmpty()){
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-                    Text(text = "문의 내역이 없습니다.",color = Color(0xFF888888), fontSize = 16.sp)
+                items(inquiryList) { inquiry ->
+                    InquiryBox(inquiry, viewModel)
                 }
             }
-            Box(modifier = Modifier.fillMaxSize().padding(bottom = 10.dp).navigationBarsPadding(), contentAlignment = Alignment.BottomCenter){
-                Button(
-                    shape = RoundedCornerShape(10),
-                    modifier = Modifier
-                        .padding(horizontal = 20.dp, vertical = 20.dp)
-                        .fillMaxWidth()
-                        .height(61.dp),
-                    onClick = { navController.navigate("InquiryPage") }
-                ) {
-                    Text(text = "1:1 문의하기", color = Color.Black, fontWeight = FontWeight.Bold)
-                }
+
+
+            Spacer(modifier = Modifier.height(20.dp)) // 상단 내용과 하단 버튼 사이의 간격
+            // 하단 버튼
+
+        }
+        // LazyColumn을 담은 Box로 수정
+        if (inquiryList.isEmpty()) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = "문의 내역이 없습니다.", color = Color(0xFF888888), fontSize = 16.sp)
+            }
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 10.dp)
+                .navigationBarsPadding(),
+            contentAlignment = Alignment.BottomCenter
+        ) {
+            Button(
+                shape = RoundedCornerShape(10),
+                modifier = Modifier
+                    .padding(horizontal = 20.dp, vertical = 20.dp)
+                    .fillMaxWidth()
+                    .height(61.dp),
+                onClick = { navController.navigate("InquiryPage") }
+            ) {
+                Text(text = "1:1 문의하기", color = Color.Black, fontWeight = FontWeight.Bold)
             }
         }
     }
 }
 
 
-
-
 @Composable
-fun InquiryBox(inquiry: Inquiry,viewModel: SupportViewModel){
+fun InquiryBox(inquiry: Inquiry, viewModel: SupportViewModel) {
     var isInquiryClicked by remember {
         mutableStateOf(false)
     }
@@ -153,49 +155,76 @@ fun InquiryBox(inquiry: Inquiry,viewModel: SupportViewModel){
 
                     }
                 }
-                .padding(horizontal = 20.dp)){
+                .padding(horizontal = 20.dp)) {
             Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
                 Text(text = inquiry.title, color = Color.White)
                 Spacer(modifier = Modifier.height(6.dp))
-                Text(text = formatDateTime(inquiry.createdDate!!),fontSize = 10.sp,color = Color(0xFF4D4D4D))
+                Text(
+                    text = formatDateTime(inquiry.createdDate!!),
+                    fontSize = 10.sp,
+                    color = Color(0xFF4D4D4D)
+                )
             }
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
-                Box(modifier = Modifier
-                    .width(82.dp)
-                    .height(32.dp)
-                    .background(color = Color(0xFF191919), shape = RoundedCornerShape(size = 42.dp))
-                    .padding(start = 14.dp, top = 3.dp, end = 14.dp, bottom = 3.dp), contentAlignment = Alignment.Center){
-                    Text(text = processed, fontSize = 12.sp, color = textColor, textAlign = TextAlign.Center, modifier = Modifier.fillMaxSize() )
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
+                Box(
+                    modifier = Modifier
+                        .width(82.dp)
+                        .height(32.dp)
+                        .background(
+                            color = Color(0xFF191919),
+                            shape = RoundedCornerShape(size = 42.dp)
+                        )
+                        .padding(start = 14.dp, top = 3.dp, end = 14.dp, bottom = 3.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = processed,
+                        fontSize = 12.sp,
+                        color = textColor,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxSize()
+                    )
 
                 }
             }
         }
         HorizontalDivider(color = Color(0xFF191919))
 
-        if(content.isNotEmpty()){
-            if (isInquiryClicked){
-                Box(modifier = Modifier
-                    .background(color = Color(0xFF000000))
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 18.dp), contentAlignment = Alignment.CenterStart){
+        if (content.isNotEmpty()) {
+            if (isInquiryClicked) {
+                Box(
+                    modifier = Modifier
+                        .background(color = Color(0xFF000000))
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 18.dp),
+                    contentAlignment = Alignment.CenterStart
+                ) {
                     Text(color = Color.White, text = content)
 
                 }
-        }
+            }
 
             HorizontalDivider(color = Color(0xFF191919))
 
 
-            if (answer.isNotEmpty()){
-                if (isInquiryClicked){
-                    Box(modifier = Modifier
-                        .background(color = Color(0xFF000000))
-                        .fillMaxWidth()
-                        .height(IntrinsicSize.Min)
-                        .padding(horizontal = 20.dp, vertical = 18.dp)){
-                        Row(modifier = Modifier
-                            .fillMaxSize()){
-                            Icon(imageVector = Icons.Filled.SubdirectoryArrowRight, contentDescription = "", tint = LinkedInColor)
+            if (answer.isNotEmpty()) {
+                if (isInquiryClicked) {
+                    Box(
+                        modifier = Modifier
+                            .background(color = Color(0xFF000000))
+                            .fillMaxWidth()
+                            .height(IntrinsicSize.Min)
+                            .padding(horizontal = 20.dp, vertical = 18.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxSize()
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.SubdirectoryArrowRight,
+                                contentDescription = "",
+                                tint = LinkedInColor
+                            )
                             Spacer(modifier = Modifier.width(5.dp))
                             Text(color = LinkedInColor, text = answer)
 

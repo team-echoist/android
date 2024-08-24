@@ -44,7 +44,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -55,51 +54,50 @@ import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.home.LogoutBox
 import com.echoist.linkedout.ui.theme.LinkedInColor
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.SettingsViewModel
 
 @Composable
 fun AccountPage(navController: NavController, viewModel: SettingsViewModel = hiltViewModel()) {
     val scrollState = rememberScrollState()
     val context = LocalContext.current
-    LinkedOutTheme {
-        Scaffold(
-            topBar = {
-                SettingTopAppBar("계정 관리",navController)
-            },
-            content = {
-                var isLogoutClicked by remember {
-                    mutableStateOf(false)
-                }
 
-                Column(
-                    Modifier
-                        .verticalScroll(scrollState)
-                        .padding(it)
-                ) {
-                    Spacer(modifier = Modifier.height(42.dp))
+    Scaffold(
+        topBar = {
+            SettingTopAppBar("계정 관리", navController)
+        },
+        content = {
+            var isLogoutClicked by remember {
+                mutableStateOf(false)
+            }
 
-                    Text(
-                        text = "로그인 정보",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(horizontal = 20.dp)
-                    )
-                    Spacer(modifier = Modifier.height(10.dp))
+            Column(
+                Modifier
+                    .verticalScroll(scrollState)
+                    .padding(it)
+            ) {
+                Spacer(modifier = Modifier.height(42.dp))
 
-                    EmailBox(
-                        { navController.navigate("ChangeEmailPage") },
-                        viewModel.getMyInfo().email ?: "noEmail"
-                    )
-                    ModifyBox("비밀번호 변경") { navController.navigate("ChangePwPage") }
+                Text(
+                    text = "로그인 정보",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(horizontal = 20.dp)
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+
+                EmailBox(
+                    { navController.navigate("ChangeEmailPage") },
+                    viewModel.getMyInfo().email ?: "noEmail"
+                )
+                ModifyBox("비밀번호 변경") { navController.navigate("ChangePwPage") }
 
 
 
-                    ModifyBox("로그아웃") { isLogoutClicked = true }
-                    Spacer(modifier = Modifier.height(20.dp))
-                    ModifyBox("탈퇴하기") { navController.navigate("AccountWithdrawalPage") }
-                    Spacer(modifier = Modifier.height(37.dp))
-                    //Text(text = "소셜", fontSize = 18.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(horizontal = 20.dp))
+                ModifyBox("로그아웃") { isLogoutClicked = true }
+                Spacer(modifier = Modifier.height(20.dp))
+                ModifyBox("탈퇴하기") { navController.navigate("AccountWithdrawalPage") }
+                Spacer(modifier = Modifier.height(37.dp))
+                //Text(text = "소셜", fontSize = 18.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(horizontal = 20.dp))
 //                    Spacer(modifier = Modifier.height(31.dp))
 //
 //                    SocialLoginBox(R.drawable.social_googlebtn,"구글",viewModel.getMyInfo())
@@ -109,92 +107,109 @@ fun AccountPage(navController: NavController, viewModel: SettingsViewModel = hil
 //                    SocialLoginBox(R.drawable.social_naverbtn,"네이버",viewModel.getMyInfo())
 //                    Spacer(modifier = Modifier.height(10.dp))
 //                    SocialLoginBox(R.drawable.social_applebtn,"애플",viewModel.getMyInfo())
-                    Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
 
-                }
-
-                AnimatedVisibility(
-                    visible = isLogoutClicked,
-                    enter = fadeIn(
-                        animationSpec = tween(
-                            durationMillis = 500,
-                            easing = FastOutSlowInEasing
-                        )
-                    ),
-                    exit = fadeOut(
-                        animationSpec = tween(
-                            durationMillis = 500,
-                            easing = LinearEasing
-                        )
-                    )
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(bottom = 10.dp)
-                            .background(Color.Black.copy(0.7f)),
-                        contentAlignment = Alignment.BottomCenter
-                    ) {
-
-                        LogoutBox(
-                            isCancelClicked = { isLogoutClicked = false },
-                            isLogoutClicked = {
-                                isLogoutClicked = false
-                                //로컬 자동로그인, id pw 값 초기화
-                                SharedPreferencesUtil.saveClickedAutoLogin(context,false)
-
-                                navController.popBackStack("LoginPage", true) //home 까지 삭제 inclusive - 포함
-                                navController.navigate("LoginPage")
-                            }
-                        )
-                    }
-                }
             }
 
+            AnimatedVisibility(
+                visible = isLogoutClicked,
+                enter = fadeIn(
+                    animationSpec = tween(
+                        durationMillis = 500,
+                        easing = FastOutSlowInEasing
+                    )
+                ),
+                exit = fadeOut(
+                    animationSpec = tween(
+                        durationMillis = 500,
+                        easing = LinearEasing
+                    )
+                )
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(bottom = 10.dp)
+                        .background(Color.Black.copy(0.7f)),
+                    contentAlignment = Alignment.BottomCenter
+                ) {
+
+                    LogoutBox(
+                        isCancelClicked = { isLogoutClicked = false },
+                        isLogoutClicked = {
+                            isLogoutClicked = false
+                            //로컬 자동로그인, id pw 값 초기화
+                            SharedPreferencesUtil.saveClickedAutoLogin(context, false)
+
+                            navController.popBackStack(
+                                "LoginPage",
+                                true
+                            ) //home 까지 삭제 inclusive - 포함
+                            navController.navigate("LoginPage")
+                        }
+                    )
+                }
+            }
+        }
 
 
-
-
-        )
-    }
+    )
 }
 
+
 @Composable
-fun EmailBox(onClick: () -> Unit,email : String){
+fun EmailBox(onClick: () -> Unit, email: String) {
     Box(modifier = Modifier
         .fillMaxWidth()
         .background(Color(0xFF0E0E0E))
         .padding(horizontal = 20.dp)
         .clickable { onClick() }
-        .height(70.dp)){
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart){
+        .height(70.dp)) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "이메일 주소 변경", Modifier.weight(2f))
                 Spacer(modifier = Modifier.width(5.dp))
-                Text(text = email, fontSize = 12.sp, color = Color(0xFF5D5D5D), modifier = Modifier.weight(2f), maxLines = 1,  // 한 줄로 제한
-                    overflow = TextOverflow.Ellipsis)  // 넘칠 경우 ... 표시)
+                Text(
+                    text = email,
+                    fontSize = 12.sp,
+                    color = Color(0xFF5D5D5D),
+                    modifier = Modifier.weight(2f),
+                    maxLines = 1,  // 한 줄로 제한
+                    overflow = TextOverflow.Ellipsis
+                )  // 넘칠 경우 ... 표시)
                 Spacer(modifier = Modifier.width(5.dp))
 
-                Icon(modifier = Modifier.weight(0.3f).size(20.dp), imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos, contentDescription = "arrowforward")
+                Icon(
+                    modifier = Modifier
+                        .weight(0.3f)
+                        .size(20.dp),
+                    imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                    contentDescription = "arrowforward"
+                )
 
             }
         }
     }
 }
+
 @Composable
-fun ModifyBox(text : String, onClick : ()-> Unit){
+fun ModifyBox(text: String, onClick: () -> Unit) {
     Box(modifier = Modifier
         .background(Color(0xFF0E0E0E))
         .padding(horizontal = 20.dp)
         .fillMaxWidth()
         .clickable { onClick() }
-        .height(70.dp)){
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart){
+        .height(70.dp)) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart) {
             Text(text = text, fontSize = 16.sp)
         }
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
-            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos, contentDescription = "arrowforward", modifier = Modifier.size(20.dp))
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                contentDescription = "arrowforward",
+                modifier = Modifier.size(20.dp)
+            )
 
         }
     }
@@ -202,7 +217,7 @@ fun ModifyBox(text : String, onClick : ()-> Unit){
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingTopAppBar(text: String,navController: NavController){
+fun SettingTopAppBar(text: String, navController: NavController) {
     // 현재 백스택 상태를 관찰하여 상태 변경 시 리컴포지션을 트리거
     val backStackEntry = navController.currentBackStackEntryAsState().value
     // 백스택에서 바로 뒤의 항목 가져오기
@@ -227,7 +242,7 @@ fun SettingTopAppBar(text: String,navController: NavController){
                 contentDescription = "arrow back",
                 modifier = Modifier
                     .clickable {
-                        if (previousRoute == Routes.InquiryPage){
+                        if (previousRoute == Routes.InquiryPage) {
                             navController.navigate("${Routes.Home}/200") {
                                 // 기존의 모든 백스택을 제거하고 Home을 루트로 설정
                                 popUpTo(navController.graph.startDestinationId) {
@@ -235,8 +250,7 @@ fun SettingTopAppBar(text: String,navController: NavController){
                                 }
                                 launchSingleTop = true
                             }
-                        }
-                        else{
+                        } else {
                             navController.popBackStack()
                         }
                     }
@@ -250,16 +264,18 @@ fun SettingTopAppBar(text: String,navController: NavController){
 }
 
 @Composable
-fun SocialLoginBox(imageResourceId : Int, socialType : String, userItem :UserInfo){
+fun SocialLoginBox(imageResourceId: Int, socialType: String, userItem: UserInfo) {
 
 //    when(userItem.oauthInfo){
 //       google머시기 -> todo 유저의 로그인정보에 따른 계정연결과 연결해제 버튼,및 텍스트 색 변경필요
 //    }
 
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 20.dp)
-        .height(50.dp)){
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp)
+            .height(50.dp)
+    ) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxSize()) {
             Icon(
                 painter = painterResource(id = imageResourceId),
@@ -272,23 +288,20 @@ fun SocialLoginBox(imageResourceId : Int, socialType : String, userItem :UserInf
             Spacer(modifier = Modifier.width(25.dp))
             Text(text = socialType, fontSize = 16.sp)
         }
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
-            Button(onClick = { /*TODO*/ }, modifier = Modifier.height(36.dp), shape = RoundedCornerShape(30), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF191919))) {
-                Text(text = "계정 연결", fontSize = 16.sp, fontWeight = FontWeight.Normal, color = LinkedInColor)
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
+            Button(
+                onClick = { /*TODO*/ },
+                modifier = Modifier.height(36.dp),
+                shape = RoundedCornerShape(30),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF191919))
+            ) {
+                Text(
+                    text = "계정 연결",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = LinkedInColor
+                )
             }
         }
     }
-
-
-
-}
-@Preview
-@Composable
-fun te(){
-    LinkedOutTheme(darkTheme = true,dynamicColor = false) {
-        Scaffold {
-            Box(modifier = Modifier.padding(it))
-        }
-    }
-
 }

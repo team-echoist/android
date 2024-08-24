@@ -21,7 +21,6 @@ import com.echoist.linkedout.components.CommuTopAppBar
 import com.echoist.linkedout.components.ProfilePage
 import com.echoist.linkedout.page.community.SearchingPage
 import com.echoist.linkedout.page.home.MyBottomNavigation
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
 import kotlinx.coroutines.launch
 
@@ -54,29 +53,25 @@ fun ProfilePage(
             content = {
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
 
-                    LinkedOutTheme {
-                        Scaffold(
-                            topBar = {
-                                CommuTopAppBar(text = "프로필", navController, viewModel){
-                                    scope.launch {
-                                        drawerState.apply {
-                                            if (isClosed) open() else close()
-                                        }
+
+                    Scaffold(
+                        topBar = {
+                            CommuTopAppBar(text = "프로필", navController, viewModel) {
+                                scope.launch {
+                                    drawerState.apply {
+                                        if (isClosed) open() else close()
                                     }
                                 }
-                            },
-                            bottomBar = { MyBottomNavigation(navController) },
-                            content = {
-                                Column(modifier = Modifier.padding(it)) {
-                                    ProfilePage(viewModel, navController)
-                                }
                             }
-                        )
-                    }
+                        },
+                        bottomBar = { MyBottomNavigation(navController) },
+                        content = {
+                            Column(modifier = Modifier.padding(it)) {
+                                ProfilePage(viewModel, navController)
+                            }
+                        }
+                    )
                 }
-            }
-        )
-
-
+            })
     }
 }

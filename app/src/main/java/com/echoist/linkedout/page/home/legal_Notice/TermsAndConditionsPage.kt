@@ -12,13 +12,12 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import com.echoist.linkedout.TERMS_POLICY_URL
 import com.echoist.linkedout.page.settings.SettingTopAppBar
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 
 //이용약관 페이지
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun TermsAndConditionsPage(navController : NavController){
-    LinkedOutTheme {
+    
         Scaffold(topBar = {
             SettingTopAppBar("이용 약관",navController)
         }) {
@@ -40,4 +39,3 @@ fun TermsAndConditionsPage(navController : NavController){
             }
         }
     }
-}

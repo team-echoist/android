@@ -79,7 +79,6 @@ import com.echoist.linkedout.data.Story
 import com.echoist.linkedout.formatDateTime
 import com.echoist.linkedout.navigateWithClearBackStack
 import com.echoist.linkedout.ui.theme.LinkedInColor
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.MyLogViewModel
 import com.echoist.linkedout.viewModels.WritingViewModel
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
@@ -96,79 +95,76 @@ fun MyLogDetailPage(
     val scrollState = rememberScrollState()
     var isClicked by remember { mutableStateOf(false) }
 
-    LinkedOutTheme {
-        Scaffold(
-            topBar = {
-                DetailTopAppBar(navController = navController, viewModel)
-            },
-            content = {
-                Box(
-                    Modifier
-                        .clickable { isClicked = !isClicked }
-                        .padding(it)
-                        .fillMaxSize(), contentAlignment = Alignment.TopCenter
+
+    Scaffold(
+        topBar = {
+            DetailTopAppBar(navController = navController, viewModel)
+        },
+        content = {
+            Box(
+                Modifier
+                    .clickable { isClicked = !isClicked }
+                    .padding(it)
+                    .fillMaxSize(), contentAlignment = Alignment.TopCenter
+            ) {
+
+                Column(Modifier.verticalScroll(scrollState)) {
+                    DetailEssay(viewModel = viewModel)
+                    LastEssayPager(viewModel = viewModel, navController = navController)
+                }
+                //수정 옵션
+                AnimatedVisibility(
+                    visible = viewModel.isActionClicked,
+                    enter = fadeIn(
+                        animationSpec = tween(
+                            durationMillis = 500,
+                            easing = FastOutSlowInEasing
+                        )
+                    ),
+                    exit = fadeOut(
+                        animationSpec = tween(
+                            durationMillis = 200,
+                            easing = LinearEasing
+                        )
+                    )
                 ) {
 
-                    Column(Modifier.verticalScroll(scrollState)) {
-                        DetailEssay(viewModel = viewModel)
-                        LastEssayPager(viewModel = viewModel, navController = navController)
-                    }
-                    //수정 옵션
-                    AnimatedVisibility(
-                        visible = viewModel.isActionClicked,
-                        enter = fadeIn(
-                            animationSpec = tween(
-                                durationMillis = 500,
-                                easing = FastOutSlowInEasing
-                            )
-                        ),
-                        exit = fadeOut(
-                            animationSpec = tween(
-                                durationMillis = 200,
-                                easing = LinearEasing
-                            )
-                        )
-                    ) {
-
-                        ModifyOption(viewModel, navController = navController, writingViewModel)
-
-                    }
+                    ModifyOption(viewModel, navController = navController, writingViewModel)
 
                 }
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .navigationBarsPadding(),
-                    contentAlignment = Alignment.BottomCenter
-                ) {
-                    LaunchedEffect(isClicked) {
-                        delay(3000)
-                        isClicked = false
-                    }
 
-                    AnimatedVisibility(
-                        visible = isClicked,
-                        enter = fadeIn(
-                            animationSpec = tween(
-                                durationMillis = 500,
-                                easing = FastOutSlowInEasing
-                            )
-                        ),
-                        exit = fadeOut(
-                            animationSpec = tween(
-                                durationMillis = 500,
-                                easing = LinearEasing
-                            )
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .navigationBarsPadding(),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                LaunchedEffect(isClicked) {
+                    delay(3000)
+                    isClicked = false
+                }
+
+                AnimatedVisibility(
+                    visible = isClicked,
+                    enter = fadeIn(
+                        animationSpec = tween(
+                            durationMillis = 500,
+                            easing = FastOutSlowInEasing
                         )
-                    ) {
-                        SequenceBottomBar(viewModel.readDetailEssay(),viewModel,navController)
-                    }
+                    ),
+                    exit = fadeOut(
+                        animationSpec = tween(
+                            durationMillis = 500,
+                            easing = LinearEasing
+                        )
+                    )
+                ) {
+                    SequenceBottomBar(viewModel.readDetailEssay(), viewModel, navController)
                 }
             }
-        )
-    }
-
-
+        }
+    )
 }
 
 @Composable
@@ -274,7 +270,8 @@ fun ModifyOption(
                         R.drawable.option_linkedout
                     )
                     HorizontalDivider(color = Color(0xFF1A1A1A))
-                    OptionItem(text = "스토리 선택", Color(0xFF616FED),
+                    OptionItem(
+                        text = "스토리 선택", Color(0xFF616FED),
                         {
                             isStoryClicked = true
                         }, R.drawable.option_check
@@ -442,10 +439,12 @@ fun DetailEssay(viewModel: MyLogViewModel) {
                 Text(text = essay.title!!, fontSize = viewModel.titleTextSize, modifier = Modifier)
                 Spacer(modifier = Modifier.height(40.dp))
 
-                RichText(state = rememberRichTextState().setHtml(essay.content!!),
+                RichText(
+                    state = rememberRichTextState().setHtml(essay.content!!),
                     fontSize = viewModel.contentTextSize,
                     lineHeight = 27.2.sp,
-                    color = Color(0xFFB4B4B4))
+                    color = Color(0xFFB4B4B4)
+                )
 
                 Spacer(modifier = Modifier.height(46.dp))
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
@@ -648,78 +647,79 @@ fun CompletedEssayPage(
     writingViewModel: WritingViewModel
 ) {
     var hasCalledApi by remember { mutableStateOf(false) }
+
+    // API 호출 및 상태 업데이트
     LaunchedEffect(key1 = Unit) {
         if (!hasCalledApi) {
             viewModel.readMyEssay()
             viewModel.readPublishEssay()
             delay(100)
-
             hasCalledApi = true
         }
     }
 
+    // 뒤로가기 버튼 처리
     BackHandler(onBack = {
-        navigateWithClearBackStack(navController,"${Routes.Home}/200")
+        navigateWithClearBackStack(navController, "${Routes.Home}/200")
     })
 
     val scrollState = rememberScrollState()
 
+    // 상태에 따라 UI를 분기
     if (hasCalledApi) {
-        LinkedOutTheme {
-            Scaffold(
-                topBar = {
-                    DetailTopAppBar(navController = navController, viewModel)
-                },
-                content = {
-                    Box(
-                        Modifier
-                            .padding(it)
-                            .fillMaxSize(), contentAlignment = Alignment.TopCenter
+        Scaffold(
+            topBar = {
+                DetailTopAppBar(navController = navController, viewModel)
+            },
+            content = {
+                Box(
+                    Modifier
+                        .padding(it)
+                        .fillMaxSize(), contentAlignment = Alignment.TopCenter
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .verticalScroll(scrollState)
+                            .fillMaxSize()
                     ) {
-
-                        Column(Modifier.verticalScroll(scrollState)) {
-                            DetailEssay2(viewModel = viewModel)
-                            LastEssayPager(viewModel = viewModel, navController = navController)
-                        }
-                        //수정 옵션
-                        AnimatedVisibility(
-                            visible = viewModel.isActionClicked,
-                            enter = fadeIn(
-                                animationSpec = tween(
-                                    durationMillis = 1000,
-                                    easing = FastOutSlowInEasing
-                                )
-                            ),
-                            exit = fadeOut(
-                                animationSpec = tween(
-                                    durationMillis = 500,
-                                    easing = LinearEasing
-                                )
-                            )
-                        ) {
-
-                            ModifyOption(
-                                viewModel,
-                                navController = navController,
-                                writingViewModel = writingViewModel
-                            )
-
-                        }
-                        val text = when (viewModel.readDetailEssay().status) {
-                            "private" -> "저장"
-                            "published" -> "발행"
-                            "linkedout" -> "링크드아웃"
-                            else -> {
-                                "검토중"
-                            }
-                        }
-                        WriteCompleteBox(type = text)
-
-
+                        DetailEssay2(viewModel = viewModel)
+                        LastEssayPager(viewModel = viewModel, navController = navController)
                     }
+
+                    // 수정 옵션
+                    AnimatedVisibility(
+                        visible = viewModel.isActionClicked,
+                        enter = fadeIn(
+                            animationSpec = tween(
+                                durationMillis = 1000,
+                                easing = FastOutSlowInEasing
+                            )
+                        ),
+                        exit = fadeOut(
+                            animationSpec = tween(
+                                durationMillis = 500,
+                                easing = LinearEasing
+                            )
+                        )
+                    ) {
+                        ModifyOption(
+                            viewModel,
+                            navController = navController,
+                            writingViewModel = writingViewModel
+                        )
+                    }
+
+                    // 상태에 따라 텍스트 표시
+                    val text = when (viewModel.readDetailEssay().status) {
+                        "private" -> "저장"
+                        "published" -> "발행"
+                        "linkedout" -> "링크드아웃"
+                        else -> "검토중"
+                    }
+                    WriteCompleteBox(type = text)
                 }
-            )
-        }
+            }
+        )
     } else {
         Box(
             modifier = Modifier
@@ -728,6 +728,7 @@ fun CompletedEssayPage(
         )
     }
 }
+
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -762,15 +763,20 @@ fun DetailEssay2(viewModel: MyLogViewModel) {
                 Text(text = essay.title!!, fontSize = viewModel.titleTextSize, modifier = Modifier)
                 Spacer(modifier = Modifier.height(40.dp))
 
-                RichText(state = rememberRichTextState().setHtml(essay.content!!),
+                RichText(
+                    state = rememberRichTextState().setHtml(essay.content!!),
                     fontSize = viewModel.contentTextSize,
                     modifier = Modifier,
-                    color = Color(0xFFB4B4B4))
+                    color = Color(0xFFB4B4B4)
+                )
 
                 Spacer(modifier = Modifier.height(46.dp))
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
                     Column {
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.CenterEnd
+                        ) {
                             (if (essay.author != null) essay.author!!.nickname else "")?.let {
                                 Text(
                                     text = it,
@@ -781,7 +787,10 @@ fun DetailEssay2(viewModel: MyLogViewModel) {
                             }
                         }
                         Spacer(modifier = Modifier.height(8.dp))
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.CenterEnd
+                        ) {
                             Text(
                                 text = formatDateTime(essay.createdDate ?: ""),
                                 fontSize = 12.sp,
@@ -830,7 +839,7 @@ fun DetailEssay2(viewModel: MyLogViewModel) {
                 }
 
             }
-            }
+        }
 
 
     }
@@ -900,11 +909,22 @@ fun WriteCompleteBox(type: String) {
                         modifier = Modifier.weight(4f)
                     ) {
                         Row {
-                            Text(text = "$type ", color = LinkedInColor, fontSize = 24.sp, fontWeight = FontWeight.SemiBold)
+                            Text(
+                                text = "$type ",
+                                color = LinkedInColor,
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
                             Text(text = "완료", fontSize = 24.sp, color = Color.White)
                         }
                         Spacer(modifier = Modifier.height(18.dp))
-                        Text(text = text, textAlign = TextAlign.Center, color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+                        Text(
+                            text = text,
+                            textAlign = TextAlign.Center,
+                            color = Color.White,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 14.sp
+                        )
 
                     }
                 }

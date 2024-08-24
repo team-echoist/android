@@ -64,7 +64,6 @@ import androidx.navigation.NavController
 import com.echoist.linkedout.R
 import com.echoist.linkedout.data.BadgeBoxItemWithTag
 import com.echoist.linkedout.page.home.MyBottomNavigation
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.SettingsViewModel
 
 @Composable
@@ -77,31 +76,29 @@ fun BadgePage(navController: NavController, viewModel: SettingsViewModel) {
 
         hasCalledApi.value = true
     }
-    LinkedOutTheme {
-        Scaffold(
-            topBar = {
+
+    Scaffold(
+        topBar = {
 
 
-                    BadgeTopAppBar(navController)
+            BadgeTopAppBar(navController)
 
-            },
-            bottomBar = { MyBottomNavigation(navController) },
-            content = {
-                Column(
-                    Modifier
-                        .padding(it)
-                        .verticalScroll(rememberScrollState())
-                        .padding(horizontal = 20.dp)
-                ) {
-                    badgeBoxItems.forEach { it ->
-                        BadgeItem(it,viewModel)
-                        Spacer(modifier = Modifier.height(10.dp))
-                    }
+        },
+        bottomBar = { MyBottomNavigation(navController) },
+        content = {
+            Column(
+                Modifier
+                    .padding(it)
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 20.dp)
+            ) {
+                badgeBoxItems.forEach { it ->
+                    BadgeItem(it, viewModel)
+                    Spacer(modifier = Modifier.height(10.dp))
                 }
             }
-        )
-    }
-
+        }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -150,7 +147,7 @@ fun BadgeItem(badgeBoxItem: BadgeBoxItemWithTag, viewModel: SettingsViewModel) {
 
 
     //레벨업 성공 시 레벨업 성공 표시
-    BadgeLevelUpSuccess(viewModel,badgeBoxItem)
+    BadgeLevelUpSuccess(viewModel, badgeBoxItem)
 
     Column {
         Text(text = badgeBoxItem.badgeName)
@@ -161,9 +158,11 @@ fun BadgeItem(badgeBoxItem: BadgeBoxItemWithTag, viewModel: SettingsViewModel) {
                 .fillMaxWidth()
                 .background(Color(0xFf0D0D0D), shape = RoundedCornerShape(10))
         ) {
-            Box(modifier = Modifier
-                .fillMaxWidth()
-                .height(110.dp)){
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(110.dp)
+            ) {
                 Row(
                     modifier = Modifier
                         .fillMaxSize()
@@ -195,13 +194,15 @@ fun BadgeItem(badgeBoxItem: BadgeBoxItemWithTag, viewModel: SettingsViewModel) {
                     }
                 }
                 //경험치가 10 이상이면 보상받기 box 만들기.
-                if (badgeBoxItem.exp >= 10){
-                    Box(modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center){
+                if (badgeBoxItem.exp >= 10) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center
+                    ) {
                         Button(onClick = { viewModel.requestBadgeLevelUp(badgeBoxItem.badgeId!!) }) {
                             Text(text = "보상 받기")
-                        } 
+                        }
                     }
                 }
             }
@@ -241,13 +242,19 @@ fun BadgeItem(badgeBoxItem: BadgeBoxItemWithTag, viewModel: SettingsViewModel) {
                                 )
                             }
                         }
-                    }
-                    else{
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-                            Text(text = "아직 일치하는 해시태그가 없습니다!", color = Color(0xFF313131), fontSize = 14.sp)
+                    } else {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "아직 일치하는 해시태그가 없습니다!",
+                                color = Color(0xFF313131),
+                                fontSize = 14.sp
+                            )
                         }
                     }
-                    
+
                 }
             }
         }
@@ -255,7 +262,7 @@ fun BadgeItem(badgeBoxItem: BadgeBoxItemWithTag, viewModel: SettingsViewModel) {
 }
 
 @Composable
-fun BadgeImg(badgeBoxItem: BadgeBoxItemWithTag){
+fun BadgeImg(badgeBoxItem: BadgeBoxItemWithTag) {
 
     val baseModifier = Modifier
         .size(70.dp)
@@ -271,7 +278,7 @@ fun BadgeImg(badgeBoxItem: BadgeBoxItemWithTag){
     }
     // 레벨이 0이면 흑백, 1부터는 컬러로
     val colorMatrix = ColorMatrix().apply {
-        if (badgeBoxItem.level == 0) setToSaturation(0f)  
+        if (badgeBoxItem.level == 0) setToSaturation(0f)
         else setToSaturation(1f)
     }
     Image(
@@ -284,18 +291,23 @@ fun BadgeImg(badgeBoxItem: BadgeBoxItemWithTag){
 
 //레벨업 보상획득 시 페이지
 @Composable
-fun BadgeLevelUpSuccess(viewModel: SettingsViewModel,badgeBoxItem: BadgeBoxItemWithTag) {
+fun BadgeLevelUpSuccess(viewModel: SettingsViewModel, badgeBoxItem: BadgeBoxItemWithTag) {
 
     AnimatedVisibility(
         viewModel.isLevelUpSuccess,
         enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)),
         exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
     ) {
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center){
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center
+        ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Image(painter = painterResource(id = badgeBoxItem.badgeResourceId), contentDescription = "imageId")
+                Image(
+                    painter = painterResource(id = badgeBoxItem.badgeResourceId),
+                    contentDescription = "imageId"
+                )
                 Text(text = badgeBoxItem.badgeName)
                 Text(text = "뱃지 획득!")
             }
@@ -327,7 +339,7 @@ fun ExpProgressBar(progress: Float, max: Int) {
             contentAlignment = Alignment.Center
         ) {
             Text(
-                modifier = Modifier.offset(y=-2.dp),
+                modifier = Modifier.offset(y = -2.dp),
                 text = "${progress.toInt()}/${max}",
                 color = Color.Black,
                 textAlign = TextAlign.Center,

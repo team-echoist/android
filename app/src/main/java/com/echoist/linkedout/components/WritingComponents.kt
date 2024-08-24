@@ -68,39 +68,37 @@ import com.canhub.cropper.CropImageContractOptions
 import com.canhub.cropper.CropImageOptions
 import com.echoist.linkedout.R
 import com.echoist.linkedout.ui.theme.LinkedInColor
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.WritingViewModel
 
-class FuncItemData(val text : String, var icon: Int, var clickable: () -> Unit )
+class FuncItemData(val text: String, var icon: Int, var clickable: () -> Unit)
 
 @Composable
-fun BlankWarningAlert(dialogState: MutableState<Boolean>){
-    LinkedOutTheme {
-        AlertDialog(
-            onDismissRequest = { dialogState.value = false },
-            confirmButton = {
-                Button(onClick = { dialogState.value = false }) {
-                    Text(text = "확인")
-                }
-            },
-            text = { Text(text = "제목이 30자 이상 이거나 내용이 10자 이하면 완료 할 수 없습니다.") },
-        )
-    }
+fun BlankWarningAlert(dialogState: MutableState<Boolean>) {
 
+    AlertDialog(
+        onDismissRequest = { dialogState.value = false },
+        confirmButton = {
+            Button(onClick = { dialogState.value = false }) {
+                Text(text = "확인")
+            }
+        },
+        text = { Text(text = "제목이 30자 이상 이거나 내용이 10자 이하면 완료 할 수 없습니다.") },
+    )
 }
 
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun prevItem(){
+fun prevItem() {
     Column {
 
-        FuncItem("인용구",R.drawable.keyboard_hashtag) {}
+        FuncItem("인용구", R.drawable.keyboard_hashtag) {}
     }
 
 }
+
 @Composable
-fun FuncItem(text : String, icon: Int, clickable: () -> Unit){
+fun FuncItem(text: String, icon: Int, clickable: () -> Unit) {
     val color = Color.Unspecified
 
     Column(
@@ -119,15 +117,18 @@ fun FuncItem(text : String, icon: Int, clickable: () -> Unit){
             color
         )
         Spacer(modifier = Modifier.height(23.dp))
-        Text(text = text, color = Color.White,
+        Text(
+            text = text, color = Color.White,
             fontSize = 12.sp,
-            textAlign = TextAlign.Center)
+            textAlign = TextAlign.Center
+        )
 
 
     }
 }
+
 @Composable
-fun TextItem(icon : Int, color: Color, clickable : () -> Unit){
+fun TextItem(icon: Int, color: Color, clickable: () -> Unit) {
 
 
     Icon(
@@ -140,10 +141,11 @@ fun TextItem(icon : Int, color: Color, clickable : () -> Unit){
             .clickable { clickable() }
     )
 }
-@Composable
-fun LocationTextField(viewModel: WritingViewModel){
 
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart){
+@Composable
+fun LocationTextField(viewModel: WritingViewModel) {
+
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart) {
         TextField(
             value = viewModel.locationText,
             colors = TextFieldDefaults.colors(
@@ -158,7 +160,7 @@ fun LocationTextField(viewModel: WritingViewModel){
             ),
             placeholder = {
                 Text(text = "장소를 입력하고 줄을 띄워주세요", color = Color.Gray, fontSize = 14.sp)
-                          },
+            },
             onValueChange = { it ->
                 if (it.isNotEmpty() && (it.last() == '\n') && viewModel.locationList.size < 1) {
                     val trimmedText = it.trim()
@@ -166,34 +168,43 @@ fun LocationTextField(viewModel: WritingViewModel){
                         viewModel.locationList.add(trimmedText)
                         viewModel.locationText = ""
                     }
-                }
-                else viewModel.locationText = it
+                } else viewModel.locationText = it
             }
         )
     }
 
 
 }
+
 @Composable
-fun LocationBox(viewModel: WritingViewModel){
-    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center, modifier = Modifier
-        .padding(bottom = 15.dp)
-        .clickable {}
-        .background(color = Color(0xFF616FED), shape = RoundedCornerShape(size = 65.dp))
-        .padding(start = 8.dp, top = 3.dp, end = 8.dp, bottom = 3.dp)) {
-        Text(text =  "${viewModel.longitude} ${viewModel.latitude}", fontSize = 14.sp, color = Color.White)
+fun LocationBox(viewModel: WritingViewModel) {
+    Row(verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .padding(bottom = 15.dp)
+            .clickable {}
+            .background(color = Color(0xFF616FED), shape = RoundedCornerShape(size = 65.dp))
+            .padding(start = 8.dp, top = 3.dp, end = 8.dp, bottom = 3.dp)) {
+        Text(
+            text = "${viewModel.longitude} ${viewModel.latitude}",
+            fontSize = 14.sp,
+            color = Color.White
+        )
 
     }
 
 }
-@Composable
-fun LocationBtn(viewModel: WritingViewModel,text: String){
 
-    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center, modifier = Modifier
-        .padding(bottom = 15.dp)
-        .clickable { viewModel.locationList.remove(text) }
-        .background(color = Color(0xFF616FED), shape = RoundedCornerShape(size = 65.dp))
-        .padding(start = 8.dp, top = 3.dp, end = 8.dp, bottom = 3.dp)) {
+@Composable
+fun LocationBtn(viewModel: WritingViewModel, text: String) {
+
+    Row(verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .padding(bottom = 15.dp)
+            .clickable { viewModel.locationList.remove(text) }
+            .background(color = Color(0xFF616FED), shape = RoundedCornerShape(size = 65.dp))
+            .padding(start = 8.dp, top = 3.dp, end = 8.dp, bottom = 3.dp)) {
         Text(text = text, fontSize = 14.sp, color = Color.White)
         Spacer(modifier = Modifier.width(2.dp))
         Icon(
@@ -235,18 +246,22 @@ fun HashTagTextField(viewModel: WritingViewModel) {
 }
 
 @Composable
-fun LocationGroup(viewModel: WritingViewModel){
+fun LocationGroup(viewModel: WritingViewModel) {
     val scrollState = rememberScrollState()
-    Box(modifier = Modifier
-        .height(55.dp)
-        .fillMaxWidth()
-        .padding(horizontal = 20.dp)){
-        Image( painter = painterResource(id = R.drawable.group_location),
-            contentDescription = "hashtagGroup")
+    Box(
+        modifier = Modifier
+            .height(55.dp)
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp)
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.group_location),
+            contentDescription = "hashtagGroup"
+        )
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.CenterStart
-        ){
+        ) {
             Column(
                 modifier = Modifier.fillMaxHeight(),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -258,18 +273,20 @@ fun LocationGroup(viewModel: WritingViewModel){
                         .width(220.dp)
                         .horizontalScroll(scrollState),
                     verticalAlignment = Alignment.CenterVertically
-                ){
+                ) {
                     viewModel.locationList.forEach {
                         Text(text = it, fontSize = 14.sp, color = Color.White)
                         Spacer(modifier = Modifier.width(13.dp))
                     }
                 }
-                Text( modifier = Modifier
-                    .padding(start = 86.dp)
-                    .width(220.dp),
+                Text(
+                    modifier = Modifier
+                        .padding(start = 86.dp)
+                        .width(220.dp),
                     text = "${viewModel.longitude} ${viewModel.latitude}",
                     fontSize = 12.sp,
-                    color = Color(0xFFA8AEE4))
+                    color = Color(0xFFA8AEE4)
+                )
 
             }
 
@@ -279,7 +296,7 @@ fun LocationGroup(viewModel: WritingViewModel){
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.CenterEnd
-        ){
+        ) {
             Text(
                 fontSize = 16.sp,
                 text = "편집",
@@ -297,13 +314,15 @@ fun LocationGroup(viewModel: WritingViewModel){
 }
 
 @Composable
-fun HashTagBtn(viewModel: WritingViewModel,text: String){
+fun HashTagBtn(viewModel: WritingViewModel, text: String) {
 
-    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center, modifier = Modifier
-        .padding(bottom = 15.dp)
-        .clickable { viewModel.hashTagList.remove(text) }
-        .background(color = Color(0xFF616FED), shape = RoundedCornerShape(size = 65.dp))
-        .padding(start = 8.dp, top = 3.dp, end = 8.dp, bottom = 3.dp)) {
+    Row(verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .padding(bottom = 15.dp)
+            .clickable { viewModel.hashTagList.remove(text) }
+            .background(color = Color(0xFF616FED), shape = RoundedCornerShape(size = 65.dp))
+            .padding(start = 8.dp, top = 3.dp, end = 8.dp, bottom = 3.dp)) {
         Text(text = text, fontSize = 14.sp, color = Color.White)
         Spacer(modifier = Modifier.width(2.dp))
         Icon(
@@ -329,18 +348,22 @@ fun HashTagBtn(viewModel: WritingViewModel,text: String){
 }
 
 @Composable
-fun HashTagGroup(viewModel: WritingViewModel){
+fun HashTagGroup(viewModel: WritingViewModel) {
     val scrollState = rememberScrollState()
-    Box(modifier = Modifier
-        .height(55.dp)
-        .fillMaxWidth()
-        .padding(horizontal = 20.dp)){
-        Image( painter = painterResource(id = R.drawable.group_hashtag),
-            contentDescription = "hashtagGroup")
+    Box(
+        modifier = Modifier
+            .height(55.dp)
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp)
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.group_hashtag),
+            contentDescription = "hashtagGroup"
+        )
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.CenterStart
-        ){
+        ) {
 
             Row(
                 modifier = Modifier
@@ -349,7 +372,7 @@ fun HashTagGroup(viewModel: WritingViewModel){
                     .fillMaxHeight()
                     .horizontalScroll(scrollState),
                 verticalAlignment = Alignment.CenterVertically
-            ){
+            ) {
                 viewModel.hashTagList.forEach {
                     Text(text = "#$it", color = Color.White, fontSize = 14.sp)
                     Spacer(modifier = Modifier.width(13.dp))
@@ -360,7 +383,7 @@ fun HashTagGroup(viewModel: WritingViewModel){
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.CenterEnd
-        ){
+        ) {
             Text(
                 fontSize = 16.sp,
                 text = "편집",
@@ -403,172 +426,197 @@ fun CropImagePage(navController: NavController, viewModel: WritingViewModel) {
 
     var isImageExist by remember { mutableStateOf(false) }
 
-    LinkedOutTheme {
-        Scaffold(
-            topBar = {
-                TopAppBar(modifier = Modifier
-                    .padding(horizontal = 20.dp)
-                    .background(Color.Black),
-                    navigationIcon = {
-                        Icon(
-                            modifier = Modifier
-                                .size(30.dp)
-                                .clickable { navController.popBackStack() },
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Close"
-                        )
-                    },
-                    title = { Text("  이미지 업로드",fontSize = 24.sp, color = Color.White) },
-                    actions = {
-                        IconButton(
-                            onClick = {
-                                val cropOptions = CropImageContractOptions(
-                                    null,
-                                    CropImageOptions(
-                                        imageSourceIncludeCamera = false,
-                                        minCropResultWidth = screenWidth *5,
-                                        minCropResultHeight = 1000,
-                                        maxCropResultWidth = screenWidth *10,
-                                        maxCropResultHeight = 1000,
-                                        cropperLabelText = "자르기"
-                                    )
-                                )
-                                imageCropLauncher.launch(cropOptions)
-                            }
-                        ) {
-                            Icon(
-                                modifier = Modifier.size(30.dp),
-                                tint = Color.White,
-                                painter = painterResource(id = R.drawable.icon_gallery),
 
-                                contentDescription = "Background from gallery"
-                            )
-                        }
-
-                        IconButton(
-                            onClick = {
-                                val cropOptions = CropImageContractOptions(
-                                    null,
-                                    CropImageOptions(
-                                        imageSourceIncludeGallery = false,
-                                        minCropResultWidth = screenWidth *5,
-                                        minCropResultHeight = 1000,
-                                        maxCropResultWidth = screenWidth *10,
-                                        maxCropResultHeight = 1000,
-                                        cropperLabelText = "자르기"
-                                    )
-                                )
-                                imageCropLauncher.launch(cropOptions)
-                            }
-                        ) {
-                            Icon(
-
-                                painter = painterResource(id = R.drawable.icon_camera),
-                                modifier = Modifier.size(30.dp),
-                                tint = Color.White,
-                                contentDescription = "Background from camera"
-                            )
-                        }
-                    }
-                )
-            }
-        ) { paddingValues ->
-            Box(modifier = Modifier.padding(paddingValues)) {
-                imageUri?.let { uri ->
-                    viewModel.imageUri = uri
-                    GlideImage(model = viewModel.imageUri, contentDescription = "",modifier = Modifier.fillMaxSize())
-
-
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "close",
-                        modifier = Modifier
-                            .size(40.dp)
-                            .offset(x = 10.dp, y = 10.dp)
-                            .clickable {
-                                viewModel.imageUri = null
-                                viewModel.imageUrl = null
-                                imageUri = null
-                            }
-                    )
-                    Log.d(TAG, "CropImagePage: $uri")
-                    isImageExist = true
-                }
-                if (imageUri == null) {
-                    isImageExist = false
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(bottom = 30.dp)
-                        , contentAlignment = Alignment.Center){
-                        Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(
-                                imageVector = Icons.Default.Add,
-                                tint = Color(0xFF4B4B4B),
-                                contentDescription = "image upload",
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clickable
-                                    {
-                                        val cropOptions = CropImageContractOptions(
-                                            null,
-                                            CropImageOptions(
-                                                imageSourceIncludeCamera = false,
-                                                minCropResultWidth = screenWidth * 5,
-                                                minCropResultHeight = 1000,
-                                                maxCropResultWidth = screenWidth * 10,
-                                                maxCropResultHeight = 1000,
-                                                cropperLabelText = "자르기"
-                                            )
-                                        )
-                                        imageCropLauncher.launch(cropOptions)
-                                    }
-
-                            )
-                            Spacer(modifier = Modifier.height(10.dp))
-                            Text(text = "사진을 업로드 해주세요" , fontSize = 18.sp, color = Color(0xFF4B4B4B), fontWeight = FontWeight.SemiBold)
-                        }
-                    }
-
-                }
-            }
-        }
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .navigationBarsPadding()
-            .padding(bottom = 30.dp), contentAlignment = Alignment.BottomCenter) {
-            Button(modifier = Modifier
-                .fillMaxWidth()
+    Scaffold(
+        topBar = {
+            TopAppBar(modifier = Modifier
                 .padding(horizontal = 20.dp)
-                .height(60.dp), enabled = isImageExist,
-                shape = RoundedCornerShape(10),
-                colors = ButtonDefaults.buttonColors(containerColor = LinkedInColor, disabledContainerColor = Color.Gray),
-                onClick = {
-                // Pass the imageUri to ViewModel or use it as needed
-                navController.navigate("WritingPage")
-            }) {
-                Text(text = "완료", color = Color.Black)
+                .background(Color.Black),
+                navigationIcon = {
+                    Icon(
+                        modifier = Modifier
+                            .size(30.dp)
+                            .clickable { navController.popBackStack() },
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Close"
+                    )
+                },
+                title = { Text("  이미지 업로드", fontSize = 24.sp, color = Color.White) },
+                actions = {
+                    IconButton(
+                        onClick = {
+                            val cropOptions = CropImageContractOptions(
+                                null,
+                                CropImageOptions(
+                                    imageSourceIncludeCamera = false,
+                                    minCropResultWidth = screenWidth * 5,
+                                    minCropResultHeight = 1000,
+                                    maxCropResultWidth = screenWidth * 10,
+                                    maxCropResultHeight = 1000,
+                                    cropperLabelText = "자르기"
+                                )
+                            )
+                            imageCropLauncher.launch(cropOptions)
+                        }
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(30.dp),
+                            tint = Color.White,
+                            painter = painterResource(id = R.drawable.icon_gallery),
+
+                            contentDescription = "Background from gallery"
+                        )
+                    }
+
+                    IconButton(
+                        onClick = {
+                            val cropOptions = CropImageContractOptions(
+                                null,
+                                CropImageOptions(
+                                    imageSourceIncludeGallery = false,
+                                    minCropResultWidth = screenWidth * 5,
+                                    minCropResultHeight = 1000,
+                                    maxCropResultWidth = screenWidth * 10,
+                                    maxCropResultHeight = 1000,
+                                    cropperLabelText = "자르기"
+                                )
+                            )
+                            imageCropLauncher.launch(cropOptions)
+                        }
+                    ) {
+                        Icon(
+
+                            painter = painterResource(id = R.drawable.icon_camera),
+                            modifier = Modifier.size(30.dp),
+                            tint = Color.White,
+                            contentDescription = "Background from camera"
+                        )
+                    }
+                }
+            )
+        }
+    ) { paddingValues ->
+        Box(modifier = Modifier.padding(paddingValues)) {
+            imageUri?.let { uri ->
+                viewModel.imageUri = uri
+                GlideImage(
+                    model = viewModel.imageUri,
+                    contentDescription = "",
+                    modifier = Modifier.fillMaxSize()
+                )
+
+
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "close",
+                    modifier = Modifier
+                        .size(40.dp)
+                        .offset(x = 10.dp, y = 10.dp)
+                        .clickable {
+                            viewModel.imageUri = null
+                            viewModel.imageUrl = null
+                            imageUri = null
+                        }
+                )
+                Log.d(TAG, "CropImagePage: $uri")
+                isImageExist = true
+            }
+            if (imageUri == null) {
+                isImageExist = false
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(bottom = 30.dp), contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            tint = Color(0xFF4B4B4B),
+                            contentDescription = "image upload",
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clickable
+                                {
+                                    val cropOptions = CropImageContractOptions(
+                                        null,
+                                        CropImageOptions(
+                                            imageSourceIncludeCamera = false,
+                                            minCropResultWidth = screenWidth * 5,
+                                            minCropResultHeight = 1000,
+                                            maxCropResultWidth = screenWidth * 10,
+                                            maxCropResultHeight = 1000,
+                                            cropperLabelText = "자르기"
+                                        )
+                                    )
+                                    imageCropLauncher.launch(cropOptions)
+                                }
+
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text(
+                            text = "사진을 업로드 해주세요",
+                            fontSize = 18.sp,
+                            color = Color(0xFF4B4B4B),
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                }
+
             }
         }
     }
-
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .navigationBarsPadding()
+            .padding(bottom = 30.dp), contentAlignment = Alignment.BottomCenter
+    ) {
+        Button(modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp)
+            .height(60.dp), enabled = isImageExist,
+            shape = RoundedCornerShape(10),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = LinkedInColor,
+                disabledContainerColor = Color.Gray
+            ),
+            onClick = {
+                // Pass the imageUri to ViewModel or use it as needed
+                navController.navigate("WritingPage")
+            }) {
+            Text(text = "완료", color = Color.Black)
+        }
+    }
 }
 
 
 //임시저장 개수 아이콘
 @Composable
-fun StoryCountIcon(count : Int){
+fun StoryCountIcon(count: Int) {
     val color = Color.White
     val circleColor = Color.Transparent
 
-    Box(modifier = Modifier.size(36.dp)){
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomStart){
-            Icon(painter = painterResource(id = R.drawable.icon_storyint), contentDescription = "", modifier = Modifier.size(34.dp),color)
+    Box(modifier = Modifier.size(36.dp)) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomStart) {
+            Icon(
+                painter = painterResource(id = R.drawable.icon_storyint),
+                contentDescription = "",
+                modifier = Modifier.size(34.dp),
+                color
+            )
         }
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopEnd){
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopEnd) {
             Surface(shape = CircleShape, modifier = Modifier.size(18.dp), color = circleColor) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-                    Text(text = count.toString(),color = Color.White, fontSize = 14.sp, modifier = Modifier.offset(x=(-2).dp))
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(
+                        text = count.toString(),
+                        color = Color.White,
+                        fontSize = 14.sp,
+                        modifier = Modifier.offset(x = (-2).dp)
+                    )
 
                 }
             }

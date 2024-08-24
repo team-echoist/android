@@ -41,7 +41,6 @@ import com.echoist.linkedout.components.MyLogTopAppBar
 import com.echoist.linkedout.page.community.SearchingPage
 import com.echoist.linkedout.page.home.MyBottomNavigation
 import com.echoist.linkedout.page.home.WriteFTB
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.HomeViewModel
 import com.echoist.linkedout.viewModels.MyLogViewModel
 import com.echoist.linkedout.viewModels.WritingViewModel
@@ -49,7 +48,12 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-fun MyLogPage(navController: NavController, viewModel: MyLogViewModel,writingViewModel: WritingViewModel,page : Int = 0) {
+fun MyLogPage(
+    navController: NavController,
+    viewModel: MyLogViewModel,
+    writingViewModel: WritingViewModel,
+    page: Int = 0
+) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val homeViewModel: HomeViewModel = hiltViewModel()
@@ -93,42 +97,49 @@ fun MyLogPage(navController: NavController, viewModel: MyLogViewModel,writingVie
             content = {
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
 
-                    LinkedOutTheme {
-                        Scaffold(
 
-                            topBar = {
-                                Column {
+                    Scaffold(
 
-                                    MyLogTopAppBar(
-                                        {
-                                            scope.launch {
-                                                drawerState.apply {
-                                                    if (isClosed) open() else close()
-                                                }
+                        topBar = {
+                            Column {
+
+                                MyLogTopAppBar(
+                                    {
+                                        scope.launch {
+                                            drawerState.apply {
+                                                if (isClosed) open() else close()
                                             }
-                                        },
-                                        viewModel.getUserInfo().nickname!!,
-                                        { navController.navigate("NotificationPage") },
-                                        viewModel.isExistUnreadAlerts)
-                                    Spacer(modifier = Modifier.height(10.dp))
+                                        }
+                                    },
+                                    viewModel.getUserInfo().nickname!!,
+                                    { navController.navigate("NotificationPage") },
+                                    viewModel.isExistUnreadAlerts
+                                )
+                                Spacer(modifier = Modifier.height(10.dp))
 
-                                    EssayChips(pagerstate, viewModel)
-                                }
-                            },
-
-                            bottomBar = { MyBottomNavigation(navController) },
-                            floatingActionButton = { WriteFTB(navController, homeViewModel,writingViewModel) },
-                            content = {
-                                Box(Modifier.padding(it)) {
-                                    EssayPager(
-                                        pagerState = pagerstate,
-                                        viewModel,
-                                        navController = navController,
-                                        writingViewModel
-                                    )
-                                }
+                                EssayChips(pagerstate, viewModel)
                             }
-                        )
+                        },
+
+                        bottomBar = { MyBottomNavigation(navController) },
+                        floatingActionButton = {
+                            WriteFTB(
+                                navController,
+                                homeViewModel,
+                                writingViewModel
+                            )
+                        },
+                        content = {
+                            Box(Modifier.padding(it)) {
+                                EssayPager(
+                                    pagerState = pagerstate,
+                                    viewModel,
+                                    navController = navController,
+                                    writingViewModel
+                                )
+                            }
+                        }
+                    )
 //                        if (isLoading) {
 //                            Box(
 //                                modifier = Modifier.fillMaxSize(),
@@ -138,26 +149,26 @@ fun MyLogPage(navController: NavController, viewModel: MyLogViewModel,writingVie
 //                            }
 //                        }
 
-                        AnimatedVisibility(
-                            visible = viewModel.isModifyStoryClicked,
-                            enter = fadeIn(
-                                animationSpec = tween(
-                                    durationMillis = 500,
-                                    easing = FastOutSlowInEasing
-                                )
-                            ),
-                            exit = fadeOut(
-                                animationSpec = tween(
-                                    durationMillis = 500,
-                                    easing = LinearEasing
-                                )
+                    AnimatedVisibility(
+                        visible = viewModel.isModifyStoryClicked,
+                        enter = fadeIn(
+                            animationSpec = tween(
+                                durationMillis = 500,
+                                easing = FastOutSlowInEasing
                             )
-                        ) {
-                            ModifyStoryBox(viewModel, navController)
+                        ),
+                        exit = fadeOut(
+                            animationSpec = tween(
+                                durationMillis = 500,
+                                easing = LinearEasing
+                            )
+                        )
+                    ) {
+                        ModifyStoryBox(viewModel, navController)
 
-                        }
                     }
                 }
             })
+
     }
 }

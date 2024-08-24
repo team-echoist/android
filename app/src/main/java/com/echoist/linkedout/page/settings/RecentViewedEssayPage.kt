@@ -32,40 +32,49 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.TYPE_RECOMMEND
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.components.EssayListItem
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
 
 @Composable
-fun RecentViewedEssayPage(navController: NavController,viewModel: CommunityViewModel = hiltViewModel()){
-    LinkedOutTheme {
-        Scaffold(
-            topBar = {
-                SettingTopAppBar("최근 본 글",navController)
-            },
-            content = {
-                Column(Modifier.padding(it)) {
-                    LazyColumn(
-                        Modifier
-                            .padding(top = 20.dp)
-                    ) {
-                        items(viewModel.getRecentEssayList()) { it ->
-                            EssayListItem(item = it, viewModel = viewModel, navController = navController)
-                        }
-                    }
-                }
-                if (viewModel.getRecentEssayList().isEmpty()){
-                    Box(modifier = Modifier.fillMaxSize()){
-                        Text(text = "최근 본 글이 없습니다.", modifier = Modifier.align(Alignment.Center), color = Color.Gray)
-                    }
-                }
+fun RecentViewedEssayPage(
+    navController: NavController,
+    viewModel: CommunityViewModel = hiltViewModel()
+) {
 
+    Scaffold(
+        topBar = {
+            SettingTopAppBar("최근 본 글", navController)
+        },
+        content = {
+            Column(Modifier.padding(it)) {
+                LazyColumn(
+                    Modifier
+                        .padding(top = 20.dp)
+                ) {
+                    items(viewModel.getRecentEssayList()) { it ->
+                        EssayListItem(
+                            item = it,
+                            viewModel = viewModel,
+                            navController = navController
+                        )
+                    }
+                }
+            }
+            if (viewModel.getRecentEssayList().isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    Text(
+                        text = "최근 본 글이 없습니다.",
+                        modifier = Modifier.align(Alignment.Center),
+                        color = Color.Gray
+                    )
+                }
             }
 
+        }
 
-        )
-    }
 
+    )
 }
+
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -141,7 +150,11 @@ fun RecentEssayListItemNoTime(
                 .fillMaxSize()
                 .padding(start = 20.dp, bottom = 10.dp)
         ) {
-            Text(text = if (item.author?.nickname != null) item.author!!.nickname!! else "닉 없음", fontSize = 10.sp, color = Color(0xFF686868))
+            Text(
+                text = if (item.author?.nickname != null) item.author!!.nickname!! else "닉 없음",
+                fontSize = 10.sp,
+                color = Color(0xFF686868)
+            )
         }
         Box(
             contentAlignment = Alignment.BottomEnd, modifier = Modifier
@@ -149,7 +162,7 @@ fun RecentEssayListItemNoTime(
         ) {
             HorizontalDivider(color = Color(0xFF686868))
         }
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
 
         }
 
