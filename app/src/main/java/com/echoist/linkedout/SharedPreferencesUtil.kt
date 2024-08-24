@@ -2,6 +2,7 @@ package com.echoist.linkedout
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.echoist.linkedout.data.Tokens
 import com.echoist.linkedout.page.home.TimeSelectionIndex
 
 
@@ -51,19 +52,20 @@ object SharedPreferencesUtil {
         return displayInfo!!
     }
 
-    //자동로그인 아이디 비밀번호 저장
-    fun getLocalAccountInfo(context: Context) : LocalAccountInfo{
+    //자동로그인 refresh, accessToken 저장
+    fun getTokensInfo(context: Context) : Tokens{
         val sharedPreferences: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        val accountInfoId = sharedPreferences.getString(ID_LOCAL_STORAGE, "")
-        val accountInfoPw = sharedPreferences.getString(PW_LOCAL_STORAGE, "")
-        return LocalAccountInfo(accountInfoId!!,accountInfoPw!!)
+        val refreshToken = sharedPreferences.getString("refresh_token", "")
+        val accessToken = sharedPreferences.getString("access_token", "")
+
+        return Tokens(accessToken!!,refreshToken!!)
     }
 
-    fun saveLocalAccountInfo(context: Context, localAccountInfo: LocalAccountInfo) {
+    fun saveTokensInfo(context: Context, accessToken : String, refreshToken : String) {
         val sharedPreferences: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         with(sharedPreferences.edit()) {
-            putString(ID_LOCAL_STORAGE, localAccountInfo.id)
-            putString(PW_LOCAL_STORAGE, localAccountInfo.pw)
+            putString("refresh_token", refreshToken)
+            putString("access_token", accessToken)
             apply()
         }
     }
@@ -113,6 +115,21 @@ object SharedPreferencesUtil {
         val hourIndex = sharedPreferences.getInt(KEY_HOUR_INDEX, 0) // 기본값은 0
         val minuteIndex = sharedPreferences.getInt(KEY_MINUTE_INDEX, 0) // 기본값은 0
         return TimeSelectionIndex(periodIndex, hourIndex, minuteIndex)
+    }
+
+    //로그인 refresh token 유효기간
+    fun saveRefreshTokenValidTime(context: Context, validTime: String) {
+        val sharedPreferences: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            putString("refreshTokenValidTime", validTime)
+            apply()
+        }
+    }
+
+    fun getRefreshTokenValidTime(context: Context): String { // yyyy-MM-dd
+        val sharedPreferences: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val validTime = sharedPreferences.getString("refreshTokenValidTime", "1999-07-25")
+        return validTime!!
     }
 
     fun getPeriodString(index: Int): String = periodMap[index] ?: "오전"

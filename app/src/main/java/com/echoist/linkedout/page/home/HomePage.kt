@@ -96,6 +96,7 @@ import com.echoist.linkedout.calculateDaysDifference
 import com.echoist.linkedout.data.BottomNavItem
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.getCurrentDateFormatted
+import com.echoist.linkedout.page.myLog.Token
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.HomeViewModel
@@ -120,6 +121,7 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewMo
 
 
     Log.d("유저의 상태코드", statusCode.toString())
+    Log.d("header token by autoLogin: in home","${Token.accessToken} \n ${Token.refreshToken}")
     var userStatus by remember { mutableStateOf(UserStatus.Activated) }
 
     userStatus = when(statusCode){

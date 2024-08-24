@@ -97,6 +97,7 @@ import com.echoist.linkedout.Routes
 import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.components.CropImagePage
 import com.echoist.linkedout.data.Notice
+import com.echoist.linkedout.isDateAfterToday
 import com.echoist.linkedout.page.community.CommunityDetailPage
 import com.echoist.linkedout.page.community.CommunityPage
 import com.echoist.linkedout.page.community.CommunitySavedEssayPage
@@ -149,7 +150,6 @@ import com.echoist.linkedout.viewModels.WritingViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.kakao.sdk.common.KakaoSdk
-import com.kakao.sdk.common.util.Utility
 import com.navercorp.nid.NaverIdLoginSDK
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -199,11 +199,22 @@ class LoginPage : ComponentActivity() {
 
         //온보딩을 한번 진행했다면 다음부턴 안나오게.
         val isOnboardingFinished = SharedPreferencesUtil.getIsOnboardingFinished(this)
-        val startDestination = if (isOnboardingFinished) Routes.LoginPage else Routes.OnBoarding
+        val isAutoLoginClicked = SharedPreferencesUtil.getClickedAutoLogin(this)
+        val tokenValidTime = SharedPreferencesUtil.getRefreshTokenValidTime(this)
+        val tokens = SharedPreferencesUtil.getTokensInfo(this)
+        Log.d("TAG", "onCreate: ${isAutoLoginClicked}")
+        val startDestination = when
+        { //자동로그인 + 토큰만료 전까지 home으로
+            isAutoLoginClicked && isDateAfterToday(tokenValidTime) -> {
+                Token.accessToken = tokens.accessToken
+                Token.refreshToken = tokens.refreshToken
+                "${Routes.Home}/200"
+            }
+            isOnboardingFinished -> Routes.LoginPage
+            else -> Routes.OnBoarding
+        }
 
         setContent {
-            val keyHash = Utility.getKeyHash(this)
-            Log.d("Hash", keyHash)
             val navController = rememberNavController()
 
             NavHost(navController = navController, startDestination = startDestination) {
@@ -515,12 +526,6 @@ fun LoginPage(
         //온보딩 확인했다는 체크
         SharedPreferencesUtil.saveIsOnboardingFinished(context,true)
 
-        //자동로그인 체크시 로그인.
-        if (SharedPreferencesUtil.getClickedAutoLogin(context = context)){
-            viewModel.userId = SharedPreferencesUtil.getLocalAccountInfo(context).id
-            viewModel.userPw = SharedPreferencesUtil.getLocalAccountInfo(context).pw
-            viewModel.login(navController)
-        }
     }
 
     LinkedOutTheme {
@@ -695,8 +700,7 @@ fun LoginPage(
             }
         )
     }
-
-    }
+}
 
 
 @Composable
@@ -729,7 +733,7 @@ fun SocialLoginBar(navController: NavController, viewModel: SocialLoginViewModel
 @Composable
 fun IdTextField(viewModel: SocialLoginViewModel, passwordFocusRequester: FocusRequester) {
     val context = LocalContext.current
-    var text by remember { mutableStateOf(SharedPreferencesUtil.getLocalAccountInfo(context).id) }
+    var text by remember { mutableStateOf("") }
     viewModel.userId = text //초기값 설정 빈값으로 두지 않기위함
 
     TextField(
@@ -785,7 +789,7 @@ fun PwTextField(
     passwordFocusRequester: FocusRequester
 ) {
     val context = LocalContext.current
-    var text by remember { mutableStateOf(SharedPreferencesUtil.getLocalAccountInfo(context).pw) }
+    var text by remember { mutableStateOf("") }
     viewModel.userPw = text
     var passwordVisible by remember { mutableStateOf(false) }
 

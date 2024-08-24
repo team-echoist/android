@@ -41,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,6 +50,7 @@ import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
+import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.page.community.ReportTextField
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
@@ -67,6 +69,7 @@ fun AccountWithdrawalPage(navController : NavController) {
         "앱 사용 중에 자꾸 문제가 생겨서(버그, 오류 등)", "다른 서비스가 더 좋아서","기타 문제"
     )
     val selectedItems = remember { mutableStateListOf<String>() }
+    val context = LocalContext.current
     Log.d(TAG, "AccountWithdrawalPage: $selectedItems")
 
     LinkedOutTheme {
@@ -126,7 +129,9 @@ fun AccountWithdrawalPage(navController : NavController) {
 
                         Button(
                             onClick = {
-                                isWithdrawalClicked = true},
+                                isWithdrawalClicked = true
+                                SharedPreferencesUtil.saveClickedAutoLogin(context,false)
+                                      },
                             enabled = !selectedItems.isEmpty(),
                             shape = RoundedCornerShape(20),
                             modifier = Modifier

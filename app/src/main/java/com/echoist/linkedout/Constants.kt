@@ -166,6 +166,23 @@ fun calculateDaysDifference(dateString: String): Long {
     return ChronoUnit.DAYS.between(targetDate, currentDate)
 }
 
+// 로그인 이후 30일 후의 날짜계산
+fun calculateDateAfter30Days(): String {
+    val currentDate = LocalDate.now() // 현재 날짜
+    val futureDate = currentDate.plusDays(30) // 30일 이후의 날짜
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd") // 원하는 날짜 형식
+
+    return futureDate.format(formatter) // 형식에 맞춰 문자열로 반환
+}
+// yyyy-mm-dd형태의 문자열이 주어졌을 때, 해당 날짜가 오늘 이후인지 확인하는 함수
+fun isDateAfterToday(dateString: String): Boolean {
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    val date = LocalDate.parse(dateString, formatter) // 문자열을 LocalDate로 변환
+    val today = LocalDate.now() // 현재 날짜
+
+    return date.isAfter(today) // 주어진 날짜가 오늘 이후인지 판단
+}
+
 fun formatElapsedTime(isoDateTimeString: String): String {
     // 작성 시간과 현재 시간 가져오기
     val writtenTime = ZonedDateTime.parse(isoDateTimeString, DateTimeFormatter.ISO_DATE_TIME)
