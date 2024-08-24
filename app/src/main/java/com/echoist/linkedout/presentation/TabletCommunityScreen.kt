@@ -39,9 +39,6 @@ fun TabletCommunityRoute(
     viewModel: CommunityViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
 ) {
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
-
     val pagerstate = rememberPagerState { 1 } //todo 다음버전에 구독페이지 추가하기. pagerstate 2로 수정
     val color = if (pagerstate.currentPage == 0) Color(0xFFD9D9D9) else Color.Black
 
@@ -50,59 +47,38 @@ fun TabletCommunityRoute(
     }
     val isLoading by viewModel.isLoading.collectAsState()
 
-    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-        ModalNavigationDrawer(
-            drawerState = drawerState,
-            drawerContent = {
-                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-                    ModalDrawerSheet(
+    val isRefreshing by viewModel.isRefreshing.collectAsState()
+
+    Column(modifier = modifier.background(color)) {
+        CommunityChips(pagerstate)
+        SwipeRefresh(
+            indicatorPadding = PaddingValues(top = 70.dp),
+            state = rememberSwipeRefreshState(isRefreshing = isRefreshing),
+            onRefresh = { viewModel.refresh() }) {
+            if (viewModel.isApifinished) {
+                Box {
+                    CommunityPager(
+                        viewModel = viewModel,
+                        pagerState = pagerstate,
+                        navController = navController
+                    )
+                }
+                if (isLoading) {
+                    Box(
                         modifier = Modifier.fillMaxSize(),
-                        drawerShape = RectangleShape,
-                        drawerContainerColor = Color.Black
+                        contentAlignment = Alignment.Center
                     ) {
-                        SearchingPage(drawerState, navController)
-                        // ...other drawer items
+                        CircularProgressIndicator(color = LinkedInColor)
                     }
                 }
-            },
-            content = {
-                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-                    val isRefreshing by viewModel.isRefreshing.collectAsState()
-
-                    Column(modifier = modifier.background(color)) {
-                        CommunityChips(pagerstate)
-                        SwipeRefresh(
-                            indicatorPadding = PaddingValues(top = 70.dp),
-                            state = rememberSwipeRefreshState(isRefreshing = isRefreshing),
-                            onRefresh = { viewModel.refresh() }) {
-                            if (viewModel.isApifinished) {
-                                Box {
-                                    CommunityPager(
-                                        viewModel = viewModel,
-                                        pagerState = pagerstate,
-                                        navController = navController
-                                    )
-                                }
-                                if (isLoading) {
-                                    Box(
-                                        modifier = Modifier.fillMaxSize(),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        CircularProgressIndicator(color = LinkedInColor)
-                                    }
-                                }
-                            } else {
-                                Box(
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    CircularProgressIndicator(color = LinkedInColor)
-                                }
-                            }
-                        }
-                    }
+            } else {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = LinkedInColor)
                 }
             }
-        )
+        }
     }
 }
