@@ -56,7 +56,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Inject
 
-
 @HiltViewModel
 class SocialLoginViewModel @Inject constructor(
     private val userApi: UserApi,
@@ -84,16 +83,21 @@ class SocialLoginViewModel @Inject constructor(
     private var appleUserToken by mutableStateOf("")
     private var appleUserId by mutableStateOf("")
 
-    var clickedAutoLogin by  mutableStateOf(false)
+    var clickedAutoLogin by mutableStateOf(false)
 
     var userId by mutableStateOf("")
     var userPw by mutableStateOf("")
 
-    private suspend fun readMyInfo(navController: NavController){
+    private fun navigateToHome(navController: NavController, statusCode: Int) {
+        navController.navigate("${Routes.Home}/$statusCode") {
+            popUpTo(Routes.LoginPage) { inclusive = true } // 로그인 스택 제거
+        }
+    }
 
+    private suspend fun readMyInfo(navController: NavController) {
         try {
             Log.d("헤더 토큰 여부", Token.accessToken)
-            val response = userApi.getMyInfo(bearerAccessToken,Token.refreshToken)
+            val response = userApi.getMyInfo(bearerAccessToken, Token.refreshToken)
 
             Log.d(TAG, "readMyInfo: suc1")
             Log.d("헤더 토큰", Token.accessToken)
@@ -102,21 +106,21 @@ class SocialLoginViewModel @Inject constructor(
             exampleItems.myProfile.essayStats = response.data.essayStats
             Log.i("본인 유저 정보 + 에세이", "readMyInfo: ${exampleItems.myProfile}")
 
-            if (response.data.user.isFirst == true){
-                Log.d("첫 회원가입 여부 체크","true")
+            if (response.data.user.isFirst == true) {
+                Log.d("첫 회원가입 여부 체크", "true")
                 navController.navigate("AgreeOfProvisionsPage")
-            }
-            else { //아니라면 바로 홈화면으로 이동
+            } else { //아니라면 바로 홈화면으로 이동
                 Log.d("첫 회원가입 여부 체크", "false")
-                navController.navigate("${Routes.Home}/200")
+                navigateToHome(navController, 200)
             }
-        }catch (e: Exception){
+        } catch (e: Exception) {
             Log.e("내 정보 요청 에러", "readMyInfo: error")
             e.printStackTrace()
         }
     }
 
     var loginStatusCode by mutableStateOf(200)
+
     //로그인
     fun login(navController: NavController) {
         viewModelScope.launch {
@@ -131,57 +135,61 @@ class SocialLoginViewModel @Inject constructor(
 
                     loginStatusCode = response.code()
                     navController.popBackStack("OnBoarding", false) //onboarding까지 전부 삭제.
-
-                    when{
+                    when {
                         //자동로그인 클릭 + 로그인 성공 시 로컬계정 저장
-                        clickedAutoLogin -> saveLocalAccount(navController.context, SharedPreferencesUtil.LocalAccountInfo(userId, userPw))
+                        clickedAutoLogin -> saveLocalAccount(
+                            navController.context,
+                            SharedPreferencesUtil.LocalAccountInfo(userId, userPw)
+                        )
                         //자동로그인 클릭x 시 빈 값 저장
-                        !clickedAutoLogin -> saveLocalAccount(navController.context, SharedPreferencesUtil.LocalAccountInfo("", ""))
+                        !clickedAutoLogin -> saveLocalAccount(
+                            navController.context,
+                            SharedPreferencesUtil.LocalAccountInfo("", "")
+                        )
                     }
-
-                    when(response.code()){
+                    when (response.code()) {
                         202 -> { // 탈퇴유저. 정보 읽지 않고 홈으로 이동.
                             Log.d("유저 상태코드", "${response.code()} 탈퇴 신청 유저 입니다. ")
-                            navController.navigate("HOME/${response.code()}")
+                            navigateToHome(navController, response.code())
                         }
+
                         else -> readMyInfo(navController)// 첫 회원가입 여부 확인하고 화면이동
                     }
-
                 } else {
                     loginStatusCode = response.code()
                     Log.e("login_failed", "$loginStatusCode")
                     Log.e("login_failed", response.message())
                 }
-
             } catch (e: Exception) {
                 e.printStackTrace()
                 Log.e("login_failed", "Failed: ${e.message}")
             }
         }
     }
+
     //앱 버전 확인
-    fun requestAppVersion(context: Context){
+    fun requestAppVersion(context: Context) {
         viewModelScope.launch {
             try {
                 val response = supportApi.requestAppVersion()
-                if (response.isSuccessful){
+                if (response.isSuccessful) {
                     val currentVersion = BuildConfig.VERSION_NAME
                     val latestVersion = response.body()!!.data.versions.android_mobile
 
                     //현재 지금은 테스트중. 둘다 1.0.0
                     if (currentVersion == latestVersion)
                         Log.d("버전 일치 확인", "버전 일치. 최신 버전 : $latestVersion\n현재 버전 : $currentVersion")
-                    else{
+                    else {
                         //버전 불일치 시 플레이 스토어로 이동
                         Log.e("버전 일치 확인", "버전 불일치. 최신 버전 : $latestVersion\n현재 버전 : $currentVersion")
                         val playStoreIntent = Intent(Intent.ACTION_VIEW).apply {
-                            data = Uri.parse("https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}")
+                            data =
+                                Uri.parse("https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}")
                             setPackage("com.android.vending")
                         }
-                        startActivity(context,playStoreIntent, Bundle.EMPTY)
+                        startActivity(context, playStoreIntent, Bundle.EMPTY)
                     }
-                }
-                else{
+                } else {
                     Log.e("앱 버전 체크 실패", "${response.code()}")
                 }
             } catch (e: Exception) {
@@ -190,6 +198,7 @@ class SocialLoginViewModel @Inject constructor(
             }
         }
     }
+
     fun signInWithGoogle(
         launcher: ManagedActivityResultLauncher<Intent, ActivityResult>,
         context: Context
@@ -261,8 +270,7 @@ class SocialLoginViewModel @Inject constructor(
                     Log.d("응답코드로 탈퇴/밴 사용자 여부파악 202 -> 탈퇴신청유저 ", response.code().toString())
                     loginStatusCode = response.code()
                     if (response.code() == 202) // 탈퇴유저. 첫유저일리 없고 정보읽지않고 홈으로이동.
-                        navController.navigate("HOME/${response.code()}")
-
+                        navigateToHome(navController, response.code())
                     else readMyInfo(navController)// 첫 회원가입 여부 확인하고 화면이동
                 } else { //409는 중복. 502는 아예 서버 팅
                     loginStatusCode = response.code()
@@ -276,10 +284,7 @@ class SocialLoginViewModel @Inject constructor(
         }
     }
 
-
     fun handleKaKaoLogin(context: Context, navController: NavController) {
-        // 카카오 로그인 조합 예제
-
         // 카카오계정으로 로그인 공통 callback 구성
         // 카카오톡으로 로그인 할 수 없어 카카오계정으로 로그인할 경우 사용됨
         val callback: (OAuthToken?, Throwable?) -> Unit = { kakaoToken, error ->
@@ -337,9 +342,7 @@ class SocialLoginViewModel @Inject constructor(
                             "\n닉네임: ${user.kakaoAccount?.profile?.nickname}" +
                             "\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}"
                 )
-
                 requestKakaoLogin(navController)
-
             }
         }
     }
@@ -363,9 +366,7 @@ class SocialLoginViewModel @Inject constructor(
                     loginStatusCode = response.code()
 
                     if (response.code() == 202) // 탈퇴유저. 첫유저일리 없고 정보읽지않고 홈으로이동.
-                        navController.navigate("HOME/${response.code()}")
-
-
+                        navigateToHome(navController, response.code())
                     else readMyInfo(navController)// 첫 회원가입 여부 확인하고 화면이동
 
                 } else {
@@ -422,8 +423,10 @@ class SocialLoginViewModel @Inject constructor(
             RESULT_CANCELED -> {
                 // 실패 or 에러
                 Log.d("Naver_errorCode", NaverIdLoginSDK.getLastErrorCode().code)
-                Log.d("Naver_errorDescription", NaverIdLoginSDK.getLastErrorDescription().toString())
-
+                Log.d(
+                    "Naver_errorDescription",
+                    NaverIdLoginSDK.getLastErrorDescription().toString()
+                )
                 // Handle failure accordingly
             }
         }
@@ -474,6 +477,7 @@ class SocialLoginViewModel @Inject constructor(
         }
 
     }
+
     // 네이버 sdk 거친 후에 서버로 카카오인증 토큰,아이디 보내고 홈화면진입
     private fun requestNaverLogin(navController: NavController) {
         viewModelScope.launch {
@@ -489,8 +493,7 @@ class SocialLoginViewModel @Inject constructor(
                     loginStatusCode = response.code()
 
                     if (response.code() == 202) // 탈퇴유저. 첫유저일리 없고 정보읽지않고 홈으로이동.
-                        navController.navigate("HOME/${response.code()}")
-
+                        navigateToHome(navController, response.code())
                     else readMyInfo(navController)// 첫 회원가입 여부 확인하고 화면이동
 
                 } else {
@@ -506,7 +509,7 @@ class SocialLoginViewModel @Inject constructor(
         }
     }
 
-    fun appleLoginHandle(activity : Activity,navController: NavController){
+    fun appleLoginHandle(activity: Activity, navController: NavController) {
         val provider = OAuthProvider.newBuilder("apple.com")
         provider.setScopes(arrayOf("email", "name").toMutableList())
         // Localize the Apple authentication screen in 한국어
@@ -517,7 +520,6 @@ class SocialLoginViewModel @Inject constructor(
             pending.addOnSuccessListener { authResult ->
                 Log.d(TAG, "checkPending:onSuccess:$authResult")
                 val credential = authResult.credential as OAuthCredential //토큰
-
 
                 appleUserToken = credential.idToken!! //아마도 토큰
                 appleUserId = authResult.user!!.uid //고유 아이디
@@ -531,9 +533,9 @@ class SocialLoginViewModel @Inject constructor(
                             "\nPhoneNumber: ${authResult.user!!.phoneNumber}" +//번호
                             "\nProviderId: ${authResult.user!!.providerId}" +// 제공자 파이어베이스
                             "\nProvider: ${authResult.credential!!.provider}" + // apple.com
-                            "\nUid: $appleUserId"+
-                            "\nProviderData: ${authResult.user!!.providerData}"+
-                            "\nsecret : $${credential.secret}"+
+                            "\nUid: $appleUserId" +
+                            "\nProviderData: ${authResult.user!!.providerData}" +
+                            "\nsecret : $${credential.secret}" +
                             "\nid 토큰 굉장히 긴것. : $${credential.idToken}"
 
                 )
@@ -563,22 +565,19 @@ class SocialLoginViewModel @Inject constructor(
                                 "\nPhoneNumber: ${authResult.user!!.phoneNumber}" +//번호
                                 "\nProviderId: ${authResult.user!!.providerId}" +// 제공자 파이어베이스
                                 "\nProvider: ${authResult.credential!!.provider}" + // apple.com
-                                "\nUid: $appleUserId"+
-                                "\nProviderData: ${authResult.user!!.providerData}"+
-                                "\nsecret : $${credential.secret}"+
+                                "\nUid: $appleUserId" +
+                                "\nProviderData: ${authResult.user!!.providerData}" +
+                                "\nsecret : $${credential.secret}" +
                                 "\nid토큰 굉장히 긴것. : $${credential.idToken}"
-
                     )
-
                     requestAppleLogin(navController = navController)
                 }
                 .addOnFailureListener { e ->
                     Log.w(TAG, "activitySignIn:onFailure", e)
                 }
         }
-
-
     }
+
     private fun requestAppleLogin(navController: NavController) {
         viewModelScope.launch {
             try {
@@ -596,8 +595,7 @@ class SocialLoginViewModel @Inject constructor(
                     Log.d(TAG, "requestAppleLogin: ${response.code()}")
                     loginStatusCode = response.code()
                     if (response.code() == 202) // 탈퇴유저. 첫유저일리 없고 정보읽지않고 홈으로이동.
-                        navController.navigate("HOME/${response.code()}")
-
+                        navigateToHome(navController, response.code())
                     else readMyInfo(navController)// 첫 회원가입 여부 확인하고 화면이동
 
                 } else {
@@ -613,7 +611,10 @@ class SocialLoginViewModel @Inject constructor(
         }
     }
 
-    private fun saveLocalAccount(context: Context, localAccountInfo: SharedPreferencesUtil.LocalAccountInfo){
+    private fun saveLocalAccount(
+        context: Context,
+        localAccountInfo: SharedPreferencesUtil.LocalAccountInfo
+    ) {
         SharedPreferencesUtil.saveLocalAccountInfo(context, localAccountInfo)
         SharedPreferencesUtil.saveClickedAutoLogin(context, clickedAutoLogin)
     }
