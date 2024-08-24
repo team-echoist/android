@@ -28,9 +28,11 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -51,6 +53,7 @@ import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.SignUpViewModel
 import kotlinx.coroutines.delay
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TabletSignUpRoute(
     navController: NavHostController,
@@ -59,18 +62,24 @@ fun TabletSignUpRoute(
     val keyboardController = LocalSoftwareKeyboardController.current
     val configuration = LocalConfiguration.current
 
+    val bottomSheetState = rememberStandardBottomSheetState(initialValue = SheetValue.Hidden, skipHiddenState = false)
+    val scaffoldState = androidx.compose.material3.rememberBottomSheetScaffoldState(
+        bottomSheetState = bottomSheetState
+    )
+
     LaunchedEffect(key1 = viewModel.isSignUpApiFinished) {
-        if (viewModel.isSignUpApiFinished) {
-            delay(2000)
+        //이메일 인증 클릭 성공시 모달 올라오게.
+        if (viewModel.isSignUpApiFinished){
+            bottomSheetState.show()
+            delay(3000)
             viewModel.isSignUpApiFinished = false
-            navController.navigate("LoginPage")
         }
     }
 
-    LaunchedEffect(key1 = viewModel.isErr) {
-        if (viewModel.isErr) {
+    LaunchedEffect(key1 = viewModel.errorCode) {
+        if (viewModel.errorCode >= 400){
             delay(2000)
-            viewModel.isErr = false
+            viewModel.errorCode = 200
         }
     }
 
@@ -215,7 +224,7 @@ internal fun TabletSignUpScreen(
                 }
 
                 AnimatedVisibility(
-                    visible = viewModel.isErr,
+                    visible = viewModel.isSignUpApiFinished,
                     enter = fadeIn(
                         animationSpec = tween(
                             durationMillis = 500,
@@ -240,7 +249,7 @@ internal fun TabletSignUpScreen(
                                 .navigationBarsPadding(), contentAlignment = Alignment.BottomCenter
                         ) {
                             SendSignUpFinishedAlert(
-                                { viewModel.isErr = false },
+                                { viewModel.isSignUpApiFinished = false },
                                 "에러가 발생했습니다.",
                                 "사용중인 이메일이거나 비밀번호 조합 오류입니다."
                             )

@@ -74,7 +74,7 @@ fun TabletLoginRoute(
     val configuration = LocalConfiguration.current
 
     LaunchedEffect(key1 = Unit) {
-        viewModel.requestAppVersion()
+        viewModel.requestAppVersion(context)
         viewModel.initializeNaverLogin(context)
     }
 
