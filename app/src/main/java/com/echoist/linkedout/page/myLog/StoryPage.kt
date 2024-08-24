@@ -56,7 +56,6 @@ import androidx.navigation.NavController
 import com.echoist.linkedout.data.RelatedEssay
 import com.echoist.linkedout.formatDateTime
 import com.echoist.linkedout.ui.theme.LinkedInColor
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.MyLogViewModel
 import kotlinx.coroutines.delay
 
@@ -65,25 +64,22 @@ import kotlinx.coroutines.delay
 fun StoryPage(viewModel: MyLogViewModel, navController: NavController) {
     var isApiFinished by remember { mutableStateOf(false) }
 
-    LaunchedEffect(key1 = Unit ) {
+    LaunchedEffect(key1 = Unit) {
         viewModel.readStoryEssayList()
         isApiFinished = true
     }
 
     if (isApiFinished) {
 
-        LinkedOutTheme {
-            Scaffold(topBar = { StoryTopAppBar(navController) }, bottomBar = {})
-            {
-                Column(Modifier.padding(it)) {
-                    StoryTitleTextField(viewModel)
-                    StoryEssayListScreen(viewModel, navController)
-                }
+
+        Scaffold(topBar = { StoryTopAppBar(navController) }, bottomBar = {})
+        {
+            Column(Modifier.padding(it)) {
+                StoryTitleTextField(viewModel)
+                StoryEssayListScreen(viewModel, navController)
             }
         }
     }
-
-
 }
 
 
@@ -94,7 +90,12 @@ fun StoryTopAppBar(navController: NavController) {
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
         title = {
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                Text(text = "스토리 만들기", fontWeight = FontWeight.Bold, textAlign = TextAlign.Center, fontSize = 16.sp)
+                Text(
+                    text = "스토리 만들기",
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    fontSize = 16.sp
+                )
             }
         },
         navigationIcon = {
@@ -109,10 +110,11 @@ fun StoryTopAppBar(navController: NavController) {
                     },
                 tint = Color.White
             )
-        }, actions = { Box(modifier = Modifier.size(30.dp))}
+        }, actions = { Box(modifier = Modifier.size(30.dp)) }
 
     )
 }
+
 //todo 스토리 수정하기들어갔을때 리스트값이 없는데 전체 1개 표시됨.
 @Composable
 fun StoryTitleTextField(viewModel: MyLogViewModel) {
@@ -166,7 +168,11 @@ fun EssayItem(
     ) {
         Column {
             Text(text = essayItem.title, fontSize = 14.sp)
-            Text(text = formatDateTime(essayItem.createdDate), fontSize = 10.sp, color = Color(0xFF727070))
+            Text(
+                text = formatDateTime(essayItem.createdDate),
+                fontSize = 10.sp,
+                color = Color(0xFF727070)
+            )
         }
         IconButton(onClick = { onItemSelected(!isSelected) }) {
             Icon(
@@ -177,10 +183,12 @@ fun EssayItem(
         }
     }
 }
+
 @SuppressLint("MutableCollectionMutableState")
 @Composable
 fun StoryEssayListScreen(viewModel: MyLogViewModel, navController: NavController) {
-    val essayItems = if (viewModel.isCreateStory) viewModel.createStoryEssayItems else viewModel.modifyStoryEssayItems
+    val essayItems =
+        if (viewModel.isCreateStory) viewModel.createStoryEssayItems else viewModel.modifyStoryEssayItems
 
     val listState = rememberLazyListState()
     LaunchedEffect(listState) {
@@ -194,14 +202,14 @@ fun StoryEssayListScreen(viewModel: MyLogViewModel, navController: NavController
             }
     }
 
-    var isFunFinished by remember{ mutableStateOf(false) }
-    LaunchedEffect(key1 = Unit ) {
+    var isFunFinished by remember { mutableStateOf(false) }
+    LaunchedEffect(key1 = Unit) {
         delay(100)
         isFunFinished = true
     }
     val essayIdList by remember { mutableStateOf(mutableListOf<Int>()) }
 
-    if (isFunFinished){
+    if (isFunFinished) {
         var selectedItems by remember { mutableStateOf(viewModel.findEssayInStory().toSet()) }
 
         val annotatedString = remember {
@@ -288,16 +296,15 @@ fun StoryEssayListScreen(viewModel: MyLogViewModel, navController: NavController
             val containerColor =
                 if (viewModel.storyTextFieldTitle.isNotEmpty()) LinkedInColor else Color(0xFF868686)
             //에세이 스토리 추가버튼
-            Box(modifier = Modifier.navigationBarsPadding()){
+            Box(modifier = Modifier.navigationBarsPadding()) {
                 Button(
                     onClick = {
                         if (viewModel.storyTextFieldTitle.isNotEmpty()) {
-                            if (viewModel.isCreateStory){ //스토리 생성
-                                viewModel.createStory(navController,essayIdList)
+                            if (viewModel.isCreateStory) { //스토리 생성
+                                viewModel.createStory(navController, essayIdList)
                                 Log.d("에세이 수정테스트", "스토리 생성입니다.: $selectedItems")
-                            }
-                            else{ // 스토리 수정
-                                viewModel.modifyStory(navController,essayIdList)
+                            } else { // 스토리 수정
+                                viewModel.modifyStory(navController, essayIdList)
                                 Log.d("에세이 수정테스트", "스토리 수정입니다.: $selectedItems")
 
                             }
@@ -310,7 +317,7 @@ fun StoryEssayListScreen(viewModel: MyLogViewModel, navController: NavController
                     colors = ButtonDefaults.buttonColors(containerColor = containerColor),
                     shape = RoundedCornerShape(20)
                 ) {
-                    Text("총 ${selectedItems.size}개의 글 모으기",color = Color.Black)
+                    Text("총 ${selectedItems.size}개의 글 모으기", color = Color.Black)
                 }
             }
 

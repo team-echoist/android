@@ -79,6 +79,7 @@ class HomeViewModel @Inject constructor(
 
             val response = userApi.getMyInfo(bearerAccessToken,Token.refreshToken)
 
+
             Log.d("헤더 토큰", Token.accessToken)
             exampleItems.myProfile = response.data.user
             exampleItems.myProfile.essayStats = response.data.essayStats
@@ -320,6 +321,8 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val response = userApi.requestUserGraphSummary(bearerAccessToken,Token.refreshToken)
+                Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+
                 if (response.isSuccessful){
 
                     repeat(5){
@@ -372,6 +375,8 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val response = supportApi.readGeulroquis(bearerAccessToken,Token.refreshToken)
+                Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+
                 if (response.isSuccessful){
                     Log.d("글로키 api", "성공: ${response.body()!!.data.url}")
                     geulRoquisUrl = response.body()!!.data.url

@@ -48,7 +48,6 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.ui.theme.LinkedInColor
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.WritingViewModel
 
 
@@ -58,43 +57,44 @@ fun TemporaryStoragePage(navController: NavController, viewModel: WritingViewMod
     var selectedItems by remember { mutableStateOf<Set<EssayApi.EssayItem>>(emptySet()) }
 
     // 데이터 로드를 위한 remember와 LaunchedEffect
-    val storageEssaysList by remember { mutableStateOf(viewModel.storageEssaysList)  }
+    val storageEssaysList by remember { mutableStateOf(viewModel.storageEssaysList) }
     LaunchedEffect(Unit) {
         viewModel.getAllStoredData()
     }
 
-    LinkedOutTheme {
-        Scaffold(topBar = {
-            StorageTopAppBar(
-                navController = navController,
-                onModifyClicked = { isModifyClicked = !isModifyClicked },
-                isModifyClicked = isModifyClicked
-            )
-        }) {
-            Column(Modifier.padding(it)) {
-                StorageWritingEssay(viewModel.title.value.text, viewModel.getCurrentDate())
-                if (isModifyClicked) {
-                    StorageSelectBox(viewModel.storageEssaysList)
-                } else {
-                    Spacer(modifier = Modifier.height(20.dp))
-                }
-                StorageEssayList(
-                    essayList = storageEssaysList,
-                    isModifyClicked = isModifyClicked,
-                    selectedItems = selectedItems,
-                    onSelectionChange = { selectedItems = it },
-                    viewModel = viewModel,
-                    navController = navController,
-                    modifier = Modifier.weight(7f)
-                )
-                val btnColor = if (selectedItems.isEmpty()) Color(0xFF868686) else LinkedInColor
-                val selectedIds = selectedItems.map { it.essayPrimaryId }
-                DeleteBtn(count = selectedItems.size,
-                    onDeleteClicked = {
-                    viewModel.deleteEssays(selectedIds)
-                        Log.d(TAG, "TemporaryStoragePage: $selectedIds")
-                    selectedItems = emptySet() }, btnColor = btnColor)
+
+    Scaffold(topBar = {
+        StorageTopAppBar(
+            navController = navController,
+            onModifyClicked = { isModifyClicked = !isModifyClicked },
+            isModifyClicked = isModifyClicked
+        )
+    }) {
+        Column(Modifier.padding(it)) {
+            StorageWritingEssay(viewModel.title.value.text, viewModel.getCurrentDate())
+            if (isModifyClicked) {
+                StorageSelectBox(viewModel.storageEssaysList)
+            } else {
+                Spacer(modifier = Modifier.height(20.dp))
             }
+            StorageEssayList(
+                essayList = storageEssaysList,
+                isModifyClicked = isModifyClicked,
+                selectedItems = selectedItems,
+                onSelectionChange = { selectedItems = it },
+                viewModel = viewModel,
+                navController = navController,
+                modifier = Modifier.weight(7f)
+            )
+            val btnColor = if (selectedItems.isEmpty()) Color(0xFF868686) else LinkedInColor
+            val selectedIds = selectedItems.map { it.essayPrimaryId }
+            DeleteBtn(count = selectedItems.size,
+                onDeleteClicked = {
+                    viewModel.deleteEssays(selectedIds)
+                    Log.d(TAG, "TemporaryStoragePage: $selectedIds")
+                    selectedItems = emptySet()
+                }, btnColor = btnColor
+            )
         }
     }
 }
@@ -124,7 +124,10 @@ fun StorageTopAppBar(
             }
         },
         actions = {
-            Text(text = text, color = Color.White, modifier = Modifier.clickable { onModifyClicked() })
+            Text(
+                text = text,
+                color = Color.White,
+                modifier = Modifier.clickable { onModifyClicked() })
         },
         navigationIcon = {
             Icon(
@@ -142,7 +145,7 @@ fun StorageTopAppBar(
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun StorageWritingEssay(title : String, createdDate : String) {
+fun StorageWritingEssay(title: String, createdDate: String) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -161,13 +164,17 @@ fun StorageWritingEssay(title : String, createdDate : String) {
                 )
             }
             Spacer(modifier = Modifier.width(20.dp))
-            GlideImage(model = R.drawable.chip_writing, contentDescription = "작성중 chip", modifier = Modifier.size(40.dp,18.dp))
+            GlideImage(
+                model = R.drawable.chip_writing,
+                contentDescription = "작성중 chip",
+                modifier = Modifier.size(40.dp, 18.dp)
+            )
         }
     }
 }
 
 @Composable
-fun StorageSelectBox(storageEssayList : List<EssayApi.EssayItem>) {
+fun StorageSelectBox(storageEssayList: List<EssayApi.EssayItem>) {
 
     Row(
         Modifier
@@ -175,7 +182,7 @@ fun StorageSelectBox(storageEssayList : List<EssayApi.EssayItem>) {
             .height(61.dp)
             .padding(horizontal = 35.dp), verticalAlignment = Alignment.CenterVertically
     ) {
-        Row (Modifier.weight(8f)){
+        Row(Modifier.weight(8f)) {
             Text(text = "전체 ", color = Color.White)
             Text(text = "${storageEssayList.size} ", color = LinkedInColor)
             Text(text = "개 ", color = Color.White)
@@ -203,21 +210,24 @@ fun StorageEssayItem(
 ) {
     val color = if (isSelected) LinkedInColor else Color(0xFF252525)
 
-    Box( modifier = Modifier
+    Box(modifier = Modifier
         .padding(horizontal = 35.dp)
         .fillMaxWidth()
         .clickable { if (!isModifyClicked) isEssayClicked() } //수정 상태가 아닐 때만 클릭 가능
-        .height(73.dp)){
+        .height(73.dp)) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.clickable  { onItemSelected(!isSelected) }
+            modifier = Modifier.clickable { onItemSelected(!isSelected) }
         ) {
             Column(
                 Modifier
                     .weight(8f),
                 verticalArrangement = Arrangement.Center
             ) {
-                Text(text = essayItem.title!!, color = Color.White) // Added color to match the theme
+                Text(
+                    text = essayItem.title!!,
+                    color = Color.White
+                ) // Added color to match the theme
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = essayItem.createdDate!!, fontSize = 10.sp,
@@ -225,7 +235,7 @@ fun StorageEssayItem(
                     color = Color(0xFF727070),
                 )
             }
-            if (isModifyClicked){
+            if (isModifyClicked) {
                 IconButton(onClick = { onItemSelected(!isSelected) }) {
                     Icon(
                         imageVector = Icons.Default.CheckCircle,
@@ -238,9 +248,11 @@ fun StorageEssayItem(
 
         }
         if (isModifyClicked && !isSelected) {
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(0.4f)))
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(0.4f))
+            )
 
         }
     }
@@ -273,7 +285,7 @@ fun StorageEssayList(
                         selectedItems - item
                     }
                     onSelectionChange(newSelectedItems)
-                },{viewModel.getEssayById(item.essayPrimaryId!!,navController)}
+                }, { viewModel.getEssayById(item.essayPrimaryId, navController) }
             )
         }
 

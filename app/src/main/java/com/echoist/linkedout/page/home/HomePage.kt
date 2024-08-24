@@ -98,7 +98,6 @@ import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.getCurrentDateFormatted
 import com.echoist.linkedout.page.myLog.Token
 import com.echoist.linkedout.ui.theme.LinkedInColor
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.HomeViewModel
 import com.echoist.linkedout.viewModels.WritingViewModel
 import com.github.mikephil.charting.charts.LineChart
@@ -111,9 +110,15 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewModel : WritingViewModel, statusCode : Int) {
+fun HomePage(
+    navController: NavController,
+    viewModel: HomeViewModel,
+    writingViewModel: WritingViewModel,
+    statusCode: Int
+) {
 
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp // 화면의 높이를 DP 단위로 가져옴
@@ -121,10 +126,10 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewMo
 
 
     Log.d("유저의 상태코드", statusCode.toString())
-    Log.d("header token by autoLogin: in home","${Token.accessToken} \n ${Token.refreshToken}")
+    Log.d("header token by autoLogin: in home", "${Token.accessToken} \n ${Token.refreshToken}")
     var userStatus by remember { mutableStateOf(UserStatus.Activated) }
 
-    userStatus = when(statusCode){
+    userStatus = when (statusCode) {
         202 -> UserStatus.DeActivated
         403 -> UserStatus.Banned
         else -> UserStatus.Activated //todo 현재 202만 탈퇴유저 밴, 관찰유저, 등등 추가예정
@@ -147,130 +152,148 @@ fun HomePage(navController: NavController,viewModel: HomeViewModel,writingViewMo
         drawerState = drawerState,
         drawerContent = {
 
-            ModalBottomSheetContent(viewModel = viewModel,navController)
+            ModalBottomSheetContent(viewModel = viewModel, navController)
         },
     ) {
-            LinkedOutTheme(navController = navController) {
 
-                Scaffold(
-                    topBar = {
+            Scaffold(
+                topBar = {
 
-                        CustomTopAppBar( {
-                            scope.launch {
-                                drawerState.apply {
-                                    if (isClosed) open() else close()
-                                }
+                    CustomTopAppBar({
+                        scope.launch {
+                            drawerState.apply {
+                                if (isClosed) open() else close()
                             }
-                        },{navController.navigate("NotificationPage")},
-                            viewModel.isExistUnreadAlerts)
-                        {
-                            viewModel.isFirstUser = true //튜토리얼 화면띄우기위함
                         }
-                    },
-                    bottomBar = { MyBottomNavigation(navController) },
-                    floatingActionButton = { WriteFTB(navController,viewModel,writingViewModel) },
-                    content = {
-                        Column(modifier = Modifier.padding(it)) {
-
-                        }
-                        Box(modifier = Modifier.fillMaxSize()){
-                            GlideImage(
-                                model = R.drawable.home_basic,
-                                contentDescription = "home_img",
-                                modifier = Modifier.fillMaxSize(),
-                                contentScale = ContentScale.FillWidth
-                            )
-
-                        }
+                    }, { navController.navigate("NotificationPage") },
+                        viewModel.isExistUnreadAlerts
+                    )
+                    {
+                        viewModel.isFirstUser = true //튜토리얼 화면띄우기위함
                     }
+                },
+                bottomBar = { MyBottomNavigation(navController) },
+                floatingActionButton = { WriteFTB(navController, viewModel, writingViewModel) },
+                content = {
+                    Column(modifier = Modifier.padding(it)) {
+
+                    }
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        GlideImage(
+                            model = R.drawable.home_basic,
+                            contentDescription = "home_img",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.FillWidth
+                        )
+
+                    }
+                }
+            )
+        }
+        //터치 효과 x
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 165.dp, bottom = 130.dp), contentAlignment = Alignment.Center
+        ) {
+            Box(
+                Modifier
+                    .size(80.dp)
+                    .clickable { viewModel.isVisibleGeulRoquis = true }) {
+                GlideImage( //전구 클릭하면 글로키 On
+                    model = TUTORIAL_BULB,
+                    contentDescription = "bulb_img",
+                    modifier = Modifier
+                        .size(80.dp)
                 )
             }
-            //터치 효과 x
 
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .padding(start = 165.dp, bottom = 130.dp), contentAlignment = Alignment.Center){
-                    Box(
-                        Modifier
-                            .size(80.dp)
-                            .clickable() { viewModel.isVisibleGeulRoquis = true }){
-                        GlideImage( //전구 클릭하면 글로키 On
-                            model = TUTORIAL_BULB,
-                            contentDescription = "bulb_img",
-                            modifier = Modifier
-                                .size(80.dp)
-                        )
-                    }
+        }
 
-                }
-
-            AnimatedVisibility(
-                visible = viewModel.isVisibleGeulRoquis && !viewModel.isFirstUser, //튜토리얼을 건너뛰어야 글로키를 볼수있음
-                enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)),
-                exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
-            ){
-                Box(modifier = Modifier
+        AnimatedVisibility(
+            visible = viewModel.isVisibleGeulRoquis && !viewModel.isFirstUser, //튜토리얼을 건너뛰어야 글로키를 볼수있음
+            enter = fadeIn(
+                animationSpec = tween(
+                    durationMillis = 500,
+                    easing = FastOutSlowInEasing
+                )
+            ),
+            exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
+        ) {
+            Box(
+                modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center){
-                    GeulRoquis(
-                        isHoldClicked = {viewModel.isVisibleGeulRoquis = false},
-                        isAcceptClicked = {
-                            writingViewModel.title.value = TextFieldValue("${getCurrentDateFormatted()} GeulRoquis")
-                            writingViewModel.hint = ("글로키란? : 글(geul)과 크로키(croquis)의 합성어로 글을 본격적으로 쓰기 전, 주어진 상황을 묘사하거나 상상을 덧대어 빠르게 스케치 하듯이 글을 쓰는 몸풀기를 말합니다. ")
-                            writingViewModel.imageUrl = viewModel.geulRoquisUrl
-                            navController.navigate("WritingPage")
-                            viewModel.isVisibleGeulRoquis = false
-                        },viewModel)
+                    .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center
+            ) {
+                GeulRoquis(
+                    isHoldClicked = { viewModel.isVisibleGeulRoquis = false },
+                    isAcceptClicked = {
+                        writingViewModel.title.value =
+                            TextFieldValue("${getCurrentDateFormatted()} GeulRoquis")
+                        writingViewModel.hint =
+                            ("글로키란? : 글(geul)과 크로키(croquis)의 합성어로 글을 본격적으로 쓰기 전, 주어진 상황을 묘사하거나 상상을 덧대어 빠르게 스케치 하듯이 글을 쓰는 몸풀기를 말합니다. ")
+                        writingViewModel.imageUrl = viewModel.geulRoquisUrl
+                        navController.navigate("WritingPage")
+                        viewModel.isVisibleGeulRoquis = false
+                    }, viewModel
+                )
+            }
+        }
+
+        if (viewModel.isFirstUser) { // 첫 회원이라면
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(0.7f))
+            )
+            TutorialPage(
+                isCloseClicked = {
+                    viewModel.isFirstUser = false
+                    viewModel.setFirstUserToExistUser()
+                },
+                isSkipClicked = {
+                    viewModel.isFirstUser = false
+                    viewModel.setFirstUserToExistUser()
+                })
+        }
+        if (userStatus == UserStatus.DeActivated) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center
+            )
+            {
+                ReactivateOrDeleteBox(
+                    isClickedReActivate = {
+                        viewModel.requestUserReActivate()
+                        userStatus = UserStatus.Activated
+                    })
+                {
+                    viewModel.requestUserDelete(navController)
                 }
             }
-
-            if (viewModel.isFirstUser){ // 첫 회원이라면
-                Box(modifier = Modifier
+        }
+        if (viewModel.latestNoticeId != null) { //id값
+            Box(
+                modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Black.copy(0.7f)))
-                TutorialPage(
-                    isCloseClicked = {
-                        viewModel.isFirstUser = false
-                        viewModel.setFirstUserToExistUser()
-                    },
-                    isSkipClicked = {
-                        viewModel.isFirstUser = false
-                        viewModel.setFirstUserToExistUser()
+                    .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center
+            )
+            {
+                Notice_Main(isClickedClose = {
+                    viewModel.latestNoticeId = null
+                },
+                    isClickedOpened = {
+                        viewModel.requestDetailNotice(viewModel.latestNoticeId!!, navController)
                     })
             }
-            if (userStatus == UserStatus.DeActivated){
-                Box(modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center)
-                {
-                    ReactivateOrDeleteBox(
-                        isClickedReActivate = {
-                            viewModel.requestUserReActivate()
-                            userStatus = UserStatus.Activated
-                        })
-                    {
-                        viewModel.requestUserDelete(navController)
-                    }
-                }
-            }
-            if (viewModel.latestNoticeId != null){ //id값
-                Box(modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center)
-                {
-                    Notice_Main(isClickedClose = {
-                        viewModel.latestNoticeId = null
-                    },
-                        isClickedOpened = {
-                            viewModel.requestDetailNotice(viewModel.latestNoticeId!!,navController)
-                        })
-                }
-            }
         }
-        }
+    }
+
 
 @Composable
-fun ModalBottomSheetContent(viewModel: HomeViewModel,navController: NavController){
+fun ModalBottomSheetContent(viewModel: HomeViewModel, navController: NavController) {
     var isLogoutClicked by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
     val context = LocalContext.current
@@ -281,7 +304,7 @@ fun ModalBottomSheetContent(viewModel: HomeViewModel,navController: NavControlle
         drawerContainerColor = Color(0xFF121212)
     ) {
         Column(Modifier.verticalScroll(scrollState)) {
-            MyProfile(item = viewModel.getMyInfo()){navController.navigate("SETTINGS")}
+            MyProfile(item = viewModel.getMyInfo()) { navController.navigate("SETTINGS") }
             HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
             MyLinkedOutBar()
             LineChartExample(essayCounts = viewModel.essayCount)
@@ -289,12 +312,12 @@ fun ModalBottomSheetContent(viewModel: HomeViewModel,navController: NavControlle
             HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
             ShopDrawerItem()
             HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
-            MyDrawableItem("화면 설정") {navController.navigate("DarkModeSettingPage")}
-            MyDrawableItem("환경 설정") {navController.navigate("notificationSettingPage")}
-            MyDrawableItem("고객지원") {navController.navigate("SupportPage")}
-            MyDrawableItem("업데이트 기록") {navController.navigate("UpdateHistoryPage")}
+            MyDrawableItem("화면 설정") { navController.navigate("DarkModeSettingPage") }
+            MyDrawableItem("환경 설정") { navController.navigate("notificationSettingPage") }
+            MyDrawableItem("고객지원") { navController.navigate("SupportPage") }
+            MyDrawableItem("업데이트 기록") { navController.navigate("UpdateHistoryPage") }
 
-            LogoutBtn{isLogoutClicked = true} //todo logout 기능 만들기
+            LogoutBtn { isLogoutClicked = true } //todo logout 기능 만들기
             // ...other drawer items
         }
 
@@ -309,23 +332,29 @@ fun ModalBottomSheetContent(viewModel: HomeViewModel,navController: NavControlle
             targetOffsetY = { 2000 },
             animationSpec = tween(durationMillis = 500)
         )
-    ){
+    ) {
         LogoutBox(
-            isCancelClicked = { isLogoutClicked = false},
-            isLogoutClicked = { isLogoutClicked = false
+            isCancelClicked = { isLogoutClicked = false },
+            isLogoutClicked = {
+                isLogoutClicked = false
                 navController.navigate(Routes.LoginPage) {
                     // 기존의 모든 백스택을 제거하고 login 루트로 설정
                     popUpTo(navController.graph.startDestinationId) { inclusive = true }
                     launchSingleTop = true
                 }
                 //로컬 자동로그인, id pw 값 초기화
-                SharedPreferencesUtil.saveClickedAutoLogin(context,false)}
+                SharedPreferencesUtil.saveClickedAutoLogin(context, false)
+            }
         )
     }
 }
 
 @Composable
-fun WriteFTB(navController: NavController,viewModel: HomeViewModel,writingViewModel: WritingViewModel) {
+fun WriteFTB(
+    navController: NavController,
+    viewModel: HomeViewModel,
+    writingViewModel: WritingViewModel
+) {
 
 
     FloatingActionButton(
@@ -336,7 +365,7 @@ fun WriteFTB(navController: NavController,viewModel: HomeViewModel,writingViewMo
             viewModel.setStorageEssay(EssayApi.EssayItem())
             writingViewModel.isModifyClicked = false
             writingViewModel.initialize()
-                  },
+        },
         shape = RoundedCornerShape(100.dp),
         containerColor = Color.White
     ) {
@@ -351,7 +380,12 @@ fun WriteFTB(navController: NavController,viewModel: HomeViewModel,writingViewMo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CustomTopAppBar(onClick: () -> Unit,onClickNotification : ()->Unit,isExistUnreadAlerts : Boolean,isClickedTutorial : ()-> Unit) {
+fun CustomTopAppBar(
+    onClick: () -> Unit,
+    onClickNotification: () -> Unit,
+    isExistUnreadAlerts: Boolean,
+    isClickedTutorial: () -> Unit
+) {
     val img = if (isExistUnreadAlerts) R.drawable.icon_noti_on else R.drawable.icon_noti_off
     TopAppBar(
         title = { }, colors = TopAppBarDefaults.topAppBarColors(Color.Transparent),
@@ -421,7 +455,11 @@ fun MyBottomNavigation(navController: NavController) {
                         painter = painterResource(id = item.icon),
                         contentDescription = item.title,
                         modifier = Modifier.size(32.dp),
-                        tint = if (isRouteSelected(currentRoute, item.screenRoute)) Color.White else Color(0xFF686868)
+                        tint = if (isRouteSelected(
+                                currentRoute,
+                                item.screenRoute
+                            )
+                        ) Color.White else Color(0xFF686868)
                     )
                 }
             )
@@ -438,59 +476,62 @@ private fun isRouteSelected(currentRoute: String?, screenRoute: String): Boolean
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun MyProfile(item: UserInfo, onClick: () -> Unit) {
-    LinkedOutTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(160.dp)
-                .padding(20.dp)
-                .clickable { onClick() }
-            , contentAlignment = Alignment.BottomCenter
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(160.dp)
+            .padding(20.dp)
+            .clickable { onClick() }, contentAlignment = Alignment.BottomCenter
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(CircleShape)
+            ) {
+                GlideImage(
+                    model = item.profileImage,
+                    contentDescription = "profileImage",
                     modifier = Modifier
-                        .size(80.dp)
-                        .clip(CircleShape)
-                ) {
-                    GlideImage(
-                        model = item.profileImage,
-                        contentDescription = "profileImage",
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .graphicsLayer {
-                                // 이미지를 원 중앙에 정렬
-                                clip = true
-                                shape = CircleShape
-                            },
-                        contentScale = ContentScale.Crop // 이미지를 자르고 원에 맞게 보여줍니다.
-                    )
-                }
-                Spacer(modifier = Modifier.width(20.dp))
-                Column(Modifier.weight(7f)) {
-                    Row {
-                        Text(text = item.nickname ?: "", color = Color(0xFF616FED))
-                        Text(text = " 아무개", color = Color.White)
-                    }
-                    Spacer(modifier = Modifier.height(7.dp))
-                    Text(text = "${calculateDaysDifference(item.createdDate ?: "2024-08-19T19:31:18.945+09:00")}일째 링크드 아웃!", color = Color(0xFF686868), fontSize = 12.sp)
-                }
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
-                    contentDescription = "go",
-                    tint = Color(0xFF686868)
+                        .fillMaxSize()
+                        .graphicsLayer {
+                            // 이미지를 원 중앙에 정렬
+                            clip = true
+                            shape = CircleShape
+                        },
+                    contentScale = ContentScale.Crop // 이미지를 자르고 원에 맞게 보여줍니다.
                 )
             }
+            Spacer(modifier = Modifier.width(20.dp))
+            Column(Modifier.weight(7f)) {
+                Row {
+                    Text(text = item.nickname ?: "", color = Color(0xFF616FED))
+                    Text(text = " 아무개", color = Color.White)
+                }
+                Spacer(modifier = Modifier.height(7.dp))
+                Text(
+                    text = "${calculateDaysDifference(item.createdDate ?: "2024-08-19T19:31:18.945+09:00")}일째 링크드 아웃!",
+                    color = Color(0xFF686868),
+                    fontSize = 12.sp
+                )
+            }
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                contentDescription = "go",
+                tint = Color(0xFF686868)
+            )
         }
     }
-
 }
+
 
 @Composable
 fun LineChartExample(modifier: Modifier = Modifier, essayCounts: List<Int>) {
     val lineData = createLineData(essayCounts)
     // 현재 달을 가져옴
-    val currentMonth = LocalDate.now().month.getDisplayName(java.time.format.TextStyle.SHORT, Locale.getDefault())
+    val currentMonth =
+        LocalDate.now().month.getDisplayName(java.time.format.TextStyle.SHORT, Locale.getDefault())
 
 
     AndroidView(
@@ -504,7 +545,8 @@ fun LineChartExample(modifier: Modifier = Modifier, essayCounts: List<Int>) {
                 xAxis.position = XAxis.XAxisPosition.BOTTOM
                 xAxis.setDrawGridLines(false)
                 xAxis.textColor = 0xFF616FED.toInt() //링크드아웃 컬러
-                xAxis.valueFormatter = IndexAxisValueFormatter(arrayOf("", currentMonth, "", "", "이번 주"))
+                xAxis.valueFormatter =
+                    IndexAxisValueFormatter(arrayOf("", currentMonth, "", "", "이번 주"))
                 xAxis.granularity = 1f
                 xAxis.labelCount = 5
                 xAxis.setDrawAxisLine(false)
@@ -545,7 +587,7 @@ fun createLineData(essayCounts: List<Int>): LineData {
         setDrawCircles(true)
         setDrawValues(false)
         setDrawIcons(false)
-        
+
 
     }
 
@@ -554,287 +596,299 @@ fun createLineData(essayCounts: List<Int>): LineData {
 
 
 @Composable
-fun MyLinkedOutBar(){
+fun MyLinkedOutBar() {
     val currentDate = LocalDate.now()
     val formattedDate = currentDate.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"))
 
-    LinkedOutTheme {
-        Box(modifier = Modifier
+
+    Box(
+        modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp)
-            .height(60.dp)){
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart){
-                Text(text = "주간 링크드아웃 지수", fontSize = 10.sp, color = Color.White)
-            }
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
-                Text(text = "$formattedDate 현재", fontSize = 10.sp, color = Color(0xFF686868))
-            }
+            .height(60.dp)
+    ) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart) {
+            Text(text = "주간 링크드아웃 지수", fontSize = 10.sp, color = Color.White)
+        }
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
+            Text(text = "$formattedDate 현재", fontSize = 10.sp, color = Color(0xFF686868))
         }
     }
-
-    
 }
 
 @Composable
-fun MyDrawableItem(text : String , onClick: () -> Unit) {
-    LinkedOutTheme {
-        NavigationDrawerItem(
-            modifier = Modifier.height(70.dp),
-            label = {
-                Text(text = text, color = Color(0xFF797979))
-            },
-            selected = false,
-            onClick = { onClick() },
-        )
-    }
+fun MyDrawableItem(text: String, onClick: () -> Unit) {
 
+    NavigationDrawerItem(
+        modifier = Modifier.height(70.dp),
+        label = {
+            Text(text = text, color = Color(0xFF797979))
+        },
+        selected = false,
+        onClick = { onClick() },
+    )
 }
 
 @Preview
 @Composable
 fun ShopDrawerItem() {
-    LinkedOutTheme {
-        NavigationDrawerItem(
-            modifier = Modifier.height(80.dp),
-            label = {
-                Text(text = "상점", color = Color.White, fontWeight = FontWeight.SemiBold)
-            },
-            selected = false,
-            onClick = { },
-            badge = {
-                Box(modifier = Modifier
+
+    NavigationDrawerItem(
+        modifier = Modifier.height(80.dp),
+        label = {
+            Text(text = "상점", color = Color.White, fontWeight = FontWeight.SemiBold)
+        },
+        selected = false,
+        onClick = { },
+        badge = {
+            Box(
+                modifier = Modifier
                     .size(60.dp, 24.dp)
-                    .background(Color(0xFF191919), shape = RoundedCornerShape(40)), contentAlignment = Alignment.Center){
-                    Text(text = "  준비중  ", fontWeight = FontWeight.SemiBold, color = LinkedInColor, fontSize = 12.sp )
-
-                }
-            }
-
-        )
-    }
-
-}
-
-@Composable
-fun LogoutBtn( isLogoutClicked :()-> Unit){
-    LinkedOutTheme {
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(bottom = 70.dp, end = 20.dp), contentAlignment = Alignment.BottomEnd){
-            Box(
-                modifier = Modifier
-                    .size(80.dp, 36.dp)
-                    .background(Color(0xFF191919), shape = RoundedCornerShape(20))
-                    .clickable { isLogoutClicked() },
+                    .background(Color(0xFF191919), shape = RoundedCornerShape(40)),
                 contentAlignment = Alignment.Center
-            ){
-                Text(text = "로그아웃", fontSize = 12.sp, color = Color(0xFF606060))
-            }
-        }
-    }
-
-}
-
-@Composable
-fun LogoutBox( isCancelClicked: () ->Unit, isLogoutClicked: () -> Unit){
-    LinkedOutTheme {
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(bottom = 10.dp)
-            .background(Color.Black.copy(0.4f)))
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter){
-            Box(modifier = Modifier
-                .fillMaxWidth()
-                .background(Color(0xFF121212), shape = RoundedCornerShape(10))
-                .height(243.dp), contentAlignment = Alignment.Center){
-                Column(
-                    modifier = Modifier.padding(20.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(text = "로그아웃하시겠습니까?", color = Color.White, fontWeight = FontWeight.SemiBold)
-                    Spacer(modifier = Modifier.height(48.dp))
-                    Row {
-                        Button(
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(
-                                    0xFF868686
-                                )
-                            ),
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(61.dp),
-                            onClick = { isCancelClicked() },
-                            shape = RoundedCornerShape(20)
-                        ) {
-                            Text(text = "취소", color = Color.Black,fontWeight = FontWeight.SemiBold)
-
-                        }
-                        Spacer(modifier = Modifier.width(10.dp))
-                        Button(
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF616FED)),
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(61.dp),
-                            onClick = { isLogoutClicked()
-                                /*TODO*/ },
-                            shape = RoundedCornerShape(20)
-                        ) {
-                            Text(text = "로그아웃", color = Color.Black, fontWeight = FontWeight.SemiBold)
-
-                        }
-                    }
-
-                }
-            }
-        }
-    }
-
-}
-
-@Composable
-fun TutorialPage(isCloseClicked: () -> Unit,isSkipClicked : ()->Unit){
-    val pagerstate = rememberPagerState { 4 }
-    val coroutineScope = rememberCoroutineScope()
-    LinkedOutTheme {
-        HorizontalPager(state = pagerstate, modifier = Modifier.fillMaxSize()) { page ->
-            when (page) {
-                0 -> Tutorial_1()
-
-
-                1 ->
-                    Tutorial_2(draggedToLeft = {
-                        coroutineScope.launch {
-                            pagerstate.animateScrollToPage(0,
-                                animationSpec = tween(
-                                    durationMillis = 600,
-                                    easing = FastOutSlowInEasing
-                                )
-                            )
-
-                        }
-                    }, isTutorial3Clicked = {
-                        coroutineScope.launch {
-                            pagerstate.animateScrollToPage(2,
-                                animationSpec = tween(
-                                    durationMillis = 600,
-                                    easing = FastOutSlowInEasing
-                                )
-                            )
-
-                        }
-                    })
-
-                2 ->
-                    Tutorial_3(draggedToLeft = {
-                        coroutineScope.launch {
-                            pagerstate.animateScrollToPage(1,
-                                animationSpec = tween(
-                                    durationMillis = 600,
-                                    easing = FastOutSlowInEasing
-                                )
-                            )
-
-                        }
-                    })
-
-
-
-                3 ->
-                    Tutorial_4(){
-                        isCloseClicked()
-                    }
-            }
-        }
-        if (pagerstate.currentPage != 3) {
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 150.dp, end = 20.dp), contentAlignment = Alignment.TopEnd
             ) {
                 Text(
-                    text = "건너뛰기 >>",
-                    modifier = Modifier.clickable { isSkipClicked() },
-                    style = TextStyle(
-                        fontSize = 14.sp,
-                        lineHeight = 21.sp,
-                        color = Color(0xFF929292),
-                        textAlign = TextAlign.Center,
-                        textDecoration = TextDecoration.Underline,
-                    )
+                    text = "  준비중  ",
+                    fontWeight = FontWeight.SemiBold,
+                    color = LinkedInColor,
+                    fontSize = 12.sp
                 )
+
             }
         }
 
-        if (pagerstate.currentPage != 3){
-            Box(
-                modifier = Modifier
-                    .fillMaxSize() /* 부모 만큼 */
-                    .padding(bottom = 20.dp), contentAlignment = Alignment.BottomCenter
+    )
+}
+
+@Composable
+fun LogoutBtn(isLogoutClicked: () -> Unit) {
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 70.dp, end = 20.dp), contentAlignment = Alignment.BottomEnd
+    ) {
+        Box(
+            modifier = Modifier
+                .size(80.dp, 36.dp)
+                .background(Color(0xFF191919), shape = RoundedCornerShape(20))
+                .clickable { isLogoutClicked() },
+            contentAlignment = Alignment.Center
+        ) {
+            Text(text = "로그아웃", fontSize = 12.sp, color = Color(0xFF606060))
+        }
+    }
+}
+
+@Composable
+fun LogoutBox(isCancelClicked: () -> Unit, isLogoutClicked: () -> Unit) {
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 10.dp)
+            .background(Color.Black.copy(0.4f))
+    )
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(0xFF121212), shape = RoundedCornerShape(10))
+                .height(243.dp), contentAlignment = Alignment.Center
+        ) {
+            Column(
+                modifier = Modifier.padding(20.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
-                Row(
-                    Modifier
-                        .height(100.dp)
-                        .padding(bottom = 30.dp), //box 안에 있어야하는거같기도?
-                    horizontalArrangement = Arrangement.Center
-                )
-                {
-                    repeat(4) { iteration ->
-                        val color =
-                            if (pagerstate.currentPage == iteration) Color(0xFF616FED) else Color.White.copy(
-                                alpha = 0.5f
+                Text(text = "로그아웃하시겠습니까?", color = Color.White, fontWeight = FontWeight.SemiBold)
+                Spacer(modifier = Modifier.height(48.dp))
+                Row {
+                    Button(
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(
+                                0xFF868686
                             )
-                        if (pagerstate.currentPage == iteration) {
-                            Box(
-                                modifier = Modifier
-                                    .padding(4.dp)
-                                    .clip(CircleShape)
-                                    .background(color)
-                                    .size(20.dp, 10.dp)
-
-                            )
-
-                        } else {
-                            Box(
-                                modifier = Modifier
-                                    .padding(4.dp)
-                                    .clip(CircleShape)
-                                    .background(color)
-                                    .size(10.dp, 10.dp)
-
-                            )
-                        }
+                        ),
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(61.dp),
+                        onClick = { isCancelClicked() },
+                        shape = RoundedCornerShape(20)
+                    ) {
+                        Text(text = "취소", color = Color.Black, fontWeight = FontWeight.SemiBold)
 
                     }
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Button(
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF616FED)),
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(61.dp),
+                        onClick = {
+                            isLogoutClicked()
+                            /*TODO*/
+                        },
+                        shape = RoundedCornerShape(20)
+                    ) {
+                        Text(text = "로그아웃", color = Color.Black, fontWeight = FontWeight.SemiBold)
+
+                    }
+                }
+
+            }
+        }
+    }
+}
+
+@Composable
+fun TutorialPage(isCloseClicked: () -> Unit, isSkipClicked: () -> Unit) {
+    val pagerstate = rememberPagerState { 4 }
+    val coroutineScope = rememberCoroutineScope()
+
+    HorizontalPager(state = pagerstate, modifier = Modifier.fillMaxSize()) { page ->
+        when (page) {
+            0 -> Tutorial_1()
+
+
+            1 ->
+                Tutorial_2(draggedToLeft = {
+                    coroutineScope.launch {
+                        pagerstate.animateScrollToPage(
+                            0,
+                            animationSpec = tween(
+                                durationMillis = 600,
+                                easing = FastOutSlowInEasing
+                            )
+                        )
+
+                    }
+                }, isTutorial3Clicked = {
+                    coroutineScope.launch {
+                        pagerstate.animateScrollToPage(
+                            2,
+                            animationSpec = tween(
+                                durationMillis = 600,
+                                easing = FastOutSlowInEasing
+                            )
+                        )
+
+                    }
+                })
+
+            2 ->
+                Tutorial_3(draggedToLeft = {
+                    coroutineScope.launch {
+                        pagerstate.animateScrollToPage(
+                            1,
+                            animationSpec = tween(
+                                durationMillis = 600,
+                                easing = FastOutSlowInEasing
+                            )
+                        )
+
+                    }
+                })
+
+
+            3 ->
+                Tutorial_4 {
+                    isCloseClicked()
+                }
+        }
+    }
+    if (pagerstate.currentPage != 3) {
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 150.dp, end = 20.dp), contentAlignment = Alignment.TopEnd
+        ) {
+            Text(
+                text = "건너뛰기 >>",
+                modifier = Modifier.clickable { isSkipClicked() },
+                style = TextStyle(
+                    fontSize = 14.sp,
+                    lineHeight = 21.sp,
+                    color = Color(0xFF929292),
+                    textAlign = TextAlign.Center,
+                    textDecoration = TextDecoration.Underline,
+                )
+            )
+        }
+    }
+
+    if (pagerstate.currentPage != 3) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize() /* 부모 만큼 */
+                .padding(bottom = 20.dp), contentAlignment = Alignment.BottomCenter
+        ) {
+
+            Row(
+                Modifier
+                    .height(100.dp)
+                    .padding(bottom = 30.dp), //box 안에 있어야하는거같기도?
+                horizontalArrangement = Arrangement.Center
+            )
+            {
+                repeat(4) { iteration ->
+                    val color =
+                        if (pagerstate.currentPage == iteration) Color(0xFF616FED) else Color.White.copy(
+                            alpha = 0.5f
+                        )
+                    if (pagerstate.currentPage == iteration) {
+                        Box(
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .clip(CircleShape)
+                                .background(color)
+                                .size(20.dp, 10.dp)
+
+                        )
+
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .clip(CircleShape)
+                                .background(color)
+                                .size(10.dp, 10.dp)
+
+                        )
+                    }
+
                 }
             }
         }
     }
 }
-    
 
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Preview
 @Composable
-fun Tutorial_1(){
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .padding(horizontal = 20.dp), contentAlignment = Alignment.Center){
-        GlideImage(model = R.drawable.tutorial_bottomicons, contentDescription = "tutorial_bottomicons")
+fun Tutorial_1() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 20.dp), contentAlignment = Alignment.Center
+    ) {
+        GlideImage(
+            model = R.drawable.tutorial_bottomicons,
+            contentDescription = "tutorial_bottomicons"
+        )
     }
 }
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun Tutorial_2(isTutorial3Clicked : ()->Unit, draggedToLeft: () -> Unit){
+fun Tutorial_2(isTutorial3Clicked: () -> Unit, draggedToLeft: () -> Unit) {
     var isClicked by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
-    Box{
-        Box(modifier = Modifier.fillMaxSize()){
+    Box {
+        Box(modifier = Modifier.fillMaxSize()) {
             GlideImage(
                 model = R.drawable.tutorial_2,
                 contentDescription = "home_img",
@@ -859,9 +913,11 @@ fun Tutorial_2(isTutorial3Clicked : ()->Unit, draggedToLeft: () -> Unit){
                 contentScale = ContentScale.FillWidth
             )
         }
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(start = 165.dp, bottom = 130.dp), contentAlignment = Alignment.Center){
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 165.dp, bottom = 130.dp), contentAlignment = Alignment.Center
+        ) {
             GlideImage(
                 model = TUTORIAL_BULB,
                 contentDescription = "bulb_img",
@@ -871,7 +927,8 @@ fun Tutorial_2(isTutorial3Clicked : ()->Unit, draggedToLeft: () -> Unit){
             )
 
         }
-        AnimatedVisibility(visible = isClicked,
+        AnimatedVisibility(
+            visible = isClicked,
             enter = slideInVertically(
                 initialOffsetY = { 2000 },
                 animationSpec = tween(durationMillis = 500)
@@ -879,8 +936,9 @@ fun Tutorial_2(isTutorial3Clicked : ()->Unit, draggedToLeft: () -> Unit){
             exit = slideOutVertically(
                 targetOffsetY = { 2000 },
                 animationSpec = tween(durationMillis = 500)
-            )) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+            )
+        ) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 GlideImage(
                     model = R.drawable.tutorial_3,
                     contentDescription = "home_img",
@@ -896,111 +954,104 @@ fun Tutorial_2(isTutorial3Clicked : ()->Unit, draggedToLeft: () -> Unit){
         }
 
 
-
     }
 
 }
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun Tutorial_3(draggedToLeft:()->Unit){
+fun Tutorial_3(draggedToLeft: () -> Unit) {
     var isClicked by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
-    LinkedOutTheme {
-        if (!isClicked){
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .pointerInput(Unit) {
-                        detectHorizontalDragGestures { _, dragAmount ->
-                            // 감지된 드래그 방향과 양에 따라 동작 수행
-                            coroutineScope.launch {
-                                if (dragAmount > 0) {
-                                    // 오른쪽으로 스와이프
-                                    draggedToLeft()
-                                } else {
-                                    // 왼쪽으로 스와이프
-                                    isClicked = true
-                                }
+
+    if (!isClicked) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .pointerInput(Unit) {
+                    detectHorizontalDragGestures { _, dragAmount ->
+                        // 감지된 드래그 방향과 양에 따라 동작 수행
+                        coroutineScope.launch {
+                            if (dragAmount > 0) {
+                                // 오른쪽으로 스와이프
+                                draggedToLeft()
+                            } else {
+                                // 왼쪽으로 스와이프
+                                isClicked = true
                             }
                         }
                     }
-                    .padding(bottom = 112.dp, end = 15.dp),
-                contentAlignment = Alignment.BottomEnd
-            ){
-                TutorialActionBtn{isClicked = true}
-            }
-        }
-
-        AnimatedVisibility(visible = isClicked,
-            enter = slideInVertically(
-                initialOffsetY = { 2000 },
-                animationSpec = tween(durationMillis = 500)
-            ),
-            exit = slideOutVertically(
-                targetOffsetY = { 2000 },
-                animationSpec = tween(durationMillis = 500)
-            )) {
-
-                Box(modifier = Modifier.fillMaxSize()){
-                    GlideImage(
-                        model = R.drawable.tutorial_4,
-                        contentDescription = "home_img",
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.FillWidth
-                    )
                 }
-
+                .padding(bottom = 112.dp, end = 15.dp),
+            contentAlignment = Alignment.BottomEnd
+        ) {
+            TutorialActionBtn { isClicked = true }
         }
     }
 
+    AnimatedVisibility(
+        visible = isClicked,
+        enter = slideInVertically(
+            initialOffsetY = { 2000 },
+            animationSpec = tween(durationMillis = 500)
+        ),
+        exit = slideOutVertically(
+            targetOffsetY = { 2000 },
+            animationSpec = tween(durationMillis = 500)
+        )
+    ) {
 
+        Box(modifier = Modifier.fillMaxSize()) {
+            GlideImage(
+                model = R.drawable.tutorial_4,
+                contentDescription = "home_img",
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.FillWidth
+            )
+        }
 
+    }
 }
-
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun Tutorial_4(isCloseClicked : ()->Unit){
-    LinkedOutTheme {
-        Box{
-            Box(modifier = Modifier.fillMaxSize()){
-                GlideImage(
-                    model = R.drawable.tutorial_5,
-                    contentDescription = "home_img",
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.FillWidth
-                )
-            }
-            Box(
+fun Tutorial_4(isCloseClicked: () -> Unit) {
+
+    Box {
+        Box(modifier = Modifier.fillMaxSize()) {
+            GlideImage(
+                model = R.drawable.tutorial_5,
+                contentDescription = "home_img",
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.FillWidth
+            )
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 45.dp, end = 20.dp)
+                .clickable { },
+            contentAlignment = Alignment.TopEnd
+        ) {
+            Icon(
+                imageVector = Icons.Default.Close,
+                contentDescription = "close",
+                tint = Color.White,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 45.dp, end = 20.dp)
-                    .clickable { },
-                contentAlignment = Alignment.TopEnd
-            ){
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = "close",
-                    tint = Color.White,
-                    modifier = Modifier
-                        .size(30.dp)
-                        .clickable { isCloseClicked() }
-                )
-            }
+                    .size(30.dp)
+                    .clickable { isCloseClicked() }
+            )
         }
     }
-
-
 }
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun TutorialActionBtn(modifier: Modifier = Modifier,isFTBClicked : ()->Unit){
-    Box(modifier){
+fun TutorialActionBtn(modifier: Modifier = Modifier, isFTBClicked: () -> Unit) {
+    Box(modifier) {
         FloatingActionButton(
             modifier = Modifier.padding(end = 25.dp, bottom = 25.dp),
-            onClick = {isFTBClicked()},
+            onClick = { isFTBClicked() },
             shape = RoundedCornerShape(100.dp),
             containerColor = if (isSystemInDarkTheme()) Color.White else Color.Gray
         ) {
@@ -1011,7 +1062,7 @@ fun TutorialActionBtn(modifier: Modifier = Modifier,isFTBClicked : ()->Unit){
                 tint = Color.Black
             )
         }
-        Box(Modifier.offset (x = (-10).dp,y= (-10).dp)){
+        Box(Modifier.offset(x = (-10).dp, y = (-10).dp)) {
             GlideImage(
                 model = R.drawable.tutorial_circle,
                 contentDescription = "circle",
@@ -1023,108 +1074,119 @@ fun TutorialActionBtn(modifier: Modifier = Modifier,isFTBClicked : ()->Unit){
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun GeulRoquis(isHoldClicked : ()-> Unit, isAcceptClicked : () -> Unit, viewModel: HomeViewModel){
-    LinkedOutTheme {
-        Box(modifier = Modifier
+fun GeulRoquis(isHoldClicked: () -> Unit, isAcceptClicked: () -> Unit, viewModel: HomeViewModel) {
+
+    Box(
+        modifier = Modifier
             .background(color = Color(0xF2121212), shape = RoundedCornerShape(4))
-            .size(281.dp, 411.dp)){
-            GlideImage(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(256.dp),
-                model = R.drawable.geulroquis_background,
-                contentDescription = "linkedout logo",
-                contentScale = ContentScale.Crop
-            )
-            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()) {
-                Spacer(modifier = Modifier.height(31.dp))
-                Text(text = "오늘의 글로키가 도착했어요!", color = Color.White, fontSize = 16.sp)
-                Spacer(modifier = Modifier.height(5.dp))
-                Text(text = "2024-07-24 GeulRoquis", color = Color.White, fontSize = 12.sp)
-                Spacer(modifier = Modifier.height(20.dp))
+            .size(281.dp, 411.dp)
+    ) {
+        GlideImage(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(256.dp),
+            model = R.drawable.geulroquis_background,
+            contentDescription = "linkedout logo",
+            contentScale = ContentScale.Crop
+        )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Spacer(modifier = Modifier.height(31.dp))
+            Text(text = "오늘의 글로키가 도착했어요!", color = Color.White, fontSize = 16.sp)
+            Spacer(modifier = Modifier.height(5.dp))
+            Text(text = "2024-07-24 GeulRoquis", color = Color.White, fontSize = 12.sp)
+            Spacer(modifier = Modifier.height(20.dp))
 
-                Log.d("글로키 링크", viewModel.geulRoquisUrl)
-                if (viewModel.geulRoquisUrl.isEmpty() || !viewModel.geulRoquisUrl.startsWith("https")){
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(260.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(color = LinkedInColor)
-                    }
+            Log.d("글로키 링크", viewModel.geulRoquisUrl)
+            if (viewModel.geulRoquisUrl.isEmpty() || !viewModel.geulRoquisUrl.startsWith("https")) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(260.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = LinkedInColor)
                 }
-                else{
-                    GlideImage(
-                        model = viewModel.geulRoquisUrl,
-                        contentDescription = "",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .height(250.dp)
-                            .fillMaxWidth()
-                    )
-                }
+            } else {
+                GlideImage(
+                    model = viewModel.geulRoquisUrl,
+                    contentDescription = "",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .height(250.dp)
+                        .fillMaxWidth()
+                )
+            }
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "보류", color = Color.White, fontSize = 16.sp, modifier = Modifier
-                        .clickable { isHoldClicked() }
-                        .weight(1f), textAlign = TextAlign.Center)
-                    VerticalDivider(color = Color(0xFF292929))
-                    Text(text = "수락", color = Color.White, fontSize = 16.sp,modifier = Modifier
-                        .clickable { isAcceptClicked() }
-                        .weight(1f),textAlign = TextAlign.Center)
-
-                }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "보류", color = Color.White, fontSize = 16.sp, modifier = Modifier
+                    .clickable { isHoldClicked() }
+                    .weight(1f), textAlign = TextAlign.Center)
+                VerticalDivider(color = Color(0xFF292929))
+                Text(text = "수락", color = Color.White, fontSize = 16.sp, modifier = Modifier
+                    .clickable { isAcceptClicked() }
+                    .weight(1f), textAlign = TextAlign.Center)
 
             }
+
         }
     }
-
 }
+
 @OptIn(ExperimentalGlideComposeApi::class)
 @Preview
 @Composable
-fun t(){
-    LinkedOutTheme {
-        Box(modifier = Modifier
+fun t() {
+
+    Box(
+        modifier = Modifier
             .background(color = Color(0xF2121212), shape = RoundedCornerShape(4))
-            .size(281.dp, 411.dp)){
+            .size(281.dp, 411.dp)
+    ) {
+        GlideImage(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(256.dp),
+            model = R.drawable.geulroquis_background,
+            contentDescription = "linkedout logo",
+            contentScale = ContentScale.Crop
+        )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Spacer(modifier = Modifier.height(31.dp))
+            Text(text = "오늘의 글로키가 도착했어요!", color = Color.White, fontSize = 16.sp)
+            Spacer(modifier = Modifier.height(5.dp))
+            Text(text = "2024-07-24 GeulRoquis", color = Color.White, fontSize = 12.sp)
+            Spacer(modifier = Modifier.height(20.dp))
+
+
             GlideImage(
+                model = R.drawable.home_basic,
+                contentDescription = "",
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
+                    .height(240.dp)
                     .fillMaxWidth()
-                    .height(256.dp),
-                model = R.drawable.geulroquis_background,
-                contentDescription = "linkedout logo",
-                contentScale = ContentScale.Crop
             )
-            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()) {
-                Spacer(modifier = Modifier.height(31.dp))
-                Text(text = "오늘의 글로키가 도착했어요!", color = Color.White, fontSize = 16.sp)
-                Spacer(modifier = Modifier.height(5.dp))
-                Text(text = "2024-07-24 GeulRoquis", color = Color.White, fontSize = 12.sp)
-                Spacer(modifier = Modifier.height(20.dp))
 
 
-                    GlideImage(
-                        model = R.drawable.home_basic,
-                        contentDescription = "",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .height(240.dp)
-                            .fillMaxWidth()
-                    )
-
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "보류", color = Color.White, fontSize = 16.sp, modifier = Modifier
-                        .weight(1f), textAlign = TextAlign.Center)
-                    VerticalDivider(color = Color(0xFF292929))
-                    Text(text = "수락", color = Color.White, fontSize = 16.sp,modifier = Modifier
-                        .weight(1f),textAlign = TextAlign.Center)
-
-                }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "보류", color = Color.White, fontSize = 16.sp, modifier = Modifier
+                        .weight(1f), textAlign = TextAlign.Center
+                )
+                VerticalDivider(color = Color(0xFF292929))
+                Text(
+                    text = "수락", color = Color.White, fontSize = 16.sp, modifier = Modifier
+                        .weight(1f), textAlign = TextAlign.Center
+                )
 
             }
+
         }
     }
 }
@@ -1133,108 +1195,118 @@ fun t(){
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ReactivateOrDeleteBox(isClickedReActivate: () -> Unit, isClickedDeActivate: () -> Unit) {
-    LinkedOutTheme {
-        Box(
-            modifier = Modifier
-                .size(300.dp, 286.dp)
-                .background(Color(0xFF1D1D1D), shape = RoundedCornerShape(4))
-        ) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopEnd) {
-                GlideImage(
-                    model = R.drawable.geulroquis_background,
-                    contentDescription = "background logo",
-                    modifier = Modifier.padding(start = 130.dp, bottom = 100.dp)
-                )
-            }
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                Text(text = "오랜만에 봬요!", fontSize = 24.sp, color = Color.White)
-                Spacer(modifier = Modifier.height(6.dp))
-                Text(
-                    text = "다시 링크드아웃에\n돌아오신 걸 환영해요.",
-                    fontSize = 16.sp,
-                    lineHeight = 24.sp,
-                    color = Color.White,
-                    textAlign = TextAlign.Center
-                )
-                Spacer(modifier = Modifier.height(30.dp))
-                Button(
-                    onClick = { isClickedDeActivate() },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                        .padding(horizontal = 20.dp),
-                    shape = RoundedCornerShape(20),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF929292))
-                ) {
-                    Text(text = "지금 계정 삭제하기", color = Color.Black)
-                }
-                Spacer(modifier = Modifier.height(10.dp))
-                Button(
-                    onClick = { isClickedReActivate() },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                        .padding(horizontal = 20.dp),
 
-                    shape = RoundedCornerShape(20)
-                ) {
-                    Text(text = "계정 복구하기", color = Color.Black)
-                }
+    Box(
+        modifier = Modifier
+            .size(300.dp, 286.dp)
+            .background(Color(0xFF1D1D1D), shape = RoundedCornerShape(4))
+    ) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopEnd) {
+            GlideImage(
+                model = R.drawable.geulroquis_background,
+                contentDescription = "background logo",
+                modifier = Modifier.padding(start = 130.dp, bottom = 100.dp)
+            )
+        }
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Text(text = "오랜만에 봬요!", fontSize = 24.sp, color = Color.White)
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = "다시 링크드아웃에\n돌아오신 걸 환영해요.",
+                fontSize = 16.sp,
+                lineHeight = 24.sp,
+                color = Color.White,
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(30.dp))
+            Button(
+                onClick = { isClickedDeActivate() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+                    .padding(horizontal = 20.dp),
+                shape = RoundedCornerShape(20),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF929292))
+            ) {
+                Text(text = "지금 계정 삭제하기", color = Color.Black)
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+            Button(
+                onClick = { isClickedReActivate() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+                    .padding(horizontal = 20.dp),
+
+                shape = RoundedCornerShape(20)
+            ) {
+                Text(text = "계정 복구하기", color = Color.Black)
             }
         }
     }
-
 }
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun Notice_Main(isClickedClose : ()->Unit,isClickedOpened : ()-> Unit){
-    LinkedOutTheme {
-        Box(modifier = Modifier
+fun Notice_Main(isClickedClose: () -> Unit, isClickedOpened: () -> Unit) {
+
+    Box(
+        modifier = Modifier
             .width(280.dp)
             .height(411.dp)
-            .background(color = Color(0xFF121212), shape = RoundedCornerShape(size = 10.dp)), contentAlignment = Alignment.Center){
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                GlideImage(model = R.drawable.notice_linkedouticon, contentDescription = "")
-                Spacer(modifier = Modifier.height(6.dp))
-                Text(
-                    text = "아무개님, 새로운 공지사항이 있어요!",
-                    style = TextStyle(
-                        fontSize = 16.sp,
-                        lineHeight = 24.sp,
-                        fontWeight = FontWeight(700),
-                        color = Color(0xFFFFFFFF),
-                        textAlign = TextAlign.Center,
-                    )
+            .background(color = Color(0xFF121212), shape = RoundedCornerShape(size = 10.dp)),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            GlideImage(model = R.drawable.notice_linkedouticon, contentDescription = "")
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = "아무개님, 새로운 공지사항이 있어요!",
+                style = TextStyle(
+                    fontSize = 16.sp,
+                    lineHeight = 24.sp,
+                    fontWeight = FontWeight(700),
+                    color = Color(0xFFFFFFFF),
+                    textAlign = TextAlign.Center,
                 )
-                Spacer(modifier = Modifier.height(6.dp))
-                Text(text = "자세히 보기를 눌러 공지를 확인하세요.", textAlign = TextAlign.Center, color = Color.White, modifier = Modifier
+            )
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = "자세히 보기를 눌러 공지를 확인하세요.",
+                textAlign = TextAlign.Center,
+                color = Color.White,
+                modifier = Modifier
                     .height(240.dp)
-                    .verticalScroll(rememberScrollState()))
-                Row {
-                    Button(onClick = { isClickedOpened() },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF868686)),
-                        shape = RoundedCornerShape(20), modifier = Modifier
-                            .height(50.dp)
-                            .padding(start = 15.dp, end = 5.dp)
-                            .weight(1f)) {
-                        Text(text = "자세히 보기", color = Color.Black, fontSize = 12.sp)
-                    }
-                    Button(onClick = { isClickedClose() }, shape = RoundedCornerShape(20), modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+            )
+            Row {
+                Button(
+                    onClick = { isClickedOpened() },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF868686)),
+                    shape = RoundedCornerShape(20), modifier = Modifier
+                        .height(50.dp)
+                        .padding(start = 15.dp, end = 5.dp)
+                        .weight(1f)
+                ) {
+                    Text(text = "자세히 보기", color = Color.Black, fontSize = 12.sp)
+                }
+                Button(
+                    onClick = { isClickedClose() },
+                    shape = RoundedCornerShape(20),
+                    modifier = Modifier
                         .height(50.dp)
                         .padding(start = 5.dp, end = 15.dp)
-                        .weight(1f)) {
-                        Text(text = "닫기", color = Color.Black, fontSize = 12.sp)
-                    }
+                        .weight(1f)
+                ) {
+                    Text(text = "닫기", color = Color.Black, fontSize = 12.sp)
                 }
-
             }
+
         }
     }
-
 }
 

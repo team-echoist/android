@@ -17,11 +17,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.echoist.linkedout.page.settings.SettingTopAppBar
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 
 @Composable
 fun FontCopyRight(navController : NavController){
-    LinkedOutTheme {
+    
         Scaffold(topBar = {
             SettingTopAppBar("글꼴 저작권",navController)
         }) {
@@ -54,4 +53,3 @@ fun FontCopyRight(navController : NavController){
             }
         }
     }
-}

@@ -50,88 +50,94 @@ import com.echoist.linkedout.TYPE_STORY
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.navigateWithClearBackStack
 import com.echoist.linkedout.ui.theme.LinkedInColor
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.MyLogViewModel
 import com.echoist.linkedout.viewModels.WritingViewModel
 import kotlinx.coroutines.delay
 
 @Composable
-fun DetailEssayInStoryPage(navController: NavController, viewModel: MyLogViewModel,writingViewModel: WritingViewModel) {
+fun DetailEssayInStoryPage(
+    navController: NavController,
+    viewModel: MyLogViewModel,
+    writingViewModel: WritingViewModel
+) {
     val scrollState = rememberScrollState()
     var isClicked by remember { mutableStateOf(false) }
 
 
-    LinkedOutTheme {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    navController = navController,
-                    viewModel.readDetailEssay(),
-                    viewModel.storyEssayNumber
-                ){viewModel.isActionClicked = !viewModel.isActionClicked}
-            },
-            content = {
-                Box(
-                    Modifier
-                        .padding(it)
-                        .clickable { isClicked = !isClicked }
-                        .fillMaxSize(), contentAlignment = Alignment.TopCenter
-                ) {
 
-                    Column(Modifier.verticalScroll(scrollState)) {
-                        DetailEssay(viewModel = viewModel)
-                    }
-                    //수정 옵션
-                    AnimatedVisibility(
-                        visible = viewModel.isActionClicked,
-                        enter = fadeIn(
-                            animationSpec = tween(
-                                durationMillis = 500,
-                                easing = FastOutSlowInEasing
-                            )
-                        ),
-                        exit = fadeOut(
-                            animationSpec = tween(
-                                durationMillis = 200,
-                                easing = LinearEasing
-                            )
-                        )
-                    ) {
-                        ModifyOption(viewModel, navController = navController, writingViewModel = writingViewModel)
-                    }
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                navController = navController,
+                viewModel.readDetailEssay(),
+                viewModel.storyEssayNumber
+            ) { viewModel.isActionClicked = !viewModel.isActionClicked }
+        },
+        content = {
+            Box(
+                Modifier
+                    .padding(it)
+                    .clickable { isClicked = !isClicked }
+                    .fillMaxSize(), contentAlignment = Alignment.TopCenter
+            ) {
+
+                Column(Modifier.verticalScroll(scrollState)) {
+                    DetailEssay(viewModel = viewModel)
                 }
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .navigationBarsPadding(),
-                    contentAlignment = Alignment.BottomCenter
-                ) {
-                    LaunchedEffect(isClicked) {
-                        delay(3000)
-                        isClicked = false
-                    }
-
-                    AnimatedVisibility(
-                        visible = isClicked,
-                        enter = fadeIn(
-                            animationSpec = tween(
-                                durationMillis = 500,
-                                easing = FastOutSlowInEasing
-                            )
-                        ),
-                        exit = fadeOut(
-                            animationSpec = tween(
-                                durationMillis = 500,
-                                easing = LinearEasing
-                            )
+                //수정 옵션
+                AnimatedVisibility(
+                    visible = viewModel.isActionClicked,
+                    enter = fadeIn(
+                        animationSpec = tween(
+                            durationMillis = 500,
+                            easing = FastOutSlowInEasing
                         )
-                    ) {
-                        StoryBottomBar(viewModel.readDetailEssay(),viewModel,navController)
-                    }
+                    ),
+                    exit = fadeOut(
+                        animationSpec = tween(
+                            durationMillis = 200,
+                            easing = LinearEasing
+                        )
+                    )
+                ) {
+                    ModifyOption(
+                        viewModel,
+                        navController = navController,
+                        writingViewModel = writingViewModel
+                    )
                 }
             }
-        )
-    }
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .navigationBarsPadding(),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                LaunchedEffect(isClicked) {
+                    delay(3000)
+                    isClicked = false
+                }
+
+                AnimatedVisibility(
+                    visible = isClicked,
+                    enter = fadeIn(
+                        animationSpec = tween(
+                            durationMillis = 500,
+                            easing = FastOutSlowInEasing
+                        )
+                    ),
+                    exit = fadeOut(
+                        animationSpec = tween(
+                            durationMillis = 500,
+                            easing = LinearEasing
+                        )
+                    )
+                ) {
+                    StoryBottomBar(viewModel.readDetailEssay(), viewModel, navController)
+                }
+            }
+        }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -140,8 +146,8 @@ fun TopAppBar(
     navController: NavController,
     essayItem: EssayApi.EssayItem,
     num: Int,
-    isModifyClicked : ()->Unit
-){
+    isModifyClicked: () -> Unit
+) {
     // 현재 백스택 상태를 관찰하여 상태 변경 시 리컴포지션을 트리거
     val backStackEntry = navController.currentBackStackEntryAsState().value
     // 백스택에서 바로 뒤의 항목 가져오기
@@ -154,11 +160,15 @@ fun TopAppBar(
     androidx.compose.material3.TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
         title = {
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "0$num. ", fontSize = 16.sp, color = LinkedInColor)
-                    Text(text = "${essayItem.title}", fontSize = 16.sp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = "0$num. ", fontSize = 16.sp, color = LinkedInColor)
+                Text(text = "${essayItem.title}", fontSize = 16.sp)
 
-                }
+            }
         },
         navigationIcon = {
             Icon(
@@ -169,7 +179,7 @@ fun TopAppBar(
                     .padding(start = 20.dp)
                     .size(30.dp)
                     .clickable {
-                        navigateWithClearBackStack(navController,Routes.StoryDetailPage)
+                        navigateWithClearBackStack(navController, Routes.StoryDetailPage)
                     } //뒤로가기
             )
         },
@@ -187,7 +197,6 @@ fun TopAppBar(
             )
         })
 }
-
 
 
 @Composable
@@ -298,7 +307,7 @@ fun StoryBottomBar(
                                 .clickable {
                                     viewModel.detailEssayBackStack.push(item)
                                     viewModel.readNextEssay(
-                                        item.id!!,TYPE_STORY,
+                                        item.id!!, TYPE_STORY,
                                         navController,
                                         viewModel.getSelectedStory().id!!
                                     )
