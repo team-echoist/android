@@ -7,7 +7,9 @@ import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.ViewTreeObserver
+import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -161,6 +163,21 @@ import java.nio.charset.StandardCharsets
 
 @AndroidEntryPoint
 class LoginPage : ComponentActivity() {
+
+    private var backKeyPressedTime = 0L
+    private val onBackPressedCallback: OnBackPressedCallback =
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (System.currentTimeMillis() > backKeyPressedTime + 2000) {
+                    backKeyPressedTime = System.currentTimeMillis()
+                    Toast.makeText(this@LoginPage, "뒤로 버튼을 한번 더 누르시면 종료됩니다.", Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    finish()
+                }
+            }
+        }
+
     private fun getSSAID(context: Context) {
         DeviceId.ssaid =
             Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
@@ -182,6 +199,8 @@ class LoginPage : ComponentActivity() {
         val jsonAdapter = moshi.adapter(Notice::class.java)
 
         super.onCreate(savedInstanceState)
+
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
         val homeViewModel: HomeViewModel by viewModels()
         val writingViewModel: WritingViewModel by viewModels()
@@ -513,10 +532,10 @@ fun LoginPage(
     LaunchedEffect(key1 = Unit) {
         viewModel.requestAppVersion(context)
         //온보딩 확인했다는 체크
-        SharedPreferencesUtil.saveIsOnboardingFinished(context,true)
+        SharedPreferencesUtil.saveIsOnboardingFinished(context, true)
 
         //자동로그인 체크시 로그인.
-        if (SharedPreferencesUtil.getClickedAutoLogin(context = context)){
+        if (SharedPreferencesUtil.getClickedAutoLogin(context = context)) {
             viewModel.userId = SharedPreferencesUtil.getLocalAccountInfo(context).id
             viewModel.userPw = SharedPreferencesUtil.getLocalAccountInfo(context).pw
             viewModel.login(navController)
@@ -696,7 +715,7 @@ fun LoginPage(
         )
     }
 
-    }
+}
 
 
 @Composable
@@ -789,59 +808,59 @@ fun PwTextField(
     viewModel.userPw = text
     var passwordVisible by remember { mutableStateOf(false) }
 
-        TextField(
-            value = text,
-            onValueChange = { new ->
-                text = new
-                viewModel.userPw = text
-            },
-            singleLine = true,
-            label = { Text("비밀번호", color = Color(0xFF919191), fontSize = 14.sp) }, // 힌트를 라벨로 설정합니다.
-            colors = TextFieldDefaults.colors(
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                focusedTextColor = Color.White,
-                unfocusedTextColor = Color.White,
-                focusedContainerColor = Color(0xFF252525),
-                unfocusedContainerColor = Color(0xFF252525)
-            ),
-            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    viewModel.login(navController)
+    TextField(
+        value = text,
+        onValueChange = { new ->
+            text = new
+            viewModel.userPw = text
+        },
+        singleLine = true,
+        label = { Text("비밀번호", color = Color(0xFF919191), fontSize = 14.sp) }, // 힌트를 라벨로 설정합니다.
+        colors = TextFieldDefaults.colors(
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            focusedTextColor = Color.White,
+            unfocusedTextColor = Color.White,
+            focusedContainerColor = Color(0xFF252525),
+            unfocusedContainerColor = Color(0xFF252525)
+        ),
+        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Password,
+            imeAction = ImeAction.Done
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = {
+                viewModel.login(navController)
+            }
+        ),
+        trailingIcon = { // 비밀번호 표시 여부입니다.
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (text.isNotEmpty())
+                    Icon(
+                        imageVector = Icons.Default.Cancel,
+                        contentDescription = "cancel",
+                        modifier = Modifier.clickable {
+                            text = ""
+                            viewModel.userPw = ""
+                        }
+                    )
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    Icon(
+                        modifier = Modifier.size(24.dp),
+                        painter = painterResource(id = if (passwordVisible) R.drawable.pw_eye_on else R.drawable.pw_eye_off),
+                        contentDescription = "pw_eye"
+                    )
                 }
-            ),
-            trailingIcon = { // 비밀번호 표시 여부입니다.
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    if (text.isNotEmpty())
-                        Icon(
-                            imageVector = Icons.Default.Cancel,
-                            contentDescription = "cancel",
-                            modifier = Modifier.clickable {
-                                text = ""
-                                viewModel.userPw = ""
-                            }
-                        )
-                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                        Icon(
-                            modifier = Modifier.size(24.dp),
-                            painter = painterResource(id = if (passwordVisible) R.drawable.pw_eye_on else R.drawable.pw_eye_off),
-                            contentDescription = "pw_eye"
-                        )
-                    }
-                }
-            },
-            shape = RoundedCornerShape(8.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, bottom = 13.dp)
-                .focusRequester(passwordFocusRequester)
-        )
-    }
+            }
+        },
+        shape = RoundedCornerShape(8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp, bottom = 13.dp)
+            .focusRequester(passwordFocusRequester)
+    )
+}
 
 @Composable
 fun LoginBtn(
@@ -851,26 +870,26 @@ fun LoginBtn(
     val interactionSource = remember { MutableInteractionSource() }
     val error = viewModel.userId.isEmpty() || viewModel.userPw.isEmpty()
 
-        Button(
-            shape = RoundedCornerShape(10.dp),
-            enabled = !error,
-            onClick = {
-                viewModel.login(navController)
-            },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = if (error) Color.Gray else LinkedInColor
-            ),
-            interactionSource = interactionSource,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(55.dp)
-                .padding(start = 16.dp, end = 16.dp)
-        ) {
-            Text(text = "로그인", color = if (error)Color(0xFF919191) else Color.Black)
-        }
-
-
+    Button(
+        shape = RoundedCornerShape(10.dp),
+        enabled = !error,
+        onClick = {
+            viewModel.login(navController)
+        },
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (error) Color.Gray else LinkedInColor
+        ),
+        interactionSource = interactionSource,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(55.dp)
+            .padding(start = 16.dp, end = 16.dp)
+    ) {
+        Text(text = "로그인", color = if (error) Color(0xFF919191) else Color.Black)
     }
+
+
+}
 
 
 @Composable
@@ -878,16 +897,16 @@ fun UnderlineText(
     text: String,
     onClick: () -> Unit
 ) {
-        Text(
-            text = text,
-            fontSize = 12.sp,
-            style = TextStyle(textDecoration = TextDecoration.Underline),
-            color = Color(0xFF919191),
-            modifier = Modifier
-                .padding(end = 25.dp)
-                .clickable { onClick() }
-        )
-    }
+    Text(
+        text = text,
+        fontSize = 12.sp,
+        style = TextStyle(textDecoration = TextDecoration.Underline),
+        color = Color(0xFF919191),
+        modifier = Modifier
+            .padding(end = 25.dp)
+            .clickable { onClick() }
+    )
+}
 
 
 enum class Keyboard {
