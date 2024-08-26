@@ -207,7 +207,7 @@ fun SignUpPage(
                                 containerColor = LinkedInColor,
                                 disabledContainerColor = Color(0xFF868686)
                             ),
-                            enabled = !viewModel.userEmailError && viewModel.userPw.isNotEmpty(),
+                            enabled = !viewModel.userEmailError && viewModel.userPw.isNotEmpty() && !viewModel.isLoading,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(100.dp)
