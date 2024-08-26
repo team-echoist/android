@@ -32,6 +32,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -132,7 +133,8 @@ fun SignUpPage(
                         keyboardController?.hide()
                         Log.d("6자리 코드 ", list.joinToString(""))
                         viewModel.requestRegister(list.joinToString(""), navController)
-                    }
+
+                    },scaffoldState
                 )
                 if (viewModel.isLoading) {
                     Box(
@@ -486,16 +488,27 @@ fun SendSignUpFinishedAlert(isClicked: () -> Unit, text1: String, text2: String)
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Authentication_6_BottomModal(
     reAuthentication: () -> Unit,
     isError: Boolean,
     isTypedLastNumber: (List<String>) -> Unit,
+    scaffoldState : BottomSheetScaffoldState
 ) {
     // MutableStateList로 6자리 입력 값을 저장
     val codeDigits = remember { mutableStateListOf("", "", "", "", "", "") }
 
     val focusRequesters = List(6) { FocusRequester() }
+
+    // 바텀시트가 다시 내려갔을 때 때 첫 번째 TextField에 포커스를 설정 && 텍스트필드값 초기화
+    LaunchedEffect(scaffoldState.bottomSheetState.currentValue) {
+        if (scaffoldState.bottomSheetState.currentValue == SheetValue.Hidden) {
+            focusRequesters[0].requestFocus()
+            codeDigits.clear()
+            repeat(6) { codeDigits.add("") }
+        }
+    }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
