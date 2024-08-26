@@ -377,7 +377,8 @@ class LoginPage : ComponentActivity() {
                                         },
                                         onClickNotification = {
                                             isNotificationClicked = !isNotificationClicked
-                                        }
+                                        },
+                                        onBackPress = { navController.popBackStack() }
                                     )
                                 },
                                 floatingActionButton = {

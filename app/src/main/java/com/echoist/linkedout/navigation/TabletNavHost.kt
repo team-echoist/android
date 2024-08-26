@@ -19,6 +19,7 @@ import androidx.navigation.navArgument
 import com.echoist.linkedout.Routes
 import com.echoist.linkedout.page.home.HomePage
 import com.echoist.linkedout.page.login.OnBoardingPage
+import com.echoist.linkedout.presentation.TabletBadgeRoute
 import com.echoist.linkedout.presentation.TabletCommunityRoute
 import com.echoist.linkedout.presentation.TabletEssayWriteRoute
 import com.echoist.linkedout.presentation.TabletHomeRoute
@@ -105,6 +106,9 @@ fun TabletNavHost(
         }
         composable(Routes.Search) {
             TabletSearchScreen(navController)
+        }
+        composable(Routes.BadgePage) {
+            TabletBadgeRoute(contentPadding = contentPadding)
         }
     }
 }

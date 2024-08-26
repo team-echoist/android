@@ -46,6 +46,7 @@ fun TopBarForRoute(
     myLogViewModel: MyLogViewModel = hiltViewModel(),
     onClickSearch: () -> Unit,
     onClickNotification: () -> Unit,
+    onBackPress: () -> Unit,
     pagerState: PagerState = rememberPagerState { 1 }
 ) {
     when {
@@ -84,12 +85,18 @@ fun TopBarForRoute(
             TabletMyInfoTopBar()
         }
 
+        currentRoute == Routes.BadgePage -> {
+            TabletDrawableTopBar(
+                title = "링크드아웃 뱃지",
+                isBack = true,
+                onCloseClick = { onBackPress() })
+        }
+
         else -> {
             // 기본 탑바 또는 아무 것도 표시하지 않음
         }
     }
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
