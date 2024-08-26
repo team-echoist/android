@@ -94,7 +94,7 @@ fun ResetPwPageWithEmail(navController: NavController) {
                     isError = false,
                     isTypedLastNumber = {
                         keyboardController?.hide()
-                    }
+                    },scaffoldState
                 )
                 if (viewModel.isLoading) {
                     Box(

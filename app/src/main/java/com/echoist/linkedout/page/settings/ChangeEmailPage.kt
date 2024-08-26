@@ -120,7 +120,7 @@ fun ChangeEmailPage(navController: NavController) {
                     isTypedLastNumber = { list -> //6자리 리스트
                         //todo 마지막 넘버 입력시 인증 함수 필요 및 isError지정
                         keyboardController?.hide()
-                    }
+                    },scaffoldState
                 )
                 if (viewModel.isLoading) {
                     Box(
