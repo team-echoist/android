@@ -183,6 +183,7 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 
@@ -268,7 +269,12 @@ class LoginPage : ComponentActivity() {
                                             .background(Color(0xFF121212))
                                             .verticalScroll(scrollState),
                                     ) {
-                                        MyProfile(item = homeViewModel.getMyInfo()) { }
+                                        MyProfile(item = homeViewModel.getMyInfo()) {
+                                            scope.launch {
+                                                drawerState.close()
+                                            }
+                                            navController.navigate(Routes.Settings)
+                                        }
                                         HorizontalDivider(
                                             thickness = 6.dp,
                                             color = Color(0xFF191919)
