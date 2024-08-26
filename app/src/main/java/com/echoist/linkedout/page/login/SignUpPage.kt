@@ -498,12 +498,13 @@ fun Authentication_6_BottomModal(
 ) {
     // MutableStateList로 6자리 입력 값을 저장
     val codeDigits = remember { mutableStateListOf("", "", "", "", "", "") }
-
+    val keyboardController = LocalSoftwareKeyboardController.current
     val focusRequesters = List(6) { FocusRequester() }
 
     // 바텀시트가 다시 내려갔을 때 때 첫 번째 TextField에 포커스를 설정 && 텍스트필드값 초기화
     LaunchedEffect(scaffoldState.bottomSheetState.currentValue) {
         if (scaffoldState.bottomSheetState.currentValue == SheetValue.Hidden) {
+            keyboardController!!.hide()
             focusRequesters[0].requestFocus()
             codeDigits.clear()
             repeat(6) { codeDigits.add("") }
@@ -532,6 +533,10 @@ fun Authentication_6_BottomModal(
                     Authentication_TextField(
                         text = codeDigits[index], // 해당 인덱스의 값을 전달
                         onValueChange = { newValue ->
+                            if (newValue.isEmpty() && index > 0) {
+                                // 입력이 지워졌을 때 && 0번째 필드가 아니면 이전 TextField로 포커스 이동
+                                focusRequesters[index - 1].requestFocus()
+                            }
                             codeDigits[index] = newValue
                         },
                         focusRequester = focusRequesters[index],
@@ -597,7 +602,7 @@ fun Authentication_TextField(
 ) {
     OutlinedTextField(
         value = text,
-        onValueChange = {
+        onValueChange = { it->
             if (it.length <= 1) {
                 onValueChange(it) // 상위 컴포저블로 값 전달
                 if (it.isNotEmpty()) {
