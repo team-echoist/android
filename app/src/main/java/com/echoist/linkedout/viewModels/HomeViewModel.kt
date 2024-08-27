@@ -154,11 +154,12 @@ class HomeViewModel @Inject constructor(
 
     //사용자 알림설정 get
     var isApifinished by mutableStateOf(false)
+
     //HomeRepository 도입
     fun readUserNotification() {
 
         viewModelScope.launch {
-            homeRepository.requestUserNotification({response->
+            homeRepository.requestUserNotification({ response ->
                 viewedNotification = response.data.viewed
                 reportNotification = response.data.report
                 marketingNotification = response.data.marketing
@@ -311,31 +312,20 @@ class HomeViewModel @Inject constructor(
 
     //유저 주간 링크드아웃 지수
     fun requestUserGraphSummary() {
-        apiCall(
-            onSuccess = { response ->
+        viewModelScope.launch {
+            homeRepository.requestUserGraphSummary{response->
                 repeat(5) {
                     essayCount[it] = response.data.weeklyEssayCounts!![it].count
                 }
-            },
-            onError = { e ->
-                Log.e("유저 주간 링크드아웃 지수:", "${e.message}")
             }
-        ) { userApi.requestUserGraphSummary(bearerAccessToken, Token.refreshToken) }
+        }
     }
 
     //튜토리얼 건너뛰기
     fun requestFirstUserToExistUser() {
-        val isNotFirst = UserInfo(isFirst = false)
-
-        apiCall(
-            onSuccess = {
-            Log.d("첫유저 ->기존유저", "성공")
-        },
-            onError = { e ->
-                Log.e("첫유저 ->기존유저", "실패 ${e.message}")
-            }
-        ) { userApi.userUpdate(bearerAccessToken, Token.refreshToken, isNotFirst) }
-
+        viewModelScope.launch {
+            homeRepository.requestFirstUserToExistUser()
+        }
     }
 
     var isCheckFinished by mutableStateOf(false)
