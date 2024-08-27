@@ -145,7 +145,7 @@ class SettingsViewModel @Inject constructor(
                     exampleItems.simpleBadgeList = badges.map { it.toBadgeBoxItem() }.toMutableStateList()
                 }
                 Log.d(TAG, "readSimpleBadgeList: ${exampleItems.simpleBadgeList}")
-                Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
 
 
             } catch (e: Exception) {
@@ -171,7 +171,7 @@ class SettingsViewModel @Inject constructor(
                     exampleItems.detailBadgeList = badges.map { it.toBadgeBoxItem() }.toMutableStateList() as SnapshotStateList<BadgeBoxItemWithTag>
                 }
                 Log.d(TAG, "readdetailList: ${exampleItems.detailBadgeList}")
-                Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
 
 
                 navController.navigate("BadgePage")
@@ -194,7 +194,7 @@ class SettingsViewModel @Inject constructor(
                 val response = userApi.requestBadgeLevelUp(bearerAccessToken,Token.refreshToken, badgeId)
                 Log.d(TAG, "requestBadgeLevelUp: ${Token.accessToken}")
 
-                Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
 
                 if (response.body()!!.success){
                     isLevelUpSuccess = true
@@ -218,7 +218,7 @@ class SettingsViewModel @Inject constructor(
                 val response = userApi.userUpdate(bearerAccessToken,Token.refreshToken, userInfo)
 
                 if (response.isSuccessful){
-                    Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                    Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
 
                     Log.d("업데이트 요청 성공", "updateMyInfo: ${newProfile.profileImage}")
 
@@ -257,7 +257,7 @@ class SettingsViewModel @Inject constructor(
                 val response = essayApi.readRecentEssays(bearerAccessToken,Token.refreshToken)
 
                 if (response.isSuccessful){
-                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                                        Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                     exampleItems.recentViewedEssayList = response.body()!!.data.essays.toMutableStateList()
                     isApiFinished = true
                 }
@@ -282,7 +282,7 @@ class SettingsViewModel @Inject constructor(
                 Log.d(TAG, "requestWithdrawal: $reasons")
 
                 if (response.isSuccessful){
-                    Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                    Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                     navController.navigate("LoginPage")
                 }
                 else{
@@ -309,7 +309,7 @@ class SettingsViewModel @Inject constructor(
                 Log.d("닉네임 중복검사", "requestNicknameDuplicated: $nickname")
 
                 if (response.isSuccessful){ //실시간요청이기때문에 토큰사용 x
-                    //                    Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                    //                    Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                     Log.d("닉네임 중복검사 성공", "코드: ${response.code()}")
                     nicknameCheckCode = response.code()
                 }

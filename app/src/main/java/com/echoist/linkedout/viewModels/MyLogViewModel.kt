@@ -144,7 +144,7 @@ class MyLogViewModel @Inject constructor(
                 Log.d("essaylist data", response.body()!!.path + response.body()!!.data)
 
                 if (response.isSuccessful) {
-                    Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                    Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
 
                     response.body()!!.data.essays.forEach { essay ->
                         // publishedEssayList에 이미 해당 essay가 존재하는지 확인
@@ -188,7 +188,7 @@ class MyLogViewModel @Inject constructor(
 
                 if (response.isSuccessful) {
                     Log.d("TAG", "readMyEssay: ${response.body()!!.data.essays}")
-                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                                        Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
 
 
                     response.body()!!.data.essays.forEach { essay ->
@@ -255,7 +255,7 @@ class MyLogViewModel @Inject constructor(
                 val response = essayApi.modifyEssay(bearerAccessToken,Token.refreshToken,exampleItems.detailEssay.id!!,item)
                 if (response.isSuccessful){
                     isActionClicked = false
-                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                                        Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                     navController.navigate("MYLOG/0")
                 }
             } catch (e: Exception) {
@@ -270,7 +270,7 @@ class MyLogViewModel @Inject constructor(
                     val response = essayApi.modifyEssay(bearerAccessToken,Token.refreshToken,exampleItems.detailEssay.id!!,item)
                     if (response.isSuccessful){
                         isActionClicked = false
-                                            Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                                            Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                         navController.navigate("MYLOG/0")
                     }
                 } catch (e: Exception) {
@@ -289,7 +289,7 @@ class MyLogViewModel @Inject constructor(
 
 
                 if (response.isSuccessful) {
-                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                                        Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                     Log.e("writeEssayApiSuccess", "${response.code()}")
                     isActionClicked = false
                     navController.navigate("MYLOG/0") {
@@ -311,7 +311,7 @@ class MyLogViewModel @Inject constructor(
                 val response = storyApi.readMyStories(accessToken = bearerAccessToken,Token.refreshToken)
 
                 if (response.isSuccessful) {
-                    Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                    Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                     storyList = response.body()!!.data.stories.toMutableStateList()
 
                     Log.e("writeEssayApiSuccess", "${response.headers()}")
@@ -335,7 +335,7 @@ class MyLogViewModel @Inject constructor(
             try {
                 val response = storyApi.deleteStory(bearerAccessToken,Token.refreshToken,storyId)
                 if (response.isSuccessful) {
-                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                                        Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                     navController.navigate("MYLOG/2")
 
                     Log.e("writeEssayApiSuccess", "${response.headers()}")
@@ -362,7 +362,7 @@ class MyLogViewModel @Inject constructor(
                 val response = storyApi.createStory(bearerAccessToken,Token.refreshToken,storyData)
 
                 if (response.isSuccessful) {
-                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                                        Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                     navController.navigate("MYLOG/2")
                     storyTextFieldTitle = ""
                     essayIdList.clear()
@@ -392,7 +392,7 @@ class MyLogViewModel @Inject constructor(
                 val response = storyApi.modifyStory(bearerAccessToken,Token.refreshToken,getSelectedStory().id!!,storyData)
 
                 if (response.isSuccessful) {
-                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                                        Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                     Log.d("스토리 수정 성공", "스토리 이름 - ${getSelectedStory().name}")
                     Log.d("스토리 수정 성공", "수정할 스토리 제목 - $storyTextFieldTitle")
                     Log.d("스토리 수정 성공", "수정할 에세이 id 리스트 - $essayIdList")
@@ -424,7 +424,7 @@ class MyLogViewModel @Inject constructor(
                 val response = storyApi.modifyEssayInStory(bearerAccessToken,Token.refreshToken,detailEssay.id!!,getSelectedStory().id!!)
 
                 if (response.isSuccessful) {
-                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                                        Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                     isActionClicked = false
                     navController.navigate("MYLOG/0")
 
@@ -452,7 +452,7 @@ class MyLogViewModel @Inject constructor(
                 val response = storyApi.deleteEssayInStory(bearerAccessToken,Token.refreshToken,detailEssay.id!!)
 
                 if (response.isSuccessful) {
-                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                                        Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                     isActionClicked = false
                     navController.navigate("MYLOG/2")
                     storyTextFieldTitle = ""
@@ -542,7 +542,7 @@ class MyLogViewModel @Inject constructor(
                 }
 
                 if (response.isSuccessful) {
-                    Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                    Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
 
                     Log.d(TAG, "readStoryEssayList: ${getSelectedStory()}")
 
@@ -578,7 +578,7 @@ class MyLogViewModel @Inject constructor(
                 var response = essayApi.readMyEssay(bearerAccessToken,Token.refreshToken, pageType = "story", storyId = getSelectedStory().id!!)
 
                 if (response.isSuccessful) {
-                    Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                    Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                     essayListInStroy = response.body()!!.data.essays.toMutableStateList()
 
                 } else {

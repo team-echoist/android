@@ -69,7 +69,6 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -96,6 +95,7 @@ import com.echoist.linkedout.calculateDaysDifference
 import com.echoist.linkedout.data.BottomNavItem
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.getCurrentDateFormatted
+import com.echoist.linkedout.navigateWithClearBackStack
 import com.echoist.linkedout.page.myLog.Token
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.viewModels.HomeViewModel
@@ -120,10 +120,7 @@ fun HomePage(
     statusCode: Int
 ) {
 
-    val configuration = LocalConfiguration.current
-    val screenWidth = configuration.screenWidthDp // 화면의 높이를 DP 단위로 가져옴
     val context = LocalContext.current
-
 
     Log.d("유저의 상태코드", statusCode.toString())
     Log.d("header token by autoLogin: in home", "${Token.accessToken} \n ${Token.refreshToken}")
@@ -142,7 +139,6 @@ fun HomePage(
         viewModel.requestUnreadAlerts()
         viewModel.requestLatestNotice()
         viewModel.requestRegisterDevice(context) //로그인 후 홈 진입 시 한번만 회원정보 등록
-
     }
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -283,10 +279,18 @@ fun HomePage(
             {
                 Notice_Main(isClickedClose = {
                     viewModel.latestNoticeId = null
-                },
-                    isClickedOpened = {
+                }, isClickedOpened = {
                         viewModel.requestDetailNotice(viewModel.latestNoticeId!!, navController)
-                    })
+                })
+            }
+        } //전역변수로 api statuscode관리해야할듯?
+        if (viewModel.apiResponseStatusCode == 401 || viewModel.apiResponseStatusCode == 500){
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .clickable(enabled = false) { }
+                .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center){
+                ReLogInWaringBox{ navigateWithClearBackStack(navController,Routes.LoginPage) }
+
             }
         }
     }
@@ -1306,6 +1310,32 @@ fun Notice_Main(isClickedClose: () -> Unit, isClickedOpened: () -> Unit) {
                 }
             }
 
+        }
+    }
+}
+
+@Composable
+fun ReLogInWaringBox(isClicked : ()->Unit){
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 30.dp)
+        .height(150.dp)
+        .background(Color(0xFF191919), shape = RoundedCornerShape(10)), contentAlignment = Alignment.Center){
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 20.dp)
+        ) {
+            Spacer(modifier = Modifier.height(40.dp))
+            Text(text = "토큰이 만료되었습니다.", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(text = "재 로그인이 필요합니다.", color = Color.White, fontSize = 14.sp)
+
+        }
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 20.dp, end = 20.dp), contentAlignment = Alignment.BottomEnd){
+            Text(text = "확인", color = LinkedInColor, modifier = Modifier.clickable { isClicked() })
         }
     }
 }

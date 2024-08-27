@@ -53,7 +53,7 @@ class HomeViewModel @Inject constructor(
     var marketingNotification by mutableStateOf(false)
     var locationNotification by mutableStateOf(false)
 
-
+    var apiResponseStatusCode by mutableStateOf(200)
 
     var isLoading by mutableStateOf(false)
     var isFirstUser by mutableStateOf(false)
@@ -78,7 +78,6 @@ class HomeViewModel @Inject constructor(
         try {
 
             val response = userApi.getMyInfo(bearerAccessToken,Token.refreshToken)
-
 
             Log.d("헤더 토큰", Token.accessToken)
             exampleItems.myProfile = response.data.user
@@ -164,8 +163,6 @@ class HomeViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                Log.e(TAG, "readUserNotification: error ${e.message}")
-                Log.e(TAG, "readUserNotification: error device id :  ${DeviceId.ssaid}\n token : ${Token.accessToken}")
             }
             finally {
                 isApifinished = true
@@ -280,6 +277,8 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val response = supportApi.requestLatestNotice(bearerAccessToken,Token.refreshToken)
+                Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+
                 if (response.isSuccessful){
                     //공지가 있을경우 true, 없을경우 Null
                     latestNoticeId = response.body()!!.data.newNotice
@@ -300,11 +299,13 @@ class HomeViewModel @Inject constructor(
             try {
                 isLoading = true
                 val response = supportApi.readUpdatedHistories(bearerAccessToken,Token.refreshToken)
+                Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+
                 if (response.isSuccessful){
                     updateHistory = response.body()!!.data.releases.toMutableStateList()
 
                     //empty라면 가져오지않음. not empty라면 token으로, null이라면 이전 token.accesstoken값으로
-                    Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                    Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                 }
             }catch (e:Exception){
                 e.printStackTrace()
@@ -321,7 +322,8 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val response = userApi.requestUserGraphSummary(bearerAccessToken,Token.refreshToken)
-                Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                Log.d(TAG, "requestUserGraphSummaryResponse: ${response.headers()}")
 
                 if (response.isSuccessful){
 
@@ -330,9 +332,13 @@ class HomeViewModel @Inject constructor(
                     }
                     Log.d(TAG, "유저 주간 링크드아웃 지수 호출 성공 $essayCount")
                 }
+                else{
+                    apiResponseStatusCode = response.code()
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
-                Log.e(TAG, "유저 주간 링크드아웃 지수: ${e.message}", )
+                apiResponseStatusCode = 500
+                Log.e(TAG, "유저 주간 링크드아웃 지수: ${e.message}", ) //error종류 timeout이거나 401인경우 재로그인
             }
         }
     }
@@ -342,6 +348,8 @@ class HomeViewModel @Inject constructor(
             try {
                 val isNotFirst = UserInfo(isFirst = false)
                 val response = userApi.userUpdate(bearerAccessToken,Token.refreshToken,isNotFirst)
+                Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+
                 if (response.isSuccessful) Log.d("첫유저 ->기존유저", "성공")
                 else Log.e("첫유저 ->기존유저", "실패 ${response.code()}")
             } catch (e: Exception) {
@@ -358,6 +366,8 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val response = supportApi.readUnreadAlerts(bearerAccessToken,Token.refreshToken)
+                Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+
                 if (response.isSuccessful){
                     isExistUnreadAlerts =
                         response.body()!!.data
@@ -375,7 +385,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val response = supportApi.readGeulroquis(bearerAccessToken,Token.refreshToken)
-                Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
 
                 if (response.isSuccessful){
                     Log.d("글로키 api", "성공: ${response.body()!!.data.url}")
@@ -396,6 +406,8 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val response = userApi.requestReactivate(bearerAccessToken,Token.refreshToken)
+                Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+
                 if (response.isSuccessful){
                     Log.d("유저 탈퇴 취소", "성공: ${response.body()}")
                 }
@@ -413,6 +425,8 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val response = userApi.requestDeleteUser(bearerAccessToken,Token.refreshToken)
+                Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+
                 if (response.isSuccessful){
                     Log.d("유저 즉시 탈퇴", "성공: ${response.body()}")
                     navController.popBackStack(Routes.OnBoarding,false)
@@ -433,9 +447,10 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val response = supportApi.readNoticeDetail(Token.accessToken,Token.refreshToken,noticeId)
+                Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+
                 if (response.isSuccessful){
 
-                    Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                     Log.d("공지사항 디테일 확인", "성공 공지 내용 : ${response.body()!!.data.content}")
 
                     val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()

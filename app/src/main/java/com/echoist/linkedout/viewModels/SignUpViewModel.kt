@@ -147,7 +147,7 @@ class SignUpViewModel @Inject constructor(
                 isSignUpApiFinished = true
 
                 Log.d("tokentoken", response.headers()["authorization"].toString())
-                Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
             } else {
                 errorCode = response.code()
                 Log.e("authApiFailed2", "Failed : ${response.headers()}")
@@ -180,7 +180,7 @@ class SignUpViewModel @Inject constructor(
                     Log.e("authApiSuccess2", "${response.headers()}")
                     Log.e("authApiSuccess2", "${response.code()}")
 
-                    Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                    Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                     readMyInfo()
                     isSendEmailVerifyApiFinished = true
 
@@ -211,7 +211,7 @@ class SignUpViewModel @Inject constructor(
                 Log.d("requestChangePw api header", "${response.headers()}")
                 Log.d("requestChangePw api code", "${response.code()}")
                 //헤더에 토큰이 없다.
-                Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                 isSendEmailVerifyApiFinished = true
             }
             else{

@@ -58,7 +58,7 @@ class SupportViewModel @Inject constructor(
             try {
                 val response = supportApi.readAlertsList(bearerAccessToken,Token.refreshToken)
                 if (response.isSuccessful){
-                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                                        Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                     alertList = response.body()!!.data.alerts.toMutableStateList()
 
                 }
@@ -78,7 +78,7 @@ class SupportViewModel @Inject constructor(
             try {
                 val response = supportApi.readAlert(bearerAccessToken,Token.refreshToken,alertId)
                 if (response.isSuccessful){
-                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                                        Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -130,7 +130,7 @@ class SupportViewModel @Inject constructor(
                 val body = Inquiry(title = title,content = content,type = type)
                 val response = supportApi.writeInquiry(bearerAccessToken,Token.refreshToken,body)
                 if (response.isSuccessful){
-                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                                        Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                     //todo alert 성공!
                     navController.navigate(Routes.LinkedOutSupportPage)
                     Log.d("문의 작성 성공", "${response.code()}")
@@ -154,7 +154,7 @@ class SupportViewModel @Inject constructor(
             try {
                 val response = supportApi.readInquiries(bearerAccessToken,Token.refreshToken)
                 if (response.isSuccessful){
-                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                                        Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                     //todo alert 성공!
                     _inquiryList.emit(response.body()!!.data)
                     Log.d(TAG, "readInquiryList: $inquiryList")
@@ -173,7 +173,7 @@ class SupportViewModel @Inject constructor(
         return try {
             val response = supportApi.readInquiryDetail(bearerAccessToken,Token.refreshToken, inquiryId)
             if (response.isSuccessful) {
-                                    Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                                    Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
 
                 response.body()?.data // 성공 시 response.body()?.data를 반환
             } else {
@@ -193,7 +193,7 @@ class SupportViewModel @Inject constructor(
             try {
                 val response = supportApi.readNotices(bearerAccessToken,Token.refreshToken)
                 if (response.isSuccessful){
-                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                                        Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                     noticeList.addAll(response.body()!!.data.Notices)
                     Log.d("공지사항 목록 불러오기", "성공: $noticeList")
                 }
@@ -213,7 +213,7 @@ class SupportViewModel @Inject constructor(
             try {
                 val response = supportApi.readNoticeDetail(bearerAccessToken,Token.refreshToken,noticeId)
                 if (response.isSuccessful){
-                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                                        Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                     Log.d("공지사항 디테일 확인", "성공 내용 : ${response.body()!!.data.content}")
                     Log.d("공지사항 디테일 확인", "성공 시간 : ${response.body()!!.data.createdDate}")
 
