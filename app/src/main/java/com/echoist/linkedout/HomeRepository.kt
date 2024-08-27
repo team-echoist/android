@@ -24,7 +24,7 @@ class HomeRepository @Inject constructor(
         { supportApi.readUserNotification(Token.bearerAccessToken, Token.refreshToken) }
     }
 
-    suspend fun requestFirstUserToExistUser(){
+    suspend fun requestFirstUserToExistUser() {
         val isNotFirst = UserInfo(isFirst = false)
         apiCall(
             onSuccess = {
@@ -36,9 +36,9 @@ class HomeRepository @Inject constructor(
         ) { userApi.userUpdate(Token.bearerAccessToken, Token.refreshToken, isNotFirst) }
     }
 
-    suspend fun requestUserGraphSummary(onSuccess: suspend (UserGraphSummaryResponse) -> Unit,) {
+    suspend fun requestUserGraphSummary(onSuccess: suspend (UserGraphSummaryResponse) -> Unit) {
         apiCall(
-            onSuccess = onSuccess ,
+            onSuccess = onSuccess,
             onError = { e ->
                 Log.e("유저 주간 링크드아웃 지수:", "${e.message}")
             }

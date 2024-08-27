@@ -351,10 +351,7 @@ class MyLogViewModel @Inject constructor(
                             ?: Token.accessToken
                     storyList = response.body()!!.data.stories.toMutableStateList()
 
-                    Log.e("writeEssayApiSuccess", "${response.headers()}")
-                    Log.e("writeEssayApiSuccess", "${response.code()}")
                 } else {
-                    Log.e("writeEssayApiFailed", "${response.errorBody()}")
                     Log.e("writeEssayApiFailed", "${response.code()}")
                 }
 
@@ -377,10 +374,7 @@ class MyLogViewModel @Inject constructor(
                             ?: Token.accessToken
                     navController.navigate("MYLOG/2")
 
-                    Log.e("writeEssayApiSuccess", "${response.headers()}")
-                    Log.e("writeEssayApiSuccess", "${response.code()}")
                 } else {
-                    Log.e("writeEssayApiFailed", "${response.errorBody()}")
                     Log.e("writeEssayApiFailed", "${response.code()}")
                 }
 
@@ -409,10 +403,7 @@ class MyLogViewModel @Inject constructor(
                     storyTextFieldTitle = ""
                     essayIdList.clear()
 
-                    Log.e("writeEssayApiSuccess", "${response.headers()}")
-                    Log.e("writeEssayApiSuccess", "${response.code()}")
                 } else {
-                    Log.e("writeEssayApiFailed", "${response.errorBody()}")
                     Log.e("writeEssayApiFailed", "${response.code()}")
                 }
 
@@ -428,7 +419,7 @@ class MyLogViewModel @Inject constructor(
     fun modifyStory(
         navController: NavController,
         essayidList: List<Int>
-    ) { //todo essaylist가 비어있을때는 동작x
+    ) {
         viewModelScope.launch {
             try {
                 val storyData = StoryApi.StoryData(storyTextFieldTitle, essayidList)
@@ -444,9 +435,6 @@ class MyLogViewModel @Inject constructor(
                     Token.accessToken =
                         response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() }
                             ?: Token.accessToken
-                    Log.d("스토리 수정 성공", "스토리 이름 - ${getSelectedStory().name}")
-                    Log.d("스토리 수정 성공", "수정할 스토리 제목 - $storyTextFieldTitle")
-                    Log.d("스토리 수정 성공", "수정할 에세이 id 리스트 - $essayIdList")
 
                     storyTextFieldTitle = ""
                     essayIdList.clear()
@@ -454,7 +442,6 @@ class MyLogViewModel @Inject constructor(
 
                     Log.e("스토리 수정 성공", "${response.code()}")
                 } else {
-                    Log.e("스토리 수정 실패", "${response.errorBody()}")
                     Log.e("스토리 수정 실패", "${response.code()}")
                 }
 
