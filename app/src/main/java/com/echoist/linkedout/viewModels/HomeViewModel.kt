@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.echoist.linkedout.AlarmReceiver
+import com.echoist.linkedout.HomeRepository
 import com.echoist.linkedout.Routes
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.api.SignUpApiImpl
@@ -45,7 +46,8 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val exampleItems: ExampleItems,
     private val userApi: UserApi,
-    private val supportApi: SupportApi
+    private val supportApi: SupportApi,
+    private val homeRepository: HomeRepository
 ) : ViewModel() {
 
     var myProfile by mutableStateOf(exampleItems.myProfile)
@@ -152,19 +154,21 @@ class HomeViewModel @Inject constructor(
 
     //사용자 알림설정 get
     var isApifinished by mutableStateOf(false)
+    //HomeRepository 도입
     fun readUserNotification() {
-        apiCall(
-            onSuccess = { response ->
+
+        viewModelScope.launch {
+            homeRepository.requestUserNotification({response->
                 viewedNotification = response.data.viewed
                 reportNotification = response.data.report
                 marketingNotification = response.data.marketing
                 requestMyInfo()
-            }, finally = {
+            })
+            {
                 isApifinished = true
             }
-        ) {
-            supportApi.readUserNotification(bearerAccessToken, Token.refreshToken)
         }
+
     }
 
     //사용자 알림설정 update
