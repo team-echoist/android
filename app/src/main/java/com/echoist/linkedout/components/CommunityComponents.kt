@@ -832,7 +832,7 @@ fun CommunityTopAppBar(
         actions = {
             Icon(
                 imageVector = Icons.Default.Search,
-                contentDescription = "",
+                contentDescription = "Search",
                 Modifier
                     .padding(start = 10.dp)
                     .size(30.dp)
@@ -842,7 +842,7 @@ fun CommunityTopAppBar(
             Spacer(modifier = Modifier.width(13.dp))
             Icon(
                 painter = painterResource(id = R.drawable.icon_bookmarkfill_black),
-                contentDescription = "",
+                contentDescription = "icon_bookmarkfill_black",
                 Modifier
                     .padding(end = 10.dp)
                     .size(30.dp)
@@ -1365,7 +1365,7 @@ fun SentenceChoiceBox(viewModel: CommunityViewModel) {
                     .padding(end = 10.dp)
                     .size(24.dp)
                     .clickable { isClicked = !isClicked },
-                contentDescription = ""
+                contentDescription = "arrow"
             )
 
         }

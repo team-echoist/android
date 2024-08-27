@@ -84,7 +84,7 @@ fun OnBoardingPage(navController: NavController) {
 
                         GlideImage(
                             model = R.drawable.splash_final,
-                            contentDescription = "",
+                            contentDescription = "splash_final",
                             modifier = Modifier.fillMaxSize()
                         )
 
@@ -196,7 +196,7 @@ fun OnBoardingPager(
     Box(modifier = Modifier.fillMaxSize()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
 //            VideoPlayer(resId)
-            GlideImage(model = resId, contentDescription = "", modifier = Modifier.fillMaxSize())
+            GlideImage(model = resId, contentDescription = "onBoarding", modifier = Modifier.fillMaxSize())
         }
 
         Column(

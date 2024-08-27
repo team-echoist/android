@@ -1,5 +1,7 @@
 package com.echoist.linkedout
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.navigation.NavController
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -105,6 +107,9 @@ object Routes {
 
 enum class UserStatus {
     Activated,Monitored,Banned,DeActivated
+}
+object AuthManager {
+    var isReAuthenticationRequired: MutableState<Boolean> = mutableStateOf(false)
 }
 
 fun navigateWithClearBackStack(

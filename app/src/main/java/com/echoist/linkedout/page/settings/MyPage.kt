@@ -476,7 +476,7 @@ fun BadgeDescriptionBox(badgeBoxItem: BadgeBoxItem, viewModel: SettingsViewModel
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
             Image(
                 painter = painterResource(id = R.drawable.badge_container),
-                contentDescription = ""
+                contentDescription = "badge_container"
             )
         }
         Column(

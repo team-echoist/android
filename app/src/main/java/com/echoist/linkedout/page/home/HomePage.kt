@@ -85,6 +85,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.echoist.linkedout.AuthManager
 import com.echoist.linkedout.R
 import com.echoist.linkedout.Routes
 import com.echoist.linkedout.SharedPreferencesUtil
@@ -134,7 +135,7 @@ fun HomePage(
 
     LaunchedEffect(key1 = Unit) {
         viewModel.requestMyInfo()
-        viewModel.requestUserGraphSummaryResponse()
+        viewModel.requestUserGraphSummary()
         viewModel.requestGuleRoquis()
         viewModel.requestUnreadAlerts()
         viewModel.requestLatestNotice()
@@ -246,11 +247,11 @@ fun HomePage(
             TutorialPage(
                 isCloseClicked = {
                     viewModel.isFirstUser = false
-                    viewModel.setFirstUserToExistUser()
+                    viewModel.requestFirstUserToExistUser()
                 },
                 isSkipClicked = {
                     viewModel.isFirstUser = false
-                    viewModel.setFirstUserToExistUser()
+                    viewModel.requestFirstUserToExistUser()
                 })
         }
         if (userStatus == UserStatus.DeActivated) {
@@ -283,13 +284,16 @@ fun HomePage(
                         viewModel.requestDetailNotice(viewModel.latestNoticeId!!, navController)
                 })
             }
-        } //전역변수로 api statuscode관리해야할듯?
-        if (viewModel.apiResponseStatusCode == 401 || viewModel.apiResponseStatusCode == 500){
+        } //토큰 만료시
+        if (AuthManager.isReAuthenticationRequired.value){
             Box(modifier = Modifier
                 .fillMaxSize()
                 .clickable(enabled = false) { }
                 .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center){
-                ReLogInWaringBox{ navigateWithClearBackStack(navController,Routes.LoginPage) }
+                ReLogInWaringBox{
+                    navigateWithClearBackStack(navController,Routes.LoginPage)
+                    AuthManager.isReAuthenticationRequired.value = false
+                }
 
             }
         }
@@ -1326,10 +1330,10 @@ fun ReLogInWaringBox(isClicked : ()->Unit){
                 .fillMaxSize()
                 .padding(start = 20.dp)
         ) {
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(20.dp))
             Text(text = "토큰이 만료되었습니다.", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
             Spacer(modifier = Modifier.height(6.dp))
-            Text(text = "재 로그인이 필요합니다.", color = Color.White, fontSize = 14.sp)
+            Text(text = "다시 로그인 해주세요.", color = Color.White, fontSize = 14.sp)
 
         }
         Box(modifier = Modifier

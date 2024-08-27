@@ -35,7 +35,7 @@ fun groupHistoriesByDate(histories: List<Release>): Map<String, List<Release>> {
 
 @Composable
 fun UpdateHistoryPage(navController: NavController, viewModel: HomeViewModel = hiltViewModel()) {
-    viewModel.readUpdateHistory()
+    viewModel.requestUpdatedHistory()
 
 
     Scaffold(topBar = {
