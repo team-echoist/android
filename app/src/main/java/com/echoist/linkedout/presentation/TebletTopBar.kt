@@ -121,6 +121,13 @@ fun TopBarForRoute(
                 onCloseClick = { onBackPress() })
         }
 
+        currentRoute == Routes.RecentViewedEssayPage -> {
+            TabletDrawableTopBar(
+                title = "최근 본 글",
+                isBack = true,
+                onCloseClick = { onBackPress() })
+        }
+
         else -> {
             // 기본 탑바 또는 아무 것도 표시하지 않음
         }
