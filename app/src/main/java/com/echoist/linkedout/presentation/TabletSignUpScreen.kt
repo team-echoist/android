@@ -1,6 +1,7 @@
 package com.echoist.linkedout.presentation
 
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
@@ -125,6 +126,7 @@ internal fun TabletSignUpScreen(
         sheetContent = {
             SignUpBottomSheetContent(
                 viewModel = viewModel,
+                scaffoldState = scaffoldState,
                 navController = navController,
                 onInputComplete = onInputComplete
             )
@@ -237,17 +239,21 @@ private fun SignUpContent(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SignUpBottomSheetContent(
     viewModel: SignUpViewModel,
+    scaffoldState: BottomSheetScaffoldState,
     navController: NavController,
     onInputComplete: (String) -> Unit
 ) {
     Box {
         Authentication_6_BottomModal(
-            { viewModel.getUserEmailCheck(viewModel.userEmail, navController) },
+            { viewModel.getUserEmailCheck(viewModel.userEmail, navController) }, //재요청 인증
             isError = viewModel.errorCode >= 400,
-            isTypedLastNumber = { list -> onInputComplete(list.joinToString("")) }
+            isTypedLastNumber = { list ->
+                onInputComplete(list.joinToString(""))
+            }, scaffoldState
         )
         if (viewModel.isLoading) {
             Box(
