@@ -32,6 +32,7 @@ import com.echoist.linkedout.presentation.TabletLoginRoute
 import com.echoist.linkedout.presentation.TabletMyInfoRoute
 import com.echoist.linkedout.presentation.TabletMyLogRoute
 import com.echoist.linkedout.presentation.TabletOnBoardingRoute
+import com.echoist.linkedout.presentation.TabletRecentEssayScreen
 import com.echoist.linkedout.presentation.TabletResetPwRoute
 import com.echoist.linkedout.presentation.TabletSearchScreen
 import com.echoist.linkedout.presentation.TabletSettingRoute
@@ -141,6 +142,12 @@ fun TabletNavHost(
         }
         composable(Routes.DeleteAccount) {
             TabletDeleteAccountRoute(contentPadding = contentPadding, navController = navController)
+        }
+        composable(Routes.RecentViewedEssayPage) {
+            TabletRecentEssayScreen(
+                contentPadding = contentPadding,
+                navController = navController
+            )
         }
     }
 }
