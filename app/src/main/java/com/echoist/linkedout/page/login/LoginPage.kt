@@ -235,6 +235,7 @@ class LoginPage : ComponentActivity() {
                         if (isClickedExit) {
                             this.finish() //두번클릭 시 앱종료
                         } else isClickedExit = true //한번클릭시 경고
+
                         // 추가적으로 원하는 동작 수행
                     } else {
                         navController.popBackStack() // 백 스택이 있다면 일반적으로 뒤로 가기
