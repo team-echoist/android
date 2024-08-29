@@ -17,10 +17,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.echoist.linkedout.Routes
+import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.page.home.HomePage
 import com.echoist.linkedout.page.login.OnBoardingPage
+import com.echoist.linkedout.presentation.TabletAccountRoute
 import com.echoist.linkedout.presentation.TabletBadgeRoute
+import com.echoist.linkedout.presentation.TabletChangeEmailScreen
+import com.echoist.linkedout.presentation.TabletChangePasswordScreen
 import com.echoist.linkedout.presentation.TabletCommunityRoute
+import com.echoist.linkedout.presentation.TabletDeleteAccountRoute
 import com.echoist.linkedout.presentation.TabletEssayWriteRoute
 import com.echoist.linkedout.presentation.TabletHomeRoute
 import com.echoist.linkedout.presentation.TabletLoginRoute
@@ -109,6 +114,33 @@ fun TabletNavHost(
         }
         composable(Routes.BadgePage) {
             TabletBadgeRoute(contentPadding = contentPadding)
+        }
+        composable(Routes.AccountPage) {
+            TabletAccountRoute(
+                contentPadding = contentPadding,
+                onClickChangeEmail = { navController.navigate(Routes.ChangeEmail) },
+                onClickChangePassword = { navController.navigate(Routes.ChangePassword) },
+                onClickDeleteAccount = { navController.navigate(Routes.DeleteAccount) },
+                isLogoutClicked = {
+                    navController.popBackStack(
+                        Routes.LoginPage,
+                        true
+                    )
+                    navController.navigate(Routes.LoginPage)
+                }
+            )
+        }
+        composable(Routes.ChangeEmail) {
+            TabletChangeEmailScreen(contentPadding = contentPadding)
+        }
+        composable(Routes.ChangePassword) {
+            TabletChangePasswordScreen(
+                contentPadding = contentPadding,
+                onClickResetPassword = { navController.navigate(Routes.ResetPwPageWithEmail) }
+            )
+        }
+        composable(Routes.DeleteAccount) {
+            TabletDeleteAccountRoute(contentPadding = contentPadding, navController = navController)
         }
     }
 }
