@@ -46,6 +46,7 @@ fun TopBarForRoute(
     myLogViewModel: MyLogViewModel = hiltViewModel(),
     onClickSearch: () -> Unit,
     onClickNotification: () -> Unit,
+    onClickTutorial: () -> Unit,
     onBackPress: () -> Unit,
     pagerState: PagerState = rememberPagerState { 1 }
 ) {
@@ -58,7 +59,7 @@ fun TopBarForRoute(
                 },
                 onClickNotification = { onClickNotification() },
                 isExistUnreadAlerts = homeViewModel.isExistUnreadAlerts,
-                isClickedTutorial = { homeViewModel.isFirstUser = true }
+                isClickedTutorial = { onClickTutorial() }
             )
         }
 
@@ -88,6 +89,34 @@ fun TopBarForRoute(
         currentRoute == Routes.BadgePage -> {
             TabletDrawableTopBar(
                 title = "링크드아웃 뱃지",
+                isBack = true,
+                onCloseClick = { onBackPress() })
+        }
+
+        currentRoute == Routes.AccountPage -> {
+            TabletDrawableTopBar(
+                title = "계정 관리",
+                isBack = true,
+                onCloseClick = { onBackPress() })
+        }
+
+        currentRoute == Routes.ChangeEmail -> {
+            TabletDrawableTopBar(
+                title = "이메일 변경",
+                isBack = true,
+                onCloseClick = { onBackPress() })
+        }
+
+        currentRoute == Routes.ChangePassword -> {
+            TabletDrawableTopBar(
+                title = "비밀번호 변경",
+                isBack = true,
+                onCloseClick = { onBackPress() })
+        }
+
+        currentRoute == Routes.DeleteAccount -> {
+            TabletDrawableTopBar(
+                title = "탈퇴하기",
                 isBack = true,
                 onCloseClick = { onBackPress() })
         }
