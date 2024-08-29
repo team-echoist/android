@@ -103,6 +103,9 @@ object Routes {
     const val LocationPolicyPage = "LocationPolicyPage"
     const val FontCopyRight = "FontCopyRight"
     const val Search = "Search"
+    const val ChangeEmail = "ChangeEmail"
+    const val ChangePassword = "ChangePassword"
+    const val DeleteAccount = "DeleteAccount"
 }
 
 enum class UserStatus {
@@ -176,6 +179,7 @@ fun calculateDateAfter30Days(): String {
 
     return futureDate.format(formatter) // 형식에 맞춰 문자열로 반환
 }
+
 // yyyy-mm-dd형태의 문자열이 주어졌을 때, 해당 날짜가 오늘 이후인지 확인하는 함수
 fun isDateAfterToday(dateString: String): Boolean {
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
