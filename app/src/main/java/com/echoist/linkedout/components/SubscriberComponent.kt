@@ -219,10 +219,7 @@ fun ProfilePage(viewModel: CommunityViewModel, navController: NavController) {
             communityViewModel = viewModel,
             navController = navController
         )
-
     }
-
-
 }
 
 @Composable

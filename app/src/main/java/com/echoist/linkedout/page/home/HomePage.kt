@@ -363,8 +363,6 @@ fun WriteFTB(
     viewModel: HomeViewModel,
     writingViewModel: WritingViewModel
 ) {
-
-
     FloatingActionButton(
         modifier = Modifier.padding(end = 25.dp, bottom = 25.dp),
         onClick = {
@@ -480,7 +478,6 @@ private fun isRouteSelected(currentRoute: String?, screenRoute: String): Boolean
     return currentRoute?.substringBefore('/') == screenRoute.substringBefore('/')
 }
 
-
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun MyProfile(item: UserInfo, onClick: () -> Unit) {
@@ -540,7 +537,6 @@ fun LineChartExample(modifier: Modifier = Modifier, essayCounts: List<Int>) {
     // 현재 달을 가져옴
     val currentMonth =
         LocalDate.now().month.getDisplayName(java.time.format.TextStyle.SHORT, Locale.getDefault())
-
 
     AndroidView(
         modifier = modifier
@@ -757,8 +753,6 @@ fun TutorialPage(isCloseClicked: () -> Unit, isSkipClicked: () -> Unit) {
     HorizontalPager(state = pagerstate, modifier = Modifier.fillMaxSize()) { page ->
         when (page) {
             0 -> Tutorial_1()
-
-
             1 ->
                 Tutorial_2(draggedToLeft = {
                     coroutineScope.launch {
@@ -797,8 +791,6 @@ fun TutorialPage(isCloseClicked: () -> Unit, isSkipClicked: () -> Unit) {
 
                     }
                 })
-
-
             3 ->
                 Tutorial_4 {
                     isCloseClicked()

@@ -48,13 +48,14 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-fun SearchingPage(drawerState: DrawerState, navController: NavController) {
+fun SearchingPage(
+    drawerState: DrawerState,
+    navController: NavController,
+    searchingViewModel: SearchingViewModel = hiltViewModel()
+) {
     val pagerState = rememberPagerState { 2 }
 
     val scope = rememberCoroutineScope()
-
-    val searchingViewModel: SearchingViewModel = hiltViewModel()
-
 
     Scaffold(
         topBar = {
@@ -74,8 +75,6 @@ fun SearchingPage(drawerState: DrawerState, navController: NavController) {
             }
         },
     ) {
-
-        //todo 검색할 리스트 뷰모델에서 재정의필요.
         Column(Modifier.padding(it)) {
             Spacer(modifier = Modifier.height(20.dp))
             SearchingPager(

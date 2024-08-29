@@ -461,8 +461,6 @@ class LoginPage : ComponentActivity() {
                     ) { ExitAppErrorBox() }
                 }
             }
-
-
         }
     }
 }

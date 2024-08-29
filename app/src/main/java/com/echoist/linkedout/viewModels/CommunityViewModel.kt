@@ -41,8 +41,7 @@ open class CommunityViewModel @Inject constructor(
 ) : ViewModel() {
 
     val _isRefreshing = MutableStateFlow(false)
-    open val isRefreshing: StateFlow<Boolean>
-        get() = _isRefreshing.asStateFlow()
+    open val isRefreshing: StateFlow<Boolean> get() = _isRefreshing.asStateFlow()
 
     private val _randomList = MutableStateFlow<List<EssayApi.EssayItem>>(emptyList())
     val randomList: StateFlow<List<EssayApi.EssayItem>>
@@ -50,14 +49,12 @@ open class CommunityViewModel @Inject constructor(
 
     var randomEssayList by mutableStateOf(mutableStateListOf<EssayApi.EssayItem>())
 
-
     open var _isLoading = MutableStateFlow(false)
     val isLoading : StateFlow<Boolean>
         get() = _isLoading.asStateFlow()
 
     private var _firstSentences = MutableStateFlow<List<EssayApi.EssayItem>>(emptyList())
-    val firstSentences : StateFlow<List<EssayApi.EssayItem>>
-        get() = _firstSentences.asStateFlow()
+    val firstSentences : StateFlow<List<EssayApi.EssayItem>> get() = _firstSentences.asStateFlow()
 
     private var _lastSentences  = MutableStateFlow<List<EssayApi.EssayItem>>(emptyList())
     val lastSentences : StateFlow<List<EssayApi.EssayItem>>
@@ -74,7 +71,6 @@ open class CommunityViewModel @Inject constructor(
 
     open var essayIdList by mutableStateOf(mutableStateListOf<Int>())
 
-
     var isClicked by mutableStateOf(false)
     var isSavedEssaysModifyClicked by mutableStateOf(false)
     var sentenceInfo by mutableStateOf(SentenceInfo.First)
@@ -89,7 +85,6 @@ open class CommunityViewModel @Inject constructor(
     var subscribeUserList = exampleItems.subscribeUserList
     var userItem = exampleItems.userItem
     var followingList = exampleItems.followingList
-
 
     var previousEssayList by mutableStateOf(exampleItems.exampleEmptyEssayList)
 
@@ -148,8 +143,6 @@ open class CommunityViewModel @Inject constructor(
     fun setBackDetailEssay(essay: EssayApi.EssayItem) {
         exampleItems.detailEssay = essay
     }
-
-
     fun findUser() {
         currentClickedUserId?.let { userId ->
             val user = exampleItems.subscribeUserList.find { it.id == userId }
@@ -181,7 +174,6 @@ open class CommunityViewModel @Inject constructor(
                     Log.d("랜덤에세이 호출성공", "전체 호출하는 limit 사이즈 ${randomEssayList.size}")
                     Log.d("랜덤에세이 호출성공", "실제 랜덤 에세이 사이즈  ${exampleItems.randomList.size}")
                 }
-
                 // API 호출 결과 처리 (예: response 데이터 사용)
             } catch (e: Exception) {
                 // 예외 처리
@@ -245,7 +237,11 @@ open class CommunityViewModel @Inject constructor(
         }
     }
 
-    open fun readDetailEssay(id: Int, navController: NavController,type: String = TYPE_RECOMMEND) {
+    open fun readDetailEssay(
+        id: Int,
+        navController: NavController,
+        type: String = TYPE_RECOMMEND
+    ) {
         viewModelScope.launch {
             try {
                 _isLoading.emit(true)
@@ -338,7 +334,11 @@ open class CommunityViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val deleteEssayId = listOf(essayId)
-                val response = bookMarkApi.deleteBookMarks(bearerAccessToken,Token.refreshToken,BookMarkApi.RequestDeleteBookMarks(deleteEssayId))
+                val response = bookMarkApi.deleteBookMarks(
+                    bearerAccessToken,
+                    Token.refreshToken,
+                    BookMarkApi.RequestDeleteBookMarks(deleteEssayId)
+                )
                 if (response.isSuccessful){
                     Log.d(TAG, "bookMarkEssayList: 단일 북마크삭제 성공 ${detailEssay.title}")
                     Log.d(TAG, "bookMarkEssayList: 북마크삭제 성공 $deleteEssayId")
@@ -361,12 +361,15 @@ open class CommunityViewModel @Inject constructor(
                     deleteEssayId.add(it.id!!)
                 }
 
-                val response = bookMarkApi.deleteBookMarks(bearerAccessToken,Token.refreshToken,BookMarkApi.RequestDeleteBookMarks(deleteEssayId))
+                val response = bookMarkApi.deleteBookMarks(
+                    bearerAccessToken,
+                    Token.refreshToken,
+                    BookMarkApi.RequestDeleteBookMarks(deleteEssayId)
+                )
                 if (response.isSuccessful){
                     //삭제하고 다시 북마크 로딩
                     readMyBookMarks(navController = navController)
                 }
-                Log.d(TAG, "bookMarkEssayList: 북마크삭제 성공 $deleteEssayId")
                 Log.d(TAG, "bookMarkEssayList: 북마크삭제 성공 $deleteEssayId")
 
                 // API 호출 결과 처리 (예: response 데이터 사용)
@@ -382,7 +385,12 @@ open class CommunityViewModel @Inject constructor(
     fun reportEssay(essayId: Int, reportReason : String){
         viewModelScope.launch {
             try {
-                val response = essayApi.reportEssay(bearerAccessToken,Token.refreshToken, essayId, EssayApi.ReportRequest(reportReason))
+                val response = essayApi.reportEssay(
+                    bearerAccessToken,
+                    Token.refreshToken,
+                    essayId,
+                    EssayApi.ReportRequest(reportReason)
+                )
                 if (response.isSuccessful){
                     Log.d(TAG, "reportEssay: 성공입니다 아니면 예시 ${detailEssay.title}")
                     isReportCleared = true

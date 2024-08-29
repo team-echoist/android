@@ -32,8 +32,6 @@ class App : Application() {
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-
-
     @Provides
     @Singleton
     fun provideRetrofit() : Retrofit{

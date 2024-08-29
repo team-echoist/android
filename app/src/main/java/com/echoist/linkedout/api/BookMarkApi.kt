@@ -12,7 +12,6 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface BookMarkApi{
-
     @GET("api/bookmarks")
     suspend fun readMyBookMark(
         @Header("Authorization") accessToken: String,
@@ -42,7 +41,5 @@ interface BookMarkApi{
         @Header("Authorization") accessToken: String,
         @Header("x-refresh-token") refreshToken: String,
     ): Response<Unit>
-
-
 
 }

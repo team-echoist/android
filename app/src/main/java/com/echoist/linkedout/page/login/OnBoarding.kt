@@ -2,7 +2,6 @@ package com.echoist.linkedout.page.login
 
 import android.content.ContentValues.TAG
 import android.util.Log
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -46,11 +45,10 @@ fun PrevOnBoardingPage() {
     OnBoardingPage(rememberNavController())
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalGlideComposeApi::class)
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun OnBoardingPage(navController: NavController) {
     var isChanged by remember { mutableStateOf(true) }
-
 
     LaunchedEffect(key1 = true) {
         if (isChanged) {
@@ -158,8 +156,6 @@ fun OnBoardingPage(navController: NavController) {
                                 )
                             }
                         }
-
-
                     }
                 }
                 if (pagerstate.currentPage == 3) {
@@ -171,8 +167,6 @@ fun OnBoardingPage(navController: NavController) {
                         ),
                         onClick = {
                             navController.navigate("LoginPage")
-
-
                         }) {
                         Text(text = "시작하기", color = Color.Black)
 
