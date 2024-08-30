@@ -36,6 +36,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.echoist.linkedout.R
@@ -49,7 +50,6 @@ import com.echoist.linkedout.page.home.MyBottomNavigation
 import com.echoist.linkedout.page.home.MyLinkedOutBar
 import com.echoist.linkedout.page.home.MyProfile
 import com.echoist.linkedout.page.home.ShopDrawerItem
-import com.echoist.linkedout.page.home.TutorialPage
 import com.echoist.linkedout.viewModels.HomeViewModel
 import com.echoist.linkedout.viewModels.MyLogViewModel
 import kotlinx.coroutines.launch
@@ -58,8 +58,8 @@ import kotlinx.coroutines.launch
 fun TabletApp(
     context: Context,
     navController: NavHostController,
-    homeViewModel: HomeViewModel,
-    myLogViewModel: MyLogViewModel
+    homeViewModel: HomeViewModel = hiltViewModel(),
+    myLogViewModel: MyLogViewModel = hiltViewModel()
 ) {
     var isClickedTutorial by remember { mutableStateOf(false) }
     val navBackStackEntry by navController.currentBackStackEntryAsState()
