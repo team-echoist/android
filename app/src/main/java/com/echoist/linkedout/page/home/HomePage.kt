@@ -148,156 +148,152 @@ fun HomePage(
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-
             ModalBottomSheetContent(viewModel = viewModel, navController)
         },
     ) {
+        Scaffold(
+            topBar = {
 
-            Scaffold(
-                topBar = {
-
-                    CustomTopAppBar({
-                        scope.launch {
-                            drawerState.apply {
-                                if (isClosed) open() else close()
-                            }
+                CustomTopAppBar({
+                    scope.launch {
+                        drawerState.apply {
+                            if (isClosed) open() else close()
                         }
-                    }, { navController.navigate("NotificationPage") },
-                        viewModel.isExistUnreadAlerts
-                    )
-                    {
-                        viewModel.isFirstUser = true //튜토리얼 화면띄우기위함
                     }
-                },
-                bottomBar = { MyBottomNavigation(navController) },
-                floatingActionButton = { WriteFTB(navController, viewModel, writingViewModel) },
-                content = {
-                    Column(modifier = Modifier.padding(it)) {
-
-                    }
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        GlideImage(
-                            model = R.drawable.home_basic,
-                            contentDescription = "home_img",
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.FillWidth
-                        )
-
-                    }
+                }, { navController.navigate("NotificationPage") },
+                    viewModel.isExistUnreadAlerts
+                )
+                {
+                    viewModel.isFirstUser = true //튜토리얼 화면띄우기위함
                 }
+            },
+            bottomBar = { MyBottomNavigation(navController) },
+            floatingActionButton = { WriteFTB(navController, viewModel, writingViewModel) },
+            content = {
+                Column(modifier = Modifier.padding(it)) {
+
+                }
+                Box(modifier = Modifier.fillMaxSize()) {
+                    GlideImage(
+                        model = R.drawable.home_basic,
+                        contentDescription = "home_img",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.FillWidth
+                    )
+
+                }
+            }
+        )
+    }
+    //터치 효과 x
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(start = 165.dp, bottom = 130.dp), contentAlignment = Alignment.Center
+    ) {
+        Box(
+            Modifier
+                .size(80.dp)
+                .clickable { viewModel.isVisibleGeulRoquis = true }) {
+            GlideImage( //전구 클릭하면 글로키 On
+                model = TUTORIAL_BULB,
+                contentDescription = "bulb_img",
+                modifier = Modifier
+                    .size(80.dp)
             )
         }
-        //터치 효과 x
+    }
 
+    AnimatedVisibility(
+        visible = viewModel.isVisibleGeulRoquis && !viewModel.isFirstUser, //튜토리얼을 건너뛰어야 글로키를 볼수있음
+        enter = fadeIn(
+            animationSpec = tween(
+                durationMillis = 500,
+                easing = FastOutSlowInEasing
+            )
+        ),
+        exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 165.dp, bottom = 130.dp), contentAlignment = Alignment.Center
+                .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center
         ) {
-            Box(
-                Modifier
-                    .size(80.dp)
-                    .clickable { viewModel.isVisibleGeulRoquis = true }) {
-                GlideImage( //전구 클릭하면 글로키 On
-                    model = TUTORIAL_BULB,
-                    contentDescription = "bulb_img",
-                    modifier = Modifier
-                        .size(80.dp)
-                )
-            }
-
-        }
-
-        AnimatedVisibility(
-            visible = viewModel.isVisibleGeulRoquis && !viewModel.isFirstUser, //튜토리얼을 건너뛰어야 글로키를 볼수있음
-            enter = fadeIn(
-                animationSpec = tween(
-                    durationMillis = 500,
-                    easing = FastOutSlowInEasing
-                )
-            ),
-            exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center
-            ) {
-                GeulRoquis(
-                    isHoldClicked = { viewModel.isVisibleGeulRoquis = false },
-                    isAcceptClicked = {
-                        writingViewModel.title.value =
-                            TextFieldValue("${getCurrentDateFormatted()} GeulRoquis")
-                        writingViewModel.hint =
-                            ("글로키란? : 글(geul)과 크로키(croquis)의 합성어로 글을 본격적으로 쓰기 전, 주어진 상황을 묘사하거나 상상을 덧대어 빠르게 스케치 하듯이 글을 쓰는 몸풀기를 말합니다. ")
-                        writingViewModel.imageUrl = viewModel.geulRoquisUrl
-                        navController.navigate("WritingPage")
-                        viewModel.isVisibleGeulRoquis = false
-                    }, viewModel
-                )
-            }
-        }
-
-        if (viewModel.isFirstUser) { // 첫 회원이라면
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(0.7f))
+            GeulRoquis(
+                isHoldClicked = { viewModel.isVisibleGeulRoquis = false },
+                isAcceptClicked = {
+                    writingViewModel.title.value =
+                        TextFieldValue("${getCurrentDateFormatted()} GeulRoquis")
+                    writingViewModel.hint =
+                        ("글로키란? : 글(geul)과 크로키(croquis)의 합성어로 글을 본격적으로 쓰기 전, 주어진 상황을 묘사하거나 상상을 덧대어 빠르게 스케치 하듯이 글을 쓰는 몸풀기를 말합니다. ")
+                    writingViewModel.imageUrl = viewModel.geulRoquisUrl
+                    navController.navigate("WritingPage")
+                    viewModel.isVisibleGeulRoquis = false
+                }, viewModel
             )
-            TutorialPage(
-                isCloseClicked = {
-                    viewModel.isFirstUser = false
-                    viewModel.requestFirstUserToExistUser()
-                },
-                isSkipClicked = {
-                    viewModel.isFirstUser = false
-                    viewModel.requestFirstUserToExistUser()
-                })
         }
-        if (userStatus == UserStatus.DeActivated) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center
-            )
-            {
-                ReactivateOrDeleteBox(
-                    isClickedReActivate = {
-                        viewModel.requestUserReActivate()
-                        userStatus = UserStatus.Activated
-                    })
-                {
-                    viewModel.requestUserDelete(navController)
-                }
-            }
-        }
-        if (viewModel.latestNoticeId != null) { //id값
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center
-            )
-            {
-                Notice_Main(isClickedClose = {
-                    viewModel.latestNoticeId = null
-                }, isClickedOpened = {
-                        viewModel.requestDetailNotice(viewModel.latestNoticeId!!, navController)
-                })
-            }
-        } //토큰 만료시
-        if (AuthManager.isReAuthenticationRequired.value){
-            Box(modifier = Modifier
+    }
+
+    if (viewModel.isFirstUser) { // 첫 회원이라면
+        Box(
+            modifier = Modifier
                 .fillMaxSize()
-                .clickable(enabled = false) { }
-                .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center){
-                ReLogInWaringBox{
-                    navigateWithClearBackStack(navController,Routes.LoginPage)
-                    AuthManager.isReAuthenticationRequired.value = false
-                }
-
+                .background(Color.Black.copy(0.7f))
+        )
+        TutorialPage(
+            isCloseClicked = {
+                viewModel.isFirstUser = false
+                viewModel.requestFirstUserToExistUser()
+            },
+            isSkipClicked = {
+                viewModel.isFirstUser = false
+                viewModel.requestFirstUserToExistUser()
+            })
+    }
+    if (userStatus == UserStatus.DeActivated) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center
+        )
+        {
+            ReactivateOrDeleteBox(
+                isClickedReActivate = {
+                    viewModel.requestUserReActivate()
+                    userStatus = UserStatus.Activated
+                })
+            {
+                viewModel.requestUserDelete(navController)
             }
         }
     }
+    if (viewModel.latestNoticeId != null) { //id값
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center
+        )
+        {
+            Notice_Main(isClickedClose = {
+                viewModel.latestNoticeId = null
+            }, isClickedOpened = {
+                viewModel.requestDetailNotice(viewModel.latestNoticeId!!, navController)
+            })
+        }
+    } //토큰 만료시
+    if (AuthManager.isReAuthenticationRequired.value) {
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .clickable(enabled = false) { }
+            .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center) {
+            ReLogInWaringBox {
+                navigateWithClearBackStack(navController, Routes.LoginPage)
+                AuthManager.isReAuthenticationRequired.value = false
+            }
+        }
+    }
+}
 
 
 @Composable
@@ -791,6 +787,7 @@ fun TutorialPage(isCloseClicked: () -> Unit, isSkipClicked: () -> Unit) {
 
                     }
                 })
+
             3 ->
                 Tutorial_4 {
                     isCloseClicked()
@@ -1311,26 +1308,36 @@ fun Notice_Main(isClickedClose: () -> Unit, isClickedOpened: () -> Unit) {
 }
 
 @Composable
-fun ReLogInWaringBox(isClicked : ()->Unit){
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 30.dp)
-        .height(150.dp)
-        .background(Color(0xFF191919), shape = RoundedCornerShape(10)), contentAlignment = Alignment.Center){
+fun ReLogInWaringBox(isClicked: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 30.dp)
+            .height(150.dp)
+            .background(Color(0xFF191919), shape = RoundedCornerShape(10)),
+        contentAlignment = Alignment.Center
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(start = 20.dp)
         ) {
             Spacer(modifier = Modifier.height(20.dp))
-            Text(text = "토큰이 만료되었습니다.", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
+            Text(
+                text = "토큰이 만료되었습니다.",
+                color = Color.White,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.SemiBold
+            )
             Spacer(modifier = Modifier.height(6.dp))
             Text(text = "다시 로그인 해주세요.", color = Color.White, fontSize = 14.sp)
 
         }
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(bottom = 20.dp, end = 20.dp), contentAlignment = Alignment.BottomEnd){
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 20.dp, end = 20.dp), contentAlignment = Alignment.BottomEnd
+        ) {
             Text(text = "확인", color = LinkedInColor, modifier = Modifier.clickable { isClicked() })
         }
     }

@@ -15,7 +15,6 @@ const val TYPE_PUBLISHED = "public"
 const val TYPE_PRIVATE = "private"
 const val TYPE_STORY = "story"
 
-
 const val MAX_TITLE_SIZE = 26
 const val MAX_CONTENT_SIZE = 20
 const val MIN_TITLE_SIZE = 16
