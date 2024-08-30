@@ -11,15 +11,14 @@ import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import com.echoist.linkedout.page.login.LoginPage
 
 class AlarmReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         createNotificationChannel(context)
 
-        //todo 여기서 알람 페이지로 이동가능~
-        val notificationIntent = Intent(context, LoginPage::class.java)
+        //todo 여기서 알람 페이지로 이동가능
+        val notificationIntent = Intent(context, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
 
         val notification = NotificationCompat.Builder(context, "alarm_channel")

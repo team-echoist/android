@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.echoist.linkedout.MainActivity
 
 
 class SplashPage : AppCompatActivity() {
@@ -28,7 +29,7 @@ class SplashPage : AppCompatActivity() {
 
         val intent = Intent(
             this,
-            LoginPage::class.java
+            MainActivity::class.java
         )
 
         startActivity(intent)
