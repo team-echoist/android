@@ -58,7 +58,8 @@ class SupportViewModel @Inject constructor(
             try {
                 val response = supportApi.readAlertsList(bearerAccessToken,Token.refreshToken)
                 if (response.isSuccessful){
-                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+
+                    Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                     alertList = response.body()!!.data.alerts.toMutableStateList()
 
                 }

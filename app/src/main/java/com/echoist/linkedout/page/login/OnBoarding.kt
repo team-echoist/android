@@ -51,7 +51,6 @@ fun PrevOnBoardingPage() {
 fun OnBoardingPage(navController: NavController) {
     var isChanged by remember { mutableStateOf(true) }
 
-
     LaunchedEffect(key1 = true) {
         if (isChanged) {
             delay(3800)
