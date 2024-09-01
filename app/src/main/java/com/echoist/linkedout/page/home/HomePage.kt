@@ -85,7 +85,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.echoist.linkedout.AuthManager
 import com.echoist.linkedout.R
 import com.echoist.linkedout.Routes
 import com.echoist.linkedout.SharedPreferencesUtil
@@ -96,7 +95,6 @@ import com.echoist.linkedout.calculateDaysDifference
 import com.echoist.linkedout.data.BottomNavItem
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.getCurrentDateFormatted
-import com.echoist.linkedout.navigateWithClearBackStack
 import com.echoist.linkedout.page.myLog.Token
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.viewModels.HomeViewModel
@@ -1313,7 +1311,7 @@ fun ReLogInWaringBox(isClicked: () -> Unit) {
         ) {
             Spacer(modifier = Modifier.height(20.dp))
             Text(
-                text = "토큰이 만료되었습니다.",
+                text = "세션이 만료되었습니다.",
                 color = Color.White,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold
