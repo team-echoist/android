@@ -21,7 +21,6 @@ import com.echoist.linkedout.data.Inquiry
 import com.echoist.linkedout.data.Notice
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.myLog.Token
-import com.echoist.linkedout.page.myLog.Token.bearerAccessToken
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -56,7 +55,7 @@ class SupportViewModel @Inject constructor(
         viewModelScope.launch {
             isLoading = true
             try {
-                val response = supportApi.readAlertsList(bearerAccessToken, Token.refreshToken)
+                val response = supportApi.readAlertsList()
                 if (response.isSuccessful) {
                     Token.accessToken =
                         response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() }
@@ -77,7 +76,7 @@ class SupportViewModel @Inject constructor(
         viewModelScope.launch {
             isLoading = true
             try {
-                val response = supportApi.readAlert(bearerAccessToken, Token.refreshToken, alertId)
+                val response = supportApi.readAlert(alertId)
                 if (response.isSuccessful) {
                     Token.accessToken =
                         response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() }
@@ -96,8 +95,6 @@ class SupportViewModel @Inject constructor(
             try {
                 isLoading = true
                 val response = essayApi.readDetailEssay(
-                    bearerAccessToken,
-                    Token.refreshToken,
                     id,
                     TYPE_RECOMMEND
                 )
@@ -130,7 +127,7 @@ class SupportViewModel @Inject constructor(
             isLoading = true
             try {
                 val body = Inquiry(title = title, content = content, type = type)
-                val response = supportApi.writeInquiry(bearerAccessToken, Token.refreshToken, body)
+                val response = supportApi.writeInquiry(body)
                 if (response.isSuccessful) {
                     Token.accessToken =
                         response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() }
@@ -153,7 +150,7 @@ class SupportViewModel @Inject constructor(
         viewModelScope.launch {
             isLoading = true
             try {
-                val response = supportApi.readInquiries(bearerAccessToken, Token.refreshToken)
+                val response = supportApi.readInquiries()
                 if (response.isSuccessful) {
                     Token.accessToken =
                         response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() }
@@ -174,7 +171,7 @@ class SupportViewModel @Inject constructor(
         isLoading = true
         return try {
             val response =
-                supportApi.readInquiryDetail(bearerAccessToken, Token.refreshToken, inquiryId)
+                supportApi.readInquiryDetail(inquiryId)
             if (response.isSuccessful) {
                 Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() }
                     ?: Token.accessToken
@@ -195,7 +192,7 @@ class SupportViewModel @Inject constructor(
         noticeList.clear()
         viewModelScope.launch {
             try {
-                val response = supportApi.readNotices(bearerAccessToken, Token.refreshToken)
+                val response = supportApi.readNotices()
                 if (response.isSuccessful) {
                     Token.accessToken =
                         response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() }
@@ -217,7 +214,7 @@ class SupportViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val response =
-                    supportApi.readNoticeDetail(bearerAccessToken, Token.refreshToken, noticeId)
+                    supportApi.readNoticeDetail(noticeId)
                 if (response.isSuccessful) {
                     Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
 

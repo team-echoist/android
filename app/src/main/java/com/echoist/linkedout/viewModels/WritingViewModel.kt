@@ -18,7 +18,6 @@ import androidx.navigation.NavController
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.page.myLog.Token
-import com.echoist.linkedout.page.myLog.Token.bearerAccessToken
 import com.echoist.linkedout.room.EssayStoreDao
 import com.mohamedrejeb.richeditor.model.RichTextState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -203,7 +202,7 @@ class WritingViewModel @Inject constructor(
                     location = locationText.ifEmpty { null },
                     tags = hashTagList
                 )
-                val response = essayApi.writeEssay(bearerAccessToken, Token.refreshToken,essayData = essayData)
+                val response = essayApi.writeEssay(essayData = essayData)
                 Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
 
                 if (response.isSuccessful) {
@@ -264,7 +263,7 @@ class WritingViewModel @Inject constructor(
                     tags = hashTagList
                 )
                 Log.d(TAG, "modifyEssay: $modifyEssayid")
-                val response = essayApi.modifyEssay(bearerAccessToken,Token.refreshToken, modifyEssayid, essayData = essayData)
+                val response = essayApi.modifyEssay( modifyEssayid, essayData = essayData)
                 if (response.isSuccessful){
                     Log.e("수정 성공", "수정 성공!: ${response.code()}", )
 
@@ -320,7 +319,7 @@ class WritingViewModel @Inject constructor(
                 val body = MultipartBody.Part.createFormData("image", file.name, requestFile)
 
                 // 서버로 업로드 요청 보내기
-                val response = essayApi.uploadThumbnail(bearerAccessToken,Token.refreshToken, body, exampleItems.detailEssay.id)
+                val response = essayApi.uploadThumbnail( body, exampleItems.detailEssay.id)
 
                 if (response.isSuccessful){
                     imageUrl = response.body()!!.data.imageUrl

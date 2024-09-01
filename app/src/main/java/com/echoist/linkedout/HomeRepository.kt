@@ -21,7 +21,7 @@ class HomeRepository @Inject constructor(
         finally: () -> Unit
     ) {
         apiCall(onSuccess = onSuccess, finally = finally)
-        { supportApi.readUserNotification(Token.bearerAccessToken, Token.refreshToken) }
+        { supportApi.readUserNotification() }
     }
 
     suspend fun requestFirstUserToExistUser() {
@@ -33,7 +33,7 @@ class HomeRepository @Inject constructor(
             onError = { e ->
                 Log.e("첫유저 ->기존유저", "실패 ${e.message}")
             }
-        ) { userApi.userUpdate(Token.bearerAccessToken, Token.refreshToken, isNotFirst) }
+        ) { userApi.userUpdate(isNotFirst) }
     }
 
     suspend fun requestUserGraphSummary(onSuccess: suspend (UserGraphSummaryResponse) -> Unit) {
@@ -42,7 +42,7 @@ class HomeRepository @Inject constructor(
             onError = { e ->
                 Log.e("유저 주간 링크드아웃 지수:", "${e.message}")
             }
-        ) { userApi.requestUserGraphSummary(Token.bearerAccessToken, Token.refreshToken) }
+        ) { userApi.requestUserGraphSummary() }
     }
 
 }

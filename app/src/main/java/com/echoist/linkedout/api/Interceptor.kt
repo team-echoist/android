@@ -33,12 +33,9 @@ class ErrorHandlingInterceptor : Interceptor {
 
         // 기타 에러 처리
         when (response.code) {
-            500 -> {
-                Log.e("intercept err", "Server error: ${response.code}")
-            }
-            else -> {
-                Log.e("intercept err", "Unexpected error: ${response.code}")
-            }
+            200,201,202 -> Log.d("response 성공","${response.code}")
+            500 -> { Log.e("intercept err", "Server error: ${response.code}") }
+            else -> { Log.e("intercept err", "Unexpected error: ${response.code}") }
         }
 
         return response

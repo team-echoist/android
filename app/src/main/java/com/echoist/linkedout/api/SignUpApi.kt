@@ -4,7 +4,6 @@ import com.echoist.linkedout.data.RegisterCode
 import com.echoist.linkedout.data.TokensResponse
 import retrofit2.Response
 import retrofit2.http.Body
-import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Query
 
@@ -31,30 +30,22 @@ interface SignUpApi {
     //이메일 재설정
     @POST("api/auth/email/verify")
     suspend fun sendEmailVerificationForChange(
-        @Header("Authorization") accessToken: String,
-        @Header("x-refresh-token") refreshToken: String,
         @Body email : EmailRequest
     ): Response<Unit>
 
     //비밀번호 재설정 요청
     @POST("api/auth/password/reset-req")
     suspend fun requestChangePw(
-        @Header("Authorization") accessToken: String,
-        @Header("x-refresh-token") refreshToken: String,
         @Body email : EmailRequest
     ): Response<Unit>
 
     @POST("api/auth/password/reset-verify")
     suspend fun verifyChangePw(
-        @Header("Authorization") accessToken: String,
-        @Header("x-refresh-token") refreshToken: String,
         @Query("token") token : String
     ): Response<Unit>
 
     @POST("api/auth/password/reset")
     suspend fun resetPw(
-        @Header("Authorization") accessToken: String,
-        @Header("x-refresh-token") refreshToken: String,
         @Body resetPwRequest : ResetPwRequest
     ): Response<Unit>
 
@@ -70,7 +61,4 @@ interface SignUpApi {
     suspend fun requestRegister(
         @Body code : RegisterCode
     ): Response<TokensResponse>
-
-
-
 }

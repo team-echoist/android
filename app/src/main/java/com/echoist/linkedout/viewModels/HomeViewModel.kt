@@ -31,7 +31,6 @@ import com.echoist.linkedout.data.Release
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.navigateWithClearBackStack
 import com.echoist.linkedout.page.myLog.Token
-import com.echoist.linkedout.page.myLog.Token.bearerAccessToken
 import com.google.firebase.messaging.FirebaseMessaging
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -82,7 +81,7 @@ class HomeViewModel @Inject constructor(
     suspend fun requestMyInfo() {
         try {
 
-            val response = userApi.getMyInfo(bearerAccessToken, Token.refreshToken)
+            val response = userApi.getMyInfo()
 
             Log.d("헤더 토큰", Token.accessToken)
             exampleItems.myProfile = response.data.user
@@ -138,8 +137,6 @@ class HomeViewModel @Inject constructor(
                     }
                 ) {
                     supportApi.requestRegisterDevice(
-                        bearerAccessToken,
-                        Token.refreshToken,
                         body
                     )
                 }
@@ -178,11 +175,11 @@ class HomeViewModel @Inject constructor(
             NotificationSettings(viewedNotification, reportNotification, marketingNotification)
         viewModelScope.launch {
             try {
-                supportApi.updateUserNotification(bearerAccessToken, Token.refreshToken, body)
+                supportApi.updateUserNotification(body)
                 Log.d(TAG, "updateUserNotification success: $body")
 
                 val userInfo = UserInfo(locationConsent = locationAgreement)
-                val response = userApi.userUpdate(bearerAccessToken, Token.refreshToken, userInfo)
+                val response = userApi.userUpdate(userInfo)
                 Log.d(TAG, "위치서비스 동의 저장 성공: ${response.code()}")
                 Log.d(TAG, "위치서비스 동의 저장 성공: $locationNotification")
 
@@ -291,7 +288,7 @@ class HomeViewModel @Inject constructor(
             onError = { e ->
                 Log.e("최신공지 확인", "확인 실패 ${e.message}")
             }
-        ) { supportApi.requestLatestNotice(bearerAccessToken, Token.refreshToken) }
+        ) { supportApi.requestLatestNotice() }
     }
 
     //업데이트 히스토리
@@ -305,7 +302,7 @@ class HomeViewModel @Inject constructor(
             finally = {
                 isLoading = false
             }
-        ) { supportApi.readUpdatedHistories(bearerAccessToken, Token.refreshToken) }
+        ) { supportApi.readUpdatedHistories() }
     }
 
     var essayCount by mutableStateOf(mutableListOf(0, 0, 0, 0, 0))
@@ -335,10 +332,7 @@ class HomeViewModel @Inject constructor(
             isExistUnreadAlerts = response.data
             Log.d(TAG, "안읽은 알림 여부: ${response.data}")
         }, finally = { isCheckFinished = true }) {
-            supportApi.readUnreadAlerts(
-                bearerAccessToken,
-                Token.refreshToken
-            )
+            supportApi.readUnreadAlerts()
         }
     }
 
@@ -352,11 +346,11 @@ class HomeViewModel @Inject constructor(
             onError =
             { e ->
                 Log.e("글로키 api", "에러 ${e.message}")
-            }) { supportApi.readGeulroquis(bearerAccessToken, Token.refreshToken) }
+            }) { supportApi.readGeulroquis() }
     }
 
     fun requestUserReActivate() {
-        apiCall { userApi.requestReactivate(bearerAccessToken, Token.refreshToken) }
+        apiCall { userApi.requestReactivate() }
     }
 
     fun requestUserDelete(navController: NavController) {
@@ -364,7 +358,7 @@ class HomeViewModel @Inject constructor(
             Log.d("유저 즉시 탈퇴", "성공")
             navigateWithClearBackStack(navController, Routes.LoginPage)
         }) {
-            userApi.requestDeleteUser(bearerAccessToken, Token.refreshToken)
+            userApi.requestDeleteUser()
         }
     }
 
@@ -381,7 +375,7 @@ class HomeViewModel @Inject constructor(
             navController.navigate("${Routes.NoticeDetailPage}/$json")
 
         }) {
-            supportApi.readNoticeDetail(Token.accessToken, Token.refreshToken, noticeId)
+            supportApi.readNoticeDetail(noticeId)
         }
     }
 }

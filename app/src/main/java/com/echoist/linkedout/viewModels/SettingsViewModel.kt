@@ -82,7 +82,7 @@ class SettingsViewModel @Inject constructor(
                 val body = MultipartBody.Part.createFormData("image", file.name, requestFile)
 
                 // 서버로 업로드 요청 보내기
-                val response = userApi.userImageUpload(bearerAccessToken,Token.refreshToken, body)
+                val response = userApi.userImageUpload( body)
 
                 if (response.isSuccessful){
                     newProfile.profileImage = response.body()!!.data.imageUrl
@@ -108,7 +108,7 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             try {
 
-                val response = userApi.getMyInfo(bearerAccessToken,Token.refreshToken)
+                val response = userApi.getMyInfo()
 
                 Log.d(TAG, "readMyInfo: suc1")
                 exampleItems.myProfile = response.data.user
@@ -139,7 +139,7 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 //readMyInfo()
-                val response = userApi.readBadgeList( bearerAccessToken,Token.refreshToken)
+                val response = userApi.readBadgeList( )
                 Log.d(TAG, "readSimpleBadgeList: ${response.body()!!.data.badges}")
                 response.body()?.data?.badges!!.let{badges ->
                     exampleItems.simpleBadgeList = badges.map { it.toBadgeBoxItem() }.toMutableStateList()
@@ -165,7 +165,7 @@ class SettingsViewModel @Inject constructor(
     fun readDetailBadgeList(navController: NavController) {
         viewModelScope.launch {
             try {
-                val response = userApi.readBadgeWithTagsList(bearerAccessToken,Token.refreshToken)
+                val response = userApi.readBadgeWithTagsList()
                 response.body()?.data?.badges?.let { badges ->
                     // badges 리스트를 SnapshotStateList로 변환
                     exampleItems.detailBadgeList = badges.map { it.toBadgeBoxItem() }.toMutableStateList() as SnapshotStateList<BadgeBoxItemWithTag>
@@ -191,7 +191,7 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             try {
 
-                val response = userApi.requestBadgeLevelUp(bearerAccessToken,Token.refreshToken, badgeId)
+                val response = userApi.requestBadgeLevelUp( badgeId)
                 Log.d(TAG, "requestBadgeLevelUp: ${Token.accessToken}")
 
                 Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
@@ -215,7 +215,7 @@ class SettingsViewModel @Inject constructor(
             isLoading = true
             try {
 
-                val response = userApi.userUpdate(bearerAccessToken,Token.refreshToken, userInfo)
+                val response = userApi.userUpdate( userInfo)
 
                 if (response.isSuccessful){
                     Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
@@ -254,7 +254,7 @@ class SettingsViewModel @Inject constructor(
             isLoading = true
 
             try {
-                val response = essayApi.readRecentEssays(bearerAccessToken,Token.refreshToken)
+                val response = essayApi.readRecentEssays()
 
                 if (response.isSuccessful){
                                         Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
@@ -278,7 +278,7 @@ class SettingsViewModel @Inject constructor(
             try {
 
                 val body = UserApi.RequestDeactivate(reasons)
-                val response = userApi.requestDeactivate(bearerAccessToken,Token.refreshToken,body)
+                val response = userApi.requestDeactivate(body)
                 Log.d(TAG, "requestWithdrawal: $reasons")
 
                 if (response.isSuccessful){
@@ -305,7 +305,7 @@ class SettingsViewModel @Inject constructor(
             try {
 
                 val nickname = UserApi.NickName(nickname)
-                val response = userApi.requestNicknameDuplicated(bearerAccessToken,Token.refreshToken,nickname)
+                val response = userApi.requestNicknameDuplicated(nickname)
                 Log.d("닉네임 중복검사", "requestNicknameDuplicated: $nickname")
 
                 if (response.isSuccessful){ //실시간요청이기때문에 토큰사용 x
