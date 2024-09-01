@@ -85,6 +85,7 @@ fun FullSubscriberPage(
                         drawerShape = RectangleShape,
                         drawerContainerColor = Color.Black
                     ) {
+                        /*
                         SearchingBar(viewModel = searchingViewModel, {
                             scope.launch {
                                 drawerState.apply {
@@ -92,8 +93,7 @@ fun FullSubscriberPage(
                                 }
                             }
                         }, drawerState)
-
-
+                         */
                         // ...other drawer items
                     }
                 }
@@ -155,8 +155,6 @@ fun FullSubscriberPage(
             })
     }
 }
-
-
 
 
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
