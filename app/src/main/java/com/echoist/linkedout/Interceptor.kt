@@ -1,7 +1,6 @@
-package com.echoist.linkedout.api
+package com.echoist.linkedout
 
 import android.util.Log
-import com.echoist.linkedout.AuthManager
 import com.echoist.linkedout.page.myLog.Token
 import okhttp3.Interceptor
 import okhttp3.Response
@@ -16,7 +15,7 @@ class ErrorHandlingInterceptor : Interceptor {
             // x-access-token이 없는 경우, 재로그인 필요
             if (response.headers["x-access-token"].isNullOrEmpty()) {
                 AuthManager.isReAuthenticationRequired.value = true
-            } else {
+            } else { //x-access-token이 있는경우
                 // 새로운 토큰 갱신
                 val newAccessToken = response.headers["x-access-token"]!!
                 // 토큰 저장
@@ -24,20 +23,19 @@ class ErrorHandlingInterceptor : Interceptor {
 
                 // 새로운 토큰으로 기존 요청을 다시 시도
                 val newRequest = request.newBuilder()
+                    .header("x-refresh-token", Token.refreshToken)
                     .header("Authorization", "Bearer $newAccessToken")
                     .build()
 
                 response = chain.proceed(newRequest) // 새로운 요청으로 다시 시도
             }
         }
-
         // 기타 에러 처리
         when (response.code) {
             200,201,202 -> Log.d("response 성공","${response.code}")
             500 -> { Log.e("intercept err", "Server error: ${response.code}") }
             else -> { Log.e("intercept err", "Unexpected error: ${response.code}") }
         }
-
         return response
     }
 }

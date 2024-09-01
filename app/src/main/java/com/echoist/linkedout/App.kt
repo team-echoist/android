@@ -3,9 +3,7 @@ package com.echoist.linkedout
 import android.app.Application
 import android.content.Context
 import androidx.room.Room
-import com.echoist.linkedout.api.AuthInterceptor
 import com.echoist.linkedout.api.BookMarkApi
-import com.echoist.linkedout.api.ErrorHandlingInterceptor
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.api.SignUpApi
 import com.echoist.linkedout.api.SocialSignUpApi

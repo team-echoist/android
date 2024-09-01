@@ -282,17 +282,7 @@ fun HomePage(
             })
         }
     } //토큰 만료시
-    if (AuthManager.isReAuthenticationRequired.value) {
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .clickable(enabled = false) { }
-            .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center) {
-            ReLogInWaringBox {
-                navigateWithClearBackStack(navController, Routes.LoginPage)
-                AuthManager.isReAuthenticationRequired.value = false
-            }
-        }
-    }
+
 }
 
 
@@ -324,7 +314,6 @@ fun ModalBottomSheetContent(viewModel: HomeViewModel, navController: NavControll
             LogoutBtn { isLogoutClicked = true } //todo logout 기능 만들기
             // ...other drawer items
         }
-
     }
     AnimatedVisibility(
         visible = isLogoutClicked,
