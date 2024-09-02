@@ -22,12 +22,7 @@ class SearchingViewModel @Inject constructor(
         viewModelScope.launch {
             uiState.value = UiState.Loading
             try {
-                val response = essayApi.readSearchingEssays(
-                    bearerAccessToken,
-                    Token.refreshToken,
-                    keyword,
-                    limit = 30
-                )
+                val response = essayApi.readSearchingEssays(keyword, limit = 30)
                 uiState.value = UiState.Success(response.data.essays)
             } catch (e: Exception) {
                 e.printStackTrace()
