@@ -226,14 +226,9 @@ fun WritingPage(
                                 Text(text = "변경", fontSize = 16.sp, color = Color.White)
                             }
                         }
-
-
                     }
                 }
-
-
             }
-
         }
         //취소 클릭시 배경 어둡게
         if (viewModel.isCanCelClicked.value)
@@ -528,7 +523,7 @@ fun WritingTopAppBar(
                     .clickable {
                         isCompleteClicked() //타이틀이 공백x 30자 넘지않게. 내용은 미니멈보다 많게
                         if (viewModel.title.value.text.isNotEmpty() && viewModel.content.length >= viewModel.minLength && viewModel.content.length <= viewModel.maxLength && viewModel.title.value.text.length <= 30) {
-                            Log.d(TAG, "WritingTopAppBar: ${viewModel.content}")
+                            Log.d("essay content", "rich text: ${viewModel.content}")
                             navController.navigate("WritingCompletePage")
                         } else {
                             isContentNotEmpty.value = true
@@ -537,11 +532,9 @@ fun WritingTopAppBar(
                             viewModel.uploadThumbnail(viewModel.imageUri ?: Uri.EMPTY, context)
                         }
                     }
-
             )
         }
         MyDivider(viewModel)
-
     }
     //컨텐츠가 비어있다면 경고
     if (isContentNotEmpty.value) {

@@ -61,8 +61,7 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
                         drawerShape = RectangleShape,
                         drawerContainerColor = Color.Black
                     ) {
-                        SearchingPage(drawerState, navController)
-                        // ...other drawer items
+                        SearchingPage(drawerState = drawerState, navController = navController)
                     }
                 }
             },

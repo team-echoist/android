@@ -80,6 +80,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -341,11 +342,8 @@ fun ModalBottomSheetContent(viewModel: HomeViewModel, navController: NavControll
 }
 
 @Composable
-fun WriteFTB(
-    navController: NavController,
-    viewModel: HomeViewModel,
-    writingViewModel: WritingViewModel
-) {
+fun WriteFTB(navController: NavController,viewModel: HomeViewModel = hiltViewModel(),writingViewModel: WritingViewModel = hiltViewModel()) {
+
     FloatingActionButton(
         modifier = Modifier.padding(end = 25.dp, bottom = 25.dp),
         onClick = {
@@ -420,7 +418,7 @@ fun PrevBottomNav() {
 }
 
 @Composable
-fun MyBottomNavigation(navController: NavController) {
+fun MyBottomNavigation(navController: NavController, onClick: (String) -> Unit = {}) {
     val items = listOf(
         BottomNavItem.Home,
         BottomNavItem.MyLog,
@@ -438,6 +436,7 @@ fun MyBottomNavigation(navController: NavController) {
                 selected = isRouteSelected(currentRoute, item.screenRoute),
                 onClick = {
                     navController.navigate(item.screenRoute)
+                    onClick(item.screenRoute)
                 },
                 icon = {
                     Icon(
@@ -847,7 +846,6 @@ fun TutorialPage(isCloseClicked: () -> Unit, isSkipClicked: () -> Unit) {
         }
     }
 }
-
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Preview

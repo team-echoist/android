@@ -77,7 +77,7 @@
         </activity>
 
         <activity
-            android:name=".page.login.LoginPage"
+            android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/LinkedOut">
             <intent-filter android:autoVerify="false">
@@ -89,7 +89,7 @@
                 <data android:scheme="http" />
                 <data android:scheme="https" />
                 <data android:host="linkedoutapp.com" />
-                <data android:path="/login" />
+                <data android:path="/main" />
             </intent-filter>
         </activity>
 
