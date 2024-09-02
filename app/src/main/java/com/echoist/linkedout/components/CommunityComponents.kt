@@ -832,7 +832,7 @@ fun CommunityTopAppBar(
         actions = {
             Icon(
                 imageVector = Icons.Default.Search,
-                contentDescription = "",
+                contentDescription = "Search",
                 Modifier
                     .padding(start = 10.dp)
                     .size(30.dp)
@@ -842,7 +842,7 @@ fun CommunityTopAppBar(
             Spacer(modifier = Modifier.width(13.dp))
             Icon(
                 painter = painterResource(id = R.drawable.icon_bookmarkfill_black),
-                contentDescription = "",
+                contentDescription = "icon_bookmarkfill_black",
                 Modifier
                     .padding(end = 10.dp)
                     .size(30.dp)
@@ -969,12 +969,9 @@ fun TodaysLogTitle() {
             Spacer(modifier = Modifier.height(4.dp))
             Text(text = "오늘 쓰여진 다양하고 솔직한 글들을 읽어보세요", fontSize = 12.sp, color = Color(0xFF696969))
             Spacer(modifier = Modifier.height(22.dp))
-
-
         }
     }
 }
-
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -998,7 +995,6 @@ fun EssayListItem(
             end = item.title?.length ?: 0
         )
 
-        // 두 번째 텍스트 ( "   • ${formatElapsedTime(item.createdDate!!)}" )
         val bulletText = "   • ${formatElapsedTime(item.createdDate!!)}"
         append(bulletText)
         addStyle(
@@ -1365,7 +1361,7 @@ fun SentenceChoiceBox(viewModel: CommunityViewModel) {
                     .padding(end = 10.dp)
                     .size(24.dp)
                     .clickable { isClicked = !isClicked },
-                contentDescription = ""
+                contentDescription = "arrow"
             )
 
         }

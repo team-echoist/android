@@ -11,8 +11,6 @@ import androidx.lifecycle.viewModelScope
 import com.echoist.linkedout.api.BookMarkApi
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.ExampleItems
-import com.echoist.linkedout.page.myLog.Token
-import com.echoist.linkedout.page.myLog.Token.bearerAccessToken
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,16 +27,14 @@ class SearchingViewModel @Inject constructor(
         viewModelScope.launch {
 
             try {
-                val response = essayApi.readSearchingEssays(bearerAccessToken,Token.refreshToken,keyword, limit = 30)
+                val response = essayApi.readSearchingEssays(keyword, limit = 30)
                 searchingEssayList = response.data.essays.toMutableStateList()
                 Log.d(ContentValues.TAG, "SearchingBar: $searchingText")
 
 
             } catch (e: Exception) {
                 e.printStackTrace()
-                TODO("Not yet implemented")
             }
-
         }
     }
 }

@@ -209,7 +209,7 @@ fun LocationBtn(viewModel: WritingViewModel, text: String) {
         Spacer(modifier = Modifier.width(2.dp))
         Icon(
             imageVector = Icons.Default.Close,
-            contentDescription = "",
+            contentDescription = "Close",
             modifier = Modifier.size(16.dp),
             tint = Color.White
         )
@@ -327,7 +327,7 @@ fun HashTagBtn(viewModel: WritingViewModel, text: String) {
         Spacer(modifier = Modifier.width(2.dp))
         Icon(
             imageVector = Icons.Default.Close,
-            contentDescription = "",
+            contentDescription = "Close",
             modifier = Modifier.size(16.dp),
             tint = Color.White
         )
@@ -501,7 +501,7 @@ fun CropImagePage(navController: NavController, viewModel: WritingViewModel) {
                 viewModel.imageUri = uri
                 GlideImage(
                     model = viewModel.imageUri,
-                    contentDescription = "",
+                    contentDescription = "writingImg",
                     modifier = Modifier.fillMaxSize()
                 )
 
@@ -603,7 +603,7 @@ fun StoryCountIcon(count: Int) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomStart) {
             Icon(
                 painter = painterResource(id = R.drawable.icon_storyint),
-                contentDescription = "",
+                contentDescription = "icon_storyint",
                 modifier = Modifier.size(34.dp),
                 color
             )

@@ -91,6 +91,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
+import com.echoist.linkedout.AuthManager
 import com.echoist.linkedout.BuildConfig
 import com.echoist.linkedout.DeviceId
 import com.echoist.linkedout.R
@@ -100,6 +101,7 @@ import com.echoist.linkedout.components.CropImagePage
 import com.echoist.linkedout.components.ExitAppErrorBox
 import com.echoist.linkedout.data.Notice
 import com.echoist.linkedout.isDateAfterToday
+import com.echoist.linkedout.navigateWithClearBackStack
 import com.echoist.linkedout.page.community.CommunityDetailPage
 import com.echoist.linkedout.page.community.CommunityPage
 import com.echoist.linkedout.page.community.CommunitySavedEssayPage
@@ -112,6 +114,7 @@ import com.echoist.linkedout.page.home.NoticeDetailPage
 import com.echoist.linkedout.page.home.NoticePage
 import com.echoist.linkedout.page.home.NotificationPage
 import com.echoist.linkedout.page.home.NotificationSettingPage
+import com.echoist.linkedout.page.home.ReLogInWaringBox
 import com.echoist.linkedout.page.home.SupportPage
 import com.echoist.linkedout.page.home.UpdateHistoryPage
 import com.echoist.linkedout.page.home.legal_Notice.FontCopyRight
@@ -452,6 +455,7 @@ class LoginPage : ComponentActivity() {
                     }
 
                 }
+                //더블클릭 시 앱종료
                 if (isClickedExit) {
                     Box(
                         Modifier
@@ -460,9 +464,19 @@ class LoginPage : ComponentActivity() {
                             .padding(bottom = 40.dp), contentAlignment = Alignment.BottomCenter
                     ) { ExitAppErrorBox() }
                 }
+                //401시 전역 재로그인
+                if (AuthManager.isReAuthenticationRequired.value) {
+                    Box(modifier = Modifier
+                        .fillMaxSize()
+                        .clickable(enabled = false) { }
+                        .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center) {
+                        ReLogInWaringBox {
+                            navigateWithClearBackStack(navController, Routes.LoginPage)
+                            AuthManager.isReAuthenticationRequired.value = false
+                        }
+                    }
+                }
             }
-
-
         }
     }
 }

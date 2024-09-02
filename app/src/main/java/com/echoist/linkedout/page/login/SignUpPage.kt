@@ -85,8 +85,6 @@ fun SignUpPage(
     viewModel: SignUpViewModel
 ) {
 
-    var authentiCode: MutableList<Int> = mutableListOf()
-
     val passwordFocusRequester = remember { FocusRequester() }
 
     val configuration = LocalConfiguration.current
@@ -134,7 +132,7 @@ fun SignUpPage(
                         Log.d("6자리 코드 ", list.joinToString(""))
                         viewModel.requestRegister(list.joinToString(""), navController)
 
-                    },scaffoldState
+                    }, scaffoldState
                 )
                 if (viewModel.isLoading) {
                     Box(
@@ -494,7 +492,7 @@ fun Authentication_6_BottomModal(
     reAuthentication: () -> Unit,
     isError: Boolean,
     isTypedLastNumber: (List<String>) -> Unit,
-    scaffoldState : BottomSheetScaffoldState
+    scaffoldState: BottomSheetScaffoldState
 ) {
     // MutableStateList로 6자리 입력 값을 저장
     val codeDigits = remember { mutableStateListOf("", "", "", "", "", "") }
@@ -602,7 +600,7 @@ fun Authentication_TextField(
 ) {
     OutlinedTextField(
         value = text,
-        onValueChange = { it->
+        onValueChange = { it ->
             if (it.length <= 1) {
                 onValueChange(it) // 상위 컴포저블로 값 전달
                 if (it.isNotEmpty()) {

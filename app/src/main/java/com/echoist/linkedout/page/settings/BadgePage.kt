@@ -189,7 +189,7 @@ fun BadgeItem(badgeBoxItem: BadgeBoxItemWithTag, viewModel: SettingsViewModel) {
                         Icon(
                             painter = painterResource(id = arrowImage),
                             tint = Color.White,
-                            contentDescription = "",
+                            contentDescription = "arrowImage",
                             modifier = Modifier.clickable { isClicked = !isClicked })
                     }
                 }
