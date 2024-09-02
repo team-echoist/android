@@ -82,85 +82,6 @@ import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.viewModels.SocialLoginViewModel
 import com.navercorp.nid.NaverIdLoginSDK
 import kotlinx.coroutines.delay
-
-
-//구글로그인 버튼
-@Composable
-fun GoogleLoginBtn(navController: NavController, viewModel: SocialLoginViewModel) {
-
-    val context = LocalContext.current
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-    ) { result ->
-        viewModel.handleGoogleLogin(result.data, navController)
-    }
-    Icon(
-        painter = painterResource(id = R.drawable.social_googlebtn),
-        contentDescription = "naver Login btn",
-        modifier = Modifier
-            .size(40.dp)
-            .clickable { viewModel.signInWithGoogle(launcher, context) },
-        tint = Color.Unspecified
-    )
-}
-
-@Composable
-fun KakaoLoginBtn(navController: NavController, viewModel: SocialLoginViewModel) {
-    val context = LocalContext.current
-
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Icon(
-            painter = painterResource(id = R.drawable.social_kakaobtn),
-            contentDescription = "naver Login btn",
-            modifier = Modifier
-                .size(40.dp)
-                .clickable { viewModel.handleKaKaoLogin(context, navController) },
-            tint = Color.Unspecified
-        )
-    }
-}
-
-@Composable
-fun NaverLoginBtn(navController: NavController, viewModel: SocialLoginViewModel) {
-    val context = LocalContext.current
-
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        viewModel.handleNaverLoginResult(result, navController)
-    }
-    viewModel.initializeNaverLogin(context)
-
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Icon(
-            painter = painterResource(id = R.drawable.social_naverbtn),
-            contentDescription = "naver Login btn",
-            modifier = Modifier
-                .size(40.dp)
-                .clickable { NaverIdLoginSDK.authenticate(context, launcher) },
-            tint = Color.Unspecified
-        )
-    }
-}
-
-@Composable
-fun AppleLoginBtn(navController: NavController, viewModel: SocialLoginViewModel) {
-
-    val context = LocalContext.current
-    val activity = context as Activity
-
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Icon(
-            painter = painterResource(id = R.drawable.social_applebtn),
-            contentDescription = "naver Login btn",
-            modifier = Modifier
-                .size(40.dp)
-                .clickable { viewModel.appleLoginHandle(activity, navController) },
-            tint = Color.Unspecified
-        )
-    }
-}
-
 @Composable
 fun LoginPage(
     navController: NavController,
@@ -345,7 +266,82 @@ fun LoginPage(
         }
     )
 }
+//구글로그인 버튼
+@Composable
+fun GoogleLoginBtn(navController: NavController, viewModel: SocialLoginViewModel) {
 
+    val context = LocalContext.current
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+    ) { result ->
+        viewModel.handleGoogleLogin(result.data, navController)
+    }
+    Icon(
+        painter = painterResource(id = R.drawable.social_googlebtn),
+        contentDescription = "naver Login btn",
+        modifier = Modifier
+            .size(40.dp)
+            .clickable { viewModel.signInWithGoogle(launcher, context) },
+        tint = Color.Unspecified
+    )
+}
+
+@Composable
+fun KakaoLoginBtn(navController: NavController, viewModel: SocialLoginViewModel) {
+    val context = LocalContext.current
+
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Icon(
+            painter = painterResource(id = R.drawable.social_kakaobtn),
+            contentDescription = "naver Login btn",
+            modifier = Modifier
+                .size(40.dp)
+                .clickable { viewModel.handleKaKaoLogin(context, navController) },
+            tint = Color.Unspecified
+        )
+    }
+}
+
+@Composable
+fun NaverLoginBtn(navController: NavController, viewModel: SocialLoginViewModel) {
+    val context = LocalContext.current
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        viewModel.handleNaverLoginResult(result, navController)
+    }
+    viewModel.initializeNaverLogin(context)
+
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Icon(
+            painter = painterResource(id = R.drawable.social_naverbtn),
+            contentDescription = "naver Login btn",
+            modifier = Modifier
+                .size(40.dp)
+                .clickable { NaverIdLoginSDK.authenticate(context, launcher) },
+            tint = Color.Unspecified
+        )
+    }
+}
+
+@Composable
+fun AppleLoginBtn(navController: NavController, viewModel: SocialLoginViewModel) {
+
+    val context = LocalContext.current
+    val activity = context as Activity
+
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Icon(
+            painter = painterResource(id = R.drawable.social_applebtn),
+            contentDescription = "naver Login btn",
+            modifier = Modifier
+                .size(40.dp)
+                .clickable { viewModel.appleLoginHandle(activity, navController) },
+            tint = Color.Unspecified
+        )
+    }
+}
 
 @Composable
 fun LoginTextFields(viewModel: SocialLoginViewModel, navController: NavController) {
