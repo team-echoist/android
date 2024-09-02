@@ -75,7 +75,7 @@ fun CommuTopAppBar(
             Row {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "",
+                    contentDescription = "ArrowBack",
                     Modifier
                         .size(30.dp)
 
@@ -102,7 +102,7 @@ fun CommuTopAppBar(
             Spacer(modifier = Modifier.width(13.dp))
             Icon(
                 imageVector = Icons.Default.Bookmark,
-                contentDescription = "",
+                contentDescription = "Bookmark",
                 Modifier
                     .size(30.dp)
                     .padding(end = 10.dp),
@@ -219,10 +219,7 @@ fun ProfilePage(viewModel: CommunityViewModel, navController: NavController) {
             communityViewModel = viewModel,
             navController = navController
         )
-
     }
-
-
 }
 
 @Composable

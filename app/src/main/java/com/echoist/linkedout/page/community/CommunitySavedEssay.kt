@@ -66,7 +66,6 @@ fun CommunitySavedEssayPage(navController: NavController, viewModel: CommunityVi
 
     val text = if (viewModel.isSavedEssaysModifyClicked) "완료" else "편집"
 
-
     Scaffold(topBar = {
         SavedEssayTopAppBar(
             { viewModel.isSavedEssaysModifyClicked = false },
@@ -74,7 +73,6 @@ fun CommunitySavedEssayPage(navController: NavController, viewModel: CommunityVi
                 viewModel.isSavedEssaysModifyClicked = !viewModel.isSavedEssaysModifyClicked
             },
             navController = navController, text
-
         )
     },
         bottomBar = {})
@@ -243,8 +241,6 @@ fun SavedEssayListItem(
 
             }
         }
-
-
 
         Box(
             contentAlignment = Alignment.BottomEnd,

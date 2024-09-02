@@ -20,6 +20,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.HiltAndroidApp
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
@@ -32,8 +33,6 @@ class App : Application() {
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-
-
     @Provides
     @Singleton
     fun provideRetrofit() : Retrofit{
@@ -44,14 +43,15 @@ object AppModule {
 //        val logging = HttpLoggingInterceptor()
 //        logging.setLevel(HttpLoggingInterceptor.Level.BODY) // BODY는 요청과 응답의 모든 정보를 로그로 남깁니다.
 //
-//        // OkHttpClient에 인터셉터를 추가
-//        val httpClient = OkHttpClient.Builder()
-//            .addInterceptor(logging)
-//            .build()
+        // OkHttpClient에 인터셉터를 추가
+        val httpClient = OkHttpClient.Builder()
+            .addInterceptor(AuthInterceptor()) //전역 헤더 인터셉터 추가.
+            .addInterceptor(ErrorHandlingInterceptor()) // 전역 에러핸들링 인터셉터 추가
+            .build()
 
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
-            //.client(httpClient) //로그 확인가능한 클라이언트 추가
+            .client(httpClient) //로그 확인가능한 클라이언트 추가
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
     }

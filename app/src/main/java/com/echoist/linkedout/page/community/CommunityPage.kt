@@ -62,13 +62,11 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
                         drawerContainerColor = Color.Black
                     ) {
                         SearchingPage(drawerState = drawerState, navController = navController)
-                        // ...other drawer items
                     }
                 }
             },
             content = {
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-
 
                     Scaffold(
                         modifier = Modifier.background(color),
@@ -90,7 +88,6 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
                                         viewModel.readMyBookMarks(navController)
                                     }
                                 )
-
                                 CommunityChips(pagerstate)
                             }
                         },
@@ -114,8 +111,6 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
                                         )
 
                                     }
-
-
                                     if (isLoading) {
                                         Box(
                                             modifier = Modifier.fillMaxSize(),
@@ -133,15 +128,11 @@ fun CommunityPage(navController: NavController, viewModel: CommunityViewModel) {
                                     }
                                 }
                             }
-
-
                         }
-
                     )
                 }
             })
     }
-
 }
 
 

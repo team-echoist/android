@@ -1,5 +1,7 @@
 package com.echoist.linkedout
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.navigation.NavController
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -12,7 +14,6 @@ const val TYPE_RECOMMEND = "recommend"
 const val TYPE_PUBLISHED = "public"
 const val TYPE_PRIVATE = "private"
 const val TYPE_STORY = "story"
-
 
 const val MAX_TITLE_SIZE = 26
 const val MAX_CONTENT_SIZE = 20
@@ -110,6 +111,9 @@ object Routes {
 
 enum class UserStatus {
     Activated, Monitored, Banned, DeActivated
+}
+object AuthManager {
+    var isReAuthenticationRequired: MutableState<Boolean> = mutableStateOf(false)
 }
 
 fun navigateWithClearBackStack(

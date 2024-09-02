@@ -21,7 +21,6 @@ import com.echoist.linkedout.data.Inquiry
 import com.echoist.linkedout.data.Notice
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.myLog.Token
-import com.echoist.linkedout.page.myLog.Token.bearerAccessToken
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -40,51 +39,52 @@ class SupportViewModel @Inject constructor(
 ) : ViewModel() {
 
     var isLoading by mutableStateOf(false)
-    var alertList: SnapshotStateList<Alert> =  mutableStateListOf()
-    var noticeList: SnapshotStateList<Notice> =  mutableStateListOf()
-    var detailNotice : Notice? by mutableStateOf(null)
+    var alertList: SnapshotStateList<Alert> = mutableStateListOf()
+    var noticeList: SnapshotStateList<Notice> = mutableStateListOf()
+    var detailNotice: Notice? by mutableStateOf(null)
 
-     private val _inquiryList = MutableStateFlow<List<Inquiry>>(emptyList())
+    private val _inquiryList = MutableStateFlow<List<Inquiry>>(emptyList())
     val inquiryList: StateFlow<List<Inquiry>>
         get() = _inquiryList.asStateFlow()
 
-    fun readMyProfile() : UserInfo{
+    fun readMyProfile(): UserInfo {
         return exampleItems.myProfile
     }
 
-    fun readAlertsList(){
+    fun readAlertsList() {
         viewModelScope.launch {
             isLoading = true
             try {
-                val response = supportApi.readAlertsList(bearerAccessToken,Token.refreshToken)
-                if (response.isSuccessful){
-
-                    Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                val response = supportApi.readAlertsList()
+                if (response.isSuccessful) {
+                    Token.accessToken =
+                        response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() }
+                            ?: Token.accessToken
                     alertList = response.body()!!.data.alerts.toMutableStateList()
 
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-            }
-            finally {
+            } finally {
                 isLoading = false
 
             }
         }
     }
 
-    fun readAlert(alertId :Int) {
+    fun readAlert(alertId: Int) {
         viewModelScope.launch {
             isLoading = true
             try {
-                val response = supportApi.readAlert(bearerAccessToken,Token.refreshToken,alertId)
-                if (response.isSuccessful){
-                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                val response = supportApi.readAlert(alertId)
+                if (response.isSuccessful) {
+                    Token.accessToken =
+                        response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() }
+                            ?: Token.accessToken
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-            }
-            finally {
+            } finally {
                 isLoading = false
             }
         }
@@ -94,14 +94,17 @@ class SupportViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 isLoading = true
-                val response = essayApi.readDetailEssay(bearerAccessToken,Token.refreshToken, id,TYPE_RECOMMEND)
+                val response = essayApi.readDetailEssay(
+                    id,
+                    TYPE_RECOMMEND
+                )
                 exampleItems.detailEssay = response.body()!!.data.essay
                 Log.d(TAG, "readdetailEssay: 성공인데요${response.body()!!.data}")
                 Log.d(TAG, "readdetailEssay: 성공인데요${response.body()!!.data.essay.title}")
 
                 if (response.body()!!.data.anotherEssays != null) {
-                    exampleItems.previousEssayList = response.body()!!.data.anotherEssays!!.essays.toMutableStateList()
-
+                    exampleItems.previousEssayList =
+                        response.body()!!.data.anotherEssays!!.essays.toMutableStateList()
                 }
                 Log.d(TAG, "readDetailEssay: previouse ${exampleItems.detailEssay}")
 
@@ -110,60 +113,55 @@ class SupportViewModel @Inject constructor(
 
                 // API 호출 결과 처리 (예: response 데이터 사용)
             } catch (e: Exception) {
-
                 // 예외 처리
                 e.printStackTrace()
                 Log.d(TAG, "readRandomEssays: ${e.message}")
-                Log.d(TAG, "readRandomEssays: ${e.cause}")
-                Log.d(TAG, "readRandomEssays: ${e.localizedMessage}")
-
-            }
-            finally {
+            } finally {
                 isLoading = false
             }
         }
     }
 
-    fun writeInquiry(title : String, content : String, type : String, navController: NavController){
+    fun writeInquiry(title: String, content: String, type: String, navController: NavController) {
         viewModelScope.launch {
             isLoading = true
             try {
-                val body = Inquiry(title = title,content = content,type = type)
-                val response = supportApi.writeInquiry(bearerAccessToken,Token.refreshToken,body)
-                if (response.isSuccessful){
-                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
-                    //todo alert 성공!
+                val body = Inquiry(title = title, content = content, type = type)
+                val response = supportApi.writeInquiry(body)
+                if (response.isSuccessful) {
+                    Token.accessToken =
+                        response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() }
+                            ?: Token.accessToken
                     navController.navigate(Routes.LinkedOutSupportPage)
                     Log.d("문의 작성 성공", "${response.code()}")
-                }
-                else{
+                } else {
                     Log.e("문의 작성 에러", "실패: ${response.code()}")
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                Log.e("문의 작성 에러", "${e.message}", )
-            }
-            finally {
+                Log.e("문의 작성 에러", "${e.message}")
+            } finally {
                 isLoading = false
             }
         }
     }
 
-    fun readInquiryList(){
+    fun readInquiryList() {
         viewModelScope.launch {
             isLoading = true
             try {
-                val response = supportApi.readInquiries(bearerAccessToken,Token.refreshToken)
-                if (response.isSuccessful){
-                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                val response = supportApi.readInquiries()
+                if (response.isSuccessful) {
+                    Token.accessToken =
+                        response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() }
+                            ?: Token.accessToken
                     //todo alert 성공!
                     _inquiryList.emit(response.body()!!.data)
                     Log.d(TAG, "readInquiryList: $inquiryList")
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-            }
-            finally {
+            } finally {
                 isLoading = false
             }
         }
@@ -172,9 +170,11 @@ class SupportViewModel @Inject constructor(
     suspend fun readDetailInquiry(inquiryId: Int): Inquiry? {
         isLoading = true
         return try {
-            val response = supportApi.readInquiryDetail(bearerAccessToken,Token.refreshToken, inquiryId)
+            val response =
+                supportApi.readInquiryDetail(inquiryId)
             if (response.isSuccessful) {
-                                    Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() }
+                    ?: Token.accessToken
 
                 response.body()?.data // 성공 시 response.body()?.data를 반환
             } else {
@@ -188,17 +188,18 @@ class SupportViewModel @Inject constructor(
         }
     }
 
-    fun requestNoticesList(){
+    fun requestNoticesList() {
         noticeList.clear()
         viewModelScope.launch {
             try {
-                val response = supportApi.readNotices(bearerAccessToken,Token.refreshToken)
-                if (response.isSuccessful){
-                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                val response = supportApi.readNotices()
+                if (response.isSuccessful) {
+                    Token.accessToken =
+                        response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() }
+                            ?: Token.accessToken
                     noticeList.addAll(response.body()!!.data.Notices)
                     Log.d("공지사항 목록 불러오기", "성공: $noticeList")
-                }
-                else{
+                } else {
                     Log.e("공지사항 목록 불러오기", "실패: ${response.code()}")
                 }
             } catch (e: Exception) {
@@ -208,16 +209,14 @@ class SupportViewModel @Inject constructor(
         }
     }
 
-    fun requestDetailNotice(noticeId : Int,navController: NavController){
+    fun requestDetailNotice(noticeId: Int, navController: NavController) {
 
         viewModelScope.launch {
             try {
-                val response = supportApi.readNoticeDetail(bearerAccessToken,Token.refreshToken,noticeId)
-                if (response.isSuccessful){
-                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
-                    Log.d("공지사항 디테일 확인", "성공 내용 : ${response.body()!!.data.content}")
-                    Log.d("공지사항 디테일 확인", "성공 시간 : ${response.body()!!.data.createdDate}")
-
+                val response =
+                    supportApi.readNoticeDetail(noticeId)
+                if (response.isSuccessful) {
+                    Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
 
                     val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
                     val jsonAdapter = moshi.adapter(Notice::class.java)
@@ -228,8 +227,7 @@ class SupportViewModel @Inject constructor(
 
                     detailNotice = response.body()!!.data
                     navController.navigate("${Routes.NoticeDetailPage}/$encodedJson")
-                }
-                else{
+                } else {
                     Log.e("공지사항 디테일 확인", "실패: ${response.code()}")
                 }
             } catch (e: Exception) {

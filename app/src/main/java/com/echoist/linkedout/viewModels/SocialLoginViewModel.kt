@@ -35,7 +35,6 @@ import com.echoist.linkedout.calculateDateAfter30Days
 import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.data.TokensResponse
 import com.echoist.linkedout.page.myLog.Token
-import com.echoist.linkedout.page.myLog.Token.bearerAccessToken
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -96,7 +95,7 @@ class SocialLoginViewModel @Inject constructor(
 
         try {
             Log.d("헤더 토큰 여부", Token.accessToken)
-            val response = userApi.getMyInfo(bearerAccessToken,Token.refreshToken)
+            val response = userApi.getMyInfo()
 
             Log.d(TAG, "readMyInfo: suc1")
             Log.d("헤더 토큰", Token.accessToken)

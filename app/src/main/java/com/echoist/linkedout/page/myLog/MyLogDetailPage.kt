@@ -327,7 +327,7 @@ fun OptionItem(
             Icon(
                 tint = color,
                 painter = painterResource(id = iconResource),
-                contentDescription = "",
+                contentDescription = "img",
                 modifier = Modifier.size(24.dp)
             )
         }
@@ -396,7 +396,7 @@ fun DetailTopAppBar(navController: NavController, viewModel: MyLogViewModel) {
         actions = {
             Icon(
                 painter = painterResource(id = R.drawable.more),
-                contentDescription = "",
+                contentDescription = "img",
                 modifier = Modifier
                     .size(50.dp)
                     .padding(end = 20.dp)
@@ -630,7 +630,7 @@ fun SingleSelectableList(items: List<Story>, viewModel: MyLogViewModel) {
                     if (isSelected) Icon(
                         painter = painterResource(id = R.drawable.option_check),
                         tint = LinkedInColor,
-                        contentDescription = ""
+                        contentDescription = "img"
                     )
                 }
 

@@ -345,7 +345,7 @@ fun CommunityTopAppBar(navController: NavController, viewModel: CommunityViewMod
         actions = {
             Icon(
                 painter = painterResource(id = R.drawable.more),
-                contentDescription = "",
+                contentDescription = "more",
                 modifier = Modifier
                     .size(40.dp)
                     .padding(end = 10.dp)
@@ -453,7 +453,7 @@ fun DetailEssay(
 
                         Icon(
                             painter = painterResource(id = iconImg),
-                            contentDescription = "",
+                            contentDescription = "iconImg",
                             Modifier
                                 .size(30.dp)
                                 .clickable {

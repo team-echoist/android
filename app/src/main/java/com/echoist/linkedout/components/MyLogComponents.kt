@@ -98,7 +98,7 @@ fun MyLogTopAppBar(
             Icon(
                 painter = painterResource(id = img),
                 tint = Color.Unspecified,
-                contentDescription = "",
+                contentDescription = "img",
                 modifier = Modifier
                     .padding(end = 10.dp)
                     .size(30.dp)
@@ -234,7 +234,7 @@ fun EssayListItem(
                 GlideImage(
                     model = item.thumbnail,
                     contentScale = ContentScale.Crop,
-                    contentDescription = "",
+                    contentDescription = "thumbnail",
                 )
                 Box(
                     modifier = Modifier
@@ -264,7 +264,7 @@ fun EssayListItem(
                     Icon(
                         painter = painterResource(id = R.drawable.option_link),
                         tint = Color.White,
-                        contentDescription = "",
+                        contentDescription = "option_link",
                         modifier = Modifier
                             .size(28.dp)
                             .padding(top = 1.5.dp)
