@@ -27,7 +27,7 @@ fun TabletUpdateHistoryRoute(
     viewModel: HomeViewModel = hiltViewModel(),
     onCloseClick: () -> Unit
 ) {
-    viewModel.readUpdateHistory()
+    viewModel.requestUpdatedHistory()
 
     LinkedOutTheme {
         Scaffold(topBar = {
