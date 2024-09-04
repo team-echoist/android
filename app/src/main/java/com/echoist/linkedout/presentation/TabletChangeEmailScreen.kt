@@ -48,10 +48,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
+import com.echoist.linkedout.isEmailValid
 import com.echoist.linkedout.page.login.Authentication_6_BottomModal
 import com.echoist.linkedout.page.settings.CustomOutlinedTextField
 import com.echoist.linkedout.page.settings.SendEmailFinishedAlert
 import com.echoist.linkedout.ui.theme.LinkedInColor
+import com.echoist.linkedout.viewModels.ChangeEmailViewModel
 import com.echoist.linkedout.viewModels.SignUpViewModel
 import kotlinx.coroutines.delay
 
@@ -59,6 +61,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun TabletChangeEmailScreen(
     viewModel: SignUpViewModel = hiltViewModel(),
+    changeEmailViewModel: ChangeEmailViewModel = hiltViewModel(),
     contentPadding: PaddingValues
 ) {
     val configuration = LocalConfiguration.current
@@ -139,7 +142,7 @@ fun TabletChangeEmailScreen(
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Text(
-                    text = viewModel.getMyInfo().email ?: "noEmail",
+                    text = changeEmailViewModel.getMyInfo().email ?: "noEmail",
                     fontSize = 16.sp,
                     color = Color(0xFF5D5D5D)
                 )
@@ -152,7 +155,7 @@ fun TabletChangeEmailScreen(
                     email,
                     { newText ->
                         email = newText
-                        isError = !viewModel.isEmailValid(email)
+                        isError = !email.isEmailValid()
                     },
                     isError = isError,
                     hint = "이메일"

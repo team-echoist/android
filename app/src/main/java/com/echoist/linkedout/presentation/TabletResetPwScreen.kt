@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.echoist.linkedout.isEmailValid
 import com.echoist.linkedout.page.settings.SendEmailFinishedAlert
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.viewModels.SignUpViewModel
@@ -74,7 +75,7 @@ fun TabletResetPwRoute(
         isLoading = isLoading,
         isSendEmailVerifyApiFinished = isSendEmailVerifyApiFinished,
         onEmailSubmit = { email -> viewModel.requestChangePw(email) },
-        isEmailValid = { email -> viewModel.isEmailValid(email) },
+        isEmailValid = { email -> email.isEmailValid() },
         onAlertDismiss = { viewModel.isSendEmailVerifyApiFinished = false },
         onBackPress = { navController.popBackStack() }
     )

@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.echoist.linkedout.isEmailValid
 import com.echoist.linkedout.page.login.Authentication_6_BottomModal
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.viewModels.SignUpViewModel
@@ -87,14 +88,15 @@ fun ResetPwPageWithEmail(navController: NavController) {
         scaffoldState = scaffoldState,
         sheetContent = {
             Box {
-                Authentication_6_BottomModal(reAuthentication =
-                {
-                    viewModel.requestChangePw(email)
-                }, //재요청 인증
+                Authentication_6_BottomModal(
+                    reAuthentication =
+                    {
+                        viewModel.requestChangePw(email)
+                    }, //재요청 인증
                     isError = false,
                     isTypedLastNumber = {
                         keyboardController?.hide()
-                    },scaffoldState
+                    }, scaffoldState
                 )
                 if (viewModel.isLoading) {
                     Box(
@@ -142,7 +144,7 @@ fun ResetPwPageWithEmail(navController: NavController) {
                         email,
                         { newText ->
                             email = newText
-                            isError = !viewModel.isEmailValid(email)
+                            isError = !email.isEmailValid()
                         },
 
                         isError = isError,

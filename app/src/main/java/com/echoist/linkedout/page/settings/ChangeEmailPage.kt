@@ -57,14 +57,19 @@ import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
+import com.echoist.linkedout.isEmailValid
 import com.echoist.linkedout.page.login.Authentication_6_BottomModal
 import com.echoist.linkedout.ui.theme.LinkedInColor
+import com.echoist.linkedout.viewModels.ChangeEmailViewModel
 import com.echoist.linkedout.viewModels.SignUpViewModel
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun ChangeEmailPage(navController: NavController) {
+fun ChangeEmailPage(
+    navController: NavController,
+    changeEmailViewModel: ChangeEmailViewModel = hiltViewModel()
+) {
 
     val configuration = LocalConfiguration.current
     val screenHeightDp = configuration.screenHeightDp // 화면의 높이를 DP 단위로 가져옴
@@ -120,7 +125,7 @@ fun ChangeEmailPage(navController: NavController) {
                     isTypedLastNumber = { list -> //6자리 리스트
                         //todo 마지막 넘버 입력시 인증 함수 필요 및 isError지정
                         keyboardController?.hide()
-                    },scaffoldState
+                    }, scaffoldState
                 )
                 if (viewModel.isLoading) {
                     Box(
@@ -153,7 +158,7 @@ fun ChangeEmailPage(navController: NavController) {
                     Spacer(modifier = Modifier.height(10.dp))
 
                     Text(
-                        text = viewModel.getMyInfo().email ?: "noEmail",
+                        text = changeEmailViewModel.getMyInfo().email ?: "noEmail",
                         fontSize = 16.sp,
                         color = Color(0xFF5D5D5D)
                     )
@@ -170,7 +175,7 @@ fun ChangeEmailPage(navController: NavController) {
                         email,
                         { newText ->
                             email = newText
-                            isError = !viewModel.isEmailValid(email)
+                            isError = !email.isEmailValid()
                         },
                         isError = isError,
                         hint = "이메일"

@@ -74,6 +74,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.echoist.linkedout.R
+import com.echoist.linkedout.isEmailValid
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.viewModels.SignUpViewModel
 import kotlinx.coroutines.delay
@@ -318,7 +319,7 @@ fun EmailTextField(viewModel: SignUpViewModel, passwordFocusRequester: FocusRequ
             isError = viewModel.userEmailError,
             onValueChange = { new ->
                 viewModel.userEmail = new
-                if (new.isNotEmpty() && viewModel.isEmailValid(viewModel.userEmail)) {
+                if (new.isNotEmpty() && viewModel.userEmail.isEmailValid()) {
                     viewModel.userEmailError = false
                     errorText = ""
                 } else {
