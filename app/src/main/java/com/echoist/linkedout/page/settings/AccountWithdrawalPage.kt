@@ -41,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,14 +50,14 @@ import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
+import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.page.community.ReportTextField
 import com.echoist.linkedout.ui.theme.LinkedInColor
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.SettingsViewModel
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun AccountWithdrawalPage(navController : NavController) {
+fun AccountWithdrawalPage(navController: NavController) {
 
     val scrollState = rememberScrollState()
     val viewModel: SettingsViewModel = hiltViewModel()
@@ -64,113 +65,125 @@ fun AccountWithdrawalPage(navController : NavController) {
     var isWithdrawalClicked by remember { mutableStateOf(false) }
     val reasonList = listOf(
         "사용 빈도가 낮아서", "콘텐츠(글)의 질이 기대에 못 미쳐서", "앱의 기능 및 서비스가 불만족스러워서",
-        "앱 사용 중에 자꾸 문제가 생겨서(버그, 오류 등)", "다른 서비스가 더 좋아서","기타 문제"
+        "앱 사용 중에 자꾸 문제가 생겨서(버그, 오류 등)", "다른 서비스가 더 좋아서", "기타 문제"
     )
     val selectedItems = remember { mutableStateListOf<String>() }
+    val context = LocalContext.current
     Log.d(TAG, "AccountWithdrawalPage: $selectedItems")
 
-    LinkedOutTheme {
-        Scaffold(
-            topBar = {
-                SettingTopAppBar("탈퇴하기",navController)
-            },
-            content = {
-                if (viewModel.isLoading){
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-                        CircularProgressIndicator(color = LinkedInColor)
-                    }
-                }
-                Column(modifier = Modifier
-                    .verticalScroll(scrollState)
-                    .padding(it)){
-                    Column(
-                        Modifier
-                            .padding(horizontal = 20.dp)
-                    ) {
-                        Spacer(modifier = Modifier.height(42.dp))
-                        Text(text = "탈퇴 시 유의사항", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
-                        Spacer(modifier = Modifier.height(10.dp))
 
-                        GlideImage(
-                            model = R.drawable.box_warn,
-                            contentDescription = "deleteWarning",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(274.dp)
-                        )
-                        Spacer(modifier = Modifier.height(32.dp))
-
-                        Text(text = "탈퇴 사유", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Text(
-                            text = "탈퇴하는 이유를 말씀해주세요. 링크드아웃 서비스 개선에 큰 도움이 될 것입니다. 이용해주셔서 감사합니다!",
-                            fontSize = 16.sp,
-                            color = Color(0xFF5D5D5D)
-                        )
-                    }
-
-
-                        val onItemSelected: (String) -> Unit = { selectedItem ->
-                            if (selectedItems.contains(selectedItem)) {
-                                selectedItems.remove(selectedItem) // 이미 선택된 항목이면 제거
-                            } else {
-                                selectedItems.add(selectedItem) // 선택되지 않은 항목이면 추가
-                            }
-                        }
-
-
-                        MultiSelectDeleteList(reasonList,selectedItems,onItemSelected)
-
-                        Spacer(modifier = Modifier.height(32.dp))
-
-
-                        Button(
-                            onClick = {
-                                isWithdrawalClicked = true},
-                            enabled = !selectedItems.isEmpty(),
-                            shape = RoundedCornerShape(20),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 20.dp).padding(bottom = 20.dp)
-                                .height(61.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFFE43446),
-                                disabledContainerColor = Color(0xFF868686),
-
-                                )
-                        ) {
-                            Text(text = "탈퇴하기", color = Color.Black)
-                        }
-
-
-                    }
-
-
-                AnimatedVisibility(
-                    visible = isWithdrawalClicked,
-                    enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)),
-                    exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
-                )
-                {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.Black.copy(0.7f)),
-                        contentAlignment = Alignment.BottomCenter
-                    ){
-
-                        WithdrawalWarningBox(
-                            isCancelClicked = { isWithdrawalClicked = false },
-                            isWithdrawalClicked = {
-                                Log.d(TAG, "AccountWithdrawalPage: $selectedItems")
-                                viewModel.requestWithdrawal(selectedItems.toList(),navController)}
-                        )
-                    }
+    Scaffold(
+        topBar = {
+            SettingTopAppBar("탈퇴하기", navController)
+        },
+        content = {
+            if (viewModel.isLoading) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = LinkedInColor)
                 }
             }
-        )
-    }
+            Column(
+                modifier = Modifier
+                    .verticalScroll(scrollState)
+                    .padding(it)
+            ) {
+                Column(
+                    Modifier
+                        .padding(horizontal = 20.dp)
+                ) {
+                    Spacer(modifier = Modifier.height(42.dp))
+                    Text(text = "탈퇴 시 유의사항", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    GlideImage(
+                        model = R.drawable.box_warn,
+                        contentDescription = "deleteWarning",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(274.dp)
+                    )
+                    Spacer(modifier = Modifier.height(32.dp))
+
+                    Text(text = "탈퇴 사유", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Text(
+                        text = "탈퇴하는 이유를 말씀해주세요. 링크드아웃 서비스 개선에 큰 도움이 될 것입니다. 이용해주셔서 감사합니다!",
+                        fontSize = 16.sp,
+                        color = Color(0xFF5D5D5D)
+                    )
+                }
+
+
+                val onItemSelected: (String) -> Unit = { selectedItem ->
+                    if (selectedItems.contains(selectedItem)) {
+                        selectedItems.remove(selectedItem) // 이미 선택된 항목이면 제거
+                    } else {
+                        selectedItems.add(selectedItem) // 선택되지 않은 항목이면 추가
+                    }
+                }
+
+
+                MultiSelectDeleteList(reasonList, selectedItems, onItemSelected)
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+
+                Button(
+                    onClick = {
+                        isWithdrawalClicked = true
+                        SharedPreferencesUtil.saveClickedAutoLogin(context, false)
+                    },
+                    enabled = !selectedItems.isEmpty(),
+                    shape = RoundedCornerShape(20),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp)
+                        .padding(bottom = 20.dp)
+                        .height(61.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFE43446),
+                        disabledContainerColor = Color(0xFF868686),
+
+                        )
+                ) {
+                    Text(text = "탈퇴하기", color = Color.Black)
+                }
+
+
+            }
+
+
+            AnimatedVisibility(
+                visible = isWithdrawalClicked,
+                enter = fadeIn(
+                    animationSpec = tween(
+                        durationMillis = 500,
+                        easing = FastOutSlowInEasing
+                    )
+                ),
+                exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
+            )
+            {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(0.7f)),
+                    contentAlignment = Alignment.BottomCenter
+                ) {
+
+                    WithdrawalWarningBox(
+                        isCancelClicked = { isWithdrawalClicked = false },
+                        isWithdrawalClicked = {
+                            Log.d(TAG, "AccountWithdrawalPage: $selectedItems")
+                            viewModel.requestWithdrawal(selectedItems.toList(), navController)
+                        }
+                    )
+                }
+            }
+        }
+    )
 }
+
 
 @Composable
 fun MultiSelectDeleteList(
@@ -212,14 +225,14 @@ fun MultiSelectDeleteList(
 
         }
 
-        }
     }
+}
 
 @Composable
 fun WithdrawalItem(
     reportItem: String,
     isSelected: Boolean,
-    selectedColor : Color,
+    selectedColor: Color,
     onItemSelected: (Boolean) -> Unit
 ) {
     val color = if (isSelected) selectedColor else Color(0xFF252525)
@@ -241,7 +254,7 @@ fun WithdrawalItem(
             Text(text = reportItem, color = Color.White)
         }
         if (reportItem == "기타 문제" && isSelected) {
-            ReportTextField("탈퇴 사유를 작성해주세요.",selectedColor)
+            ReportTextField("탈퇴 사유를 작성해주세요.", selectedColor)
             Spacer(modifier = Modifier.height(20.dp))
         }
     }
@@ -249,21 +262,29 @@ fun WithdrawalItem(
 
 
 @Composable
-fun WithdrawalWarningBox( isCancelClicked: () ->Unit, isWithdrawalClicked: () -> Unit){
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .background(Color.Black.copy(0.7f)))
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter){
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .background(Color(0xFF121212), shape = RoundedCornerShape(10))
-            .height(243.dp), contentAlignment = Alignment.Center){
+fun WithdrawalWarningBox(isCancelClicked: () -> Unit, isWithdrawalClicked: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(0.7f))
+    )
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(0xFF121212), shape = RoundedCornerShape(10))
+                .height(243.dp), contentAlignment = Alignment.Center
+        ) {
             Column(
                 modifier = Modifier.padding(20.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "정말 회원 탈퇴를 신청하시겠습니까?", color = Color.White, fontWeight = FontWeight.SemiBold)
+                Text(
+                    text = "정말 회원 탈퇴를 신청하시겠습니까?",
+                    color = Color.White,
+                    fontWeight = FontWeight.SemiBold
+                )
                 Spacer(modifier = Modifier.height(48.dp))
                 Row {
                     Button(
@@ -278,7 +299,7 @@ fun WithdrawalWarningBox( isCancelClicked: () ->Unit, isWithdrawalClicked: () ->
                         onClick = { isCancelClicked() },
                         shape = RoundedCornerShape(20)
                     ) {
-                        Text(text = "취소", color = Color.Black,fontWeight = FontWeight.SemiBold)
+                        Text(text = "취소", color = Color.Black, fontWeight = FontWeight.SemiBold)
 
                     }
                     Spacer(modifier = Modifier.width(10.dp))
@@ -287,8 +308,9 @@ fun WithdrawalWarningBox( isCancelClicked: () ->Unit, isWithdrawalClicked: () ->
                         modifier = Modifier
                             .weight(1f)
                             .height(61.dp),
-                        onClick = { isWithdrawalClicked()
-                                  },
+                        onClick = {
+                            isWithdrawalClicked()
+                        },
                         shape = RoundedCornerShape(20)
                     ) {
                         Text(text = "확인", color = Color.Black, fontWeight = FontWeight.SemiBold)

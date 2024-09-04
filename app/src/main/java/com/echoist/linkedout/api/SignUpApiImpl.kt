@@ -24,32 +24,24 @@ class SignUpApiImpl : SignUpApi {
     }
 
     override suspend fun sendEmailVerificationForChange(
-        accessToken: String,
-        refreshToken: String,
         email: SignUpApi.EmailRequest
     ): Response<Unit> {
         TODO("Not yet implemented")
     }
 
     override suspend fun requestChangePw(
-        accessToken: String,
-        refreshToken: String,
         email: SignUpApi.EmailRequest
     ): Response<Unit> {
         TODO("Not yet implemented")
     }
 
     override suspend fun verifyChangePw(
-        accessToken: String,
-        refreshToken: String,
         token: String
     ): Response<Unit> {
         TODO("Not yet implemented")
     }
 
     override suspend fun resetPw(
-        accessToken: String,
-        refreshToken: String,
         resetPwRequest: SignUpApi.ResetPwRequest
     ): Response<Unit> {
         TODO("Not yet implemented")

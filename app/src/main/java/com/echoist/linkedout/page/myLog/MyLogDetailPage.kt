@@ -2,6 +2,7 @@ package com.echoist.linkedout.page.myLog
 
 import android.content.ContentValues.TAG
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -68,11 +70,15 @@ import com.echoist.linkedout.PRIVATE_POPUP_URL
 import com.echoist.linkedout.PUBLISHED_POPUP_URL
 import com.echoist.linkedout.R
 import com.echoist.linkedout.Routes
+import com.echoist.linkedout.TYPE_PRIVATE
+import com.echoist.linkedout.TYPE_PUBLISHED
+import com.echoist.linkedout.TYPE_STORY
+import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.components.LastEssayPager
 import com.echoist.linkedout.data.Story
 import com.echoist.linkedout.formatDateTime
+import com.echoist.linkedout.navigateWithClearBackStack
 import com.echoist.linkedout.ui.theme.LinkedInColor
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.MyLogViewModel
 import com.echoist.linkedout.viewModels.WritingViewModel
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
@@ -87,51 +93,78 @@ fun MyLogDetailPage(
     writingViewModel: WritingViewModel
 ) {
     val scrollState = rememberScrollState()
+    var isClicked by remember { mutableStateOf(false) }
 
 
-    LinkedOutTheme {
-        Scaffold(
-            topBar = {
-                DetailTopAppBar(navController = navController, viewModel)
-            },
-            content = {
-                Box(
-                    Modifier
-                        .padding(it)
-                        .fillMaxSize(), contentAlignment = Alignment.TopCenter
+    Scaffold(
+        topBar = {
+            DetailTopAppBar(navController = navController, viewModel)
+        },
+        content = {
+            Box(
+                Modifier
+                    .clickable { isClicked = !isClicked }
+                    .padding(it)
+                    .fillMaxSize(), contentAlignment = Alignment.TopCenter
+            ) {
+
+                Column(Modifier.verticalScroll(scrollState)) {
+                    DetailEssay(viewModel = viewModel)
+                    LastEssayPager(viewModel = viewModel, navController = navController)
+                }
+                //수정 옵션
+                AnimatedVisibility(
+                    visible = viewModel.isActionClicked,
+                    enter = fadeIn(
+                        animationSpec = tween(
+                            durationMillis = 500,
+                            easing = FastOutSlowInEasing
+                        )
+                    ),
+                    exit = fadeOut(
+                        animationSpec = tween(
+                            durationMillis = 200,
+                            easing = LinearEasing
+                        )
+                    )
                 ) {
 
-                    Column(Modifier.verticalScroll(scrollState)) {
-                        DetailEssay(viewModel = viewModel)
-                        LastEssayPager(viewModel = viewModel, navController = navController)
-                    }
-                    //수정 옵션
-                    AnimatedVisibility(
-                        visible = viewModel.isActionClicked,
-                        enter = fadeIn(
-                            animationSpec = tween(
-                                durationMillis = 500,
-                                easing = FastOutSlowInEasing
-                            )
-                        ),
-                        exit = fadeOut(
-                            animationSpec = tween(
-                                durationMillis = 200,
-                                easing = LinearEasing
-                            )
-                        )
-                    ) {
-
-                        ModifyOption(viewModel, navController = navController, writingViewModel)
-
-                    }
+                    ModifyOption(viewModel, navController = navController, writingViewModel)
 
                 }
+
             }
-        )
-    }
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .navigationBarsPadding(),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                LaunchedEffect(isClicked) {
+                    delay(3000)
+                    isClicked = false
+                }
 
-
+                AnimatedVisibility(
+                    visible = isClicked,
+                    enter = fadeIn(
+                        animationSpec = tween(
+                            durationMillis = 500,
+                            easing = FastOutSlowInEasing
+                        )
+                    ),
+                    exit = fadeOut(
+                        animationSpec = tween(
+                            durationMillis = 500,
+                            easing = LinearEasing
+                        )
+                    )
+                ) {
+                    SequenceBottomBar(viewModel.readDetailEssay(), viewModel, navController)
+                }
+            }
+        }
+    )
 }
 
 @Composable
@@ -237,7 +270,8 @@ fun ModifyOption(
                         R.drawable.option_linkedout
                     )
                     HorizontalDivider(color = Color(0xFF1A1A1A))
-                    OptionItem(text = "스토리 선택", Color(0xFF616FED),
+                    OptionItem(
+                        text = "스토리 선택", Color(0xFF616FED),
                         {
                             isStoryClicked = true
                         }, R.drawable.option_check
@@ -293,7 +327,7 @@ fun OptionItem(
             Icon(
                 tint = color,
                 painter = painterResource(id = iconResource),
-                contentDescription = "",
+                contentDescription = "img",
                 modifier = Modifier.size(24.dp)
             )
         }
@@ -328,25 +362,33 @@ fun DetailTopAppBar(navController: NavController, viewModel: MyLogViewModel) {
                     .size(30.dp)
 
                     .clickable {
-                        //writingcomplete에서 왔다면 홈으로보내기
-                        if (previousRoute == Routes.WritingCompletePage){
-                            navController.popBackStack(Routes.WritingPage,true)
-                            navController.navigate("${Routes.Home}/200")
-                        }
+                        Log.d(TAG, "DetailTopAppBar: $previousRoute")
+                        when (previousRoute) {
+                            Routes.WritingCompletePage -> navigateWithClearBackStack(
+                                navController,
+                                "${Routes.Home}/200"
+                            )
 
+                            "${Routes.MyLog}/{page}" -> navigateWithClearBackStack(
+                                navController,
+                                "${Routes.MyLog}/0"
+                            )
 
-                        else{
-                            if (viewModel.detailEssayBackStack.isNotEmpty()) {
-                                viewModel.detailEssayBackStack.pop()
-                                Log.d(TAG, "pushpushpop: ${viewModel.detailEssayBackStack}")
+                            else -> {
+                                navController.popBackStack()
+                                viewModel.isActionClicked = false
+
                                 if (viewModel.detailEssayBackStack.isNotEmpty()) {
-                                    viewModel.detailEssay = viewModel.detailEssayBackStack.peek()
+                                    viewModel.detailEssayBackStack.pop()
+                                    Log.d(TAG, "pushpushpop: ${viewModel.detailEssayBackStack}")
+                                    if (viewModel.detailEssayBackStack.isNotEmpty()) {
+                                        viewModel.detailEssay =
+                                            viewModel.detailEssayBackStack.peek()
+                                    }
                                 }
-                            }
-                            navController.popBackStack()
-                            viewModel.isActionClicked = false
-                        }
 
+                            }
+                        }
                     } //뒤로가기
             )
         },
@@ -354,7 +396,7 @@ fun DetailTopAppBar(navController: NavController, viewModel: MyLogViewModel) {
         actions = {
             Icon(
                 painter = painterResource(id = R.drawable.more),
-                contentDescription = "",
+                contentDescription = "img",
                 modifier = Modifier
                     .size(50.dp)
                     .padding(end = 20.dp)
@@ -369,6 +411,7 @@ fun DetailTopAppBar(navController: NavController, viewModel: MyLogViewModel) {
 @Composable
 fun DetailEssay(viewModel: MyLogViewModel) {
     val essay = viewModel.detailEssay
+    Log.d(TAG, "DetailEssay: ${essay.status}")
     Box {
         Column {
             if (essay.thumbnail != null && essay.thumbnail!!.startsWith("https")) {
@@ -396,10 +439,12 @@ fun DetailEssay(viewModel: MyLogViewModel) {
                 Text(text = essay.title!!, fontSize = viewModel.titleTextSize, modifier = Modifier)
                 Spacer(modifier = Modifier.height(40.dp))
 
-                RichText(state = rememberRichTextState().setHtml(essay.content!!),
+                RichText(
+                    state = rememberRichTextState().setHtml(essay.content!!),
                     fontSize = viewModel.contentTextSize,
                     lineHeight = 27.2.sp,
-                    color = Color(0xFFB4B4B4))
+                    color = Color(0xFFB4B4B4)
+                )
 
                 Spacer(modifier = Modifier.height(46.dp))
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
@@ -585,7 +630,7 @@ fun SingleSelectableList(items: List<Story>, viewModel: MyLogViewModel) {
                     if (isSelected) Icon(
                         painter = painterResource(id = R.drawable.option_check),
                         tint = LinkedInColor,
-                        contentDescription = ""
+                        contentDescription = "img"
                     )
                 }
 
@@ -602,74 +647,79 @@ fun CompletedEssayPage(
     writingViewModel: WritingViewModel
 ) {
     var hasCalledApi by remember { mutableStateOf(false) }
+
+    // API 호출 및 상태 업데이트
     LaunchedEffect(key1 = Unit) {
         if (!hasCalledApi) {
             viewModel.readMyEssay()
             viewModel.readPublishEssay()
             delay(100)
-
             hasCalledApi = true
         }
     }
 
+    // 뒤로가기 버튼 처리
+    BackHandler(onBack = {
+        navigateWithClearBackStack(navController, "${Routes.Home}/200")
+    })
+
     val scrollState = rememberScrollState()
 
+    // 상태에 따라 UI를 분기
     if (hasCalledApi) {
-        LinkedOutTheme {
-            Scaffold(
-                topBar = {
-                    DetailTopAppBar(navController = navController, viewModel)
-                },
-                content = {
-                    Box(
-                        Modifier
-                            .padding(it)
-                            .fillMaxSize(), contentAlignment = Alignment.TopCenter
+        Scaffold(
+            topBar = {
+                DetailTopAppBar(navController = navController, viewModel)
+            },
+            content = {
+                Box(
+                    Modifier
+                        .padding(it)
+                        .fillMaxSize(), contentAlignment = Alignment.TopCenter
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .verticalScroll(scrollState)
+                            .fillMaxSize()
                     ) {
-
-                        Column(Modifier.verticalScroll(scrollState)) {
-                            DetailEssay2(viewModel = viewModel)
-                            LastEssayPager(viewModel = viewModel, navController = navController)
-                        }
-                        //수정 옵션
-                        AnimatedVisibility(
-                            visible = viewModel.isActionClicked,
-                            enter = fadeIn(
-                                animationSpec = tween(
-                                    durationMillis = 1000,
-                                    easing = FastOutSlowInEasing
-                                )
-                            ),
-                            exit = fadeOut(
-                                animationSpec = tween(
-                                    durationMillis = 500,
-                                    easing = LinearEasing
-                                )
-                            )
-                        ) {
-
-                            ModifyOption(
-                                viewModel,
-                                navController = navController,
-                                writingViewModel = writingViewModel
-                            )
-
-                        }
-                        val text = when (viewModel.readDetailEssay().status) {
-                            "private" -> "저장"
-                            "published" -> "발행"
-                            "linkedout" -> "링크드아웃"
-                            else -> {
-                                "검토중"
-                            }
-                        }
-                        WriteCompleteBox(type = text)
-
-
+                        DetailEssay2(viewModel = viewModel)
+                        LastEssayPager(viewModel = viewModel, navController = navController)
                     }
+
+                    // 수정 옵션
+                    AnimatedVisibility(
+                        visible = viewModel.isActionClicked,
+                        enter = fadeIn(
+                            animationSpec = tween(
+                                durationMillis = 1000,
+                                easing = FastOutSlowInEasing
+                            )
+                        ),
+                        exit = fadeOut(
+                            animationSpec = tween(
+                                durationMillis = 500,
+                                easing = LinearEasing
+                            )
+                        )
+                    ) {
+                        ModifyOption(
+                            viewModel,
+                            navController = navController,
+                            writingViewModel = writingViewModel
+                        )
+                    }
+
+                    // 상태에 따라 텍스트 표시
+                    val text = when (viewModel.readDetailEssay().status) {
+                        "private" -> "저장"
+                        "published" -> "발행"
+                        "linkedout" -> "링크드아웃"
+                        else -> "검토중"
+                    }
+                    WriteCompleteBox(type = text)
                 }
-            )
-        }
+            }
+        )
     } else {
         Box(
             modifier = Modifier
@@ -677,9 +727,8 @@ fun CompletedEssayPage(
                 .background(Color.Black)
         )
     }
-
-
 }
+
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -714,15 +763,20 @@ fun DetailEssay2(viewModel: MyLogViewModel) {
                 Text(text = essay.title!!, fontSize = viewModel.titleTextSize, modifier = Modifier)
                 Spacer(modifier = Modifier.height(40.dp))
 
-                RichText(state = rememberRichTextState().setHtml(essay.content!!),
+                RichText(
+                    state = rememberRichTextState().setHtml(essay.content!!),
                     fontSize = viewModel.contentTextSize,
                     modifier = Modifier,
-                    color = Color(0xFFB4B4B4))
+                    color = Color(0xFFB4B4B4)
+                )
 
                 Spacer(modifier = Modifier.height(46.dp))
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
                     Column {
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.CenterEnd
+                        ) {
                             (if (essay.author != null) essay.author!!.nickname else "")?.let {
                                 Text(
                                     text = it,
@@ -733,7 +787,10 @@ fun DetailEssay2(viewModel: MyLogViewModel) {
                             }
                         }
                         Spacer(modifier = Modifier.height(8.dp))
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.CenterEnd
+                        ) {
                             Text(
                                 text = formatDateTime(essay.createdDate ?: ""),
                                 fontSize = 12.sp,
@@ -782,7 +839,7 @@ fun DetailEssay2(viewModel: MyLogViewModel) {
                 }
 
             }
-            }
+        }
 
 
     }
@@ -852,11 +909,22 @@ fun WriteCompleteBox(type: String) {
                         modifier = Modifier.weight(4f)
                     ) {
                         Row {
-                            Text(text = "$type ", color = LinkedInColor, fontSize = 24.sp, fontWeight = FontWeight.SemiBold)
+                            Text(
+                                text = "$type ",
+                                color = LinkedInColor,
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
                             Text(text = "완료", fontSize = 24.sp, color = Color.White)
                         }
                         Spacer(modifier = Modifier.height(18.dp))
-                        Text(text = text, textAlign = TextAlign.Center, color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+                        Text(
+                            text = text,
+                            textAlign = TextAlign.Center,
+                            color = Color.White,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 14.sp
+                        )
 
                     }
                 }
@@ -876,9 +944,135 @@ fun WriteCompleteBox(type: String) {
                     }
                 }
             }
-
-
         }
     }
+}
 
+
+@Composable
+fun SequenceBottomBar(
+    item: EssayApi.EssayItem,
+    viewModel: MyLogViewModel,
+    navController: NavController,
+) {
+    // 현재 백스택 상태를 관찰하여 상태 변경 시 리컴포지션을 트리거
+    val backStackEntry = navController.currentBackStackEntryAsState().value
+    // 백스택에서 바로 뒤의 항목 가져오기
+    val previousBackStackEntry = backStackEntry?.let { navController.previousBackStackEntry }
+    // 이전 목적지의 라우트 확인
+    val previousRoute = previousBackStackEntry?.destination?.route
+
+    var noExistPreviousStack by remember { mutableStateOf(false) }
+
+    LaunchedEffect(key1 = noExistPreviousStack) { //1초 뒤에 이전 조회글 토스트 사라지게.
+        delay(1500)
+        noExistPreviousStack = false
+    }
+
+    Column {
+        AnimatedVisibility(
+            visible = noExistPreviousStack,
+            enter = fadeIn(
+                animationSpec = tween(
+                    durationMillis = 300,
+                    easing = FastOutSlowInEasing
+                )
+            ),
+            exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp)
+                    .padding(horizontal = 20.dp)
+                    .background(color = Color(0xFF212121), shape = RoundedCornerShape(size = 10.dp))
+            ) {
+                Text(
+                    text = "이전 글이 없습니다.",
+                    fontSize = 16.sp,
+                    color = Color.White,
+                    modifier = Modifier.align(
+                        Alignment.Center
+                    )
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(14.dp))
+        Box(
+            modifier = Modifier
+                .background(Color(0xFF0E0E0E))
+                .fillMaxWidth()
+                .height(70.dp)
+        ) {
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(end = 20.dp),
+                contentAlignment = Alignment.CenterEnd
+            ) {
+                Row(
+                    modifier = Modifier.height(94.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.icon_arrowleft),
+                            contentDescription = "nav back",
+                            Modifier
+                                .size(20.dp)
+                                .clickable {
+
+                                    if (viewModel.detailEssayBackStack.isNotEmpty()) {
+                                        viewModel.detailEssayBackStack.pop()
+
+                                        if (viewModel.detailEssayBackStack.isNotEmpty()) {
+                                            viewModel.detailEssay =
+                                                viewModel.detailEssayBackStack.peek()
+                                            viewModel.setBackDetailEssay(viewModel.detailEssayBackStack.peek()) //detailEssay값을 아예 수정
+                                        }
+                                    }
+                                    navController.popBackStack()
+                                }
+
+
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(text = "이전 글", fontSize = 12.sp, color = Color.White)
+                    }
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.icon_arrowright),
+                            contentDescription = "next random essay",
+                            Modifier
+                                .size(20.dp)
+                                .clickable {
+                                    viewModel.detailEssayBackStack.push(item)
+                                    viewModel.readNextEssay(
+                                        item.id!!,
+                                        when (item.status) {
+                                            "private" -> TYPE_PRIVATE
+                                            "published" -> TYPE_PUBLISHED
+                                            else -> TYPE_STORY
+                                        },
+                                        navController,
+                                        if (item.status == TYPE_STORY) viewModel.getSelectedStory().id!! else 0
+                                    )
+                                }
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(text = "다음 글", fontSize = 12.sp, color = Color.White)
+                    }
+                }
+            }
+        }
+    }
 }

@@ -20,7 +20,6 @@ import com.echoist.linkedout.data.NotificationSettings
 import com.echoist.linkedout.data.RegisterCode
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.myLog.Token
-import com.echoist.linkedout.page.myLog.Token.bearerAccessToken
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -59,7 +58,7 @@ class SignUpViewModel @Inject constructor(
 
     private suspend fun readMyInfo(){
         try {
-            val response = userApi.getMyInfo(bearerAccessToken,Token.refreshToken)
+            val response = userApi.getMyInfo()
 
             exampleItems.myProfile = response.data.user
             exampleItems.myProfile.essayStats = response.data.essayStats
@@ -147,7 +146,7 @@ class SignUpViewModel @Inject constructor(
                 isSignUpApiFinished = true
 
                 Log.d("tokentoken", response.headers()["authorization"].toString())
-                Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
             } else {
                 errorCode = response.code()
                 Log.e("authApiFailed2", "Failed : ${response.headers()}")
@@ -174,14 +173,13 @@ class SignUpViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val userEmail = SignUpApi.EmailRequest(email)
-                val response = signUpApi.sendEmailVerificationForChange(bearerAccessToken,Token.refreshToken,userEmail)
+                val response = signUpApi.sendEmailVerificationForChange(userEmail)
 
                 if (response.isSuccessful) {
                     Log.e("authApiSuccess2", "${response.headers()}")
                     Log.e("authApiSuccess2", "${response.code()}")
 
-                    Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
-                    //todo 회원가입 비밀번호 특수문자 대소문자 필요한거 Ui 변경해야함. 그리고 확인로딩시 대기표시 띄워줘야함.
+                    Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                     readMyInfo()
                     isSendEmailVerifyApiFinished = true
 
@@ -206,16 +204,14 @@ class SignUpViewModel @Inject constructor(
         viewModelScope.launch {
             isLoading = true
             val userEmail = SignUpApi.EmailRequest(email)
-            val response = signUpApi.requestChangePw(bearerAccessToken,Token.refreshToken,userEmail)
+            val response = signUpApi.requestChangePw(userEmail)
 
             if (response.code() == 201) { //성공
                 Log.d("requestChangePw api header", "${response.headers()}")
                 Log.d("requestChangePw api code", "${response.code()}")
                 //헤더에 토큰이 없다.
-                //                    Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                 isSendEmailVerifyApiFinished = true
-
-
             }
             else{
                 // code == 400 잘못된 이메일주소
@@ -231,15 +227,12 @@ class SignUpViewModel @Inject constructor(
     fun verifyChangePw(token : String,newPw: String){
         viewModelScope.launch {
 
-            val response = signUpApi.verifyChangePw(bearerAccessToken,Token.refreshToken,token)
+            val response = signUpApi.verifyChangePw(token)
 
             if (response.code() == 304) { //성공
                 Log.e("authApiSuccess2", "${response.headers()}")
                 Log.e("authApiSuccess2", "${response.code()}")
-
-                //Token.accessToken = (response.headers()["authorization"].toString()) 여기도 마찬가지일것
                 resetPw(token,newPw)
-
             }
             else{
                 // code == 404 유효하지 않은토큰. 토큰을 못받았거나 10분이 지났거나
@@ -252,22 +245,13 @@ class SignUpViewModel @Inject constructor(
 
     private suspend fun resetPw(token : String, newPw : String)
     {
-
             val body = SignUpApi.ResetPwRequest(newPw,token)
-            val response = signUpApi.resetPw(bearerAccessToken,Token.refreshToken,body)
+            val response = signUpApi.resetPw(body)
 
             if (response.code() == 200) { //성공
-                Log.e("authApiSuccess2", "${response.headers()}")
                 Log.e("authApiSuccess2", "${response.code()}")
-
-
-                // Token.accessToken = (response.headers()["authorization"].toString()) 여기도마찬가지
-                //변경 완료!
-
             }
             else{
-                // code == 404 유효하지 않은토큰. 토큰을 못받았거나 10분이 지났거나
-                Log.e("authApiFailed2", "Failed : ${response.headers()}")
                 Log.e("authApiFailed2", "${response.code()}")
             }
     }
@@ -294,7 +278,7 @@ class SignUpViewModel @Inject constructor(
                 Log.d("위치서비스 동의 등록 ", "2")
                 if (locationAgreement) {
                     val userInfo = UserInfo(locationConsent = true)
-                    val response = userApi.userUpdate(bearerAccessToken,Token.refreshToken, userInfo)
+                    val response = userApi.userUpdate( userInfo)
 
                     if (response.isSuccessful) {
                         Log.d(TAG, "위치서비스 동의 저장 성공: ${response.code()}")
@@ -305,7 +289,7 @@ class SignUpViewModel @Inject constructor(
 
                 // 사용자의 마케팅 동의
                 Log.d("약관 동의 저장시작", "3")
-                val response = supportApi.updateUserNotification(bearerAccessToken,Token.refreshToken, option)
+                val response = supportApi.updateUserNotification( option)
                 if (response.isSuccessful) {
                     Log.d(TAG, "마케팅 동의 저장 성공: ${response.code()}")
 
@@ -321,7 +305,7 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    private suspend fun requestRegisterDevice(context: Context) {
+    suspend fun requestRegisterDevice(context: Context) {
         val ssaid = getSSAID(context)
         val token = getFCMToken() // Suspend 함수로 호출
 
@@ -329,7 +313,7 @@ class SignUpViewModel @Inject constructor(
             // 서버에 토큰값 보내기 등의 작업을 여기서 처리할 수 있습니다.
             val body = SignUpApiImpl.RegisterDeviceRequest(ssaid, token)
             try {
-                val response = supportApi.requestRegisterDevice(bearerAccessToken,Token.refreshToken, body)
+                val response = supportApi.requestRegisterDevice( body)
                 if (response.isSuccessful) {
                     Log.i("FCM Token", "ssaid 값 : $ssaid \n FCM token 값 : $token")
                     Log.d("기기 등록 성공입니다.", "success: ")

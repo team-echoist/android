@@ -13,13 +13,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.media3.exoplayer.ExoPlayer
+import com.echoist.linkedout.MainActivity
 
 
 class SplashPage : AppCompatActivity() {
     private var keepSplash = true
     private val delay = 1200L
-    lateinit var player : ExoPlayer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,12 +29,13 @@ class SplashPage : AppCompatActivity() {
 
         val intent = Intent(
             this,
-            LoginPage::class.java
+            MainActivity::class.java
         )
 
         startActivity(intent)
         finish()
     }
+
     private fun setupSplashScreen(splashScreen: SplashScreen) {
         // Replace this timer with your logic to load data on the splash screen.
         splashScreen.setKeepOnScreenCondition { keepSplash }
@@ -43,6 +43,7 @@ class SplashPage : AppCompatActivity() {
             keepSplash = false
         }, delay)
     }
+
     // Declare the launcher at the top of your Activity/Fragment:
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission(),

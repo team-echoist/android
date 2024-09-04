@@ -12,6 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 
 private val DarkColorScheme = darkColorScheme(
     primary = LinkedInColor,
@@ -45,9 +47,12 @@ private val LightColorScheme = lightColorScheme(
 fun LinkedOutTheme(
     darkTheme: Boolean = true, //isSystemInDarkTheme(), //이 값 대신 SharedPreferencesUtil 을 사용
     // Dynamic color is available on Android 12+
+    navController: NavController = rememberNavController(),
     dynamicColor: Boolean = false,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
+
 ) {
+
     //val context = LocalContext.current
     //val dark : Boolean = SharedPreferencesUtil.getDisplayInfo(context) == DARK_MODE
 
@@ -56,10 +61,11 @@ fun LinkedOutTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
+    // 최상위에서 백키 동작 관리
+
     CompositionLocalProvider(
         LocalRippleConfiguration provides null // 리플 효과 제거
     ) {

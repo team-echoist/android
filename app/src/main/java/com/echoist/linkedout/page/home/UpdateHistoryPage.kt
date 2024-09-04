@@ -27,7 +27,6 @@ import androidx.navigation.NavController
 import com.echoist.linkedout.data.Release
 import com.echoist.linkedout.page.settings.SettingTopAppBar
 import com.echoist.linkedout.ui.theme.LinkedInColor
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.HomeViewModel
 
 fun groupHistoriesByDate(histories: List<Release>): Map<String, List<Release>> {
@@ -35,42 +34,40 @@ fun groupHistoriesByDate(histories: List<Release>): Map<String, List<Release>> {
 }
 
 @Composable
-fun UpdateHistoryPage(navController: NavController, viewModel : HomeViewModel = hiltViewModel()) {
-    viewModel.readUpdateHistory()
+fun UpdateHistoryPage(navController: NavController, viewModel: HomeViewModel = hiltViewModel()) {
+    viewModel.requestUpdatedHistory()
 
-    LinkedOutTheme {
-        Scaffold(topBar = {
-            SettingTopAppBar("업데이트 기록", navController)
-        }) {
 
-            Column(
-                Modifier
-                    .padding(it)
-                    .verticalScroll(rememberScrollState())
-            ) {
+    Scaffold(topBar = {
+        SettingTopAppBar("업데이트 기록", navController)
+    }) {
 
-                if(!viewModel.updateHistory.isEmpty()){
-                    UpdateHistoryList(viewModel.updateHistory)
-                }
+        Column(
+            Modifier
+                .padding(it)
+                .verticalScroll(rememberScrollState())
+        ) {
+
+            if (!viewModel.updateHistory.isEmpty()) {
+                UpdateHistoryList(viewModel.updateHistory)
             }
-            if(viewModel.updateHistory.isEmpty()){
-                if (viewModel.isLoading){
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-                        CircularProgressIndicator(color = LinkedInColor)
-                    }
+        }
+        if (viewModel.updateHistory.isEmpty()) {
+            if (viewModel.isLoading) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = LinkedInColor)
                 }
-                else{
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-                        Text(
-                            text = "업데이트 기록이 없습니다.",
-                            style = TextStyle(
-                                fontSize = 16.sp,
-                                lineHeight = 25.6.sp,
-                                fontWeight = FontWeight(400),
-                                color = Color(0xFF888888),
-                            )
+            } else {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(
+                        text = "업데이트 기록이 없습니다.",
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            lineHeight = 25.6.sp,
+                            fontWeight = FontWeight(400),
+                            color = Color(0xFF888888),
                         )
-                    }
+                    )
                 }
             }
         }

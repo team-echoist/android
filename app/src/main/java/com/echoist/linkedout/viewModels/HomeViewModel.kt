@@ -17,19 +17,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.echoist.linkedout.AlarmReceiver
-import com.echoist.linkedout.DeviceId
+import com.echoist.linkedout.HomeRepository
 import com.echoist.linkedout.Routes
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.api.SignUpApiImpl
 import com.echoist.linkedout.api.SupportApi
 import com.echoist.linkedout.api.UserApi
+import com.echoist.linkedout.apiCall
 import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.data.Notice
 import com.echoist.linkedout.data.NotificationSettings
 import com.echoist.linkedout.data.Release
 import com.echoist.linkedout.data.UserInfo
+import com.echoist.linkedout.navigateWithClearBackStack
 import com.echoist.linkedout.page.myLog.Token
-import com.echoist.linkedout.page.myLog.Token.bearerAccessToken
 import com.google.firebase.messaging.FirebaseMessaging
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -44,7 +45,9 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val exampleItems: ExampleItems,
     private val userApi: UserApi,
-    private val supportApi: SupportApi) : ViewModel() {
+    private val supportApi: SupportApi,
+    private val homeRepository: HomeRepository
+) : ViewModel() {
 
     var myProfile by mutableStateOf(exampleItems.myProfile)
 
@@ -53,31 +56,32 @@ class HomeViewModel @Inject constructor(
     var marketingNotification by mutableStateOf(false)
     var locationNotification by mutableStateOf(false)
 
-
+    var apiResponseStatusCode by mutableStateOf(200)
 
     var isLoading by mutableStateOf(false)
     var isFirstUser by mutableStateOf(false)
-    var latestNoticeId : Int? by mutableStateOf(null) //공지가 있을경우 true, 없을경우 Null
+    var latestNoticeId: Int? by mutableStateOf(null) //공지가 있을경우 true, 없을경우 Null
 
-    var updateHistory: SnapshotStateList<Release> =  mutableStateListOf()
+    var updateHistory: SnapshotStateList<Release> = mutableStateListOf()
 
     var isVisibleGeulRoquis by mutableStateOf(true)
 
-    fun readMyProfile() : UserInfo{
+    fun readMyProfile(): UserInfo {
         return exampleItems.myProfile
     }
 
-    fun initializeDetailEssay(){
+    fun initializeDetailEssay() {
         exampleItems.detailEssay = EssayApi.EssayItem()
     }
-    fun setStorageEssay(essayItem: EssayApi.EssayItem){
+
+    fun setStorageEssay(essayItem: EssayApi.EssayItem) {
         exampleItems.storageEssay = essayItem
     }
 
-    suspend fun requestMyInfo(){
+    suspend fun requestMyInfo() {
         try {
 
-            val response = userApi.getMyInfo(bearerAccessToken,Token.refreshToken)
+            val response = userApi.getMyInfo()
 
             Log.d("헤더 토큰", Token.accessToken)
             exampleItems.myProfile = response.data.user
@@ -88,13 +92,9 @@ class HomeViewModel @Inject constructor(
             //첫유저인지 판별
             isFirstUser = response.data.user.isFirst == true
 
-        }catch (e: Exception){
+        } catch (e: Exception) {
             Log.d(TAG, "readMyInfo: error err")
             e.printStackTrace()
-            Log.d(TAG, e.message.toString())
-            Log.d(TAG, e.cause.toString())
-
-
         }
     }
 
@@ -121,7 +121,6 @@ class HomeViewModel @Inject constructor(
             // Get new FCM registration token
             val token = task.result
             callback(token)
-
         }
     }
 
@@ -131,81 +130,67 @@ class HomeViewModel @Inject constructor(
             if (token != null) {
                 // 서버에 토큰값 보내기 등의 작업을 여기서 처리할 수 있습니다.
                 val body = SignUpApiImpl.RegisterDeviceRequest(ssaid, token)
-                viewModelScope.launch {
-                    try {
-                        supportApi.requestRegisterDevice(bearerAccessToken,Token.refreshToken, body)
+
+                apiCall(
+                    onSuccess = {
                         Log.i("FCM Token", "ssaid 값 : $ssaid \n FCM token 값 : $token")
-
-                    } catch (e: Exception) {
-                        Log.e("FCM Token", "Failed to fetch token")
-
-                    } finally {
                     }
-
+                ) {
+                    supportApi.requestRegisterDevice(
+                        body
+                    )
                 }
-
             } else {
                 Log.e("FCM Token", "Failed to fetch token")
                 //토큰없으면 기기등록도 안됨
             }
         }
+
+
     }
 
     //사용자 알림설정 get
     var isApifinished by mutableStateOf(false)
+
+    //HomeRepository 도입
     fun readUserNotification() {
+
         viewModelScope.launch {
-            try {
-                val response = supportApi.readUserNotification(bearerAccessToken,Token.refreshToken)
-                Log.d(TAG, "readUserNotification: ${response.body()?.data!!}")
-
-                if (response.isSuccessful) {
-                    Log.d(TAG, "readUserNotification: success${response.body()?.data!!}")
-                    viewedNotification = response.body()?.data!!.viewed
-                    reportNotification = response.body()?.data!!.report
-                    marketingNotification = response.body()?.data!!.marketing
-
-                    requestMyInfo()
-                } else {
-                    Log.e(TAG, "readUserNotification: err${response.code()}")
-                    Log.e(TAG, "readUserNotification: err device id${DeviceId.ssaid}")
-
-                }
-
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Log.e(TAG, "readUserNotification: error ${e.message}")
-                Log.e(TAG, "readUserNotification: error device id :  ${DeviceId.ssaid}\n token : ${Token.accessToken}")
-
-            }
-            finally {
+            homeRepository.requestUserNotification({ response ->
+                viewedNotification = response.data.viewed
+                reportNotification = response.data.report
+                marketingNotification = response.data.marketing
+                requestMyInfo()
+            })
+            {
                 isApifinished = true
             }
         }
+
     }
 
     //사용자 알림설정 update
-    fun updateUserNotification(navController: NavController,locationAgreement : Boolean) {
-        val body = NotificationSettings(viewedNotification, reportNotification,marketingNotification)
+    fun updateUserNotification(navController: NavController, locationAgreement: Boolean) {
+        val body =
+            NotificationSettings(viewedNotification, reportNotification, marketingNotification)
         viewModelScope.launch {
             try {
-                supportApi.updateUserNotification(bearerAccessToken,Token.refreshToken,  body)
+                supportApi.updateUserNotification(body)
                 Log.d(TAG, "updateUserNotification success: $body")
 
-                    val userInfo = UserInfo(locationConsent = locationAgreement)
-                    val response = userApi.userUpdate(bearerAccessToken,Token.refreshToken,userInfo)
-                    Log.d(TAG, "위치서비스 동의 저장 성공: ${response.code()}")
-                    Log.d(TAG, "위치서비스 동의 저장 성공: $locationNotification")
+                val userInfo = UserInfo(locationConsent = locationAgreement)
+                val response = userApi.userUpdate(userInfo)
+                Log.d(TAG, "위치서비스 동의 저장 성공: ${response.code()}")
+                Log.d(TAG, "위치서비스 동의 저장 성공: $locationNotification")
 
-                    navController.navigate("${Routes.Home}/200")
+                navController.navigate("${Routes.Home}/200")
             } catch (e: Exception) {
                 e.printStackTrace()
                 Log.d(TAG, "noti update failed: ${e.message}")
 
-                TODO("Not yet implemented")
-            } finally {
             }
         }
+
     }
 
     fun setAlarmFromTimeString(context: Context, hour: String, min: String, period: String) {
@@ -216,7 +201,12 @@ class HomeViewModel @Inject constructor(
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, AlarmReceiver::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
 
         val calendar = Calendar.getInstance()
 
@@ -263,14 +253,14 @@ class HomeViewModel @Inject constructor(
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
 
-        )
-
+            )
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         alarmManager.cancel(pendingIntent)
 
         // 알람이 해제되었음을 로그로 출력
         Log.d(TAG, "알람 취소")
     }
+
     fun setAlarmAfter10(context: Context) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, AlarmReceiver::class.java)
@@ -290,186 +280,102 @@ class HomeViewModel @Inject constructor(
     }
 
     //최신공지 여부
-    fun requestLatestNotice(){
-        viewModelScope.launch {
-            try {
-                val response = supportApi.requestLatestNotice(bearerAccessToken,Token.refreshToken)
-                if (response.isSuccessful){
-                    //공지가 있을경우 true, 없을경우 Null
-                    latestNoticeId = response.body()!!.data.newNotice
-                    Log.d("최신공지 확인", "확인 성공 newNotice : ${response.body()!!.data.newNotice}")
-                }
-                else{
-                    Log.e("최신공지 확인", "확인 실패 ${response.code()}")
-                }
-            }catch (e:Exception){
+    fun requestLatestNotice() {
+        apiCall(
+            onSuccess = { response ->
+                latestNoticeId = response.data.newNotice
+            },
+            onError = { e ->
                 Log.e("최신공지 확인", "확인 실패 ${e.message}")
-                e.printStackTrace()
-
             }
-        }
-
+        ) { supportApi.requestLatestNotice() }
     }
 
-    fun readUpdateHistory(){
-        viewModelScope.launch {
-            try {
-                isLoading = true
-                val response = supportApi.readUpdatedHistories(bearerAccessToken,Token.refreshToken)
-                if (response.isSuccessful){
-                    updateHistory = response.body()!!.data.releases.toMutableStateList()
+    //업데이트 히스토리
+    fun requestUpdatedHistory() {
+        isLoading = true
 
-                    //empty라면 가져오지않음. not empty라면 token으로, null이라면 이전 token.accesstoken값으로
-                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
-
-
-                }
-            }catch (e:Exception){
-                e.printStackTrace()
-
-            }
-            finally {
+        apiCall(
+            onSuccess = { response ->
+                updateHistory = response.data.releases.toMutableStateList()
+            },
+            finally = {
                 isLoading = false
             }
-        }
-
+        ) { supportApi.readUpdatedHistories() }
     }
 
-    var essayCount by mutableStateOf(mutableListOf(0,0,0,0,0))
+    var essayCount by mutableStateOf(mutableListOf(0, 0, 0, 0, 0))
 
-    fun requestUserGraphSummaryResponse(){
+    //유저 주간 링크드아웃 지수
+    fun requestUserGraphSummary() {
         viewModelScope.launch {
-            try {
-                val response = userApi.requestUserGraphSummary(bearerAccessToken,Token.refreshToken)
-                if (response.isSuccessful){
-
-                    repeat(5){
-                        essayCount[it] = response.body()!!.data.weeklyEssayCounts!![it].count
-                    }
-                    Log.d(TAG, "유저 주간 링크드아웃 지수 호출 성공 $essayCount")
+            homeRepository.requestUserGraphSummary{response->
+                repeat(5) {
+                    essayCount[it] = response.data.weeklyEssayCounts!![it].count
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Log.e(TAG, "유저 주간 링크드아웃 지수: ${e.message}", )
-            } finally {
             }
         }
     }
 
-    fun setFirstUserToExistUser(){
+    //튜토리얼 건너뛰기
+    fun requestFirstUserToExistUser() {
         viewModelScope.launch {
-            try {
-                val isNotFirst = UserInfo(isFirst = false)
-                val response = userApi.userUpdate(bearerAccessToken,Token.refreshToken,isNotFirst)
-                if (response.isSuccessful) Log.d("첫유저 ->기존유저", "성공")
-                else Log.e("첫유저 ->기존유저", "실패 ${response.code()}")
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Log.e("error","set user first to exist error ")
-            }
+            homeRepository.requestFirstUserToExistUser()
         }
-
     }
 
     var isCheckFinished by mutableStateOf(false)
     var isExistUnreadAlerts by mutableStateOf(false)
-    fun requestUnreadAlerts(){
-
-        viewModelScope.launch {
-            try {
-                val response = supportApi.readUnreadAlerts(bearerAccessToken,Token.refreshToken)
-                if (response.isSuccessful){
-                    isExistUnreadAlerts =
-                        response.body()!!.data
-                    Log.d(TAG, "안읽은 알림 여부: ${response.body()!!.data}")
-                }
-            } catch (e: Exception) {
-                Log.e("안읽은 알림 여부","에러")
-            } finally {
-                isCheckFinished = true
-            }
+    fun requestUnreadAlerts() {
+        apiCall(onSuccess = { response ->
+            isExistUnreadAlerts = response.data
+            Log.d(TAG, "안읽은 알림 여부: ${response.data}")
+        }, finally = { isCheckFinished = true }) {
+            supportApi.readUnreadAlerts()
         }
     }
+
     var geulRoquisUrl by mutableStateOf("")
-    fun requestGuleRoquis(){
-        viewModelScope.launch {
-            try {
-                val response = supportApi.readGeulroquis(bearerAccessToken,Token.refreshToken)
-                if (response.isSuccessful){
-                    Log.d("글로키 api", "성공: ${response.body()!!.data.url}")
-                    geulRoquisUrl = response.body()!!.data.url
-                    Log.d("글로키 api", "성공: $geulRoquisUrl")
+    fun requestGuleRoquis() {
+        apiCall(onSuccess =
+        { response ->
+            geulRoquisUrl = response.data.url
+            Log.d("글로키 api", "성공: $geulRoquisUrl")
+        },
+            onError =
+            { e ->
+                Log.e("글로키 api", "에러 ${e.message}")
+            }) { supportApi.readGeulroquis() }
+    }
 
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Log.e("글로키 api","에러 ${e.message}")
-            }
-            finally {
-                isApifinished = true
-            }
+    fun requestUserReActivate() {
+        apiCall { userApi.requestReactivate() }
+    }
+
+    fun requestUserDelete(navController: NavController) {
+        apiCall(onSuccess = {
+            Log.d("유저 즉시 탈퇴", "성공")
+            navigateWithClearBackStack(navController, Routes.LoginPage)
+        }) {
+            userApi.requestDeleteUser()
         }
     }
 
-    fun requestUserReActivate(){
-        viewModelScope.launch {
-            try {
-                val response = userApi.requestReactivate(bearerAccessToken,Token.refreshToken)
-                if (response.isSuccessful){
-                    Log.d("유저 탈퇴 취소", "성공: ${response.body()}")
-                }
-                else{
-                    Log.e("유저 탈퇴 취소", "실패: ${response.code()}", )
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Log.e("유저 탈퇴 취소", "실패: ${e.message}", )
-            }
-        }
-    }
-
-    fun requestUserDelete(navController: NavController){
-        viewModelScope.launch {
-            try {
-                val response = userApi.requestDeleteUser(bearerAccessToken,Token.refreshToken)
-                if (response.isSuccessful){
-                    Log.d("유저 즉시 탈퇴", "성공: ${response.body()}")
-                    navController.popBackStack(Routes.OnBoarding,false)
-                    navController.navigate(Routes.LoginPage)
-                }
-                else{
-                    Log.e("유저 즉시 탈퇴", "실패: ${response.code()}", )
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Log.e("유저 즉시 탈퇴", "실패: ${e.message}", )
-            }
-        }
-    }
     //notice 세부 사항 읽은 후 세부 페이지로 이동
-    fun requestDetailNotice(noticeId : Int,navController: NavController){
+    fun requestDetailNotice(noticeId: Int, navController: NavController) {
 
-        viewModelScope.launch {
-            try {
-                val response = supportApi.readNoticeDetail(Token.accessToken,Token.refreshToken,noticeId)
-                if (response.isSuccessful){
-                                        Token.accessToken = response.headers()["authorization"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
-                    Log.d("공지사항 디테일 확인", "성공 공지 내용 : ${response.body()!!.data.content}")
+        apiCall(onSuccess =
+        { response ->
+            Log.d("공지사항 디테일 확인", "성공 공지 내용 : ${response.data.content}")
 
-                    val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
-                    val jsonAdapter = moshi.adapter(Notice::class.java)
-                    val json = jsonAdapter.toJson(response.body()!!.data)
+            val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+            val jsonAdapter = moshi.adapter(Notice::class.java)
+            val json = jsonAdapter.toJson(response.data)
+            navController.navigate("${Routes.NoticeDetailPage}/$json")
 
-                    navController.navigate("${Routes.NoticeDetailPage}/$json")
-
-                }
-                else{
-                    Log.e("공지사항 디테일 확인", "실패: ${response.code()}")
-                }
-            } catch (e: Exception) {
-                Log.e("공지사항 디테일 확인", "실패: ${e.printStackTrace()}")
-                e.printStackTrace()
-            }
+        }) {
+            supportApi.readNoticeDetail(noticeId)
         }
     }
 }

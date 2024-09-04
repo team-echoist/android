@@ -106,7 +106,6 @@ import com.echoist.linkedout.data.EssayStats
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.home.MyBottomNavigation
 import com.echoist.linkedout.ui.theme.LinkedInColor
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
 import com.echoist.linkedout.viewModels.SettingsViewModel
 import kotlinx.coroutines.delay
@@ -120,7 +119,7 @@ fun MyPage(
 ) {
 
 
-    val viewModel : SettingsViewModel = hiltViewModel()
+    val viewModel: SettingsViewModel = hiltViewModel()
 
     var isApiFinished by remember {
         mutableStateOf(false)
@@ -142,97 +141,100 @@ fun MyPage(
         bottomSheetState = bottomSheetState
     )
 
-    LinkedOutTheme {
-        BottomSheetScaffold(
-            sheetContainerColor = Color(0xFF111111),
-            scaffoldState = scaffoldState,
-            sheetContent = {
-                //이미지 수정시
-                AnimatedVisibility(
-                    visible = viewModel.isClickedModifyImage,
-                    enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = LinearEasing)),
-                    exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
-                ){
-                    Log.d(TAG, "MyPage: ${viewModel.newProfile}")
-                    SelectProfileIconBottomSheet(viewModel)
-                }
-                //기본
 
-                AnimatedVisibility(
-                    visible = !viewModel.isClickedModifyImage,
-                    enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = LinearEasing)),
-                    exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
-                ){
-                    ModifyMyProfileBottomSheet(
-                        onClickComplete = {
-                            viewModel.updateMyInfo(viewModel.newProfile, navController)
-                        },
-                        onClickCancel = {
-                            scope.launch {
-                                bottomSheetState.hide()
+    BottomSheetScaffold(
+        sheetContainerColor = Color(0xFF111111),
+        scaffoldState = scaffoldState,
+        sheetContent = {
+            //이미지 수정시
+            AnimatedVisibility(
+                visible = viewModel.isClickedModifyImage,
+                enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = LinearEasing)),
+                exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
+            ) {
+                Log.d(TAG, "MyPage: ${viewModel.newProfile}")
+                SelectProfileIconBottomSheet(viewModel)
+            }
+            //기본
 
-                            }
-                        },viewModel)
-                }
+            AnimatedVisibility(
+                visible = !viewModel.isClickedModifyImage,
+                enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = LinearEasing)),
+                exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
+            ) {
+                ModifyMyProfileBottomSheet(
+                    onClickComplete = {
+                        viewModel.updateMyInfo(viewModel.newProfile, navController)
+                    },
+                    onClickCancel = {
+                        scope.launch {
+                            bottomSheetState.hide()
+
+                        }
+                    }, viewModel
+                )
+            }
 
 
+        },
+        sheetPeekHeight = 0.dp
+    ) {
+        Scaffold(
+            topBar = {
+                Text(
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    text = "MY",
+                    color = Color.White,
+                    modifier = Modifier
+                        .padding(start = 20.dp, top = 10.dp)
+                        .safeDrawingPadding()
+                )
             },
-            sheetPeekHeight = 0.dp
-        ) {
-            Scaffold(
-                topBar = {
-                    Text(
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        text = "MY",
-                        color = Color.White,
-                        modifier = Modifier
-                            .padding(start = 20.dp, top = 10.dp)
-                            .safeDrawingPadding()
-                    )
-                },
-                bottomBar = { MyBottomNavigation(navController) },
-                content = {
-                    Column(
-                        modifier = Modifier
-                            .padding(it)
-                            .verticalScroll(scrollState)
+            bottomBar = { MyBottomNavigation(navController) },
+            content = {
+                Column(
+                    modifier = Modifier
+                        .padding(it)
+                        .verticalScroll(scrollState)
 
-                    ) {
-                        MySettings(item = viewModel.getMyInfo()) {
-                            Log.d(TAG, "MyPage: ${viewModel.getMyInfo()}")
-                            scope.launch {
-                                bottomSheetState.expand()
-                            }
+                ) {
+                    MySettings(item = viewModel.getMyInfo()) {
+                        Log.d(TAG, "MyPage: ${viewModel.getMyInfo()}")
+                        scope.launch {
+                            bottomSheetState.expand()
                         }
-                        if (viewModel.isApiFinished){
-                            SettingBar("링크드아웃 배지") { viewModel.readDetailBadgeList(navController) }
-                            LinkedOutBadgeGrid(viewModel)
-                            SettingBar("최근 본 글") {navController.navigate("RecentViewedEssayPage")}
-                            RecentEssayList(itemList = viewModel.getRecentViewedEssayList(),navController)
-                            MembershipSettingBar("멤버십 관리"){}
-                            SettingBar("계정 관리") {navController.navigate("AccountPage")}
-                        }
-
-
-
                     }
-
-                    if (viewModel.isBadgeClicked) {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            BadgeDescriptionBox(viewModel.badgeBoxItem!!, viewModel)
-                        }
+                    if (viewModel.isApiFinished) {
+                        SettingBar("링크드아웃 배지") { viewModel.readDetailBadgeList(navController) }
+                        LinkedOutBadgeGrid(viewModel)
+                        SettingBar("최근 본 글") { navController.navigate("RecentViewedEssayPage") }
+                        RecentEssayList(
+                            itemList = viewModel.getRecentViewedEssayList(),
+                            navController
+                        )
+                        MembershipSettingBar("멤버십 관리") {}
+                        SettingBar("계정 관리") { navController.navigate("AccountPage") }
                     }
 
 
                 }
-            )
-        }
+
+                if (viewModel.isBadgeClicked) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        BadgeDescriptionBox(viewModel.badgeBoxItem!!, viewModel)
+                    }
+                }
+
+
+            }
+        )
     }
 }
+
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -260,7 +262,7 @@ fun MySettings(item: UserInfo, onClick: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(40.dp))
-        if (item.profileImage != null){
+        if (item.profileImage != null) {
             Box(
                 modifier = Modifier
                     .size(108.dp)
@@ -380,9 +382,10 @@ fun SettingBar(text: String, onClick: () -> Unit) {
         }
     }
 }
+
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun MembershipSettingBar(text: String, onClick: () -> Unit){
+fun MembershipSettingBar(text: String, onClick: () -> Unit) {
 
     Box(modifier = Modifier
         .fillMaxWidth()
@@ -403,7 +406,7 @@ fun MembershipSettingBar(text: String, onClick: () -> Unit){
                     .size(60.dp, 24.dp)
                     .background(Color(0xFF191919), shape = RoundedCornerShape(40)),
                 contentAlignment = Alignment.Center
-            ){
+            ) {
                 GlideImage(model = R.drawable.icon_comingsoon, contentDescription = "comingsoon")
 
             }
@@ -413,7 +416,11 @@ fun MembershipSettingBar(text: String, onClick: () -> Unit){
 }
 
 @Composable
-fun RecentEssayItem(item: EssayApi.EssayItem,viewModel : CommunityViewModel = hiltViewModel(),navController: NavController) {
+fun RecentEssayItem(
+    item: EssayApi.EssayItem,
+    viewModel: CommunityViewModel = hiltViewModel(),
+    navController: NavController
+) {
     Box(modifier = Modifier
         .size(150.dp, 120.dp)
         .clickable { /* 에세이로 이동 */
@@ -434,14 +441,17 @@ fun RecentEssayItem(item: EssayApi.EssayItem,viewModel : CommunityViewModel = hi
 }
 
 @Composable
-fun RecentEssayList(itemList: List<EssayApi.EssayItem>,navController: NavController) {
-    if (itemList.isEmpty()){
-        Text(text = "최근 본 글이 없습니다.", modifier = Modifier.padding(horizontal = 20.dp), color = Color(0xFF494747))
-    }
-    else{
+fun RecentEssayList(itemList: List<EssayApi.EssayItem>, navController: NavController) {
+    if (itemList.isEmpty()) {
+        Text(
+            text = "최근 본 글이 없습니다.",
+            modifier = Modifier.padding(horizontal = 20.dp),
+            color = Color(0xFF494747)
+        )
+    } else {
         LazyRow(Modifier.padding(start = 20.dp)) {
             itemsIndexed(itemList) { index, item ->
-                RecentEssayItem(item,navController = navController)
+                RecentEssayItem(item, navController = navController)
 
                 // 마지막 항목인 경우에만 Spacer와 VerticalDivider 실행
                 if (index < itemList.size - 1) {
@@ -452,7 +462,7 @@ fun RecentEssayList(itemList: List<EssayApi.EssayItem>,navController: NavControl
             }
         }
     }
-    
+
 }
 
 @Composable
@@ -466,7 +476,7 @@ fun BadgeDescriptionBox(badgeBoxItem: BadgeBoxItem, viewModel: SettingsViewModel
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
             Image(
                 painter = painterResource(id = R.drawable.badge_container),
-                contentDescription = ""
+                contentDescription = "badge_container"
             )
         }
         Column(
@@ -596,20 +606,21 @@ fun LinkedOutBadgeGrid(viewModel: SettingsViewModel) {
         }
     }
 }
+
 @Composable
-fun ModifyNickNameTextField( viewModel: SettingsViewModel) {
+fun ModifyNickNameTextField(viewModel: SettingsViewModel) {
 
     var text by remember { mutableStateOf(viewModel.getMyInfo().nickname ?: "에러") }
     var message by remember {
         mutableStateOf("   *필명은 최대 6자, 한글로만 입력 가능합니다.")
     }
-    message = when (viewModel.nicknameCheckCode){
-        200 ,201-> "   * 사용가능한 닉네임입니다!"
+    message = when (viewModel.nicknameCheckCode) {
+        200, 201 -> "   * 사용가능한 닉네임입니다!"
         409 -> "   * 이미 사용중인 닉네임입니다."
         400 -> "   * 필명은 3자 이상 6자 이하의 완성된 한글 단어로만 구성할 수 있습니다."
         else -> ("   * ${viewModel.nicknameCheckCode}")          //에러코드
     }
-    val color = when (viewModel.nicknameCheckCode){
+    val color = when (viewModel.nicknameCheckCode) {
         409 -> Color.Red
         400 -> Color.Red
         else -> LinkedInColor
@@ -627,7 +638,7 @@ fun ModifyNickNameTextField( viewModel: SettingsViewModel) {
             value = text,
             isError = viewModel.nicknameCheckCode == 409 || viewModel.nicknameCheckCode == 400,
             onValueChange = {
-                if (it.length < 7){
+                if (it.length < 7) {
                     text = it
                     viewModel.newProfile.nickname = text //수정할때마다 새 프로필 닉네임 변경
                     Log.d(TAG, "ModifyNickNameTextField: ${viewModel.newProfile}")
@@ -648,7 +659,7 @@ fun ModifyNickNameTextField( viewModel: SettingsViewModel) {
                 errorBorderColor = Color.Red
             ),
             shape = RoundedCornerShape(10),
-            )
+        )
         Spacer(modifier = Modifier.height(5.dp))
         Text(text = message, color = color, fontSize = 10.sp)
     }
@@ -727,7 +738,7 @@ fun ModifyMyProfileBottomSheet(
                 imageUrl = url
             )
             Spacer(modifier = Modifier.height(26.dp))
-            ModifyNickNameTextField( viewModel)
+            ModifyNickNameTextField(viewModel)
 
         }//이미지변경
 
@@ -735,10 +746,9 @@ fun ModifyMyProfileBottomSheet(
 }
 
 
-
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun SelectProfileImageIcon(onClickModifyImage: () -> Unit, imageUrl : String ) {
+fun SelectProfileImageIcon(onClickModifyImage: () -> Unit, imageUrl: String) {
 
 
     Box(modifier = Modifier.size(120.dp)) {
@@ -778,12 +788,11 @@ fun SelectProfileImageIcon(onClickModifyImage: () -> Unit, imageUrl : String ) {
 }
 
 
-
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun SelectProfileIconBottomSheet(viewModel: SettingsViewModel){
+fun SelectProfileIconBottomSheet(viewModel: SettingsViewModel) {
 
-val context = LocalContext.current
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
     val galleryLauncher = rememberLauncherForActivityResult(
@@ -804,7 +813,8 @@ val context = LocalContext.current
         }
     }
 
-    val icons = listOf(PROFILE_IMAGE_01,
+    val icons = listOf(
+        PROFILE_IMAGE_01,
         PROFILE_IMAGE_02,
         PROFILE_IMAGE_03,
         PROFILE_IMAGE_04,
@@ -815,12 +825,15 @@ val context = LocalContext.current
         PROFILE_IMAGE_09,
         PROFILE_IMAGE_10,
         PROFILE_IMAGE_11,
-        PROFILE_IMAGE_12)
+        PROFILE_IMAGE_12
+    )
 
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 20.dp)
-        .height(770.dp)) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp)
+            .height(770.dp)
+    ) {
         Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
 
             TopAppBar(
@@ -840,8 +853,7 @@ val context = LocalContext.current
                         modifier = Modifier
                             .clickable { viewModel.isClickedModifyImage = false }
                             .padding(start = 10.dp)
-                            .size(30.dp)
-                            ,
+                            .size(30.dp),
                         tint = Color.White
                     )
 

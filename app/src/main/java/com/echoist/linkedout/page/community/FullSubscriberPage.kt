@@ -51,7 +51,6 @@ import com.echoist.linkedout.PROFILE_IMAGE_01
 import com.echoist.linkedout.components.CommuTopAppBar
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.home.MyBottomNavigation
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
 import com.echoist.linkedout.viewModels.SearchingViewModel
 import kotlinx.coroutines.launch
@@ -60,7 +59,7 @@ import kotlinx.coroutines.launch
 @Preview
 @Composable
 fun Prev3() {
-    val viewModel : CommunityViewModel = viewModel()
+    val viewModel: CommunityViewModel = viewModel()
 
     FullSubscriberPage(viewModel = viewModel, navController = rememberNavController())
 }
@@ -79,13 +78,14 @@ fun FullSubscriberPage(
             drawerContent = {
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
 
-                    val searchingViewModel : SearchingViewModel = hiltViewModel()
+                    val searchingViewModel: SearchingViewModel = hiltViewModel()
 
                     ModalDrawerSheet(
                         modifier = Modifier.fillMaxSize(),
                         drawerShape = RectangleShape,
                         drawerContainerColor = Color.Black
                     ) {
+                        /*
                         SearchingBar(viewModel = searchingViewModel, {
                             scope.launch {
                                 drawerState.apply {
@@ -93,8 +93,7 @@ fun FullSubscriberPage(
                                 }
                             }
                         }, drawerState)
-
-
+                         */
                         // ...other drawer items
                     }
                 }
@@ -102,59 +101,61 @@ fun FullSubscriberPage(
             content = {
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
 
-                    LinkedOutTheme {
-                        Scaffold(
-                            topBar = {
-                                CommuTopAppBar(text = "전체 구독 목록", navController,viewModel){
-                                    scope.launch {
-                                        drawerState.apply {
-                                            if (isClosed) open() else close()
-                                        }
-                                    }
-                                }
-                            },
-                            bottomBar = { if (!viewModel.unSubscribeClicked) MyBottomNavigation(navController) },
-                            content = {
 
-                                LazyColumn(
-                                    modifier = Modifier
-                                        .padding(it)
-                                        .padding(top = 30.dp)
-                                ) {
-                                    items(viewModel.subscribeUserList) { it -> //todo 랜덤리스트에서 구독자 에세이 리스트로 바꿔야함.
-                                        SubscriberSimpleItem(item = it, viewModel, navController)
-                                        Spacer(modifier = Modifier.height(10.dp))
-
-                                    }
-                                }
-                                AnimatedVisibility(
-                                    visible = viewModel.unSubscribeClicked,
-                                    enter = slideInVertically(
-                                        initialOffsetY = { 2000 },
-                                        animationSpec = tween(durationMillis = 500)
-                                    ),
-                                    exit = slideOutVertically(
-                                        targetOffsetY = { 2000 },
-                                        animationSpec = tween(durationMillis = 500)
-                                    )
-                                ) {
-                                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
-                                        UnsubscribeAlert(viewModel)
-
+                    Scaffold(
+                        topBar = {
+                            CommuTopAppBar(text = "전체 구독 목록", navController, viewModel) {
+                                scope.launch {
+                                    drawerState.apply {
+                                        if (isClosed) open() else close()
                                     }
                                 }
                             }
-                        )
-                    }
+                        },
+                        bottomBar = {
+                            if (!viewModel.unSubscribeClicked) MyBottomNavigation(
+                                navController
+                            )
+                        },
+                        content = {
+
+                            LazyColumn(
+                                modifier = Modifier
+                                    .padding(it)
+                                    .padding(top = 30.dp)
+                            ) {
+                                items(viewModel.subscribeUserList) { it -> //todo 랜덤리스트에서 구독자 에세이 리스트로 바꿔야함.
+                                    SubscriberSimpleItem(item = it, viewModel, navController)
+                                    Spacer(modifier = Modifier.height(10.dp))
+
+                                }
+                            }
+                            AnimatedVisibility(
+                                visible = viewModel.unSubscribeClicked,
+                                enter = slideInVertically(
+                                    initialOffsetY = { 2000 },
+                                    animationSpec = tween(durationMillis = 500)
+                                ),
+                                exit = slideOutVertically(
+                                    targetOffsetY = { 2000 },
+                                    animationSpec = tween(durationMillis = 500)
+                                )
+                            ) {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.BottomEnd
+                                ) {
+                                    UnsubscribeAlert(viewModel)
+
+                                }
+                            }
+                        }
+                    )
                 }
-            }
-        )
-
-
+            })
     }
-
-
 }
+
 
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -245,7 +246,11 @@ fun UnsubscribeAlert(viewModel: CommunityViewModel) {
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(text = "구독을 취소하시겠습니까?")
                 Spacer(modifier = Modifier.height(6.dp))
-                Text(text = "구독 취소 시 업데이트 되는 글이 보이지 않습니다.", fontSize = 14.sp, modifier = Modifier.padding(horizontal = 20.dp))
+                Text(
+                    text = "구독 취소 시 업데이트 되는 글이 보이지 않습니다.",
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(horizontal = 20.dp)
+                )
                 Spacer(modifier = Modifier.height(15.dp))
                 HorizontalDivider(color = Color(0xFF202020))
                 Spacer(modifier = Modifier.height(18.dp))

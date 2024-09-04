@@ -1,5 +1,8 @@
 package com.echoist.linkedout
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.navigation.NavController
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -8,9 +11,9 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
 const val TYPE_RECOMMEND = "recommend"
-const val TYPE_PUBLISHED = "publish"
+const val TYPE_PUBLISHED = "public"
 const val TYPE_PRIVATE = "private"
-
+const val TYPE_STORY = "story"
 
 const val MAX_TITLE_SIZE = 26
 const val MAX_CONTENT_SIZE = 20
@@ -54,6 +57,7 @@ object DeviceType {
     const val TABLET = "Tablet"
     const val UNKNOWN = "Unknown"
 }
+
 object Routes {
     const val OnBoarding = "OnBoarding"
     const val LoginPage = "LoginPage"
@@ -99,12 +103,31 @@ object Routes {
     const val PrivacyPolicyPage = "PrivacyPolicyPage"
     const val LocationPolicyPage = "LocationPolicyPage"
     const val FontCopyRight = "FontCopyRight"
+    const val Search = "Search"
+    const val ChangeEmail = "ChangeEmail"
+    const val ChangePassword = "ChangePassword"
+    const val DeleteAccount = "DeleteAccount"
 }
 
 enum class UserStatus {
-    Activated,Monitored,Banned,DeActivated
+    Activated, Monitored, Banned, DeActivated
+}
+object AuthManager {
+    var isReAuthenticationRequired: MutableState<Boolean> = mutableStateOf(false)
 }
 
+fun navigateWithClearBackStack(
+    navController: NavController,
+    route: String,
+    launchSingleTop: Boolean = true
+) {
+    navController.navigate(route) {
+        popUpTo(navController.graph.startDestinationId) {
+            inclusive = true
+        }
+        this.launchSingleTop = launchSingleTop
+    }
+}
 
 //2024-07-01T14:22:46.803+09:00 to 2024.07.01
 fun formatDateTime(input: String): String {
@@ -150,6 +173,24 @@ fun calculateDaysDifference(dateString: String): Long {
 
     // 두 날짜 간의 차이 계산
     return ChronoUnit.DAYS.between(targetDate, currentDate)
+}
+
+// 로그인 이후 30일 후의 날짜계산
+fun calculateDateAfter30Days(): String {
+    val currentDate = LocalDate.now() // 현재 날짜
+    val futureDate = currentDate.plusDays(30) // 30일 이후의 날짜
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd") // 원하는 날짜 형식
+
+    return futureDate.format(formatter) // 형식에 맞춰 문자열로 반환
+}
+
+// yyyy-mm-dd형태의 문자열이 주어졌을 때, 해당 날짜가 오늘 이후인지 확인하는 함수
+fun isDateAfterToday(dateString: String): Boolean {
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    val date = LocalDate.parse(dateString, formatter) // 문자열을 LocalDate로 변환
+    val today = LocalDate.now() // 현재 날짜
+
+    return date.isAfter(today) // 주어진 날짜가 오늘 이후인지 판단
 }
 
 fun formatElapsedTime(isoDateTimeString: String): String {

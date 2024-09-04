@@ -59,7 +59,6 @@ import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.formatElapsedTime
 import com.echoist.linkedout.ui.theme.LinkedInColor
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
 
 @Composable
@@ -67,26 +66,24 @@ fun CommunitySavedEssayPage(navController: NavController, viewModel: CommunityVi
 
     val text = if (viewModel.isSavedEssaysModifyClicked) "완료" else "편집"
 
-    LinkedOutTheme {
-        Scaffold(topBar = {
-            SavedEssayTopAppBar(
-                { viewModel.isSavedEssaysModifyClicked = false },
-                onClickModify = {
-                    viewModel.isSavedEssaysModifyClicked = !viewModel.isSavedEssaysModifyClicked
-                },
-                navController = navController,text
+    Scaffold(topBar = {
+        SavedEssayTopAppBar(
+            { viewModel.isSavedEssaysModifyClicked = false },
+            onClickModify = {
+                viewModel.isSavedEssaysModifyClicked = !viewModel.isSavedEssaysModifyClicked
+            },
+            navController = navController, text
+        )
+    },
+        bottomBar = {})
+    {
+        Column(Modifier.padding(it)) {
+            SavedEssayListScreen(viewModel, navController)
 
-            )
-        },
-            bottomBar = {})
-        {
-            Column(Modifier.padding(it)) {
-                SavedEssayListScreen(viewModel, navController)
-
-            }
         }
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -94,29 +91,33 @@ fun SavedEssayTopAppBar(
     onClickNavBack: () -> Unit,
     onClickModify: () -> Unit,
     navController: NavController,
-    modifyText : String
+    modifyText: String
 ) {
 
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
         title = {
-                Text(text = "저장한 글", fontWeight = FontWeight.SemiBold, fontSize = 24.sp)
+            Text(text = "저장한 글", fontWeight = FontWeight.SemiBold, fontSize = 24.sp)
         },
         navigationIcon = {
             Icon(
-            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-            contentDescription = "",
-            Modifier
-                .padding(start = 10.dp)
-                .size(30.dp)
-                .clickable {
-                    navController.popBackStack()
-                    onClickNavBack()
-                },
-        )},
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "",
+                Modifier
+                    .padding(start = 10.dp)
+                    .size(30.dp)
+                    .clickable {
+                        navController.popBackStack()
+                        onClickNavBack()
+                    },
+            )
+        },
         actions = {
             Spacer(modifier = Modifier.width(13.dp))
-            Text(text = modifyText, fontSize = 16.sp, modifier = Modifier.clickable { onClickModify() })
+            Text(
+                text = modifyText,
+                fontSize = 16.sp,
+                modifier = Modifier.clickable { onClickModify() })
             Spacer(modifier = Modifier.width(15.dp))
 
 
@@ -173,7 +174,6 @@ fun SavedEssayListItem(
     ) {
 
 
-
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(
                 modifier = Modifier
@@ -204,9 +204,9 @@ fun SavedEssayListItem(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                        text = item.author?.nickname ?: "닉없음 아무개",
-                        fontSize = 10.sp,
-                        color = Color(0xFF686868)
+                    text = item.author?.nickname ?: "닉없음 아무개",
+                    fontSize = 10.sp,
+                    color = Color(0xFF686868)
                 )
 
             }
@@ -226,20 +226,21 @@ fun SavedEssayListItem(
 
             if (viewModel.isSavedEssaysModifyClicked) {
 
-                    IconButton(onClick = { onItemSelected(!isSelected)
-                    }) {
-                        Icon(
-                            modifier = Modifier.padding(horizontal = 10.dp).weight(1f),
-                            imageVector = Icons.Default.CheckCircle,
-                            tint = checkColor,
-                            contentDescription = null
-                        )
-                    }
+                IconButton(onClick = {
+                    onItemSelected(!isSelected)
+                }) {
+                    Icon(
+                        modifier = Modifier
+                            .padding(horizontal = 10.dp)
+                            .weight(1f),
+                        imageVector = Icons.Default.CheckCircle,
+                        tint = checkColor,
+                        contentDescription = null
+                    )
+                }
 
             }
         }
-
-
 
         Box(
             contentAlignment = Alignment.BottomEnd,
@@ -248,10 +249,12 @@ fun SavedEssayListItem(
             HorizontalDivider(color = Color(0xFF686868))
         }
 
-        if (viewModel.isSavedEssaysModifyClicked && !isSelected){
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(0.7f)))
+        if (viewModel.isSavedEssaysModifyClicked && !isSelected) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(0.7f))
+            )
         }
 
     }
@@ -261,141 +264,150 @@ fun SavedEssayListItem(
 @Composable
 fun SavedEssayListScreen(viewModel: CommunityViewModel, navController: NavController) {
 
-        var selectedItems by remember { mutableStateOf<Set<EssayApi.EssayItem>>(emptySet()) }
+    var selectedItems by remember { mutableStateOf<Set<EssayApi.EssayItem>>(emptySet()) }
 
-        val annotatedString = remember {
-            AnnotatedString.Builder().apply {
-                append("전체 ")
+    val annotatedString = remember {
+        AnnotatedString.Builder().apply {
+            append("전체 ")
 
-                withStyle(
-                    style = SpanStyle(
-                        color = Color(0xFF616FED),
-                        fontWeight = FontWeight.Bold
-                    )
-                ) {
-                    append("${viewModel.bookMarkEssayList.size} ")
-                }
-                append("개")
-            }.toAnnotatedString()
-        }
+            withStyle(
+                style = SpanStyle(
+                    color = Color(0xFF616FED),
+                    fontWeight = FontWeight.Bold
+                )
+            ) {
+                append("${viewModel.bookMarkEssayList.size} ")
+            }
+            append("개")
+        }.toAnnotatedString()
+    }
 
-        Log.d(ContentValues.TAG, "StoryEssayListScreen: $selectedItems")
+    Log.d(ContentValues.TAG, "StoryEssayListScreen: $selectedItems")
 
-        Column(modifier = Modifier.fillMaxSize()) {
-            Spacer(modifier = Modifier.height(20.dp))
+    Column(modifier = Modifier.fillMaxSize()) {
+        Spacer(modifier = Modifier.height(20.dp))
 
-            if (viewModel.isSavedEssaysModifyClicked) {
+        if (viewModel.isSavedEssaysModifyClicked) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+            ) {
                 Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp)
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.CenterStart
                 ) {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.CenterStart
-                    ) {
-                        Text(text = annotatedString, fontSize = 12.sp)
-                    }
+                    Text(text = annotatedString, fontSize = 12.sp)
+                }
 
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.CenterEnd
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
 
-                            val textColor = if (selectedItems.size != viewModel.bookMarkEssayList.size) Color(0xFF727070) else Color.White
+                        val textColor =
+                            if (selectedItems.size != viewModel.bookMarkEssayList.size) Color(
+                                0xFF727070
+                            ) else Color.White
 
-                            Text(text = "전체 선택", fontSize = 12.sp, color = textColor)
-                            Spacer(modifier = Modifier.width(5.dp))
-                            IconButton(
-                                modifier = Modifier.size(20.dp),
-                                onClick = {
-                                    selectedItems = if (selectedItems.size == viewModel.bookMarkEssayList.size) {
+                        Text(text = "전체 선택", fontSize = 12.sp, color = textColor)
+                        Spacer(modifier = Modifier.width(5.dp))
+                        IconButton(
+                            modifier = Modifier.size(20.dp),
+                            onClick = {
+                                selectedItems =
+                                    if (selectedItems.size == viewModel.bookMarkEssayList.size) {
                                         emptySet()
                                     } else {
                                         viewModel.bookMarkEssayList.toSet()
                                     }
-                                }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.CheckCircle,
-                                    tint = if (selectedItems.size == viewModel.bookMarkEssayList.size) LinkedInColor else Color(
-                                        0xFF252525
-                                    ),
-                                    contentDescription = null
-                                )
                             }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.CheckCircle,
+                                tint = if (selectedItems.size == viewModel.bookMarkEssayList.size) LinkedInColor else Color(
+                                    0xFF252525
+                                ),
+                                contentDescription = null
+                            )
                         }
                     }
                 }
             }
+        }
 
-            Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
-            if (viewModel.bookMarkEssayList.isNotEmpty()){
-                LazyColumn(modifier = Modifier.weight(1f)) {
-                    items(viewModel.bookMarkEssayList) { item ->
-                        val isSelected = item in selectedItems
-                        SavedEssayListItem(
-                            item = item,
-                            isSelected = isSelected,
-                            onItemSelected = { selected ->
-                                selectedItems = if (selected) {
-                                    selectedItems + item
-                                } else {
-                                    selectedItems - item
-                                }
-                            },
-                            onClickItem = {
-                                if (!viewModel.isSavedEssaysModifyClicked) {
-                                    viewModel.readDetailEssay(item.id!!, navController,
-                                        TYPE_RECOMMEND
-                                    )
-
-                                    val exampleItems = ExampleItems()
-                                    Log.d(ContentValues.TAG, "CommunityDetailPage: ${exampleItems.detailEssay.title}")
-                                    Log.d(ContentValues.TAG, "CommunityDetailPage: ${viewModel.detailEssay.title}")
-
-
-                                }
-                            },
-                            viewModel = viewModel
-                        )
-                    }
-                }
-            }
-            else
-            {
-
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-                    Text(text = "저장한 글이 없습니다.", color = Color.Gray)
-                }
-            }
-
-                val containerColor =
-                    if (selectedItems.isNotEmpty()) LinkedInColor else Color(0xFF868686)
-
-                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.BottomCenter) {
-                    Button(
-                        onClick = {
-                            if (selectedItems.isNotEmpty()) {
-                                // 에세이 선택 삭제
-                                viewModel.deleteBookMarks(selectedItems.toList(),navController)
+        if (viewModel.bookMarkEssayList.isNotEmpty()) {
+            LazyColumn(modifier = Modifier.weight(1f)) {
+                items(viewModel.bookMarkEssayList) { item ->
+                    val isSelected = item in selectedItems
+                    SavedEssayListItem(
+                        item = item,
+                        isSelected = isSelected,
+                        onItemSelected = { selected ->
+                            selectedItems = if (selected) {
+                                selectedItems + item
+                            } else {
+                                selectedItems - item
                             }
                         },
-                        modifier = Modifier
-                            .height(90.dp)
-                            .fillMaxWidth()
-                            .padding(20.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = containerColor),
-                        shape = RoundedCornerShape(20)
-                    ) {
-                        Text("총 ${selectedItems.size}개 삭제", color = Color.Black)
-                    }
-                }
+                        onClickItem = {
+                            if (!viewModel.isSavedEssaysModifyClicked) {
+                                viewModel.readDetailEssay(
+                                    item.id!!, navController,
+                                    TYPE_RECOMMEND
+                                )
 
+                                val exampleItems = ExampleItems()
+                                Log.d(
+                                    ContentValues.TAG,
+                                    "CommunityDetailPage: ${exampleItems.detailEssay.title}"
+                                )
+                                Log.d(
+                                    ContentValues.TAG,
+                                    "CommunityDetailPage: ${viewModel.detailEssay.title}"
+                                )
+
+
+                            }
+                        },
+                        viewModel = viewModel
+                    )
+                }
+            }
+        } else {
+
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = "저장한 글이 없습니다.", color = Color.Gray)
+            }
         }
+
+        val containerColor =
+            if (selectedItems.isNotEmpty()) LinkedInColor else Color(0xFF868686)
+
+        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.BottomCenter) {
+            Button(
+                onClick = {
+                    if (selectedItems.isNotEmpty()) {
+                        // 에세이 선택 삭제
+                        viewModel.deleteBookMarks(selectedItems.toList(), navController)
+                    }
+                },
+                modifier = Modifier
+                    .height(90.dp)
+                    .fillMaxWidth()
+                    .padding(20.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = containerColor),
+                shape = RoundedCornerShape(20)
+            ) {
+                Text("총 ${selectedItems.size}개 삭제", color = Color.Black)
+            }
+        }
+
     }
+}
 
 
 

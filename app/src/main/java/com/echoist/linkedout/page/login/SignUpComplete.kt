@@ -33,13 +33,12 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
 import com.echoist.linkedout.Routes
 import com.echoist.linkedout.ui.theme.LinkedInColor
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.HomeViewModel
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun SignUpCompletePage(homeViewModel: HomeViewModel,navController: NavController) {
+fun SignUpCompletePage(homeViewModel: HomeViewModel, navController: NavController) {
     var isLoading by remember { androidx.compose.runtime.mutableStateOf(true) }
 
     LaunchedEffect(key1 = Unit) {
@@ -50,35 +49,44 @@ fun SignUpCompletePage(homeViewModel: HomeViewModel,navController: NavController
         navController.navigate("${Routes.Home}/200")
     }
 
-    LinkedOutTheme {
-        Scaffold {
-            Box(
-                Modifier
-                    .padding(it)
-                    .fillMaxSize(), contentAlignment = Alignment.Center) {
-                Column(Modifier.padding(horizontal = 20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                    LoadingText(nickName = homeViewModel.readMyProfile().nickname!!)
-                    Spacer(modifier = Modifier.height(56.dp))
-                    GlideImage(model = R.drawable.login_table, modifier = Modifier.size(246.dp,266.dp), contentDescription = "login table")
-                    Spacer(modifier = Modifier.height(87.dp))
 
-                }
-                Box(modifier = Modifier
-                    .fillMaxSize()
-                    .padding(end = 20.dp), contentAlignment = Alignment.BottomEnd){
-                    GlideImage(
-                        model = R.drawable.rightsidetext,
-                        contentDescription = "rightsideText",
-                        Modifier
-                            .padding(bottom = 80.dp)
-                            .size(240.dp, 90.dp)
-                    )
-                }
+    Scaffold {
+        Box(
+            Modifier
+                .padding(it)
+                .fillMaxSize(), contentAlignment = Alignment.Center
+        ) {
+            Column(
+                Modifier.padding(horizontal = 20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                LoadingText(nickName = homeViewModel.readMyProfile().nickname!!)
+                Spacer(modifier = Modifier.height(56.dp))
+                GlideImage(
+                    model = R.drawable.login_table,
+                    modifier = Modifier.size(246.dp, 266.dp),
+                    contentDescription = "login table"
+                )
+                Spacer(modifier = Modifier.height(87.dp))
+
             }
-            if (isLoading){
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-                    CircularProgressIndicator(color = LinkedInColor)
-                }
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(end = 20.dp), contentAlignment = Alignment.BottomEnd
+            ) {
+                GlideImage(
+                    model = R.drawable.rightsidetext,
+                    contentDescription = "rightsideText",
+                    Modifier
+                        .padding(bottom = 80.dp)
+                        .size(240.dp, 90.dp)
+                )
+            }
+        }
+        if (isLoading) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = LinkedInColor)
             }
         }
     }
@@ -96,19 +104,19 @@ fun LoadingText(nickName: String) {
 
     Column {
 
-            Row {
-                AnimatedVisibility(
-                    visible = isVisible,
-                    enter = slideInVertically(initialOffsetY = { it }) + fadeIn()
-                ) {
-                    Text(
-                        text = "'$nickName'",
-                        fontSize = 20.sp,
-                        color = LinkedInColor
-                    )
-                }
-                    Text(text = "님", fontSize = 20.sp)
+        Row {
+            AnimatedVisibility(
+                visible = isVisible,
+                enter = slideInVertically(initialOffsetY = { it }) + fadeIn()
+            ) {
+                Text(
+                    text = "'$nickName'",
+                    fontSize = 20.sp,
+                    color = LinkedInColor
+                )
             }
+            Text(text = "님", fontSize = 20.sp)
+        }
 
         Text(text = "당신만을 위한 글쓰기 공간을 생성중입니다", fontSize = 18.sp)
         Spacer(modifier = Modifier.height(13.dp))
@@ -123,10 +131,12 @@ fun LoadingText(nickName: String) {
 
 @Preview
 @Composable
-fun RightSideText(){
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .height(90.dp)){
+fun RightSideText() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(90.dp)
+    ) {
         Text(
             text = "이곳에서 마음껏\n실험하고,부딪히고,성장하는\n아무개가 되어보세요 ",
             Modifier.fillMaxSize(),

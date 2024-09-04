@@ -30,19 +30,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.echoist.linkedout.ui.theme.LinkedInColor
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChangePwPage(navController: NavController) {
 
     val scrollState = rememberScrollState()
-
-    LinkedOutTheme{
-
         Scaffold(
             topBar = {
-                SettingTopAppBar("비밀번호 변경",navController)
+                SettingTopAppBar("비밀번호 변경", navController)
             },
             content = {
                 Column(
@@ -70,7 +66,7 @@ fun ChangePwPage(navController: NavController) {
                         Text(text = "올바른 이메일 형식이 아닙니다.", color = Color.Red, fontSize = 12.sp)
                     }
                     Spacer(modifier = Modifier.height(12.dp))
-                    Row (verticalAlignment = Alignment.CenterVertically){
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(text = "비밀번호를 잊으셨나요? ", fontSize = 12.sp, color = Color(0xFF5D5D5D))
                         Text(
                             text = "비밀번호 재설정",
@@ -85,7 +81,6 @@ fun ChangePwPage(navController: NavController) {
 
                     Text(text = "새 비밀번호", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
                     Spacer(modifier = Modifier.height(10.dp))
-
 
 
                     var newPw by remember { mutableStateOf("") } //todo 이 값들을 페이지 나갔다 들어와도 유지되게끔 할것인지.
@@ -128,8 +123,8 @@ fun ChangePwPage(navController: NavController) {
 
                     val enabled = newPw == newPwCheck && newPw.isNotBlank() //문자가 있어야함
                     Button(
-                        onClick = { /* todo 비밀번호 변경 기능구현 */},
-                        enabled =  enabled,
+                        onClick = { /* todo 비밀번호 변경 기능구현 */ },
+                        enabled = enabled,
                         shape = RoundedCornerShape(20),
                         modifier = Modifier
                             .fillMaxWidth()
@@ -147,4 +142,3 @@ fun ChangePwPage(navController: NavController) {
             }
         )
     }
-}

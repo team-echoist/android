@@ -34,27 +34,25 @@ import com.echoist.linkedout.R
 import com.echoist.linkedout.Routes
 import com.echoist.linkedout.page.settings.ModifyBox
 import com.echoist.linkedout.page.settings.SettingTopAppBar
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 
 @Composable
-fun SupportPage(navController : NavController){
-    LinkedOutTheme {
-        Scaffold(topBar = {
-            SettingTopAppBar("고객지원",navController)
-        }) {
+fun SupportPage(navController: NavController) {
 
-            Column(Modifier.padding(it)) {
-                ModifyBox("링크드아웃 고객센터") {navController.navigate("LinkedOutSupportPage")}
-                ModifyBox("공지사항") {navController.navigate(Routes.NoticePage)}
-                Legal_Notice(navController = navController)
+    Scaffold(topBar = {
+        SettingTopAppBar("고객지원", navController)
+    }) {
 
-            }
+        Column(Modifier.padding(it)) {
+            ModifyBox("링크드아웃 고객센터") { navController.navigate("LinkedOutSupportPage") }
+            ModifyBox("공지사항") { navController.navigate(Routes.NoticePage) }
+            Legal_Notice(navController = navController)
+
         }
     }
 }
 
 @Composable
-fun Legal_Notice(navController: NavController){
+fun Legal_Notice(navController: NavController) {
     var isClicked by remember { mutableStateOf(false) }
 
     Column {
@@ -63,13 +61,22 @@ fun Legal_Notice(navController: NavController){
             .padding(start = 20.dp)
             .fillMaxWidth()
             .clickable { isClicked = !isClicked }
-            .height(70.dp)){
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart){
+            .height(70.dp)) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart) {
                 Text(text = "법적 고지", color = Color.White, fontSize = 16.sp)
             }
             val iconImg = if (isClicked) R.drawable.arrowup else R.drawable.arrowdown
-            Box(modifier = Modifier.fillMaxSize().padding(end = 10.dp), contentAlignment = Alignment.CenterEnd){
-                Icon(painter = painterResource(id = iconImg), contentDescription = "arrowforward", tint = Color.White)
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(end = 10.dp),
+                contentAlignment = Alignment.CenterEnd
+            ) {
+                Icon(
+                    painter = painterResource(id = iconImg),
+                    contentDescription = "arrowforward",
+                    tint = Color.White
+                )
 
             }
         }
@@ -89,22 +96,28 @@ fun Legal_Notice(navController: NavController){
             )
         ) {
             Column {
-                Legal_NoticeMenu("이용약관"){navController.navigate("TermsAndConditionsPage")}
-                Legal_NoticeMenu("위치 기반 서비스 이용 약관"){navController.navigate("LocationPolicyPage")}
-                Legal_NoticeMenu("개인정보처리방침"){navController.navigate("PrivacyPolicyPage")}
-                Legal_NoticeMenu("글꼴 저작권"){navController.navigate("FontCopyRight")}
+                Legal_NoticeMenu("이용약관") { navController.navigate("TermsAndConditionsPage") }
+                Legal_NoticeMenu("위치 기반 서비스 이용 약관") { navController.navigate("LocationPolicyPage") }
+                Legal_NoticeMenu("개인정보처리방침") { navController.navigate("PrivacyPolicyPage") }
+                Legal_NoticeMenu("글꼴 저작권") { navController.navigate("FontCopyRight") }
             }
         }
     }
 }
+
 @Composable
-fun Legal_NoticeMenu(text : String,isOptionClicked : ()->Unit){
-    Row (verticalAlignment = Alignment.CenterVertically, modifier = Modifier
+fun Legal_NoticeMenu(text: String, isOptionClicked: () -> Unit) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier
         .height(64.dp)
         .padding(horizontal = 20.dp)
-        .clickable { isOptionClicked() }){
-        Text(text = "•   ",color = Color.White,fontSize = 16.sp)
-        Text(text = text,color = Color.White, textDecoration = TextDecoration.Underline, fontSize = 16.sp)
+        .clickable { isOptionClicked() }) {
+        Text(text = "•   ", color = Color.White, fontSize = 16.sp)
+        Text(
+            text = text,
+            color = Color.White,
+            textDecoration = TextDecoration.Underline,
+            fontSize = 16.sp
+        )
 
     }
 }

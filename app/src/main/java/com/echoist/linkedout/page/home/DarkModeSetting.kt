@@ -36,70 +36,85 @@ import com.echoist.linkedout.R
 import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.page.settings.SettingTopAppBar
 import com.echoist.linkedout.ui.theme.LinkedInColor
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun DarkModeSettingPage(navController: NavController){
+fun DarkModeSettingPage(navController: NavController) {
 
     val context = LocalContext.current
     // Destructuring Declaration을 통해 두 값을 나누어 사용 selectedMode를 설정하는 함수로 사용가능
-    val (selectedMode, setSelectedMode) = remember { mutableStateOf<String?>(SharedPreferencesUtil.getDisplayInfo(context)) }
+    val (selectedMode, setSelectedMode) = remember {
+        mutableStateOf<String?>(
+            SharedPreferencesUtil.getDisplayInfo(
+                context
+            )
+        )
+    }
 
 
-    LinkedOutTheme {
-        Scaffold(
-            topBar = {
-                SettingTopAppBar("화면",navController)
-            },
-            content = {
-                Column(Modifier.padding(it)) {
-                    Spacer(modifier = Modifier.height(14.dp))
-                    Box(modifier = Modifier
+
+    Scaffold(
+        topBar = {
+            SettingTopAppBar("화면", navController)
+        },
+        content = {
+            Column(Modifier.padding(it)) {
+                Spacer(modifier = Modifier.height(14.dp))
+                Box(
+                    modifier = Modifier
                         .fillMaxWidth()
-                        .height(320.dp), contentAlignment = Alignment.Center){
+                        .height(320.dp), contentAlignment = Alignment.Center
+                ) {
 
 //
 
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .clickable(enabled = false) { }
+                            .padding(16.dp)
+                            .padding(end = 140.dp)
+                    ) {
+                        GlideImage(model = R.drawable.mode_light, contentDescription = "modeImg")
+                        Spacer(modifier = Modifier.height(22.dp))
+                        Box(
                             modifier = Modifier
-                                .clickable(enabled = false) {  }
-                                .padding(16.dp)
-                                .padding(end = 140.dp)
-                        ) {
-                            GlideImage(model = R.drawable.mode_light, contentDescription = "modeImg")
-                            Spacer(modifier = Modifier.height(22.dp))
-                            Box(modifier = Modifier
                                 .size(60.dp, 24.dp)
-                                .background(Color(0xFF191919), shape = RoundedCornerShape(40)), contentAlignment = Alignment.Center){
-                                Text(text = "  준비중  ", fontWeight = FontWeight.SemiBold, color = LinkedInColor, fontSize = 12.sp )
-
-                            }
-                            Spacer(modifier = Modifier.height(10.dp))
-                            Text(text = "라이트 모드", fontSize = 16.sp)
-                        }
-
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier
-                                .clickable(enabled = false) {  }
-                                .padding(16.dp)
-                                .padding(start = 140.dp)
+                                .background(Color(0xFF191919), shape = RoundedCornerShape(40)),
+                            contentAlignment = Alignment.Center
                         ) {
-                            GlideImage(model = R.drawable.mode_dark, contentDescription = "modeImg")
-                            Spacer(modifier = Modifier.height(22.dp))
-                            Icon(
-                                imageVector = Icons.Default.CheckCircle,
-                                tint = LinkedInColor,
-                                contentDescription = null
+                            Text(
+                                text = "  준비중  ",
+                                fontWeight = FontWeight.SemiBold,
+                                color = LinkedInColor,
+                                fontSize = 12.sp
                             )
-                            Spacer(modifier = Modifier.height(10.dp))
-                            Text(text = "다크 모드", fontSize = 16.sp)
+
                         }
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text(text = "라이트 모드", fontSize = 16.sp)
+                    }
+
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .clickable(enabled = false) { }
+                            .padding(16.dp)
+                            .padding(start = 140.dp)
+                    ) {
+                        GlideImage(model = R.drawable.mode_dark, contentDescription = "modeImg")
+                        Spacer(modifier = Modifier.height(22.dp))
+                        Icon(
+                            imageVector = Icons.Default.CheckCircle,
+                            tint = LinkedInColor,
+                            contentDescription = null
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text(text = "다크 모드", fontSize = 16.sp)
+                    }
 
 
-                        //ModeItem(
+                    //ModeItem(
 //                            modeText = "라이트 모드",
 //                            modeImg = R.drawable.mode_light,
 //                            isSelected = selectedMode == LIGHT_MODE,
@@ -122,12 +137,12 @@ fun DarkModeSettingPage(navController: NavController){
 //
 //                        )
 
-                    }
                 }
             }
-        )
-    }
+        }
+    )
 }
+
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable

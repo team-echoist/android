@@ -83,12 +83,12 @@ import me.saket.extendedspans.RoundedCornerSpanPainter
 import me.saket.extendedspans.drawBehind
 
 @Composable
-fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) {
+fun RandomSentences(viewModel: CommunityViewModel, navController: NavController) {
     val oneSentenceList by if (viewModel.sentenceInfo == SentenceInfo.First) viewModel.firstSentences.collectAsState() else viewModel.lastSentences.collectAsState()
 
 
     //한줄추천 받아온 리스트값이 비어있거나 25사이즈 전이면 안보여줌.
-    if (oneSentenceList.isNotEmpty() && oneSentenceList.size>25){
+    if (oneSentenceList.isNotEmpty() && oneSentenceList.size > 25) {
 
         val annotatedString = remember(viewModel.sentenceInfo, oneSentenceList) {
             buildAnnotatedString {
@@ -449,7 +449,6 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
         }
 
 
-
         val extendedSpans = remember {
             ExtendedSpans(
                 RoundedCornerSpanPainter(
@@ -519,68 +518,68 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
 
         Column {
 
-                var layoutResult: TextLayoutResult? = remember { null }
-                Text(
-                    text = remember(annotatedString) {
-                        extendedSpans.extend(annotatedString)
-                    },fontSize = 14.sp,
-                    modifier = Modifier
-                        .horizontalScroll(state = rememberScrollState())
-                        // .fillMaxWidth()
-                        .drawBehind(extendedSpans)
-                        .pointerInput(Unit) {
-                            detectTapGestures { offsetPosition ->
-                                layoutResult?.let {
-                                    val position = it.getOffsetForPosition(offsetPosition)
-                                    annotatedString
-                                        .getStringAnnotations(
-                                            tag = "SentenceTag",
-                                            start = position,
-                                            end = position
-                                        )
-                                        .firstOrNull()
-                                        ?.let { annotation ->
-                                            when (annotation.item) {
-                                                "Sentence1" -> viewModel.readDetailEssay(
-                                                    oneSentenceList[0].id!!,
-                                                    navController = navController
-                                                )
+            var layoutResult: TextLayoutResult? = remember { null }
+            Text(
+                text = remember(annotatedString) {
+                    extendedSpans.extend(annotatedString)
+                }, fontSize = 14.sp,
+                modifier = Modifier
+                    .horizontalScroll(state = rememberScrollState())
+                    // .fillMaxWidth()
+                    .drawBehind(extendedSpans)
+                    .pointerInput(Unit) {
+                        detectTapGestures { offsetPosition ->
+                            layoutResult?.let {
+                                val position = it.getOffsetForPosition(offsetPosition)
+                                annotatedString
+                                    .getStringAnnotations(
+                                        tag = "SentenceTag",
+                                        start = position,
+                                        end = position
+                                    )
+                                    .firstOrNull()
+                                    ?.let { annotation ->
+                                        when (annotation.item) {
+                                            "Sentence1" -> viewModel.readDetailEssay(
+                                                oneSentenceList[0].id!!,
+                                                navController = navController
+                                            )
 
-                                                "Sentence2" -> viewModel.readDetailEssay(
-                                                    oneSentenceList[1].id!!,
-                                                    navController = navController
-                                                )
+                                            "Sentence2" -> viewModel.readDetailEssay(
+                                                oneSentenceList[1].id!!,
+                                                navController = navController
+                                            )
 
-                                                "Sentence3" -> viewModel.readDetailEssay(
-                                                    oneSentenceList[2].id!!,
-                                                    navController = navController
-                                                )
+                                            "Sentence3" -> viewModel.readDetailEssay(
+                                                oneSentenceList[2].id!!,
+                                                navController = navController
+                                            )
 
-                                                "Sentence4" -> viewModel.readDetailEssay(
-                                                    oneSentenceList[3].id!!,
-                                                    navController = navController
-                                                )
+                                            "Sentence4" -> viewModel.readDetailEssay(
+                                                oneSentenceList[3].id!!,
+                                                navController = navController
+                                            )
 
-                                                "Sentence5" -> viewModel.readDetailEssay(
-                                                    oneSentenceList[4].id!!,
-                                                    navController = navController
-                                                )
-                                            }
+                                            "Sentence5" -> viewModel.readDetailEssay(
+                                                oneSentenceList[4].id!!,
+                                                navController = navController
+                                            )
                                         }
-                                }
+                                    }
                             }
-                        },
-                    onTextLayout = {
-                        layoutResult = it
-                        extendedSpans.onTextLayout(it)
-                    }
-                )
+                        }
+                    },
+                onTextLayout = {
+                    layoutResult = it
+                    extendedSpans.onTextLayout(it)
+                }
+            )
 
             var layoutResult2: TextLayoutResult? = remember { null }
             Text(
                 text = remember(annotatedString2) {
                     extendedSpans.extend(annotatedString2)
-                },fontSize = 14.sp,
+                }, fontSize = 14.sp,
                 modifier = Modifier
                     .offset(y = 4.dp)
                     .horizontalScroll(state = rememberScrollState())
@@ -637,7 +636,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
             Text(
                 text = remember(annotatedString3) {
                     extendedSpans3.extend(annotatedString3)
-                },fontSize = 14.sp,
+                }, fontSize = 14.sp,
                 modifier = Modifier
                     .offset(y = 8.dp)
                     .horizontalScroll(state = rememberScrollState())
@@ -695,7 +694,7 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
             Text(
                 text = remember(annotatedString4) {
                     extendedSpans4.extend(annotatedString4)
-                },fontSize = 14.sp,
+                }, fontSize = 14.sp,
                 modifier = Modifier
                     .offset(y = 12.dp)
 
@@ -809,10 +808,9 @@ fun RandomSentences(viewModel: CommunityViewModel,navController: NavController) 
                     extendedSpans5.onTextLayout(it)
                 }
             )
-            }
         }
     }
-
+}
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -834,7 +832,7 @@ fun CommunityTopAppBar(
         actions = {
             Icon(
                 imageVector = Icons.Default.Search,
-                contentDescription = "",
+                contentDescription = "Search",
                 Modifier
                     .padding(start = 10.dp)
                     .size(30.dp)
@@ -844,7 +842,7 @@ fun CommunityTopAppBar(
             Spacer(modifier = Modifier.width(13.dp))
             Icon(
                 painter = painterResource(id = R.drawable.icon_bookmarkfill_black),
-                contentDescription = "",
+                contentDescription = "icon_bookmarkfill_black",
                 Modifier
                     .padding(end = 10.dp)
                     .size(30.dp)
@@ -971,12 +969,9 @@ fun TodaysLogTitle() {
             Spacer(modifier = Modifier.height(4.dp))
             Text(text = "오늘 쓰여진 다양하고 솔직한 글들을 읽어보세요", fontSize = 12.sp, color = Color(0xFF696969))
             Spacer(modifier = Modifier.height(22.dp))
-
-
         }
     }
 }
-
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -1000,7 +995,6 @@ fun EssayListItem(
             end = item.title?.length ?: 0
         )
 
-        // 두 번째 텍스트 ( "   • ${formatElapsedTime(item.createdDate!!)}" )
         val bulletText = "   • ${formatElapsedTime(item.createdDate!!)}"
         append(bulletText)
         addStyle(
@@ -1035,8 +1029,12 @@ fun EssayListItem(
                     Modifier.padding(top = 10.dp),
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    if (item.status == "linkedout"){
-                        Icon(painter = painterResource(id = R.drawable.option_linkedout), contentDescription = "linkedout icon", modifier = Modifier.size(24.dp))
+                    if (item.status == "linkedout") {
+                        Icon(
+                            painter = painterResource(id = R.drawable.option_linkedout),
+                            contentDescription = "linkedout icon",
+                            modifier = Modifier.size(24.dp)
+                        )
                         Spacer(modifier = Modifier.width(6.dp))
 
                     }
@@ -1079,18 +1077,18 @@ fun EssayListItem(
                 .fillMaxSize()
                 .padding(start = 20.dp, bottom = 10.dp)
         ) {
-            if (item.author != null){ //author이 널이거나
+            if (item.author != null) { //author이 널이거나
                 Text(
                     text = item.author!!.nickname ?: "알 수 없는 아무개",
                     fontSize = 10.sp,
                     color = Color(0xFF686868)
                 )
-            }
-            else{
+            } else {
                 Text(
                     text = "알 수 없는 아무개",
                     fontSize = 10.sp,
-                    color = Color(0xFF686868))
+                    color = Color(0xFF686868)
+                )
             }
 
         }
@@ -1100,7 +1098,7 @@ fun EssayListItem(
         ) {
             HorizontalDivider(color = Color(0xFF333333))
         }
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
 
         }
 
@@ -1123,42 +1121,53 @@ fun RandomCommunityPage(viewModel: CommunityViewModel, navController: NavControl
                 }
             }
     }
-        LazyColumn(
-            state = listState,
-            modifier = Modifier
-                .background(Color(0xFFD9D9D9))
-        ) {
-            item {
-                Column {
-                    Box {
-                        Column(modifier = Modifier.padding(horizontal = 20.dp))
-                        {
-                            Spacer(modifier = Modifier.height(30.dp))
-                            Text(text = "한 문장을 모아", fontWeight = FontWeight.SemiBold, color = Color.Black, fontSize = 18.sp)
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Text(text = "글의 시작을 알리는 문장들을 만나보세요.", color = Color(0xFF696969), fontSize = 12.sp)
-                            Spacer(modifier = Modifier.height(23.dp))
-                        }
-                        Box(modifier = Modifier
-                            .fillMaxSize()
-                            .padding(top = 24.dp), contentAlignment = Alignment.TopEnd){
-                            SentenceChoiceBox(viewModel)
-                        }
-
+    LazyColumn(
+        state = listState,
+        modifier = Modifier
+            .background(Color(0xFFD9D9D9))
+    ) {
+        item {
+            Column {
+                Box {
+                    Column(modifier = Modifier.padding(horizontal = 20.dp))
+                    {
+                        Spacer(modifier = Modifier.height(30.dp))
+                        Text(
+                            text = "한 문장을 모아",
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.Black,
+                            fontSize = 18.sp
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = "글의 시작을 알리는 문장들을 만나보세요.",
+                            color = Color(0xFF696969),
+                            fontSize = 12.sp
+                        )
+                        Spacer(modifier = Modifier.height(23.dp))
                     }
-                    Spacer(modifier = Modifier.height(10.dp))
-                    RandomSentences(viewModel,navController)
-                    Spacer(modifier = Modifier.height(40.dp))
-
-                    TodaysLogTitle()
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = 24.dp), contentAlignment = Alignment.TopEnd
+                    ) {
+                        SentenceChoiceBox(viewModel)
+                    }
 
                 }
+                Spacer(modifier = Modifier.height(10.dp))
+                RandomSentences(viewModel, navController)
+                Spacer(modifier = Modifier.height(40.dp))
+
+                TodaysLogTitle()
 
             }
-            items(viewModel.randomEssayList) { it ->
-                EssayListItem(item = it, viewModel = viewModel, navController = navController)
-            }
+
         }
+        items(viewModel.randomEssayList) { it ->
+            EssayListItem(item = it, viewModel = viewModel, navController = navController)
+        }
+    }
 }
 
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
@@ -1174,43 +1183,43 @@ fun SubscribeUserItem(item: UserInfo, viewModel: CommunityViewModel) {
         label = ""  //todo white값을 unspecified.0.4f로 맞추면될듯
     )
 
-        Box(
-            modifier = Modifier
-                .width(70.dp)
-                .background(background, shape = RoundedCornerShape(25))
-                .padding(top = 20.dp)
-                .clickable {
-                    if (viewModel.currentClickedUserId == item.id) {
-                        viewModel.currentClickedUserId = null
-                    } else {
-                        viewModel.currentClickedUserId = item.id
-                    }
-                },
-            contentAlignment = Alignment.Center
-        ) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Surface(
-                    shape = CircleShape,
-                    modifier = Modifier.size(50.dp),
-                    color = backgroundTrans // Unspecified
-                ) {
-                    GlideImage(
-                        model = item.profileImage,
-                        contentDescription = null,
-                        modifier = Modifier
-                    )
+    Box(
+        modifier = Modifier
+            .width(70.dp)
+            .background(background, shape = RoundedCornerShape(25))
+            .padding(top = 20.dp)
+            .clickable {
+                if (viewModel.currentClickedUserId == item.id) {
+                    viewModel.currentClickedUserId = null
+                } else {
+                    viewModel.currentClickedUserId = item.id
                 }
-                Text(text = item.nickname!!, fontSize = 12.sp, color = backgroundTrans)
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Surface(
+                shape = CircleShape,
+                modifier = Modifier.size(50.dp),
+                color = backgroundTrans // Unspecified
+            ) {
+                GlideImage(
+                    model = item.profileImage,
+                    contentDescription = null,
+                    modifier = Modifier
+                )
             }
+            Text(text = item.nickname!!, fontSize = 12.sp, color = backgroundTrans)
         }
     }
+}
 
 
 @Composable
-fun SubscribeUserList(viewModel: CommunityViewModel,navController: NavController) {
+fun SubscribeUserList(viewModel: CommunityViewModel, navController: NavController) {
     Row(
         modifier = Modifier.background(Color.Black),
         verticalAlignment = Alignment.CenterVertically,
@@ -1234,7 +1243,7 @@ fun SubscribeUserList(viewModel: CommunityViewModel,navController: NavController
 @Preview
 @Composable
 fun prev() {
-    val viewModel : CommunityViewModel = viewModel()
+    val viewModel: CommunityViewModel = viewModel()
     Column {
         SubscribeUserItem(item = viewModel.userItem, viewModel = viewModel)
         EssayListItem(
@@ -1261,7 +1270,7 @@ fun SubscribePage(
     ) {
         item {
             Column {
-                SubscribeUserList(viewModel,navController)
+                SubscribeUserList(viewModel, navController)
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -1320,67 +1329,69 @@ fun SentenceChoiceBox(viewModel: CommunityViewModel) {
     var text by remember { mutableStateOf("첫 문장") }
 
     val arrow = if (isClicked) R.drawable.arrowup else R.drawable.arrowdown
-    val animatedHeight by animateDpAsState(targetValue = if (isClicked) 80.dp else 40.dp, label = "")
+    val animatedHeight by animateDpAsState(
+        targetValue = if (isClicked) 80.dp else 40.dp,
+        label = ""
+    )
 
-        Column(
-            modifier = Modifier
-                .padding(horizontal = 10.dp)
-                .size(120.dp, animatedHeight)
-                .background(Color(0xFFCFCFCF), shape = RoundedCornerShape(10))
-                ,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Row (verticalAlignment = Alignment.CenterVertically){
-                Text(
-                    text = text,
-                    modifier = Modifier
-                        .weight(4f)
-                        .padding(start = 10.dp)
-                        .clickable {
-                            if (isClicked) isClicked = false
-                        },
-                    fontSize = 13.sp,
-                    color = Color.Black
-                )
-                Spacer(modifier = Modifier.width(10.dp))
-                Icon(
-                    painter = painterResource(arrow),
-                    tint = Color.Black,
-                    modifier = Modifier
-                        .padding(end = 10.dp)
-                        .size(24.dp)
-                        .clickable { isClicked = !isClicked },
-                    contentDescription = ""
-                )
+    Column(
+        modifier = Modifier
+            .padding(horizontal = 10.dp)
+            .size(120.dp, animatedHeight)
+            .background(Color(0xFFCFCFCF), shape = RoundedCornerShape(10)),
+        verticalArrangement = Arrangement.Center
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = text,
+                modifier = Modifier
+                    .weight(4f)
+                    .padding(start = 10.dp)
+                    .clickable {
+                        if (isClicked) isClicked = false
+                    },
+                fontSize = 13.sp,
+                color = Color.Black
+            )
+            Spacer(modifier = Modifier.width(10.dp))
+            Icon(
+                painter = painterResource(arrow),
+                tint = Color.Black,
+                modifier = Modifier
+                    .padding(end = 10.dp)
+                    .size(24.dp)
+                    .clickable { isClicked = !isClicked },
+                contentDescription = "arrow"
+            )
 
-            }
+        }
 
-            if (isClicked) {
-                Spacer(modifier = Modifier.height(6.dp))
-                HorizontalDivider(color = Color(0xFFC5C5C5))
-                Spacer(modifier = Modifier.height(6.dp))
+        if (isClicked) {
+            Spacer(modifier = Modifier.height(6.dp))
+            HorizontalDivider(color = Color(0xFFC5C5C5))
+            Spacer(modifier = Modifier.height(6.dp))
 
-                Text(
-                    text = if (text == first) last else first,
-                    modifier = Modifier
-                        .padding(start = 10.dp)
-                        .clickable {
-                            if (text == last) {
-                                text = first
-                                viewModel.sentenceInfo = SentenceInfo.First
-                            } else {
-                                text = last
-                                viewModel.sentenceInfo = SentenceInfo.Last
-                            }
-                            isClicked = false
+            Text(
+                text = if (text == first) last else first,
+                modifier = Modifier
+                    .padding(start = 10.dp)
+                    .clickable {
+                        if (text == last) {
+                            text = first
+                            viewModel.sentenceInfo = SentenceInfo.First
+                        } else {
+                            text = last
+                            viewModel.sentenceInfo = SentenceInfo.Last
+                        }
+                        isClicked = false
 
-                        },
-                    fontSize = 13.sp,
-                    color = Color.Black
-                )
-            }
+                    },
+                fontSize = 13.sp,
+                color = Color.Black
+            )
         }
     }
+}
 
 
 

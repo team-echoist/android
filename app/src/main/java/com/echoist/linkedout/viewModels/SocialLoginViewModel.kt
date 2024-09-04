@@ -31,9 +31,10 @@ import com.echoist.linkedout.api.SignUpApi
 import com.echoist.linkedout.api.SocialSignUpApi
 import com.echoist.linkedout.api.SupportApi
 import com.echoist.linkedout.api.UserApi
+import com.echoist.linkedout.calculateDateAfter30Days
 import com.echoist.linkedout.data.ExampleItems
+import com.echoist.linkedout.data.TokensResponse
 import com.echoist.linkedout.page.myLog.Token
-import com.echoist.linkedout.page.myLog.Token.bearerAccessToken
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -52,6 +53,7 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Inject
@@ -93,7 +95,7 @@ class SocialLoginViewModel @Inject constructor(
 
         try {
             Log.d("헤더 토큰 여부", Token.accessToken)
-            val response = userApi.getMyInfo(bearerAccessToken,Token.refreshToken)
+            val response = userApi.getMyInfo()
 
             Log.d(TAG, "readMyInfo: suc1")
             Log.d("헤더 토큰", Token.accessToken)
@@ -133,10 +135,13 @@ class SocialLoginViewModel @Inject constructor(
                     navController.popBackStack("OnBoarding", false) //onboarding까지 전부 삭제.
 
                     when{
-                        //자동로그인 클릭 + 로그인 성공 시 로컬계정 저장
-                        clickedAutoLogin -> saveLocalAccount(navController.context, SharedPreferencesUtil.LocalAccountInfo(userId, userPw))
+                        //자동로그인 클릭 + 로그인 성공 시 엑세스토큰, 리프레시토큰 저장 + 토큰의 30일 이후 날짜 계산
+                        clickedAutoLogin -> {
+                            saveLocalTokens(navController.context, Token.accessToken, Token.refreshToken)
+                            SharedPreferencesUtil.saveRefreshTokenValidTime(navController.context, calculateDateAfter30Days()) //토큰 유효 기간 저장
+                        }
                         //자동로그인 클릭x 시 빈 값 저장
-                        !clickedAutoLogin -> saveLocalAccount(navController.context, SharedPreferencesUtil.LocalAccountInfo("", ""))
+                        !clickedAutoLogin -> saveLocalTokens(navController.context, "","")
                     }
 
                     when(response.code()){
@@ -168,7 +173,6 @@ class SocialLoginViewModel @Inject constructor(
                     val currentVersion = BuildConfig.VERSION_NAME
                     val latestVersion = response.body()!!.data.versions.android_mobile
 
-                    //현재 지금은 테스트중. 둘다 1.0.0
                     if (currentVersion == latestVersion)
                         Log.d("버전 일치 확인", "버전 일치. 최신 버전 : $latestVersion\n현재 버전 : $currentVersion")
                     else{
@@ -246,33 +250,8 @@ class SocialLoginViewModel @Inject constructor(
 
     //서버로 구글로그인 인증받아온 후 홈화면진입.
     private fun requestGoogleLogin(navController: NavController) {
-        viewModelScope.launch {
-            try {
-                val userAccount = SocialSignUpApi.UserAccount(googleUserToken)
-                val response = socialSignUpApi.requestGoogleLogin(userAccount)
-
-                if (response.isSuccessful) {
-                    Token.accessToken = response.body()!!.data.accessToken
-                    Token.refreshToken = response.body()!!.data.refreshToken
-
-                    Log.i("server header access token(구글)", Token.accessToken)
-                    Log.i("server refresh token(구글)", Token.refreshToken)
-
-                    Log.d("응답코드로 탈퇴/밴 사용자 여부파악 202 -> 탈퇴신청유저 ", response.code().toString())
-                    loginStatusCode = response.code()
-                    if (response.code() == 202) // 탈퇴유저. 첫유저일리 없고 정보읽지않고 홈으로이동.
-                        navController.navigate("HOME/${response.code()}")
-
-                    else readMyInfo(navController)// 첫 회원가입 여부 확인하고 화면이동
-                } else { //409는 중복. 502는 아예 서버 팅
-                    loginStatusCode = response.code()
-                    Log.e("google_login 서버와 api", "Failed ${response.code()}")
-                }
-
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Log.e("google_login", "Failed: ${e.message}")
-            }
+        requestSocialLogin(navController, googleUserToken, "구글") { userAccount ->
+            socialSignUpApi.requestGoogleLogin(userAccount)
         }
     }
 
@@ -346,38 +325,8 @@ class SocialLoginViewModel @Inject constructor(
 
     // 카카오 sdk 거친 후에 서버로 카카오인증 토큰,아이디 보내고 홈화면진입
     private fun requestKakaoLogin(navController: NavController) {
-        viewModelScope.launch {
-            try {
-                val userAccount = SocialSignUpApi.UserAccount(kakaoUserToken)
-                val response = socialSignUpApi.requestKakaoLogin(userAccount)
-
-                if (response.isSuccessful) {
-
-                    Token.accessToken = response.body()!!.data.accessToken
-                    Token.refreshToken = response.body()!!.data.refreshToken
-
-                    Log.i("server header access token(카카오)", Token.accessToken)
-                    Log.i("server refresh token(카카오)", Token.refreshToken)
-
-                    Log.d(TAG, "requestKakaoLogin: ${response.code()}")
-                    loginStatusCode = response.code()
-
-                    if (response.code() == 202) // 탈퇴유저. 첫유저일리 없고 정보읽지않고 홈으로이동.
-                        navController.navigate("HOME/${response.code()}")
-
-
-                    else readMyInfo(navController)// 첫 회원가입 여부 확인하고 화면이동
-
-                } else {
-                    Log.e("kakao_login 서버와 api", "Failed ${response.code()}")
-                    loginStatusCode = response.code()
-                }
-
-            } catch (e: Exception) {
-                // api 요청 실패
-                e.printStackTrace()
-                Log.e("kakao login fiailed", "Failed: ${e.message}")
-            }
+        requestSocialLogin(navController, kakaoUserToken, "카카오") { userAccount ->
+            socialSignUpApi.requestKakaoLogin(userAccount)
         }
     }
 
@@ -476,33 +425,8 @@ class SocialLoginViewModel @Inject constructor(
     }
     // 네이버 sdk 거친 후에 서버로 카카오인증 토큰,아이디 보내고 홈화면진입
     private fun requestNaverLogin(navController: NavController) {
-        viewModelScope.launch {
-            try {
-                val userAccount = SocialSignUpApi.UserAccount(naverUserToken)
-                val response = socialSignUpApi.requestNaverLogin(userAccount)
-
-                if (response.isSuccessful) {
-                    Token.accessToken = response.body()!!.data.accessToken
-                    Token.refreshToken = response.body()!!.data.refreshToken
-                    Log.i("server header access token(네이버)", Token.accessToken)
-                    Log.i("server refresh token(네이버)", Token.refreshToken)
-                    loginStatusCode = response.code()
-
-                    if (response.code() == 202) // 탈퇴유저. 첫유저일리 없고 정보읽지않고 홈으로이동.
-                        navController.navigate("HOME/${response.code()}")
-
-                    else readMyInfo(navController)// 첫 회원가입 여부 확인하고 화면이동
-
-                } else {
-                    loginStatusCode = response.code()
-                    Log.e("naver_login 서버와 api", "Failed ${response.code()}")
-                }
-
-            } catch (e: Exception) {
-                // api 요청 실패
-                e.printStackTrace()
-                Log.e("naver login failed", "Failed: ${e.message}")
-            }
+        requestSocialLogin(navController, naverUserToken, "네이버") { userAccount ->
+            socialSignUpApi.requestNaverLogin(userAccount)
         }
     }
 
@@ -580,43 +504,60 @@ class SocialLoginViewModel @Inject constructor(
 
     }
     private fun requestAppleLogin(navController: NavController) {
+        requestSocialLogin(navController, appleUserToken, "애플") { userAccount ->
+            socialSignUpApi.requestAppleLogin(userAccount)
+        }
+    }
+
+    private fun saveLocalTokens(context: Context, accessToken : String, refreshToken : String){
+        SharedPreferencesUtil.saveTokensInfo(context, accessToken, refreshToken)
+        SharedPreferencesUtil.saveClickedAutoLogin(context, clickedAutoLogin)
+    }
+    private fun requestSocialLogin(
+        navController: NavController,
+        userToken: String,
+        loginType: String,
+        requestLogin: suspend (SocialSignUpApi.UserAccount) -> Response<TokensResponse>
+    ) {
         viewModelScope.launch {
             try {
-                val userAccount = SocialSignUpApi.UserAccount(appleUserToken)
-                val response = socialSignUpApi.requestAppleLogin(userAccount)
+                val userAccount = SocialSignUpApi.UserAccount(userToken)
+                val response = requestLogin(userAccount)
 
                 if (response.isSuccessful) {
-                    Log.d(TAG, "requestAppleLogin: 로그인 성공")
-                    Token.accessToken = response.body()!!.data.accessToken
-                    Token.refreshToken = response.body()!!.data.refreshToken
+                    val accessToken = response.body()!!.data.accessToken
+                    val refreshToken = response.body()!!.data.refreshToken
 
-                    Log.i("server header access token(애플)", Token.accessToken)
-                    Log.i("server refresh token(애플)", Token.refreshToken)
+                    Token.accessToken = accessToken
+                    Token.refreshToken = refreshToken
 
-                    Log.d(TAG, "requestAppleLogin: ${response.code()}")
+                    Log.i("server header access token($loginType)", accessToken)
+                    Log.i("server refresh token($loginType)", refreshToken)
                     loginStatusCode = response.code()
-                    if (response.code() == 202) // 탈퇴유저. 첫유저일리 없고 정보읽지않고 홈으로이동.
+
+                    if (response.code() == 202) {
+                        // 탈퇴유저. 첫유저일리 없고 정보읽지않고 홈으로 이동.
                         navController.navigate("HOME/${response.code()}")
-
-                    else readMyInfo(navController)// 첫 회원가입 여부 확인하고 화면이동
-
+                    } else {
+                        // 첫 회원가입 여부 확인하고 화면 이동
+                        clickedAutoLogin = true
+                        saveLocalTokens(navController.context, accessToken, refreshToken)
+                        SharedPreferencesUtil.saveRefreshTokenValidTime(navController.context, calculateDateAfter30Days()) // 토큰 유효 기간 저장
+                        readMyInfo(navController)
+                    }
                 } else {
                     loginStatusCode = response.code()
-                    Log.e("Apple_login 서버와 api", "Failed ${response.code()}")
+                    Log.e("$loginType 서버와 api", "Failed ${response.code()}")
                 }
 
             } catch (e: Exception) {
-                // api 요청 실패
+                // API 요청 실패
                 e.printStackTrace()
-                Log.e("Apple login failed", "Failed: ${e.message}")
+                Log.e("$loginType login failed", "Failed: ${e.message}")
             }
         }
     }
 
-    private fun saveLocalAccount(context: Context, localAccountInfo: SharedPreferencesUtil.LocalAccountInfo){
-        SharedPreferencesUtil.saveLocalAccountInfo(context, localAccountInfo)
-        SharedPreferencesUtil.saveClickedAutoLogin(context, clickedAutoLogin)
-    }
 
 }
 

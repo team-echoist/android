@@ -32,8 +32,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.ArrowLeft
-import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
@@ -86,7 +84,6 @@ import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.formatDateTime
 import com.echoist.linkedout.page.myLog.OptionItem
 import com.echoist.linkedout.ui.theme.LinkedInColor
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.CommunityViewModel
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
 import com.mohamedrejeb.richeditor.ui.material3.RichText
@@ -100,9 +97,10 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
 
     val scope = rememberCoroutineScope()
 
-    val peekHeight = if (viewModel.isReportClicked ) 310.dp else 0.dp
+    val peekHeight = if (viewModel.isReportClicked) 310.dp else 0.dp
 
-    val bottomSheetState = rememberStandardBottomSheetState(initialValue = SheetValue.Hidden, skipHiddenState = false)
+    val bottomSheetState =
+        rememberStandardBottomSheetState(initialValue = SheetValue.Hidden, skipHiddenState = false)
     val scaffoldState = androidx.compose.material3.rememberBottomSheetScaffoldState(
         bottomSheetState = bottomSheetState
     )
@@ -130,173 +128,173 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
         }
         viewModel.isOptionClicked = false
     }
-    LinkedOutTheme {
-        BottomSheetScaffold(
-            sheetContainerColor = Color(0xFF191919),
-            scaffoldState = scaffoldState,
-            sheetContent = {
 
-                               //신고하기 요청보냄.
-                if (!viewModel.isReportCleared){
-                    ReportMenuBottomSheet(viewModel)
+    BottomSheetScaffold(
+        sheetContainerColor = Color(0xFF191919),
+        scaffoldState = scaffoldState,
+        sheetContent = {
 
-                }
-                else{ //신고 하기 버튼 눌렀을때 제대로 요청이 들어가고 접수가되었다면. 완료버튼 클릭시
-                    ReportComplete { viewModel.isReportCleared = false
-                        viewModel.isReportClicked = false
-                        viewModel.isOptionClicked =false
-                        scope.launch {
-                            bottomSheetState.hide()
-                        }
+            //신고하기 요청보냄.
+            if (!viewModel.isReportCleared) {
+                ReportMenuBottomSheet(viewModel)
 
+            } else { //신고 하기 버튼 눌렀을때 제대로 요청이 들어가고 접수가되었다면. 완료버튼 클릭시
+                ReportComplete {
+                    viewModel.isReportCleared = false
+                    viewModel.isReportClicked = false
+                    viewModel.isOptionClicked = false
+                    scope.launch {
+                        bottomSheetState.hide()
                     }
-                }
 
+                }
+            }
+
+
+        },
+
+        sheetPeekHeight = peekHeight
+    ) {
+        Scaffold(
+            topBar = {
+
+                CommunityTopAppBar(navController = navController, viewModel, color = color)
 
             },
+            content = {
+                Box(
+                    Modifier
+                        .clickable { isClicked = !isClicked }
+                        .padding(it)
+                        .fillMaxSize(), contentAlignment = Alignment.TopCenter
+                ) {
+                    LazyColumn(state = listState) {
+                        item {
 
-            sheetPeekHeight = peekHeight
-        ) {
-            Scaffold(
-                topBar = {
-
-                    CommunityTopAppBar(navController = navController, viewModel, color = color)
-
-                },
-                content = {
-                        Box(
-                            Modifier
-                                .clickable { isClicked = !isClicked }
-                                .padding(it)
-                                .fillMaxSize(), contentAlignment = Alignment.TopCenter
-                        ) {
-                            LazyColumn(state = listState) {
-                                item {
-
-                                    DetailEssay(
-                                        item = viewModel.readDetailEssay(),
-                                        viewModel,
-                                        navController
-                                    )
-                                    Spacer(modifier = Modifier.height(28.dp))
-
-                                    val userinfo = viewModel.readDetailEssay().author ?: UserInfo()
-
-                                    SubscriberSimpleItem(
-                                        item = userinfo,
-                                        viewModel = viewModel,
-                                        navController = navController
-                                    )
-                                    Spacer(modifier = Modifier.height(36.dp))
-                                    Box(
-                                        modifier = Modifier
-                                            .height(12.dp)
-                                            .fillMaxWidth()
-                                            .background(Color(0xFF1A1A1A))
-                                    )
-                                    Box(
-                                        modifier = Modifier
-                                            .height(56.dp)
-                                            .fillMaxWidth()
-                                            .padding(horizontal = 20.dp),
-                                        contentAlignment = Alignment.CenterStart
-                                    )
-                                    {
-                                        Text(
-                                            text = "다른 글",
-                                            fontSize = 14.sp,
-                                            color = Color(0xFF616FED)
-                                        )
-
-                                    }
-                                }
-                                items(items = viewModel.readAnotherEssays()) { it -> //랜덤리스트 말고 수정할것. 그사람의 리스트로
-                                    EssayListItem(
-                                        item = it,
-                                        viewModel = viewModel,
-                                        navController = navController
-                                    )
-                                }
-
-
-                            }
-
-                            //신고 옵션
-                            AnimatedVisibility(
-                                visible = viewModel.isOptionClicked,
-                                enter = fadeIn(
-                                    animationSpec = tween(
-                                        durationMillis = 1000,
-                                        easing = FastOutSlowInEasing
-                                    )
-                                ),
-                                exit = fadeOut(
-                                    animationSpec = tween(
-                                        durationMillis = 500,
-                                        easing = LinearEasing
-                                    )
-                                )
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(end = 23.dp),
-                                    contentAlignment = Alignment.TopEnd
-                                ) {
-                                    ReportOption({viewModel.isReportClicked = !viewModel.isReportClicked}, viewModel)
-                                }
-                            }
-
-                        }
-
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .navigationBarsPadding(),
-                        contentAlignment = Alignment.BottomCenter
-                    ) {
-                        LaunchedEffect(isClicked) {
-                            delay(3000)
-                            isClicked = false
-                        }
-
-                        AnimatedVisibility(
-                            visible = isClicked,
-                            enter = fadeIn(
-                                animationSpec = tween(
-                                    durationMillis = 500,
-                                    easing = FastOutSlowInEasing
-                                )
-                            ),
-                            exit = fadeOut(
-                                animationSpec = tween(
-                                    durationMillis = 500,
-                                    easing = LinearEasing
-                                )
+                            DetailEssay(
+                                item = viewModel.readDetailEssay(),
+                                viewModel,
+                                navController
                             )
+                            Spacer(modifier = Modifier.height(28.dp))
+
+                            val userinfo = viewModel.readDetailEssay().author ?: UserInfo()
+
+                            SubscriberSimpleItem(
+                                item = userinfo,
+                                viewModel = viewModel,
+                                navController = navController
+                            )
+                            Spacer(modifier = Modifier.height(36.dp))
+                            Box(
+                                modifier = Modifier
+                                    .height(12.dp)
+                                    .fillMaxWidth()
+                                    .background(Color(0xFF1A1A1A))
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .height(56.dp)
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 20.dp),
+                                contentAlignment = Alignment.CenterStart
+                            )
+                            {
+                                Text(
+                                    text = "다른 글",
+                                    fontSize = 14.sp,
+                                    color = Color(0xFF616FED)
+                                )
+
+                            }
+                        }
+                        items(items = viewModel.readAnotherEssays()) { it -> //랜덤리스트 말고 수정할것. 그사람의 리스트로
+                            EssayListItem(
+                                item = it,
+                                viewModel = viewModel,
+                                navController = navController
+                            )
+                        }
+
+
+                    }
+
+                    //신고 옵션
+                    AnimatedVisibility(
+                        visible = viewModel.isOptionClicked,
+                        enter = fadeIn(
+                            animationSpec = tween(
+                                durationMillis = 1000,
+                                easing = FastOutSlowInEasing
+                            )
+                        ),
+                        exit = fadeOut(
+                            animationSpec = tween(
+                                durationMillis = 500,
+                                easing = LinearEasing
+                            )
+                        )
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(end = 23.dp),
+                            contentAlignment = Alignment.TopEnd
                         ) {
-                            SequenceBottomBar(viewModel.readDetailEssay(),viewModel,navController)
+                            ReportOption({
+                                viewModel.isReportClicked = !viewModel.isReportClicked
+                            }, viewModel)
                         }
                     }
-                    if (viewModel.isReportClicked)
+
+                }
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .navigationBarsPadding(),
+                    contentAlignment = Alignment.BottomCenter
+                ) {
+                    LaunchedEffect(isClicked) {
+                        delay(3000)
+                        isClicked = false
+                    }
+
+                    AnimatedVisibility(
+                        visible = isClicked,
+                        enter = fadeIn(
+                            animationSpec = tween(
+                                durationMillis = 500,
+                                easing = FastOutSlowInEasing
+                            )
+                        ),
+                        exit = fadeOut(
+                            animationSpec = tween(
+                                durationMillis = 500,
+                                easing = LinearEasing
+                            )
+                        )
+                    ) {
+                        SequenceBottomBar(viewModel.readDetailEssay(), viewModel, navController)
+                    }
+                }
+                if (viewModel.isReportClicked)
                     Box(modifier = Modifier
                         .fillMaxSize()
                         .background(Color.Black.copy(0.7f))
                         .clickable { viewModel.isReportClicked = false })
 
-                }
+            }
 
-            )
-        }
+        )
     }
 }
 
 
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CommunityTopAppBar(navController: NavController, viewModel: CommunityViewModel, color : Color) {
+fun CommunityTopAppBar(navController: NavController, viewModel: CommunityViewModel, color: Color) {
     // 현재 백스택 상태를 관찰하여 상태 변경 시 리컴포지션을 트리거
     val backStackEntry = navController.currentBackStackEntryAsState().value
     // 백스택에서 바로 뒤의 항목 가져오기
@@ -347,7 +345,7 @@ fun CommunityTopAppBar(navController: NavController, viewModel: CommunityViewMod
         actions = {
             Icon(
                 painter = painterResource(id = R.drawable.more),
-                contentDescription = "",
+                contentDescription = "more",
                 modifier = Modifier
                     .size(40.dp)
                     .padding(end = 10.dp)
@@ -359,7 +357,7 @@ fun CommunityTopAppBar(navController: NavController, viewModel: CommunityViewMod
 }
 
 @Composable
-fun ReportOption( onClickReport: () -> Unit,viewModel: CommunityViewModel) {
+fun ReportOption(onClickReport: () -> Unit, viewModel: CommunityViewModel) {
     Surface(modifier = Modifier.size(180.dp, 110.dp), shape = RoundedCornerShape(10)) {
         Column(
             modifier = Modifier
@@ -393,7 +391,12 @@ fun ReportOption( onClickReport: () -> Unit,viewModel: CommunityViewModel) {
                 )
             }
             HorizontalDivider(color = Color(0xFF1A1A1A))
-            OptionItem(text = "신고하기", Color(0xFFE43446), onClick =  {onClickReport()}, R.drawable.option_report)
+            OptionItem(
+                text = "신고하기",
+                Color(0xFFE43446),
+                onClick = { onClickReport() },
+                R.drawable.option_report
+            )
 
         }
     }
@@ -402,7 +405,11 @@ fun ReportOption( onClickReport: () -> Unit,viewModel: CommunityViewModel) {
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navController: NavController) {
+fun DetailEssay(
+    item: EssayApi.EssayItem,
+    viewModel: CommunityViewModel,
+    navController: NavController
+) {
     var isApiFinished by remember {
         mutableStateOf(false)
     }
@@ -411,9 +418,10 @@ fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navContro
         isApiFinished = true
     }
     var isEssayBookMarked by remember { mutableStateOf(item.isBookmarked) }
-    val iconImg = if (isEssayBookMarked) R.drawable.icon_bookmarkfill else R.drawable.icon_bookmarkborder
+    val iconImg =
+        if (isEssayBookMarked) R.drawable.icon_bookmarkfill else R.drawable.icon_bookmarkborder
 
-    if (isApiFinished){
+    if (isApiFinished) {
         Box {
             Column(
                 modifier = Modifier
@@ -428,17 +436,24 @@ fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navContro
                                 .fillMaxWidth()
                                 .height(220.dp)
                         )
-                    Spacer(modifier = Modifier.height(20.dp))
+                        Spacer(modifier = Modifier.height(20.dp))
                     }
                 }
                 Row(modifier = Modifier.padding(horizontal = 20.dp)) {
-                    Text(text = item.title!!, fontSize = viewModel.titleTextSize, modifier = Modifier)
-                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+                    Text(
+                        text = item.title!!,
+                        fontSize = viewModel.titleTextSize,
+                        modifier = Modifier
+                    )
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
 
 
                         Icon(
                             painter = painterResource(id = iconImg),
-                            contentDescription = "",
+                            contentDescription = "iconImg",
                             Modifier
                                 .size(30.dp)
                                 .clickable {
@@ -463,19 +478,26 @@ fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navContro
 //                    modifier = Modifier.padding(horizontal = 20.dp),
 //                    color = Color(0xFFB4B4B4)
 //                )
-                RichText(state = rememberRichTextState().setHtml(item.content!!),
+                RichText(
+                    state = rememberRichTextState().setHtml(item.content!!),
                     fontSize = viewModel.contentTextSize,
                     lineHeight = 27.2.sp,
                     modifier = Modifier.padding(horizontal = 20.dp),
-                    color = Color(0xFFB4B4B4))
+                    color = Color(0xFFB4B4B4)
+                )
 
                 Spacer(modifier = Modifier.height(46.dp))
-                Box(modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 20.dp), contentAlignment = Alignment.BottomEnd) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 20.dp), contentAlignment = Alignment.BottomEnd
+                ) {
                     Column {
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
-                            (if (item.author !=null) item.author!!.nickname else "알 수 없는")?.let {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.CenterEnd
+                        ) {
+                            (if (item.author != null) item.author!!.nickname else "알 수 없는")?.let {
                                 Text(
                                     text = it,
                                     fontSize = 12.sp,
@@ -486,7 +508,10 @@ fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navContro
 
                         }
                         Spacer(modifier = Modifier.height(8.dp))
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.CenterEnd
+                        ) {
                             Text(
                                 text = formatDateTime(item.createdDate ?: ""),
                                 fontSize = 12.sp,
@@ -495,8 +520,11 @@ fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navContro
                             )
                         }
                         Spacer(modifier = Modifier.height(8.dp))
-                        if (item.linkedOutGauge != null){
-                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
+                        if (item.linkedOutGauge != null) {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.CenterEnd
+                            ) {
                                 Row {
                                     repeat(item.linkedOutGauge!!) {
                                         Image(
@@ -518,15 +546,15 @@ fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navContro
                     }
                 }
                 Spacer(modifier = Modifier.height(28.dp))
-                if (item.tags != null){
+                if (item.tags != null) {
                     Row(modifier = Modifier.padding(horizontal = 20.dp)) {
-                        repeat(item.tags!!.size){
+                        repeat(item.tags!!.size) {
                             SuggestionChip(
                                 onClick = { },
                                 label = { Text(item.tags!![it].name) },
                                 shape = RoundedCornerShape(50)
                             )
-                            if (it != item.tags!!.size-1) Spacer(modifier = Modifier.width(10.dp))
+                            if (it != item.tags!!.size - 1) Spacer(modifier = Modifier.width(10.dp))
                         }
                     }
                 }
@@ -537,7 +565,11 @@ fun DetailEssay(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navContro
 }
 
 @Composable
-fun SequenceBottomBar(item: EssayApi.EssayItem,viewModel: CommunityViewModel,navController: NavController){
+fun SequenceBottomBar(
+    item: EssayApi.EssayItem,
+    viewModel: CommunityViewModel,
+    navController: NavController
+) {
     // 현재 백스택 상태를 관찰하여 상태 변경 시 리컴포지션을 트리거
     val backStackEntry = navController.currentBackStackEntryAsState().value
     // 백스택에서 바로 뒤의 항목 가져오기
@@ -546,7 +578,8 @@ fun SequenceBottomBar(item: EssayApi.EssayItem,viewModel: CommunityViewModel,nav
     val previousRoute = previousBackStackEntry?.destination?.route
 
     var isEssayBookMarked by remember { mutableStateOf(item.isBookmarked) }
-    val iconImg = if (isEssayBookMarked) R.drawable.icon_bookmarkfill else R.drawable.icon_bookmarkborder
+    val iconImg =
+        if (isEssayBookMarked) R.drawable.icon_bookmarkfill else R.drawable.icon_bookmarkborder
 
     var noExistPreviousStack by remember { mutableStateOf(false) }
 
@@ -558,16 +591,21 @@ fun SequenceBottomBar(item: EssayApi.EssayItem,viewModel: CommunityViewModel,nav
     Column {
         AnimatedVisibility(
             visible = noExistPreviousStack,
-            enter = fadeIn(animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing)),
+            enter = fadeIn(
+                animationSpec = tween(
+                    durationMillis = 300,
+                    easing = FastOutSlowInEasing
+                )
+            ),
             exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
-        ){
+        ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(60.dp)
                     .padding(horizontal = 20.dp)
                     .background(color = Color(0xFF212121), shape = RoundedCornerShape(size = 10.dp))
-            ){
+            ) {
                 Text(
                     text = "이전에 조회한 글이 없습니다.",
                     fontSize = 16.sp,
@@ -580,11 +618,13 @@ fun SequenceBottomBar(item: EssayApi.EssayItem,viewModel: CommunityViewModel,nav
         }
 
         Spacer(modifier = Modifier.height(14.dp))
-        Box(modifier = Modifier
-            .background(Color(0xFF0E0E0E))
-            .fillMaxWidth()
-            .height(70.dp)){
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart){
+        Box(
+            modifier = Modifier
+                .background(Color(0xFF0E0E0E))
+                .fillMaxWidth()
+                .height(70.dp)
+        ) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart) {
 
                 Icon(painter = painterResource(id = iconImg), contentDescription = "bookMark",
                     Modifier
@@ -602,59 +642,78 @@ fun SequenceBottomBar(item: EssayApi.EssayItem,viewModel: CommunityViewModel,nav
                         }
                         .size(35.dp))
             }
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
-                Row(modifier = Modifier.height(94.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowLeft,
-                        contentDescription = "nav back",
-                        Modifier
-                            .size(50.dp)
-                            .clickable {
-                                // 커뮤니티 홈에서 들어온경우를 제외하고 back stack한다
-                                if (previousRoute != Routes.Community) {
-                                    if (viewModel.detailEssayBackStack.isNotEmpty()) {
-                                        viewModel.detailEssayBackStack.pop()
-                                        Log.d(
-                                            ContentValues.TAG,
-                                            "pushpushpop: ${viewModel.detailEssayBackStack}"
-                                        )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(end = 20.dp),
+                contentAlignment = Alignment.CenterEnd
+            ) {
+                Row(
+                    modifier = Modifier.height(94.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.icon_arrowleft),
+                            contentDescription = "nav back",
+                            Modifier
+                                .size(20.dp)
+                                .clickable {
+                                    // 커뮤니티 홈에서 들어온경우를 제외하고 back stack한다
+                                    if (previousRoute != Routes.Community) {
                                         if (viewModel.detailEssayBackStack.isNotEmpty()) {
-                                            viewModel.detailEssay =
-                                                viewModel.detailEssayBackStack.peek()
-                                            viewModel.setBackDetailEssay(viewModel.detailEssayBackStack.peek()) //detailEssay값을 아예 수정
+                                            viewModel.detailEssayBackStack.pop()
+                                            Log.d(
+                                                ContentValues.TAG,
+                                                "pushpushpop: ${viewModel.detailEssayBackStack}"
+                                            )
+                                            if (viewModel.detailEssayBackStack.isNotEmpty()) {
+                                                viewModel.detailEssay =
+                                                    viewModel.detailEssayBackStack.peek()
+                                                viewModel.setBackDetailEssay(viewModel.detailEssayBackStack.peek()) //detailEssay값을 아예 수정
+                                            }
                                         }
+                                        navController.popBackStack()
+                                    } else {
+                                        noExistPreviousStack = true
                                     }
-                                    navController.popBackStack()
-                                } else {
-                                    noExistPreviousStack = true
+
                                 }
-
-                            }
-                    )
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowRight,
-                        contentDescription = "next random essay",
-                        Modifier
-                            .size(50.dp)
-                            .clickable {
-                                viewModel.detailEssayBackStack.push(item)
-                                viewModel.readDetailEssay(
-                                    viewModel.previousEssayList[0].id!!,
-                                    navController = navController,
-                                    TYPE_RECOMMEND
-                                )
-                            }
-                    )
-
-
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(text = "봤던 글", fontSize = 12.sp, color = Color.White)
+                    }
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.icon_arrowright),
+                            contentDescription = "next random essay",
+                            Modifier
+                                .size(20.dp)
+                                .clickable {
+                                    viewModel.detailEssayBackStack.push(item)
+                                    viewModel.readDetailEssay(
+                                        viewModel.previousEssayList[0].id!!,
+                                        navController = navController,
+                                        TYPE_RECOMMEND
+                                    )
+                                }
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(text = "랜덤 글", fontSize = 12.sp, color = Color.White)
+                    }
                 }
             }
-
-
         }
     }
-    
 }
+
 @Composable
 fun ReportMenuBottomSheet(viewModel: CommunityViewModel) {
     val reportOptions = listOf(
@@ -672,7 +731,10 @@ fun ReportMenuBottomSheet(viewModel: CommunityViewModel) {
             .padding(top = 20.dp)
     ) {
         Column {
-            Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 Text(text = "신고", fontSize = 16.sp, color = Color.White)
                 Spacer(modifier = Modifier.height(13.dp))
                 Text(text = "이 글을 신고하는 이유를 선택해주세요.", color = Color.White)
@@ -688,7 +750,8 @@ fun ReportMenuBottomSheet(viewModel: CommunityViewModel) {
             Spacer(modifier = Modifier.height(20.dp))
             Button(
                 onClick = {
-                          viewModel.reportEssay(viewModel.detailEssay.id!!,selectedItem)},
+                    viewModel.reportEssay(viewModel.detailEssay.id!!, selectedItem)
+                },
                 modifier = Modifier
                     .fillMaxWidth() // TODO: report API 연동 필요
                     .height(61.dp)
@@ -705,7 +768,7 @@ fun ReportMenuBottomSheet(viewModel: CommunityViewModel) {
 fun ReportItem(
     reportItem: String,
     isSelected: Boolean,
-    selectedColor : Color,
+    selectedColor: Color,
     onItemSelected: (Boolean) -> Unit
 ) {
     val color = if (isSelected) selectedColor else Color(0xFF252525)
@@ -727,7 +790,7 @@ fun ReportItem(
             Text(text = reportItem, color = Color.White)
         }
         if (reportItem == "기타 문제" && isSelected) {
-            ReportTextField("신고 내용을 작성해주세요",selectedColor)
+            ReportTextField("신고 내용을 작성해주세요", selectedColor)
             Spacer(modifier = Modifier.height(20.dp))
         }
     }
@@ -770,20 +833,21 @@ fun SingleSelectReportList(
 
 
 @Composable
-fun ReportTextField(hint : String,selectedColor: Color) {
+fun ReportTextField(hint: String, selectedColor: Color) {
 
 
     var isFocused by remember { mutableStateOf(false) }
     var borderColor = if (isFocused) selectedColor else Color(0xFF202020)
 
     var text by remember { mutableStateOf(TextFieldValue("")) }
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .height(150.dp)
-        .padding(horizontal = 15.dp)
-        ){
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(150.dp)
+            .padding(horizontal = 15.dp)
+    ) {
         TextField(
-            placeholder = { Text(text = hint)},
+            placeholder = { Text(text = hint) },
             modifier = Modifier
                 .fillMaxSize()
                 .onFocusChanged { isFocused = it.isFocused }
@@ -813,7 +877,7 @@ fun ReportTextField(hint : String,selectedColor: Color) {
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun ReportComplete(isCompleteClicked : ()->Unit){
+fun ReportComplete(isCompleteClicked: () -> Unit) {
     val annotatedString = remember {
         AnnotatedString.Builder().apply {
             withStyle(
@@ -837,21 +901,35 @@ fun ReportComplete(isCompleteClicked : ()->Unit){
         }.toAnnotatedString()
     }
 
-    Box(modifier = Modifier
-        .height(715.dp)
-        .fillMaxSize()
-        .verticalScroll(rememberScrollState())
-        .padding(top = 55.dp)) {
+    Box(
+        modifier = Modifier
+            .height(715.dp)
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(top = 55.dp)
+    ) {
         Column(Modifier.padding(horizontal = 20.dp)) {
-            Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 Text(text = "수상한 글 검거 완료", fontSize = 20.sp, color = LinkedInColor)
                 Spacer(modifier = Modifier.height(20.dp))
-                Text(text = annotatedString, color = Color.White, textAlign = TextAlign.Center, fontSize = 16.sp)
+                Text(
+                    text = annotatedString,
+                    color = Color.White,
+                    textAlign = TextAlign.Center,
+                    fontSize = 16.sp
+                )
                 Spacer(modifier = Modifier.height(54.dp))
 
             }
             Text(text = "신고 접수", fontSize = 16.sp, color = Color.White)
-            Text(text = "아무개님의 신고는 링크드아웃의 서비스를 개선하고 유지하는데 큰 도움이 돼요.", color = Color(0xFF6B6B6B), fontSize = 14.sp)
+            Text(
+                text = "아무개님의 신고는 링크드아웃의 서비스를 개선하고 유지하는데 큰 도움이 돼요.",
+                color = Color(0xFF6B6B6B),
+                fontSize = 14.sp
+            )
             GlideImage(model = R.drawable.more, contentDescription = "more")
             Spacer(modifier = Modifier.height(7.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -866,16 +944,26 @@ fun ReportComplete(isCompleteClicked : ()->Unit){
 //                )
 
             }
-            Text(text = "링크드아웃 팀에서는 수상한 글을 꼼꼼하게 심문해 규정을 어긴 글을 최대한 빠르게 체포하고 있어요.", color = Color(0xFF6B6B6B), fontSize = 14.sp)
+            Text(
+                text = "링크드아웃 팀에서는 수상한 글을 꼼꼼하게 심문해 규정을 어긴 글을 최대한 빠르게 체포하고 있어요.",
+                color = Color(0xFF6B6B6B),
+                fontSize = 14.sp
+            )
             GlideImage(model = R.drawable.more, contentDescription = "more")
             Spacer(modifier = Modifier.height(7.dp))
             Text(text = "검토 완료", fontSize = 16.sp, color = Color.White)
-            Text(text = "심문이 끝난 후 결과를 알려드려요. 나쁜 글이 확실하다면 글을 공식적으로 체포했다는 알림을 보내드릴게요!", color = Color(0xFF6B6B6B), fontSize = 14.sp)
+            Text(
+                text = "심문이 끝난 후 결과를 알려드려요. 나쁜 글이 확실하다면 글을 공식적으로 체포했다는 알림을 보내드릴게요!",
+                color = Color(0xFF6B6B6B),
+                fontSize = 14.sp
+            )
             Spacer(modifier = Modifier.height(72.dp))
 
-            Button(onClick = { isCompleteClicked() }, modifier = Modifier
-                .fillMaxWidth()
-                .height(61.dp), shape = RoundedCornerShape(20)) {
+            Button(
+                onClick = { isCompleteClicked() }, modifier = Modifier
+                    .fillMaxWidth()
+                    .height(61.dp), shape = RoundedCornerShape(20)
+            ) {
                 Text(text = "확인", color = Color.Black)
             }
         }
