@@ -29,7 +29,6 @@ import com.echoist.linkedout.components.ExitAppErrorBox
 import com.echoist.linkedout.navigation.MobileApp
 import com.echoist.linkedout.page.home.ReLogInWaringBox
 import com.echoist.linkedout.page.myLog.Token
-import com.echoist.linkedout.presentation.TabletApp
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -109,11 +108,14 @@ import kotlinx.coroutines.delay
                     }
                 }
 
-                if (isTablet) { //tabletApp 함수 안에서 hiltviewmodel로 초기화하게끔만 살짝 수정했는데 확인부탁드립니다! 메인에서 뷰모델을 다 지우고싶은..욕심이..
-                    TabletApp(this, navController)
-                } else { //mobile
-                    MobileApp(navController, startDestination)
-                }
+//                  release 버전에는 아직 테블릿 제외
+//                if (isTablet) {
+//                    TabletApp(this, navController)
+//                } else { //mobile
+//                    MobileApp(navController, startDestination)
+//                }
+
+                MobileApp(navController, startDestination)
 
                 if (isClickedExit) {
                     Box(
