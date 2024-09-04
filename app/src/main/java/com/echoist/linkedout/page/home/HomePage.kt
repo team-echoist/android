@@ -152,7 +152,6 @@ fun HomePage(
     ) {
         Scaffold(
             topBar = {
-
                 CustomTopAppBar({
                     scope.launch {
                         drawerState.apply {
@@ -181,28 +180,27 @@ fun HomePage(
                     )
 
                 }
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(start = 165.dp, bottom = 130.dp), contentAlignment = Alignment.Center
+                ) {
+                    Box(
+                        Modifier
+                            .size(80.dp)
+                            .clickable { viewModel.isVisibleGeulRoquis = true }) {
+                        GlideImage( //전구 클릭하면 글로키 On
+                            model = TUTORIAL_BULB,
+                            contentDescription = "bulb_img",
+                            modifier = Modifier
+                                .size(80.dp)
+                        )
+                    }
+                }
             }
         )
     }
     //터치 효과 x
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(start = 165.dp, bottom = 130.dp), contentAlignment = Alignment.Center
-    ) {
-        Box(
-            Modifier
-                .size(80.dp)
-                .clickable { viewModel.isVisibleGeulRoquis = true }) {
-            GlideImage( //전구 클릭하면 글로키 On
-                model = TUTORIAL_BULB,
-                contentDescription = "bulb_img",
-                modifier = Modifier
-                    .size(80.dp)
-            )
-        }
-    }
 
     AnimatedVisibility(
         visible = viewModel.isVisibleGeulRoquis && !viewModel.isFirstUser, //튜토리얼을 건너뛰어야 글로키를 볼수있음
