@@ -1,6 +1,9 @@
 name: Check Version Code and Version Name
 
 on:
+  push:
+    branches:
+      - release/*  # 릴리즈 브랜치에 푸시할 때만 실행
   pull_request:
     branches:
       - release/*  # 릴리즈 브랜치로 PR이 올라올 때만 실행
