@@ -1,4 +1,4 @@
-name: Check Version Code and Version Name
+name: CI/CD Pipeline
 
 on:
   push:
@@ -21,8 +21,11 @@ jobs:
     - name: Get previous versionCode and versionName
       id: prev_versions
       run: |
-        PREV_VERSION_CODE=$(git show HEAD~1:app/build.gradle | grep 'versionCode' | awk '{print $2}')
-        PREV_VERSION_NAME=$(git show HEAD~1:app/build.gradle | grep 'versionName' | awk '{print $2}')
+        # Fetch previous commit's build.gradle file
+        git show HEAD~1:app/build.gradle > prev_build.gradle
+        # Extract versionCode and versionName from the previous build.gradle
+        PREV_VERSION_CODE=$(grep 'versionCode' prev_build.gradle | awk '{print $2}')
+        PREV_VERSION_NAME=$(grep 'versionName' prev_build.gradle | awk '{print $2}')
         
         echo "PREV_VERSION_CODE=${PREV_VERSION_CODE}" >> $GITHUB_ENV
         echo "PREV_VERSION_NAME=${PREV_VERSION_NAME}" >> $GITHUB_ENV
@@ -30,6 +33,7 @@ jobs:
     - name: Get current versionCode and versionName
       id: curr_versions
       run: |
+        # Extract versionCode and versionName from the current build.gradle
         CURR_VERSION_CODE=$(grep 'versionCode' app/build.gradle | awk '{print $2}')
         CURR_VERSION_NAME=$(grep 'versionName' app/build.gradle | awk '{print $2}')
         
@@ -38,10 +42,42 @@ jobs:
 
     - name: Compare versions and fail if they are the same
       run: |
-        if [ "$PREV_VERSION_CODE" = "$CURR_VERSION_CODE" ] && [ "$PREV_VERSION_NAME" = "$CURR_VERSION_NAME" ]; then
+        if [ "${{ env.PREV_VERSION_CODE }}" = "${{ env.CURR_VERSION_CODE }}" ] && [ "${{ env.PREV_VERSION_NAME }}" = "${{ env.CURR_VERSION_NAME }}" ]; then
           echo "Error: versionCode and versionName are identical to the previous commit."
           exit 1
         else
           echo "Version check passed."
         fi
 
+  build:
+    runs-on: ubuntu-latest
+    needs: check-version  # 'check-version' 작업이 성공해야만 실행됨
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Java
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'  # 사용 중인 Java 버전에 맞게 설정
+
+    - name: Build with Gradle
+      run: ./gradlew build
+
+    - name: Run tests
+      run: ./gradlew test
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build  # 'build' 작업이 성공해야만 실행됨
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Deploy
+      run: |
+        echo "Deploying application..."
+        # 배포 스크립트 또는 명령어를 여기에 추가
+        # 예: ./deploy.sh
