@@ -1,0 +1,44 @@
+name: Check Version Code and Version Name
+
+on:
+  pull_request:
+    branches:
+      - release/*  # 릴리즈 브랜치로 PR이 올라올 때만 실행
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 2  # 최소 2개 커밋을 가져와 비교할 수 있도록 설정
+
+    - name: Get previous versionCode and versionName
+      id: prev_versions
+      run: |
+        PREV_VERSION_CODE=$(git show HEAD~1:app/build.gradle | grep 'versionCode' | awk '{print $2}')
+        PREV_VERSION_NAME=$(git show HEAD~1:app/build.gradle | grep 'versionName' | awk '{print $2}')
+        
+        echo "PREV_VERSION_CODE=${PREV_VERSION_CODE}" >> $GITHUB_ENV
+        echo "PREV_VERSION_NAME=${PREV_VERSION_NAME}" >> $GITHUB_ENV
+
+    - name: Get current versionCode and versionName
+      id: curr_versions
+      run: |
+        CURR_VERSION_CODE=$(grep 'versionCode' app/build.gradle | awk '{print $2}')
+        CURR_VERSION_NAME=$(grep 'versionName' app/build.gradle | awk '{print $2}')
+        
+        echo "CURR_VERSION_CODE=${CURR_VERSION_CODE}" >> $GITHUB_ENV
+        echo "CURR_VERSION_NAME=${CURR_VERSION_NAME}" >> $GITHUB_ENV
+
+    - name: Compare versions and fail if they are the same
+      run: |
+        if [ "$PREV_VERSION_CODE" = "$CURR_VERSION_CODE" ] && [ "$PREV_VERSION_NAME" = "$CURR_VERSION_NAME" ]; then
+          echo "Error: versionCode and versionName are identical to the previous commit."
+          exit 1
+        else
+          echo "Version check passed."
+        fi
+
