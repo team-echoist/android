@@ -49,15 +49,19 @@ import androidx.navigation.NavController
 import com.echoist.linkedout.isEmailValid
 import com.echoist.linkedout.page.login.Authentication_6_BottomModal
 import com.echoist.linkedout.ui.theme.LinkedInColor
+import com.echoist.linkedout.viewModels.ChangeEmailViewModel
+import com.echoist.linkedout.viewModels.ResetPwViewModel
 import com.echoist.linkedout.viewModels.SignUpViewModel
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ResetPwPageWithEmail(navController: NavController) {
+fun ResetPwPageWithEmail(
+    navController: NavController,
+    viewModel: ResetPwViewModel = hiltViewModel()
+) {
 
     val scrollState = rememberScrollState()
-    val viewModel: SignUpViewModel = hiltViewModel()
 
     val passwordFocusRequester = remember { FocusRequester() }
 
@@ -81,7 +85,6 @@ fun ResetPwPageWithEmail(navController: NavController) {
             viewModel.isSendEmailVerifyApiFinished = false
         }
     }
-
 
     BottomSheetScaffold(
         sheetContainerColor = Color(0xFF191919),
@@ -107,8 +110,6 @@ fun ResetPwPageWithEmail(navController: NavController) {
                     }
                 }
             }
-
-
         },
         sheetPeekHeight = (0.8 * screenHeightDp).dp
     ) {
@@ -212,11 +213,9 @@ fun ResetPwPageWithEmail(navController: NavController) {
                             SendEmailFinishedAlert("이메일 주소로 인증메일이 발송됐습니다.") {
                                 viewModel.isSendEmailVerifyApiFinished = false
                             }
-
                         }
                     }
                 }
-
             }
         )
     }

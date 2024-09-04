@@ -51,13 +51,13 @@ import androidx.navigation.NavHostController
 import com.echoist.linkedout.isEmailValid
 import com.echoist.linkedout.page.settings.SendEmailFinishedAlert
 import com.echoist.linkedout.ui.theme.LinkedInColor
-import com.echoist.linkedout.viewModels.SignUpViewModel
+import com.echoist.linkedout.viewModels.ResetPwViewModel
 import kotlinx.coroutines.delay
 
 @Composable
 fun TabletResetPwRoute(
     navController: NavHostController,
-    viewModel: SignUpViewModel = hiltViewModel()
+    viewModel: ResetPwViewModel = hiltViewModel()
 ) {
     val isSendEmailVerifyApiFinished = viewModel.isSendEmailVerifyApiFinished
     val isLoading = viewModel.isLoading

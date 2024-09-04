@@ -49,7 +49,6 @@ class SignUpViewModel @Inject constructor(
     var isLoading by mutableStateOf(false)
     var errorCode by mutableStateOf(200)
 
-    // init 함수에서 호출
     private suspend fun readMyInfo() {
         try {
             val response = userApi.getMyInfo()
@@ -62,7 +61,6 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    //이메일 중복검사 1차
     var isSignUpApiFinished by mutableStateOf(false)
     fun getUserEmailCheck(userEmail: String, navController: NavController) {
 
@@ -127,8 +125,6 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-
-    //이메일 중복검사 2차
     private suspend fun emailVerify(navController: NavController) { //코루틴스코프에서 순차적으로 수행된다. 뷰모델스코프는 위에걸로
 
         try {
@@ -155,99 +151,6 @@ class SignUpViewModel @Inject constructor(
         } finally {
             isLoading = false
 
-        }
-    }
-
-
-    var isSendEmailVerifyApiFinished by mutableStateOf(false)
-
-    //이메일변경용 메일요청
-    // 이메일변경 viewModel 분리
-    fun sendEmailVerificationForChange(email: String) { //코루틴스코프에서 순차적으로 수행된다. 뷰모델스코프는 위에걸로
-        isLoading = true
-        viewModelScope.launch {
-            try {
-                val userEmail = SignUpApi.EmailRequest(email)
-                val response = signUpApi.sendEmailVerificationForChange(userEmail)
-
-                if (response.isSuccessful) {
-                    Log.e("authApiSuccess2", "${response.headers()}")
-                    Log.e("authApiSuccess2", "${response.code()}")
-
-                    Token.accessToken =
-                        response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() }
-                            ?: Token.accessToken
-                    readMyInfo()
-                    isSendEmailVerifyApiFinished = true
-
-                } else {
-                    Log.e("authApiFailed2", "Failed : ${response.headers()}")
-                    Log.e("authApiFailed2", "${response.code()}")
-                }
-
-            } catch (e: Exception) {
-                // api 요청 실패
-                Log.e("writeEssayApiFailed2", "Failed: ${e.message}")
-            } finally {
-                isLoading = false
-            }
-        }
-
-    }
-
-    // 비밀번호 변경 viewModel 분리
-    fun requestChangePw(email: String) {
-        isLoading = true
-        viewModelScope.launch {
-            isLoading = true
-            val userEmail = SignUpApi.EmailRequest(email)
-            val response = signUpApi.requestChangePw(userEmail)
-
-            if (response.code() == 201) { //성공
-                Log.d("requestChangePw api header", "${response.headers()}")
-                Log.d("requestChangePw api code", "${response.code()}")
-                //헤더에 토큰이 없다.
-                Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() }
-                    ?: Token.accessToken
-                isSendEmailVerifyApiFinished = true
-            } else {
-                // code == 400 잘못된 이메일주소
-                Log.e("authApiFailed2", "Failed : ${response.headers()}")
-                Log.e("authApiFailed2", "${response.code()}")
-
-            }
-            isLoading = false
-
-        }
-    }
-
-    fun verifyChangePw(token: String, newPw: String) {
-        viewModelScope.launch {
-
-            val response = signUpApi.verifyChangePw(token)
-
-            if (response.code() == 304) { //성공
-                Log.e("authApiSuccess2", "${response.headers()}")
-                Log.e("authApiSuccess2", "${response.code()}")
-                resetPw(token, newPw)
-            } else {
-                // code == 404 유효하지 않은토큰. 토큰을 못받았거나 10분이 지났거나
-                Log.e("authApiFailed2", "Failed : ${response.headers()}")
-                Log.e("authApiFailed2", "${response.code()}")
-            }
-
-        }
-    }
-
-    // 비밀번호 변경 viewModel 분리
-    private suspend fun resetPw(token: String, newPw: String) {
-        val body = SignUpApi.ResetPwRequest(newPw, token)
-        val response = signUpApi.resetPw(body)
-
-        if (response.code() == 200) { //성공
-            Log.e("authApiSuccess2", "${response.code()}")
-        } else {
-            Log.e("authApiFailed2", "${response.code()}")
         }
     }
 
