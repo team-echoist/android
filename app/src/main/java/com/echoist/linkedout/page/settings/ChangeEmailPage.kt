@@ -103,11 +103,11 @@ fun ChangeEmailPage(
     val scrollState = rememberScrollState()
 
     //이메일 보냄 api 가 끝나면 2초 후 사라지게
-    LaunchedEffect(key1 = viewModel.isSendEmailVerifyApiFinished) {
-        if (viewModel.isSendEmailVerifyApiFinished) {
+    LaunchedEffect(key1 = changeEmailViewModel.isSendEmailVerifyApiFinished) {
+        if (changeEmailViewModel.isSendEmailVerifyApiFinished) {
             bottomSheetState.show()
             delay(3000)
-            viewModel.isSendEmailVerifyApiFinished = false
+            changeEmailViewModel.isSendEmailVerifyApiFinished = false
         }
     }
 
@@ -119,7 +119,7 @@ fun ChangeEmailPage(
             Box {
                 Authentication_6_BottomModal(
                     reAuthentication = {
-                        viewModel.sendEmailVerificationForChange(email)
+                        changeEmailViewModel.sendEmailVerificationForChange(email)
                     }, //재요청 인증
                     isError = false,
                     isTypedLastNumber = { list -> //6자리 리스트
@@ -203,7 +203,7 @@ fun ChangeEmailPage(
 
                     val enabled = !(isError || email.isEmpty())
                     Button(
-                        onClick = { viewModel.sendEmailVerificationForChange(email) },
+                        onClick = { changeEmailViewModel.sendEmailVerificationForChange(email) },
                         enabled = enabled,
                         shape = RoundedCornerShape(20),
                         modifier = Modifier
@@ -221,7 +221,7 @@ fun ChangeEmailPage(
 
                 }
                 AnimatedVisibility(
-                    visible = viewModel.isSendEmailVerifyApiFinished,
+                    visible = changeEmailViewModel.isSendEmailVerifyApiFinished,
                     enter = fadeIn(
                         animationSpec = tween(
                             durationMillis = 500,
@@ -247,7 +247,7 @@ fun ChangeEmailPage(
                             contentAlignment = Alignment.BottomCenter
                         ) {
                             SendEmailFinishedAlert("새 이메일 주소로 인증메일이 발송됐습니다.") {
-                                viewModel.isSendEmailVerifyApiFinished = false
+                                changeEmailViewModel.isSendEmailVerifyApiFinished = false
                             }
 
                         }
