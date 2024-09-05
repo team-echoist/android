@@ -82,7 +82,6 @@ import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.viewModels.SocialLoginViewModel
 import com.navercorp.nid.NaverIdLoginSDK
 import kotlinx.coroutines.delay
-
 @Composable
 fun LoginPage(
     navController: NavController,
@@ -343,6 +342,7 @@ fun AppleLoginBtn(navController: NavController, viewModel: SocialLoginViewModel)
         )
     }
 }
+
 @Composable
 fun LoginTextFields(viewModel: SocialLoginViewModel, navController: NavController) {
     val passwordFocusRequester = remember { FocusRequester() }
