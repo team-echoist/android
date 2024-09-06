@@ -34,12 +34,10 @@ class ResetPwViewModel @Inject constructor(
                 //헤더에 토큰이 없다.
                 Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() }
                     ?: Token.accessToken
-                isSendEmailVerifyApiFinished = true
             } else {
                 // code == 400 잘못된 이메일주소
                 Log.e("authApiFailed2", "Failed : ${response.headers()}")
                 Log.e("authApiFailed2", "${response.code()}")
-
             }
             isLoading = false
         }

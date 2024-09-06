@@ -49,6 +49,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -74,6 +75,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.echoist.linkedout.R
+import com.echoist.linkedout.Routes
 import com.echoist.linkedout.isEmailValid
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.viewModels.SignUpViewModel
@@ -98,6 +100,16 @@ fun SignUpPage(
     val scaffoldState = androidx.compose.material3.rememberBottomSheetScaffoldState(
         bottomSheetState = bottomSheetState
     )
+
+    val navigateToComplete by viewModel.navigateToComplete.collectAsState()
+
+    LaunchedEffect(navigateToComplete) {
+        if (navigateToComplete) {
+            navController.navigate(Routes.SignUpComplete)
+            viewModel.onNavigated()
+        }
+    }
+
     LaunchedEffect(key1 = viewModel.isSignUpApiFinished) {
         //이메일 인증 클릭 성공시 모달 올라오게.
         if (viewModel.isSignUpApiFinished) {
@@ -126,12 +138,12 @@ fun SignUpPage(
         sheetContent = {
             Box {
                 Authentication_6_BottomModal(
-                    { viewModel.getUserEmailCheck(viewModel.userEmail, navController) }, //재요청 인증
+                    { viewModel.getUserEmailCheck(viewModel.userEmail) }, //재요청 인증
                     isError = viewModel.errorCode >= 400,
                     isTypedLastNumber = { list ->
                         keyboardController?.hide()
                         Log.d("6자리 코드 ", list.joinToString(""))
-                        viewModel.requestRegister(list.joinToString(""), navController)
+                        viewModel.requestRegister(list.joinToString(""))
 
                     }, scaffoldState
                 )
@@ -213,12 +225,11 @@ fun SignUpPage(
                                 .padding(start = 20.dp, end = 20.dp, top = 50.dp),
                             onClick = {
                                 keyboardController?.hide()
-                                viewModel.getUserEmailCheck(viewModel.userEmail, navController)
+                                viewModel.getUserEmailCheck(viewModel.userEmail)
                             }
                         ) {
                             Text(text = "인증 메일 보내기", color = Color.Black)
                         }
-
                     }
                 }
 
@@ -253,7 +264,6 @@ fun SignUpPage(
                                 "이메일 주소로 인증 메일이 발송됐습니다.",
                                 "링크를 클릭해 회원가입을 완료해주세요 !!"
                             )
-
                         }
                     }
                 }

@@ -22,6 +22,8 @@ import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.myLog.Token
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.coroutines.resume
@@ -49,6 +51,9 @@ class SignUpViewModel @Inject constructor(
     var isLoading by mutableStateOf(false)
     var errorCode by mutableStateOf(200)
 
+    private val _navigateToComplete = MutableStateFlow(false)
+    val navigateToComplete: StateFlow<Boolean> = _navigateToComplete
+
     private suspend fun readMyInfo() {
         try {
             val response = userApi.getMyInfo()
@@ -62,7 +67,7 @@ class SignUpViewModel @Inject constructor(
     }
 
     var isSignUpApiFinished by mutableStateOf(false)
-    fun getUserEmailCheck(userEmail: String, navController: NavController) {
+    fun getUserEmailCheck(userEmail: String) {
 
         viewModelScope.launch {
             isLoading = true
@@ -70,11 +75,10 @@ class SignUpViewModel @Inject constructor(
                 val email = SignUpApi.EmailRequest(userEmail)
                 val response = signUpApi.emailDuplicateConfirm(email)
 
-
                 if (response.isSuccessful) {
                     Log.e("authApiSuccess1", "${response.code()}")
 
-                    emailVerify(navController)
+                    emailVerify()
                 } else {
                     errorCode = response.code()
                     Log.e("authApiFailed1", "Failed : ${response.errorBody()}")
@@ -82,7 +86,6 @@ class SignUpViewModel @Inject constructor(
                     Log.e("authApiSuccess", "${response.code()}")
                     if (response.code() == 409) Log.e(TAG, "getUserEmailCheck: 이미 사용중인 이메일입니다.")
                 }
-
             } catch (e: Exception) {
                 errorCode = 500
 
@@ -94,7 +97,7 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    fun requestRegister(code: String, navController: NavController) { //6자리 코드
+    fun requestRegister(code: String) { //6자리 코드
         viewModelScope.launch {
             isLoading = true
             try {
@@ -107,7 +110,7 @@ class SignUpViewModel @Inject constructor(
                     Token.refreshToken = response.body()!!.data.refreshToken
 
                     readMyInfo()
-                    navController.navigate("SignUpComplete")
+                    _navigateToComplete.value = true
                 } else {
                     errorCode = response.code()
 
@@ -125,7 +128,11 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    private suspend fun emailVerify(navController: NavController) { //코루틴스코프에서 순차적으로 수행된다. 뷰모델스코프는 위에걸로
+    fun onNavigated() {
+        _navigateToComplete.value = false
+    }
+
+    private suspend fun emailVerify() {
 
         try {
             val userAccount = SignUpApi.UserAccount(userEmail, userPw)
@@ -158,7 +165,6 @@ class SignUpViewModel @Inject constructor(
         locationAgreement: Boolean,
         marketingAgreement: Boolean,
         serviceAlertAgreement: Boolean,
-        navController: NavController,
         context: Context
     ) {
         val option = when {
@@ -196,7 +202,7 @@ class SignUpViewModel @Inject constructor(
                 if (response.isSuccessful) {
                     Log.d(TAG, "마케팅 동의 저장 성공: ${response.code()}")
 
-                    navController.navigate("SignUpComplete")
+                    _navigateToComplete.value = true
                 } else {
                     Log.e(TAG, "마케팅 동의 저장 실패: ${response.code()}")
                     Log.e(TAG, "마케팅 동의 저장 실패: ${response.errorBody()}")

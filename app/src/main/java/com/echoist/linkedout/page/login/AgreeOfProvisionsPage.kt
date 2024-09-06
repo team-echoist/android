@@ -232,7 +232,6 @@ fun AgreeOfProvisionsPage(navController: NavController, viewModel: SignUpViewMod
                             viewModel.agreement_location,
                             viewModel.agreement_marketing,
                             viewModel.agreement_serviceAlert,
-                            navController, //동의여부 서버에 보내고 첫 회원가입 로그인,
                             context
                         )
                     }

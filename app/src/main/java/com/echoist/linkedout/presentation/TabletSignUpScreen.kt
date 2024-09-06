@@ -97,11 +97,11 @@ fun TabletSignUpRoute(
         onBackPressed = { navController.popBackStack() },
         onSubmitEmail = {
             keyboardController?.hide()
-            viewModel.getUserEmailCheck(viewModel.userEmail, navController)
+            viewModel.getUserEmailCheck(viewModel.userEmail)
         },
         onInputComplete = {
             keyboardController?.hide()
-            viewModel.requestRegister(it, navController)
+            viewModel.requestRegister(it)
         }
     )
 }
@@ -127,7 +127,6 @@ internal fun TabletSignUpScreen(
             SignUpBottomSheetContent(
                 viewModel = viewModel,
                 scaffoldState = scaffoldState,
-                navController = navController,
                 onInputComplete = onInputComplete
             )
         },
@@ -244,12 +243,11 @@ private fun SignUpContent(
 private fun SignUpBottomSheetContent(
     viewModel: SignUpViewModel,
     scaffoldState: BottomSheetScaffoldState,
-    navController: NavController,
     onInputComplete: (String) -> Unit
 ) {
     Box {
         Authentication_6_BottomModal(
-            { viewModel.getUserEmailCheck(viewModel.userEmail, navController) }, //재요청 인증
+            { viewModel.getUserEmailCheck(viewModel.userEmail) }, //재요청 인증
             isError = viewModel.errorCode >= 400,
             isTypedLastNumber = { list ->
                 onInputComplete(list.joinToString(""))
