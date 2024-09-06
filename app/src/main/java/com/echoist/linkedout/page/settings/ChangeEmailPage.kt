@@ -70,7 +70,6 @@ fun ChangeEmailPage(
     navController: NavController,
     changeEmailViewModel: ChangeEmailViewModel = hiltViewModel()
 ) {
-
     val configuration = LocalConfiguration.current
     val screenHeightDp = configuration.screenHeightDp // 화면의 높이를 DP 단위로 가져옴
 
@@ -111,7 +110,6 @@ fun ChangeEmailPage(
         }
     }
 
-
     BottomSheetScaffold(
         sheetContainerColor = Color(0xFF191919),
         scaffoldState = scaffoldState,
@@ -123,6 +121,7 @@ fun ChangeEmailPage(
                     }, //재요청 인증
                     isError = false,
                     isTypedLastNumber = { list -> //6자리 리스트
+                        changeEmailViewModel.postAuthChangeEmail(list.joinToString(""))
                         //todo 마지막 넘버 입력시 인증 함수 필요 및 isError지정
                         keyboardController?.hide()
                     }, scaffoldState
@@ -136,13 +135,10 @@ fun ChangeEmailPage(
                     }
                 }
             }
-
-
         },
         sheetPeekHeight = (0.8 * screenHeightDp).dp
     ) {
         Scaffold(
-
             topBar = {
                 SettingTopAppBar("이메일 주소 변경", navController)
             },
@@ -164,12 +160,8 @@ fun ChangeEmailPage(
                     )
                     Spacer(modifier = Modifier.height(32.dp))
 
-
                     Text(text = "새 이메일 주소", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
                     Spacer(modifier = Modifier.height(10.dp))
-
-
-
 
                     CustomOutlinedTextField(
                         email,
@@ -249,7 +241,6 @@ fun ChangeEmailPage(
                             SendEmailFinishedAlert("새 이메일 주소로 인증메일이 발송됐습니다.") {
                                 changeEmailViewModel.isSendEmailVerifyApiFinished = false
                             }
-
                         }
                     }
                 }
@@ -261,8 +252,6 @@ fun ChangeEmailPage(
                         CircularProgressIndicator(color = LinkedInColor)
                     }
                 }
-
-
             }
         )
     }
@@ -294,7 +283,6 @@ fun CustomOutlinedTextField(
             focusedContainerColor = Color(0xFF111111),
             errorBorderColor = Color.Red,
             errorTextColor = Color(0xFF5D5D5D)
-
         ),
         trailingIcon = {
             if (text.isNotEmpty())
@@ -305,7 +293,6 @@ fun CustomOutlinedTextField(
                         onTextChange("")
                     }
                 )
-
         })
 }
 
@@ -327,7 +314,6 @@ fun SendEmailFinishedAlert(text: String, isClicked: () -> Unit) {
             Column {
                 Text(text = text, fontSize = 14.sp)
                 Text(text = "링크를 클릭해 인증을 완료해주세요.", color = LinkedInColor, fontSize = 14.sp)
-
             }
         }
         Box(
@@ -341,8 +327,5 @@ fun SendEmailFinishedAlert(text: String, isClicked: () -> Unit) {
                 contentDescription = "close",
                 modifier = Modifier.clickable { isClicked() })
         }
-
-
     }
 }
-

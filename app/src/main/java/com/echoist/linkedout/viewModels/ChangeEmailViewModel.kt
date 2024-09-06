@@ -42,7 +42,7 @@ class ChangeEmailViewModel @Inject constructor(
     }
 
     var isSendEmailVerifyApiFinished by mutableStateOf(false)
-    fun sendEmailVerificationForChange(email: String) { //코루틴스코프에서 순차적으로 수행된다. 뷰모델스코프는 위에걸로
+    fun sendEmailVerificationForChange(email: String) {
         isLoading = true
         viewModelScope.launch {
             try {
@@ -71,7 +71,23 @@ class ChangeEmailViewModel @Inject constructor(
                 isLoading = false
             }
         }
-
     }
 
+    fun postAuthChangeEmail(code: String){
+        viewModelScope.launch {
+            try {
+                val userEmail = SignUpApi.ChangeEmail(code)
+                val response = signUpApi.postAuthChangeEmail(userEmail)
+                if(response.isSuccessful){
+                    Log.e("authApiSuccess3", "${response.headers()}")
+                    Log.e("authApiSuccess3", "${response.code()}")
+                } else {
+                    Log.e("authApiFailed3", "Failed : ${response.headers()}")
+                    Log.e("authApiFailed3", "${response.code()}")
+                }
+            } catch (e: Exception) {
+                Log.e("writeEssayApiFailed3", "Failed: ${e.message}")
+            }
+        }
+    }
 }
