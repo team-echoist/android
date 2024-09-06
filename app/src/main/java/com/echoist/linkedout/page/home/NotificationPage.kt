@@ -29,6 +29,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,6 +53,7 @@ import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
+import com.echoist.linkedout.Routes
 import com.echoist.linkedout.data.Alert
 import com.echoist.linkedout.page.settings.SettingTopAppBar
 import com.echoist.linkedout.ui.theme.LinkedInColor
@@ -74,6 +77,13 @@ fun NotificationPage(navController: NavController, viewModel: SupportViewModel =
         withStyle(style = SpanStyle(color = LinkedInColor)) { append("을 시작했어요!") }
     }.toAnnotatedString()
 
+    val navigateToCommunityDetail by viewModel.navigateToCommunityDetail.collectAsState()
+    LaunchedEffect(key1 = navigateToCommunityDetail) {
+        if (navigateToCommunityDetail) {
+            navController.navigate(Routes.CommunityDetailPage)
+            viewModel.onNavigated()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -100,7 +110,6 @@ fun NotificationPage(navController: NavController, viewModel: SupportViewModel =
                             when (alert.type) {
                                 "published" -> viewModel.readDetailEssay(
                                     alert.essay.id ?: 0,
-                                    navController
                                 )
 
                                 else -> { //링크드아웃, 고객지원 모두 오픈테러

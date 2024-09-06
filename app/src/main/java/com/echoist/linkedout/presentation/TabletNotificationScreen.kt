@@ -22,6 +22,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +37,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.echoist.linkedout.Routes
 import com.echoist.linkedout.data.Alert
 import com.echoist.linkedout.page.home.NotificationDate
 import com.echoist.linkedout.page.home.NotificationItem
@@ -62,6 +65,14 @@ fun TabletNotificationScreen(
         withStyle(style = SpanStyle(color = LinkedInColor)) { append("을 시작했어요!") }
     }.toAnnotatedString()
 
+    val navigateToCommunityDetail by viewModel.navigateToCommunityDetail.collectAsState()
+    LaunchedEffect(key1 = navigateToCommunityDetail) {
+        if (navigateToCommunityDetail) {
+            navController.navigate(Routes.CommunityDetailPage)
+            viewModel.onNavigated()
+        }
+    }
+
     Column(
         Modifier
             .fillMaxSize()
@@ -84,8 +95,7 @@ fun TabletNotificationScreen(
 
                         when (alert.type) {
                             "published" -> viewModel.readDetailEssay(
-                                alert.essay.id ?: 0,
-                                navController
+                                alert.essay.id ?: 0
                             )
 
                             else -> { //링크드아웃, 고객지원 모두 오픈테러
