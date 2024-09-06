@@ -8,6 +8,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -31,6 +32,7 @@ import com.echoist.linkedout.page.home.ReLogInWaringBox
 import com.echoist.linkedout.page.myLog.Token
 import com.echoist.linkedout.presentation.TabletApp
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
+import com.echoist.linkedout.viewModels.HomeViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.kakao.sdk.common.KakaoSdk
@@ -66,6 +68,8 @@ import kotlinx.coroutines.delay
         val isAutoLoginClicked = SharedPreferencesUtil.getClickedAutoLogin(this)
         val tokenValidTime = SharedPreferencesUtil.getRefreshTokenValidTime(this)
         val tokens = SharedPreferencesUtil.getTokensInfo(this)
+
+        val homeViewModel by viewModels<HomeViewModel>()
 
         val startDestination = when { //자동로그인 + 토큰만료 전까지 home으로
             isAutoLoginClicked && isDateAfterToday(tokenValidTime) -> {
@@ -126,14 +130,14 @@ import kotlinx.coroutines.delay
                             .padding(bottom = 40.dp), contentAlignment = Alignment.BottomCenter
                     ) { ExitAppErrorBox() }
                 }
-                if (AuthManager.isReAuthenticationRequired.value) {
+                if (homeViewModel.getReAuthenticationRequired()) {
                     Box(modifier = Modifier
                         .fillMaxSize()
                         .clickable(enabled = false) { }
                         .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center) {
                         ReLogInWaringBox {
                             navigateWithClearBackStack(navController, Routes.LoginPage)
-                            AuthManager.isReAuthenticationRequired.value = false
+                            homeViewModel.setReAuthenticationRequired(false)
                         }
                     }
                 }

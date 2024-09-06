@@ -19,6 +19,7 @@ import androidx.navigation.NavController
 import com.echoist.linkedout.AlarmReceiver
 import com.echoist.linkedout.HomeRepository
 import com.echoist.linkedout.Routes
+import com.echoist.linkedout.TokenRepository
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.api.SignUpApiImpl
 import com.echoist.linkedout.api.SupportApi
@@ -46,7 +47,8 @@ class HomeViewModel @Inject constructor(
     private val exampleItems: ExampleItems,
     private val userApi: UserApi,
     private val supportApi: SupportApi,
-    private val homeRepository: HomeRepository
+    private val homeRepository: HomeRepository,
+    private val tokenRepository: TokenRepository
 ) : ViewModel() {
 
     var myProfile by mutableStateOf(exampleItems.myProfile)
@@ -65,6 +67,13 @@ class HomeViewModel @Inject constructor(
     var updateHistory: SnapshotStateList<Release> = mutableStateListOf()
 
     var isVisibleGeulRoquis by mutableStateOf(true)
+
+    fun setReAuthenticationRequired(value: Boolean) {
+        tokenRepository.setReAuthenticationRequired(value)
+    }
+    fun getReAuthenticationRequired(): Boolean {
+        return tokenRepository.isReAuthenticationRequired.value
+    }
 
     fun readMyProfile(): UserInfo {
         return exampleItems.myProfile

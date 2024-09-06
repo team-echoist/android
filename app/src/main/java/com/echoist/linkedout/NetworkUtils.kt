@@ -26,7 +26,6 @@ fun <T> ViewModel.apiCall(
             }
 
         } catch (e: Exception) {
-            if (e.message == "timeout") AuthManager.isReAuthenticationRequired.value = true
             Log.e("api error", "${e.message}")
             onError(e)
         }
