@@ -13,6 +13,8 @@ import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.myLog.Token
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -73,14 +75,19 @@ class ChangeEmailViewModel @Inject constructor(
         }
     }
 
-    fun postAuthChangeEmail(code: String){
+    private val _navigateToComplete = MutableStateFlow(false)
+    val navigateToComplete: StateFlow<Boolean> = _navigateToComplete
+
+    fun postAuthChangeEmail(code: String) {
         viewModelScope.launch {
             try {
                 val userEmail = SignUpApi.ChangeEmail(code)
                 val response = signUpApi.postAuthChangeEmail(userEmail)
-                if(response.isSuccessful){
+                if (response.isSuccessful) {
                     Log.e("authApiSuccess3", "${response.headers()}")
                     Log.e("authApiSuccess3", "${response.code()}")
+                    readMyInfo()
+                    _navigateToComplete.value = true
                 } else {
                     Log.e("authApiFailed3", "Failed : ${response.headers()}")
                     Log.e("authApiFailed3", "${response.code()}")
@@ -89,5 +96,9 @@ class ChangeEmailViewModel @Inject constructor(
                 Log.e("writeEssayApiFailed3", "Failed: ${e.message}")
             }
         }
+    }
+
+    fun onNavigated() {
+        _navigateToComplete.value = false
     }
 }
