@@ -36,6 +36,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -58,8 +59,6 @@ class HomeViewModel @Inject constructor(
     var marketingNotification by mutableStateOf(false)
     var locationNotification by mutableStateOf(false)
 
-    var apiResponseStatusCode by mutableStateOf(200)
-
     var isLoading by mutableStateOf(false)
     var isFirstUser by mutableStateOf(false)
     var latestNoticeId: Int? by mutableStateOf(null) //공지가 있을경우 true, 없을경우 Null
@@ -67,12 +66,10 @@ class HomeViewModel @Inject constructor(
     var updateHistory: SnapshotStateList<Release> = mutableStateListOf()
 
     var isVisibleGeulRoquis by mutableStateOf(true)
+    val isReAuthenticationRequired: StateFlow<Boolean> = tokenRepository.isReAuthenticationRequired
 
     fun setReAuthenticationRequired(value: Boolean) {
         tokenRepository.setReAuthenticationRequired(value)
-    }
-    fun getReAuthenticationRequired(): Boolean {
-        return tokenRepository.isReAuthenticationRequired.value
     }
 
     fun readMyProfile(): UserInfo {

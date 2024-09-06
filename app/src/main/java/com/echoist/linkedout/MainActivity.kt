@@ -8,7 +8,6 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -16,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.echoist.linkedout.components.ExitAppErrorBox
 import com.echoist.linkedout.navigation.MobileApp
@@ -69,8 +70,6 @@ import kotlinx.coroutines.delay
         val tokenValidTime = SharedPreferencesUtil.getRefreshTokenValidTime(this)
         val tokens = SharedPreferencesUtil.getTokensInfo(this)
 
-        val homeViewModel by viewModels<HomeViewModel>()
-
         val startDestination = when { //자동로그인 + 토큰만료 전까지 home으로
             isAutoLoginClicked && isDateAfterToday(tokenValidTime) -> {
                 Token.accessToken = tokens.accessToken
@@ -83,6 +82,10 @@ import kotlinx.coroutines.delay
         }
 
         setContent {
+
+            val homeViewModel : HomeViewModel = hiltViewModel()
+            val isReAuthenticationRequired by homeViewModel.isReAuthenticationRequired.collectAsState()
+
             var isClickedExit by remember {
                 mutableStateOf(false)
             }
@@ -130,7 +133,7 @@ import kotlinx.coroutines.delay
                             .padding(bottom = 40.dp), contentAlignment = Alignment.BottomCenter
                     ) { ExitAppErrorBox() }
                 }
-                if (homeViewModel.getReAuthenticationRequired()) {
+                if (isReAuthenticationRequired) {
                     Box(modifier = Modifier
                         .fillMaxSize()
                         .clickable(enabled = false) { }

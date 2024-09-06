@@ -17,6 +17,7 @@ class ErrorHandlingInterceptor @Inject constructor(private val tokenRepository: 
             // x-access-token이 없는 경우, 재로그인 필요
             if (response.headers["x-access-token"].isNullOrEmpty()) {
                 tokenRepository.setReAuthenticationRequired(true)
+
             } else { //x-access-token이 있는경우
                 // 새로운 토큰 갱신
                 val newAccessToken = response.headers["x-access-token"]!!
