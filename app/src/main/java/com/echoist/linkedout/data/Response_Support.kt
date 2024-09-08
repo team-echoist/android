@@ -42,9 +42,9 @@ data class AllInquiriesResponse(
 @JsonClass(generateAdapter = true)
 data class Notice(
     val id: Int,
-    val title: String,
+    val title: String = "",
     val content: String? = null,
-    val createdDate: String
+    val createdDate: String = "2024-07-01T14:22:46.803 09:00"
 )
 //공지사항
 

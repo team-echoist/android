@@ -110,6 +110,7 @@ object Routes {
 enum class UserStatus {
     Activated, Monitored, Banned, DeActivated
 }
+
 fun navigateWithClearBackStack(
     navController: NavController,
     route: String,
@@ -132,8 +133,8 @@ fun formatDateTime(input: String): String {
 
     return dateTime.format(outputFormatter)
 }
-//2024-07-01T14:22:46.803 09:00 to 2024-07-01T14:22:46.803+09:00 to 2024.07.01
 
+//2024-07-01T14:22:46.803 09:00 to 2024-07-01T14:22:46.803+09:00 to 2024.07.01
 fun parseAndFormatDateTime(dateTimeString: String): String {
     // 공백을 +로 바꾸어 표준 형식으로 만듦
     val correctedDateTimeString = dateTimeString.replace(" ", "+")

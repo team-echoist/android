@@ -14,7 +14,6 @@ import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import com.echoist.linkedout.Routes
 import com.echoist.linkedout.components.CropImagePage
-import com.echoist.linkedout.data.Notice
 import com.echoist.linkedout.page.community.CommunityDetailPage
 import com.echoist.linkedout.page.community.CommunityPage
 import com.echoist.linkedout.page.community.CommunitySavedEssayPage
@@ -66,20 +65,12 @@ import com.echoist.linkedout.viewModels.SettingsViewModel
 import com.echoist.linkedout.viewModels.SignUpViewModel
 import com.echoist.linkedout.viewModels.SupportViewModel
 import com.echoist.linkedout.viewModels.WritingViewModel
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import java.net.URLDecoder
-import java.nio.charset.StandardCharsets
 
 @Composable
 fun MobileApp(
     navController: NavHostController,
     startDestination: String
 ) {
-
-    val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
-    val jsonAdapter = moshi.adapter(Notice::class.java)
-
     val homeViewModel: HomeViewModel = hiltViewModel()
     val writingViewModel: WritingViewModel = hiltViewModel()
     val signUpViewModel: SignUpViewModel = hiltViewModel()
@@ -139,25 +130,13 @@ fun MobileApp(
             NoticePage(navController, supportViewModel)
         }
         composable(
-            route = "${Routes.NoticeDetailPage}/{noticeJson}",
-            arguments = listOf(navArgument("noticeJson") {
-                type = NavType.StringType
+            route = "${Routes.NoticeDetailPage}/{noticeId}",
+            arguments = listOf(navArgument("noticeId") {
+                type = NavType.IntType
             })
         ) { backStackEntry ->
-            val noticeJson = backStackEntry.arguments?.getString("noticeJson")
-            val decodedJson =
-                noticeJson?.let {
-                    URLDecoder.decode(
-                        it,
-                        StandardCharsets.UTF_8.name()
-                    )
-                }
-            val notice = jsonAdapter.fromJson(decodedJson!!)
-
-            NoticeDetailPage(
-                navController,
-                notice ?: Notice(0, "no title", "no content", "2024 08 03")
-            )
+            val noticeId = backStackEntry.arguments?.getInt("noticeId")
+            NoticeDetailPage(navController, noticeId!!)
         }
         composable(Routes.UpdateHistoryPage) {
             UpdateHistoryPage(navController)

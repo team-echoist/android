@@ -19,14 +19,11 @@ import com.echoist.linkedout.data.Inquiry
 import com.echoist.linkedout.data.Notice
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.myLog.Token
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.net.URLEncoder
 import javax.inject.Inject
 
 @HiltViewModel
@@ -49,15 +46,11 @@ class SupportViewModel @Inject constructor(
     val navigateToCommunityDetail: StateFlow<Boolean> get() = _navigateToCommunityDetail.asStateFlow()
 
     private val _navigateToLinkedOutSupport = MutableStateFlow(false)
-    val navigateToLinkedOutSupport: StateFlow<Boolean> get()= _navigateToLinkedOutSupport.asStateFlow()
-
-    private val _navigateToNoticeDetail = MutableStateFlow(false)
-    val navigateToNoticeDetail: StateFlow<Boolean> get()= _navigateToNoticeDetail.asStateFlow()
+    val navigateToLinkedOutSupport: StateFlow<Boolean> get() = _navigateToLinkedOutSupport.asStateFlow()
 
     fun onNavigated() {
         _navigateToCommunityDetail.value = false
         _navigateToLinkedOutSupport.value = false
-        _navigateToNoticeDetail.value = false
     }
 
     fun readMyProfile(): UserInfo {
@@ -228,7 +221,6 @@ class SupportViewModel @Inject constructor(
             val response = supportApi.readNoticeDetail(noticeId)
             if (response.isSuccessful) {
                 Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
-                _navigateToNoticeDetail.value = true
                 response.body()?.data
             } else {
                 Log.e("공지사항 디테일 확인", "실패: ${response.code()}")
@@ -238,18 +230,6 @@ class SupportViewModel @Inject constructor(
             Log.e("공지사항 디테일 확인", "실패: ${e.message}")
             e.printStackTrace()
             null
-        }
-    }
-
-    fun encodeNoticeToJson(notice: Notice): String {
-        return try {
-            val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
-            val jsonAdapter = moshi.adapter(Notice::class.java)
-            val json = jsonAdapter.toJson(notice)
-            URLEncoder.encode(json, "UTF-8")
-        } catch (e: Exception) {
-            Log.e("JSON Encoding", "에러: ${e.message}")
-            ""
         }
     }
 }

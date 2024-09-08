@@ -1,6 +1,5 @@
 package com.echoist.linkedout.page.home
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -21,7 +20,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,7 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewModelScope
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.Routes
 import com.echoist.linkedout.data.Notice
@@ -42,28 +40,16 @@ import com.echoist.linkedout.formatDateTime
 import com.echoist.linkedout.page.settings.SettingTopAppBar
 import com.echoist.linkedout.parseAndFormatDateTime
 import com.echoist.linkedout.viewModels.SupportViewModel
-import kotlinx.coroutines.launch
 
 @Composable
 fun NoticePage(
     navController: NavController,
     viewModel: SupportViewModel
 ) {
-    var encodeJson by remember { mutableStateOf("") }
 
     LaunchedEffect(key1 = Unit) {
         viewModel.requestNoticesList()
     }
-
-    val navigateToNoticeDetail by viewModel.navigateToNoticeDetail.collectAsState()
-    LaunchedEffect(navigateToNoticeDetail) {
-        if (navigateToNoticeDetail) {
-            navController.navigate("${Routes.NoticeDetailPage}/$encodeJson")
-            viewModel.onNavigated()
-        }
-    }
-
-    // 테마 적용
 
     Scaffold(
         topBar = {
@@ -80,14 +66,7 @@ fun NoticePage(
             if (!viewModel.noticeList.isEmpty()) {
                 viewModel.noticeList.forEach { item ->
                     NoticeItem(item) {
-                        viewModel.viewModelScope.launch {
-                            val notice = viewModel.requestDetailNotice(item.id)
-                            notice?.let {
-                                encodeJson = viewModel.encodeNoticeToJson(it)
-                            } ?: run {
-                                Log.e("공지사항 디테일 확인", "데이터를 불러오지 못했습니다.")
-                            }
-                        }
+                        navController.navigate("${Routes.NoticeDetailPage}/${item.id}")
                     }
                 }
             }
@@ -102,7 +81,6 @@ fun NoticePage(
 
 @Composable
 fun NoticeItem(notice: Notice, onClickItem: () -> Unit) {
-
 
     Box(modifier = Modifier
         .fillMaxWidth()
@@ -145,7 +123,16 @@ fun NoticeItem(notice: Notice, onClickItem: () -> Unit) {
 }
 
 @Composable
-fun NoticeDetailPage(navController: NavController, notice: Notice) {
+fun NoticeDetailPage(
+    navController: NavController,
+    noticeId: Int,
+    supportViewModel: SupportViewModel = hiltViewModel()
+) {
+    var notice: Notice? by remember { mutableStateOf(null) }
+
+    LaunchedEffect(key1 = Unit) {
+        notice = supportViewModel.requestDetailNotice(noticeId)!!
+    }
 
     Scaffold(
         topBar = {
@@ -159,19 +146,22 @@ fun NoticeDetailPage(navController: NavController, notice: Notice) {
                 .verticalScroll(rememberScrollState())
                 .fillMaxHeight()
         ) {
-
-            Spacer(modifier = Modifier.height(20.dp))
-            Text(text = notice.title, fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
-            Spacer(modifier = Modifier.height(20.dp))
-            Text(text = notice.content ?: "내용이 없습니다. 하지만 없다면 서버오류입니다.", fontSize = 16.sp)
-            Spacer(modifier = Modifier.height(20.dp))
-            Text(
-                text = parseAndFormatDateTime(notice.createdDate),
-                fontSize = 12.sp,
-                color = Color.Gray
-            )
-
-
+            if (notice == null) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(text = "공지사항이 없습니다.", color = Color.Gray)
+                }
+            } else {
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(text = notice!!.title, fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(text = notice!!.content!!, fontSize = 16.sp)
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(
+                    text = parseAndFormatDateTime(notice!!.createdDate),
+                    fontSize = 12.sp,
+                    color = Color.Gray
+                )
+            }
         }
     }
 }
