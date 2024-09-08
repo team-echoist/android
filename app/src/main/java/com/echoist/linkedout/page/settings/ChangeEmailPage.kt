@@ -43,6 +43,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -179,7 +180,8 @@ fun ChangeEmailPage(
                             isError = !email.isEmailValid()
                         },
                         isError = isError,
-                        hint = "이메일"
+                        hint = "이메일",
+                        singLine = true
                     )
                     if (isError) {
                         Text(
@@ -273,6 +275,7 @@ fun CustomOutlinedTextField(
     hint: String,
     isError: Boolean,
     modifier: Modifier = Modifier,
+    singLine: Boolean = false
 ) {
     OutlinedTextField(
         shape = RoundedCornerShape(10),
@@ -293,6 +296,7 @@ fun CustomOutlinedTextField(
             errorBorderColor = Color.Red,
             errorTextColor = Color(0xFF5D5D5D)
         ),
+        singleLine = singLine,
         trailingIcon = {
             if (text.isNotEmpty())
                 Icon(

@@ -115,11 +115,9 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyPage(
-    navController: NavController
+    navController: NavController,
+    viewModel: SettingsViewModel = hiltViewModel()
 ) {
-
-
-    val viewModel: SettingsViewModel = hiltViewModel()
 
     var isApiFinished by remember {
         mutableStateOf(false)
