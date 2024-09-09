@@ -168,10 +168,7 @@ fun SignUpPage(
                 })
             },
             content = {
-
-
                 Box {
-
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
@@ -185,7 +182,11 @@ fun SignUpPage(
                             modifier = Modifier
                                 .padding(16.dp)
                                 .size(30.dp)
-                                .clickable { navController.popBackStack() } //뒤로가기
+                                .clickable {
+                                    navController.popBackStack()
+                                    viewModel.userEmail = ""
+                                    viewModel.userPw = ""
+                                }
                         )
                         Spacer(modifier = Modifier.height(30.dp))
                         Text(
