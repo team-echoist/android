@@ -1,5 +1,7 @@
 package com.echoist.linkedout.page.settings
 
+import android.view.Gravity
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
@@ -16,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -46,10 +49,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
@@ -60,6 +65,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
 import com.echoist.linkedout.Routes
+import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.isEmailValid
 import com.echoist.linkedout.page.login.Authentication_6_BottomModal
 import com.echoist.linkedout.ui.theme.LinkedInColor
@@ -83,6 +89,7 @@ fun ChangeEmailPage(
     )
     var email by remember { mutableStateOf("") }
     var isError by remember { mutableStateOf(false) }
+    var showToast by remember { mutableStateOf(false) }
 
     val annotatedString = remember {
         AnnotatedString.Builder().apply {
@@ -101,13 +108,23 @@ fun ChangeEmailPage(
     }
 
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
 
     val navigateToComplete by viewModel.navigateToComplete.collectAsState()
 
     LaunchedEffect(navigateToComplete) {
         if (navigateToComplete) {
-            navController.popBackStack()
-            viewModel.onNavigated()
+            bottomSheetState.hide()
+            showToast = true
+            delay(2000)
+            SharedPreferencesUtil.saveClickedAutoLogin(context, false)
+            navController.navigate(Routes.LoginPage) {
+                popUpTo(navController.graph.startDestinationId) {
+                    inclusive = true
+                }
+                launchSingleTop = true
+            }
+            showToast = false
         }
     }
 
@@ -215,13 +232,10 @@ fun ChangeEmailPage(
                         colors = ButtonDefaults.buttonColors(
                             containerColor = LinkedInColor,
                             disabledContainerColor = Color(0xFF868686),
-
-                            )
+                        )
                     ) {
                         androidx.compose.material.Text(text = "인증하기")
                     }
-
-
                 }
                 AnimatedVisibility(
                     visible = viewModel.isSendEmailVerifyApiFinished,
@@ -255,6 +269,48 @@ fun ChangeEmailPage(
                         }
                     }
                 }
+                AnimatedVisibility(
+                    visible = navigateToComplete,
+                    enter = fadeIn(
+                        animationSpec = tween(
+                            durationMillis = 500,
+                            easing = FastOutSlowInEasing
+                        )
+                    ),
+                    exit = fadeOut(
+                        animationSpec = tween(
+                            durationMillis = 500,
+                            easing = LinearEasing
+                        )
+                    )
+                ) {
+                    Box(modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(0.7f))
+                        .clickable(enabled = false) { }) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .align(Alignment.Center)
+                                .height(60.dp)
+                                .padding(horizontal = 20.dp)
+                                .background(
+                                    Color(0xFF616FED),
+                                    shape = RoundedCornerShape(10)
+                                )
+                        ) {
+                            Text(
+                                text = "이메일 주소가 변경되었습니다. \n 다시 로그인해주세요.",
+                                color = Color.White,
+                                modifier = Modifier
+                                    .padding(horizontal = 20.dp)
+                                    .align(Alignment.Center),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                }
+
                 if (viewModel.isLoading) {
                     Box(
                         modifier = Modifier.fillMaxSize(),

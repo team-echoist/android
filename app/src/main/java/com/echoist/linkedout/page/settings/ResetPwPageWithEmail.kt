@@ -149,7 +149,8 @@ fun ResetPwPageWithEmail(
                         },
 
                         isError = isError,
-                        hint = "이메일"
+                        hint = "이메일",
+                        singLine = true
                     )
                     if (isError) {
                         Text(
@@ -162,7 +163,6 @@ fun ResetPwPageWithEmail(
 
                     val enabled = !(isError || email.isEmpty())
                     val focusManager = LocalFocusManager.current
-
 
                     Button(
                         //비번 변경 이메일요청

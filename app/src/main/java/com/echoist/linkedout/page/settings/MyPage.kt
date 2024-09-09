@@ -139,7 +139,6 @@ fun MyPage(
         bottomSheetState = bottomSheetState
     )
 
-
     BottomSheetScaffold(
         sheetContainerColor = Color(0xFF111111),
         scaffoldState = scaffoldState,
@@ -172,8 +171,6 @@ fun MyPage(
                     }, viewModel
                 )
             }
-
-
         },
         sheetPeekHeight = 0.dp
     ) {
@@ -197,8 +194,7 @@ fun MyPage(
                         .verticalScroll(scrollState)
 
                 ) {
-                    MySettings(item = viewModel.getMyInfo()) {
-                        Log.d(TAG, "MyPage: ${viewModel.getMyInfo()}")
+                    MySettings(viewModel.getMyInfo()) {
                         scope.launch {
                             bottomSheetState.expand()
                         }
@@ -237,7 +233,6 @@ fun MyPage(
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun MySettings(item: UserInfo, onClick: () -> Unit) {
-
     val annotatedString = remember {
         AnnotatedString.Builder().apply {
             withStyle(
@@ -246,7 +241,7 @@ fun MySettings(item: UserInfo, onClick: () -> Unit) {
                     fontWeight = FontWeight.Bold
                 )
             ) {
-                append("${item.nickname!!} ")
+                append("${item.nickname ?: ""} ")
             }
             append("아무개")
         }.toAnnotatedString()
