@@ -134,7 +134,6 @@ fun AccountPage(navController: NavController, viewModel: SettingsViewModel = hil
                         .background(Color.Black.copy(0.7f)),
                     contentAlignment = Alignment.BottomCenter
                 ) {
-
                     LogoutBox(
                         isCancelClicked = { isLogoutClicked = false },
                         isLogoutClicked = {
@@ -142,18 +141,16 @@ fun AccountPage(navController: NavController, viewModel: SettingsViewModel = hil
                             //로컬 자동로그인, id pw 값 초기화
                             SharedPreferencesUtil.saveClickedAutoLogin(context, false)
 
-                            navController.popBackStack(
-                                "LoginPage",
-                                true
-                            ) //home 까지 삭제 inclusive - 포함
-                            navController.navigate("LoginPage")
+                            navController.navigate(Routes.LoginPage) {
+                                popUpTo(navController.graph.startDestinationId) {
+                                    inclusive = true
+                                }
+                            }
                         }
                     )
                 }
             }
         }
-
-
     )
 }
 
