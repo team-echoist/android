@@ -27,13 +27,17 @@ class ChangeEmailViewModel @Inject constructor(
 
     var isLoading by mutableStateOf(false)
 
+    var isSendEmailVerifyApiFinished by mutableStateOf(false)
+
+    private val _navigateToComplete = MutableStateFlow(false)
+    val navigateToComplete: StateFlow<Boolean> = _navigateToComplete
+
     private suspend fun readMyInfo() {
         try {
             val response = userApi.getMyInfo()
 
             exampleItems.myProfile = response.data.user
             exampleItems.myProfile.essayStats = response.data.essayStats
-
         } catch (_: Exception) {
             Log.d(ContentValues.TAG, "readMyInfo: error err")
         }
@@ -43,7 +47,6 @@ class ChangeEmailViewModel @Inject constructor(
         return exampleItems.myProfile
     }
 
-    var isSendEmailVerifyApiFinished by mutableStateOf(false)
     fun sendEmailVerificationForChange(email: String) {
         isLoading = true
         viewModelScope.launch {
@@ -60,7 +63,6 @@ class ChangeEmailViewModel @Inject constructor(
                             ?: Token.accessToken
                     readMyInfo()
                     isSendEmailVerifyApiFinished = true
-
                 } else {
                     Log.e("authApiFailed2", "Failed : ${response.headers()}")
                     Log.e("authApiFailed2", "${response.code()}")
@@ -74,9 +76,6 @@ class ChangeEmailViewModel @Inject constructor(
             }
         }
     }
-
-    private val _navigateToComplete = MutableStateFlow(false)
-    val navigateToComplete: StateFlow<Boolean> = _navigateToComplete
 
     fun postAuthChangeEmail(code: String) {
         viewModelScope.launch {
@@ -96,9 +95,5 @@ class ChangeEmailViewModel @Inject constructor(
                 Log.e("writeEssayApiFailed3", "Failed: ${e.message}")
             }
         }
-    }
-
-    fun onNavigated() {
-        _navigateToComplete.value = false
     }
 }

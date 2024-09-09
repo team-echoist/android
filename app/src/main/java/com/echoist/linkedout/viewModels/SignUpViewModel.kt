@@ -4,13 +4,11 @@ import android.content.ContentValues.TAG
 import android.content.Context
 import android.provider.Settings
 import android.util.Log
-import android.util.Patterns
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
 import com.echoist.linkedout.api.SignUpApi
 import com.echoist.linkedout.api.SignUpApiImpl
 import com.echoist.linkedout.api.SupportApi
@@ -48,6 +46,8 @@ class SignUpViewModel @Inject constructor(
     var agreement_location by mutableStateOf(false)
     var agreement_serviceAlert by mutableStateOf(false)
 
+    var isSignUpApiFinished by mutableStateOf(false)
+
     var isLoading by mutableStateOf(false)
     var errorCode by mutableStateOf(200)
 
@@ -60,15 +60,12 @@ class SignUpViewModel @Inject constructor(
 
             exampleItems.myProfile = response.data.user
             exampleItems.myProfile.essayStats = response.data.essayStats
-
         } catch (_: Exception) {
             Log.d(TAG, "readMyInfo: error err")
         }
     }
 
-    var isSignUpApiFinished by mutableStateOf(false)
     fun getUserEmailCheck(userEmail: String) {
-
         viewModelScope.launch {
             isLoading = true
             try {
@@ -113,10 +110,8 @@ class SignUpViewModel @Inject constructor(
                     _navigateToComplete.value = true
                 } else {
                     errorCode = response.code()
-
                     Log.e("회원가입 요청 실패", "Failed: ${response.code()}")
                 }
-
             } catch (e: Exception) {
                 errorCode = 500
                 // api 요청 실패
@@ -133,7 +128,6 @@ class SignUpViewModel @Inject constructor(
     }
 
     private suspend fun emailVerify() {
-
         try {
             val userAccount = SignUpApi.UserAccount(userEmail, userPw)
             val response = signUpApi.emailVerify(userAccount)
@@ -150,14 +144,12 @@ class SignUpViewModel @Inject constructor(
                 Log.e("authApiFailed2", "Failed : ${response.headers()}")
                 Log.e("authApiSuccess2", "${response.code()}")
             }
-
         } catch (e: Exception) {
             errorCode = 500
             // api 요청 실패
             Log.e("writeEssayApiFailed2", "Failed: ${e.message}")
         } finally {
             isLoading = false
-
         }
     }
 
@@ -260,5 +252,4 @@ class SignUpViewModel @Inject constructor(
         Log.d("DeviceID", "Device ID: $deviceId")
         return deviceId
     }
-
 }
