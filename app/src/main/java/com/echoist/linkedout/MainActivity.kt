@@ -133,6 +133,7 @@ import kotlinx.coroutines.delay
                             .padding(bottom = 40.dp), contentAlignment = Alignment.BottomCenter
                     ) { ExitAppErrorBox() }
                 }
+
                 if (isReAuthenticationRequired) {
                     Box(modifier = Modifier
                         .fillMaxSize()
