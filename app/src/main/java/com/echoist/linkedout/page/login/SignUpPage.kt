@@ -60,6 +60,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -509,7 +510,7 @@ fun Authentication_6_BottomModal(
     // MutableStateList로 6자리 입력 값을 저장
     val codeDigits = remember { mutableStateListOf("", "", "", "", "", "") }
     val keyboardController = LocalSoftwareKeyboardController.current
-    val focusRequesters = List(6) { FocusRequester() }
+    val focusRequesters = remember { List(6) { FocusRequester() } }
 
     // 바텀시트가 다시 내려갔을 때 때 첫 번째 TextField에 포커스를 설정 && 텍스트필드값 초기화
     LaunchedEffect(scaffoldState.bottomSheetState.currentValue) {

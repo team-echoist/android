@@ -142,7 +142,7 @@ fun AccountPage(navController: NavController, viewModel: SettingsViewModel = hil
                             SharedPreferencesUtil.saveClickedAutoLogin(context, false)
 
                             navController.navigate(Routes.LoginPage) {
-                                popUpTo(navController.graph.startDestinationId) {
+                                popUpTo(Routes.LoginPage) {
                                     inclusive = true
                                 }
                             }

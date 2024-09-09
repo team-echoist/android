@@ -28,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,10 +37,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
@@ -48,6 +51,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
+import com.echoist.linkedout.Routes
+import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.isEmailValid
 import com.echoist.linkedout.page.login.Authentication_6_BottomModal
 import com.echoist.linkedout.page.settings.CustomOutlinedTextField
@@ -60,9 +65,9 @@ import kotlinx.coroutines.delay
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalGlideComposeApi::class)
 @Composable
 fun TabletChangeEmailScreen(
-    viewModel: SignUpViewModel = hiltViewModel(),
     changeEmailViewModel: ChangeEmailViewModel = hiltViewModel(),
-    contentPadding: PaddingValues
+    contentPadding: PaddingValues,
+    moveToLoginPage: () -> Unit
 ) {
     val configuration = LocalConfiguration.current
     val screenHeightDp = configuration.screenHeightDp // 화면의 높이를 DP 단위로 가져옴
@@ -75,6 +80,7 @@ fun TabletChangeEmailScreen(
     )
     var email by remember { mutableStateOf("") }
     var isError by remember { mutableStateOf(false) }
+    var showToast by remember { mutableStateOf(false) }
 
     val annotatedString = remember {
         AnnotatedString.Builder().apply {
@@ -90,6 +96,20 @@ fun TabletChangeEmailScreen(
             }
             append("을 눌러 해당 이메일로 인증을 완료해 주세요.")
         }.toAnnotatedString()
+    }
+
+    val context = LocalContext.current
+    val navigateToComplete by changeEmailViewModel.navigateToComplete.collectAsState()
+
+    LaunchedEffect(navigateToComplete) {
+        if (navigateToComplete) {
+            bottomSheetState.hide()
+            showToast = true
+            delay(2000)
+            SharedPreferencesUtil.saveClickedAutoLogin(context, false)
+            moveToLoginPage()
+            showToast = false
+        }
     }
 
     //이메일 보냄 api 가 끝나면 2초 후 사라지게
@@ -111,12 +131,12 @@ fun TabletChangeEmailScreen(
                         changeEmailViewModel.sendEmailVerificationForChange(email)
                     }, //재요청 인증
                     isError = false,
-                    isTypedLastNumber = { list -> //6자리 리스트
-                        //todo 마지막 넘버 입력시 인증 함수 필요 및 isError지정
+                    isTypedLastNumber = { list ->
+                        changeEmailViewModel.postAuthChangeEmail(list.joinToString(""))
                         keyboardController?.hide()
                     }, scaffoldState
                 )
-                if (viewModel.isLoading) {
+                if (changeEmailViewModel.isLoading) {
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
@@ -158,7 +178,8 @@ fun TabletChangeEmailScreen(
                         isError = !email.isEmailValid()
                     },
                     isError = isError,
-                    hint = "이메일"
+                    hint = "이메일",
+                    singLine = true
                 )
                 if (isError) {
                     Text(
@@ -231,7 +252,48 @@ fun TabletChangeEmailScreen(
                     }
                 }
             }
-            if (viewModel.isLoading) {
+            AnimatedVisibility(
+                visible = navigateToComplete,
+                enter = fadeIn(
+                    animationSpec = tween(
+                        durationMillis = 500,
+                        easing = FastOutSlowInEasing
+                    )
+                ),
+                exit = fadeOut(
+                    animationSpec = tween(
+                        durationMillis = 500,
+                        easing = LinearEasing
+                    )
+                )
+            ) {
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(0.7f))
+                    .clickable(enabled = false) { }) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.Center)
+                            .height(60.dp)
+                            .padding(horizontal = 20.dp)
+                            .background(
+                                Color(0xFF616FED),
+                                shape = RoundedCornerShape(10)
+                            )
+                    ) {
+                        Text(
+                            text = "이메일 주소가 변경되었습니다. \n 다시 로그인해주세요.",
+                            color = Color.White,
+                            modifier = Modifier
+                                .padding(horizontal = 20.dp)
+                                .align(Alignment.Center),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            }
+            if (changeEmailViewModel.isLoading) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
