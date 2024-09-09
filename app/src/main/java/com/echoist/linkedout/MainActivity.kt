@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.echoist.linkedout.components.ExitAppErrorBox
 import com.echoist.linkedout.navigation.MobileApp
@@ -31,6 +33,7 @@ import com.echoist.linkedout.page.home.ReLogInWaringBox
 import com.echoist.linkedout.page.myLog.Token
 import com.echoist.linkedout.presentation.TabletApp
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
+import com.echoist.linkedout.viewModels.HomeViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.kakao.sdk.common.KakaoSdk
@@ -79,6 +82,10 @@ import kotlinx.coroutines.delay
         }
 
         setContent {
+
+            val homeViewModel : HomeViewModel = hiltViewModel()
+            val isReAuthenticationRequired by homeViewModel.isReAuthenticationRequired.collectAsState()
+
             var isClickedExit by remember {
                 mutableStateOf(false)
             }
@@ -126,14 +133,15 @@ import kotlinx.coroutines.delay
                             .padding(bottom = 40.dp), contentAlignment = Alignment.BottomCenter
                     ) { ExitAppErrorBox() }
                 }
-                if (AuthManager.isReAuthenticationRequired.value) {
+
+                if (isReAuthenticationRequired) {
                     Box(modifier = Modifier
                         .fillMaxSize()
                         .clickable(enabled = false) { }
                         .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center) {
                         ReLogInWaringBox {
                             navigateWithClearBackStack(navController, Routes.LoginPage)
-                            AuthManager.isReAuthenticationRequired.value = false
+                            homeViewModel.setReAuthenticationRequired(false)
                         }
                     }
                 }

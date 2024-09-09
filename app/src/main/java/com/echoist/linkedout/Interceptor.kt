@@ -4,8 +4,10 @@ import android.util.Log
 import com.echoist.linkedout.page.myLog.Token
 import okhttp3.Interceptor
 import okhttp3.Response
+import javax.inject.Inject
 
-class ErrorHandlingInterceptor : Interceptor {
+
+class ErrorHandlingInterceptor @Inject constructor(private val tokenRepository: TokenRepository): Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
         var response = chain.proceed(request)
@@ -14,7 +16,8 @@ class ErrorHandlingInterceptor : Interceptor {
         if (response.code == 401) {
             // x-access-token이 없는 경우, 재로그인 필요
             if (response.headers["x-access-token"].isNullOrEmpty()) {
-                AuthManager.isReAuthenticationRequired.value = true
+                tokenRepository.setReAuthenticationRequired(true)
+
             } else { //x-access-token이 있는경우
                 // 새로운 토큰 갱신
                 val newAccessToken = response.headers["x-access-token"]!!

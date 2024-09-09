@@ -1,7 +1,5 @@
 package com.echoist.linkedout
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.navigation.NavController
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -112,9 +110,6 @@ object Routes {
 enum class UserStatus {
     Activated, Monitored, Banned, DeActivated
 }
-object AuthManager {
-    var isReAuthenticationRequired: MutableState<Boolean> = mutableStateOf(false)
-}
 
 fun navigateWithClearBackStack(
     navController: NavController,
@@ -138,8 +133,8 @@ fun formatDateTime(input: String): String {
 
     return dateTime.format(outputFormatter)
 }
-//2024-07-01T14:22:46.803 09:00 to 2024-07-01T14:22:46.803+09:00 to 2024.07.01
 
+//2024-07-01T14:22:46.803 09:00 to 2024-07-01T14:22:46.803+09:00 to 2024.07.01
 fun parseAndFormatDateTime(dateTimeString: String): String {
     // 공백을 +로 바꾸어 표준 형식으로 만듦
     val correctedDateTimeString = dateTimeString.replace(" ", "+")

@@ -58,7 +58,6 @@ suspend fun <T> apiCall(
 
         if (!response.isSuccessful && response.code() == 401) { //에러코드가 401인경우
             if (response.headers()["x-access-token"].isNullOrEmpty()) { //x-access-token이 안들어오는경우 재로그인필요.
-                AuthManager.isReAuthenticationRequired.value = true
             } else {
                 Token.accessToken = response.headers()["x-access-token"]!!
                 // 갱신된 토큰으로 다시 API 호출
@@ -76,7 +75,6 @@ suspend fun <T> apiCall(
         }
 
     } catch (e: Exception) {
-        if (e.message == "timeout") AuthManager.isReAuthenticationRequired.value = true
         Log.e("api error", "${e.printStackTrace()}")
         onError(e)
     } finally {

@@ -35,7 +35,7 @@ class App : Application() {
 object AppModule {
     @Provides
     @Singleton
-    fun provideRetrofit() : Retrofit{
+    fun provideRetrofit(errorHandlingInterceptor: ErrorHandlingInterceptor) : Retrofit{
         val moshi = Moshi.Builder()
             .addLast(KotlinJsonAdapterFactory())
             .build()
@@ -46,7 +46,7 @@ object AppModule {
         // OkHttpClient에 인터셉터를 추가
         val httpClient = OkHttpClient.Builder()
             .addInterceptor(AuthInterceptor()) //전역 헤더 인터셉터 추가.
-            .addInterceptor(ErrorHandlingInterceptor()) // 전역 에러핸들링 인터셉터 추가
+            .addInterceptor(errorHandlingInterceptor) // 전역 에러핸들링 인터셉터 추가
             .build()
 
         return Retrofit.Builder()
@@ -54,6 +54,18 @@ object AppModule {
             .client(httpClient) //로그 확인가능한 클라이언트 추가
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideTokenRepository(): TokenRepository {
+        return TokenRepository()
+    }
+
+    @Provides
+    @Singleton
+    fun provideErrorHandlingInterceptor(tokenRepository: TokenRepository): ErrorHandlingInterceptor {
+        return ErrorHandlingInterceptor(tokenRepository)
     }
 
     @Provides

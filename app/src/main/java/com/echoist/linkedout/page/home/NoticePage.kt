@@ -20,6 +20,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,7 +32,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.echoist.linkedout.Routes
 import com.echoist.linkedout.data.Notice
 import com.echoist.linkedout.formatDateTime
 import com.echoist.linkedout.page.settings.SettingTopAppBar
@@ -45,8 +51,6 @@ fun NoticePage(
         viewModel.requestNoticesList()
     }
 
-    // 테마 적용
-
     Scaffold(
         topBar = {
             SettingTopAppBar("공지사항", navController)
@@ -60,12 +64,12 @@ fun NoticePage(
         ) {
 
             if (!viewModel.noticeList.isEmpty()) {
-                viewModel.noticeList.forEach { notice ->
-                    NoticeItem(notice) { viewModel.requestDetailNotice(notice.id, navController) }
+                viewModel.noticeList.forEach { item ->
+                    NoticeItem(item) {
+                        navController.navigate("${Routes.NoticeDetailPage}/${item.id}")
+                    }
                 }
             }
-
-
         }
         if (viewModel.noticeList.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -77,7 +81,6 @@ fun NoticePage(
 
 @Composable
 fun NoticeItem(notice: Notice, onClickItem: () -> Unit) {
-
 
     Box(modifier = Modifier
         .fillMaxWidth()
@@ -120,7 +123,16 @@ fun NoticeItem(notice: Notice, onClickItem: () -> Unit) {
 }
 
 @Composable
-fun NoticeDetailPage(navController: NavController, notice: Notice) {
+fun NoticeDetailPage(
+    navController: NavController,
+    noticeId: Int,
+    supportViewModel: SupportViewModel = hiltViewModel()
+) {
+    var notice: Notice? by remember { mutableStateOf(null) }
+
+    LaunchedEffect(key1 = Unit) {
+        notice = supportViewModel.requestDetailNotice(noticeId)!!
+    }
 
     Scaffold(
         topBar = {
@@ -134,19 +146,22 @@ fun NoticeDetailPage(navController: NavController, notice: Notice) {
                 .verticalScroll(rememberScrollState())
                 .fillMaxHeight()
         ) {
-
-            Spacer(modifier = Modifier.height(20.dp))
-            Text(text = notice.title, fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
-            Spacer(modifier = Modifier.height(20.dp))
-            Text(text = notice.content ?: "내용이 없습니다. 하지만 없다면 서버오류입니다.", fontSize = 16.sp)
-            Spacer(modifier = Modifier.height(20.dp))
-            Text(
-                text = parseAndFormatDateTime(notice.createdDate),
-                fontSize = 12.sp,
-                color = Color.Gray
-            )
-
-
+            if (notice == null) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(text = "공지사항이 없습니다.", color = Color.Gray)
+                }
+            } else {
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(text = notice!!.title, fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(text = notice!!.content!!, fontSize = 16.sp)
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(
+                    text = parseAndFormatDateTime(notice!!.createdDate),
+                    fontSize = 12.sp,
+                    color = Color.Gray
+                )
+            }
         }
     }
 }

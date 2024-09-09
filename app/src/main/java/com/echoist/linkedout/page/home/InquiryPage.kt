@@ -37,6 +37,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,6 +58,7 @@ import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
+import com.echoist.linkedout.Routes
 import com.echoist.linkedout.page.settings.CustomOutlinedTextField
 import com.echoist.linkedout.page.settings.SettingTopAppBar
 import com.echoist.linkedout.ui.theme.LinkedInColor
@@ -69,7 +72,6 @@ fun InquiryPage(
 
     val inquiryOptions = listOf("기술 지원 관련", "계정 및 결제", "콘텐츠 관련", "기능 요청 및 제안", "기타")
     var selectedItem by remember { mutableStateOf("") }
-
 
     var inquiryTitle by remember { mutableStateOf("") }
     var isErrTitle by remember { mutableStateOf(true) }
@@ -85,6 +87,14 @@ fun InquiryPage(
     // 스크롤 상태를 추적
     val isScrolling = scrollState.isScrollInProgress
 
+    val navigateToLinkedOutSupport by viewModel.navigateToLinkedOutSupport.collectAsState()
+
+    LaunchedEffect(key1 = navigateToLinkedOutSupport) {
+        if (navigateToLinkedOutSupport) {
+            navController.navigate(Routes.LinkedOutSupportPage)
+            viewModel.onNavigated()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -126,10 +136,7 @@ fun InquiryPage(
                             .clickable { isInfoClicked = !isInfoClicked },
                         tint = Color(0xFF4D4D4D)
                     )
-
                 }
-
-
 
                 Spacer(modifier = Modifier.height(12.dp))
                 SingleSelectInquiryList(inquiryOptions, selectedItem) { it -> selectedItem = it }
@@ -198,7 +205,6 @@ fun InquiryPage(
                             inquiryTitle,
                             inquiryContent,
                             selectedItem,
-                            navController
                         )
                     }
                 ) {
@@ -248,12 +254,6 @@ fun InquiryItem(
             }
             Text(text = inquiryItem, color = Color.White)
 
-//            if (inquiryItem == "기술 지원\n관련") {
-//                Spacer(modifier = Modifier.width(10.dp))
-//                InquiryInfoBox()
-//
-//
-//            }
         }
     }
 }

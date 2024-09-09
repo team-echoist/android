@@ -10,8 +10,6 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
-import com.echoist.linkedout.Routes
 import com.echoist.linkedout.TYPE_RECOMMEND
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.api.SupportApi
@@ -21,14 +19,11 @@ import com.echoist.linkedout.data.Inquiry
 import com.echoist.linkedout.data.Notice
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.myLog.Token
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.net.URLEncoder
 import javax.inject.Inject
 
 @HiltViewModel
@@ -46,6 +41,17 @@ class SupportViewModel @Inject constructor(
     private val _inquiryList = MutableStateFlow<List<Inquiry>>(emptyList())
     val inquiryList: StateFlow<List<Inquiry>>
         get() = _inquiryList.asStateFlow()
+
+    private val _navigateToCommunityDetail = MutableStateFlow(false)
+    val navigateToCommunityDetail: StateFlow<Boolean> get() = _navigateToCommunityDetail.asStateFlow()
+
+    private val _navigateToLinkedOutSupport = MutableStateFlow(false)
+    val navigateToLinkedOutSupport: StateFlow<Boolean> get() = _navigateToLinkedOutSupport.asStateFlow()
+
+    fun onNavigated() {
+        _navigateToCommunityDetail.value = false
+        _navigateToLinkedOutSupport.value = false
+    }
 
     fun readMyProfile(): UserInfo {
         return exampleItems.myProfile
@@ -90,7 +96,7 @@ class SupportViewModel @Inject constructor(
         }
     }
 
-    fun readDetailEssay(id: Int, navController: NavController) {
+    fun readDetailEssay(id: Int) {
         viewModelScope.launch {
             try {
                 isLoading = true
@@ -109,7 +115,7 @@ class SupportViewModel @Inject constructor(
                 Log.d(TAG, "readDetailEssay: previouse ${exampleItems.detailEssay}")
 
                 Log.d(TAG, "readDetailEssay: anotherEssays ${exampleItems.previousEssayList}")
-                navController.navigate("CommunityDetailPage")
+                _navigateToCommunityDetail.value = true
 
                 // API 호출 결과 처리 (예: response 데이터 사용)
             } catch (e: Exception) {
@@ -122,7 +128,7 @@ class SupportViewModel @Inject constructor(
         }
     }
 
-    fun writeInquiry(title: String, content: String, type: String, navController: NavController) {
+    fun writeInquiry(title: String, content: String, type: String) {
         viewModelScope.launch {
             isLoading = true
             try {
@@ -132,7 +138,8 @@ class SupportViewModel @Inject constructor(
                     Token.accessToken =
                         response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() }
                             ?: Token.accessToken
-                    navController.navigate(Routes.LinkedOutSupportPage)
+                    _navigateToLinkedOutSupport.value = true
+
                     Log.d("문의 작성 성공", "${response.code()}")
                 } else {
                     Log.e("문의 작성 에러", "실패: ${response.code()}")
@@ -209,31 +216,20 @@ class SupportViewModel @Inject constructor(
         }
     }
 
-    fun requestDetailNotice(noticeId: Int, navController: NavController) {
-
-        viewModelScope.launch {
-            try {
-                val response =
-                    supportApi.readNoticeDetail(noticeId)
-                if (response.isSuccessful) {
-                    Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
-
-                    val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
-                    val jsonAdapter = moshi.adapter(Notice::class.java)
-
-                    val data = response.body()!!.data
-                    val json = jsonAdapter.toJson(data)
-                    val encodedJson = URLEncoder.encode(json, "UTF-8")
-
-                    detailNotice = response.body()!!.data
-                    navController.navigate("${Routes.NoticeDetailPage}/$encodedJson")
-                } else {
-                    Log.e("공지사항 디테일 확인", "실패: ${response.code()}")
-                }
-            } catch (e: Exception) {
-                Log.e("공지사항 디테일 확인", "실패: ${e.printStackTrace()}")
-                e.printStackTrace()
+    suspend fun requestDetailNotice(noticeId: Int): Notice? {
+        return try {
+            val response = supportApi.readNoticeDetail(noticeId)
+            if (response.isSuccessful) {
+                Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                response.body()?.data
+            } else {
+                Log.e("공지사항 디테일 확인", "실패: ${response.code()}")
+                null
             }
+        } catch (e: Exception) {
+            Log.e("공지사항 디테일 확인", "실패: ${e.message}")
+            e.printStackTrace()
+            null
         }
     }
 }
