@@ -29,6 +29,10 @@ class SignUpApiImpl : SignUpApi {
         TODO("Not yet implemented")
     }
 
+    override suspend fun postAuthChangeEmail(code: SignUpApi.ChangeEmail): Response<Unit> {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun requestChangePw(
         email: SignUpApi.EmailRequest
     ): Response<Unit> {

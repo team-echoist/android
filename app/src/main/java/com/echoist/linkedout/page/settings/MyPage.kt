@@ -115,11 +115,9 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyPage(
-    navController: NavController
+    navController: NavController,
+    viewModel: SettingsViewModel = hiltViewModel()
 ) {
-
-
-    val viewModel: SettingsViewModel = hiltViewModel()
 
     var isApiFinished by remember {
         mutableStateOf(false)
@@ -140,7 +138,6 @@ fun MyPage(
     val scaffoldState = androidx.compose.material3.rememberBottomSheetScaffoldState(
         bottomSheetState = bottomSheetState
     )
-
 
     BottomSheetScaffold(
         sheetContainerColor = Color(0xFF111111),
@@ -174,8 +171,6 @@ fun MyPage(
                     }, viewModel
                 )
             }
-
-
         },
         sheetPeekHeight = 0.dp
     ) {
@@ -199,8 +194,7 @@ fun MyPage(
                         .verticalScroll(scrollState)
 
                 ) {
-                    MySettings(item = viewModel.getMyInfo()) {
-                        Log.d(TAG, "MyPage: ${viewModel.getMyInfo()}")
+                    MySettings(viewModel.getMyInfo()) {
                         scope.launch {
                             bottomSheetState.expand()
                         }
@@ -239,7 +233,6 @@ fun MyPage(
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun MySettings(item: UserInfo, onClick: () -> Unit) {
-
     val annotatedString = remember {
         AnnotatedString.Builder().apply {
             withStyle(
@@ -248,7 +241,7 @@ fun MySettings(item: UserInfo, onClick: () -> Unit) {
                     fontWeight = FontWeight.Bold
                 )
             ) {
-                append("${item.nickname!!} ")
+                append("${item.nickname ?: ""} ")
             }
             append("아무개")
         }.toAnnotatedString()

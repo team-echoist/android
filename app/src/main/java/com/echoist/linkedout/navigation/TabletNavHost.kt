@@ -132,7 +132,13 @@ fun TabletNavHost(
             )
         }
         composable(Routes.ChangeEmail) {
-            TabletChangeEmailScreen(contentPadding = contentPadding)
+            TabletChangeEmailScreen(contentPadding = contentPadding) {
+                navController.navigate(Routes.LoginPage) {
+                    popUpTo(Routes.LoginPage) {
+                        inclusive = true
+                    }
+                }
+            }
         }
         composable(Routes.ChangePassword) {
             TabletChangePasswordScreen(

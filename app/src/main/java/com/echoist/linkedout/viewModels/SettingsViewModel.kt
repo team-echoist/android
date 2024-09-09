@@ -283,7 +283,11 @@ class SettingsViewModel @Inject constructor(
 
                 if (response.isSuccessful){
                     Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
-                    navController.navigate("LoginPage")
+                    navController.navigate("LoginPage"){
+                        popUpTo(navController.graph.startDestinationId) {
+                            inclusive = true
+                        }
+                    }
                 }
                 else{
                     Log.e("탈퇴 실패", "코드 :  ${response.code()}")

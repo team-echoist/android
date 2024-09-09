@@ -46,9 +46,12 @@ fun SignUpCompletePage(homeViewModel: HomeViewModel, navController: NavControlle
         isLoading = true
         delay(3000)
         isLoading = false
-        navController.navigate("${Routes.Home}/200")
+        navController.navigate("${Routes.Home}/200") {
+            popUpTo(navController.graph.startDestinationId) {
+                inclusive = true
+            }
+        }
     }
-
 
     Scaffold {
         Box(

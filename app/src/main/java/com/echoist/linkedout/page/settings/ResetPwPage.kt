@@ -26,16 +26,15 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.ui.theme.LinkedInColor
-import com.echoist.linkedout.viewModels.SignUpViewModel
+import com.echoist.linkedout.viewModels.ResetPwViewModel
 
 @Composable
-fun ResetPwPage(navController: NavController, token: String = "empty_token") {
+fun ResetPwPage(
+    navController: NavController, token: String = "empty_token",
+    viewModel: ResetPwViewModel = hiltViewModel()
+) {
 
     val scrollState = rememberScrollState()
-    val viewModel: SignUpViewModel = hiltViewModel()
-
-
-
 
     Scaffold(
         topBar = {
@@ -91,10 +90,8 @@ fun ResetPwPage(navController: NavController, token: String = "empty_token") {
                     Text(text = "비밀번호가 불일치합니다.", color = Color.Red, fontSize = 12.sp)
                 }
 
-
                 Spacer(modifier = Modifier.height(187.dp))
                 val focusManager = LocalFocusManager.current
-
 
                 val enabled = newPw == newPwCheck && newPw.isNotBlank() //문자가 있어야함
                 Button(
@@ -110,14 +107,11 @@ fun ResetPwPage(navController: NavController, token: String = "empty_token") {
                     colors = ButtonDefaults.buttonColors(
                         containerColor = LinkedInColor,
                         disabledContainerColor = Color(0xFF868686),
-
-                        )
+                    )
                 ) {
                     Text(text = "변경하기", color = Color.Black)
                 }
             }
-
-
         }
     )
 }

@@ -49,6 +49,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -59,6 +60,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -74,6 +76,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.echoist.linkedout.R
+import com.echoist.linkedout.Routes
+import com.echoist.linkedout.isEmailValid
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.viewModels.SignUpViewModel
 import kotlinx.coroutines.delay
@@ -97,6 +101,16 @@ fun SignUpPage(
     val scaffoldState = androidx.compose.material3.rememberBottomSheetScaffoldState(
         bottomSheetState = bottomSheetState
     )
+
+    val navigateToComplete by viewModel.navigateToComplete.collectAsState()
+
+    LaunchedEffect(navigateToComplete) {
+        if (navigateToComplete) {
+            navController.navigate(Routes.SignUpComplete)
+            viewModel.onNavigated()
+        }
+    }
+
     LaunchedEffect(key1 = viewModel.isSignUpApiFinished) {
         //이메일 인증 클릭 성공시 모달 올라오게.
         if (viewModel.isSignUpApiFinished) {
@@ -125,12 +139,12 @@ fun SignUpPage(
         sheetContent = {
             Box {
                 Authentication_6_BottomModal(
-                    { viewModel.getUserEmailCheck(viewModel.userEmail, navController) }, //재요청 인증
+                    { viewModel.getUserEmailCheck(viewModel.userEmail) }, //재요청 인증
                     isError = viewModel.errorCode >= 400,
                     isTypedLastNumber = { list ->
                         keyboardController?.hide()
                         Log.d("6자리 코드 ", list.joinToString(""))
-                        viewModel.requestRegister(list.joinToString(""), navController)
+                        viewModel.requestRegister(list.joinToString(""))
 
                     }, scaffoldState
                 )
@@ -155,10 +169,7 @@ fun SignUpPage(
                 })
             },
             content = {
-
-
                 Box {
-
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
@@ -172,7 +183,11 @@ fun SignUpPage(
                             modifier = Modifier
                                 .padding(16.dp)
                                 .size(30.dp)
-                                .clickable { navController.popBackStack() } //뒤로가기
+                                .clickable {
+                                    navController.popBackStack()
+                                    viewModel.userEmail = ""
+                                    viewModel.userPw = ""
+                                }
                         )
                         Spacer(modifier = Modifier.height(30.dp))
                         Text(
@@ -212,12 +227,11 @@ fun SignUpPage(
                                 .padding(start = 20.dp, end = 20.dp, top = 50.dp),
                             onClick = {
                                 keyboardController?.hide()
-                                viewModel.getUserEmailCheck(viewModel.userEmail, navController)
+                                viewModel.getUserEmailCheck(viewModel.userEmail)
                             }
                         ) {
                             Text(text = "인증 메일 보내기", color = Color.Black)
                         }
-
                     }
                 }
 
@@ -252,7 +266,6 @@ fun SignUpPage(
                                 "이메일 주소로 인증 메일이 발송됐습니다.",
                                 "링크를 클릭해 회원가입을 완료해주세요 !!"
                             )
-
                         }
                     }
                 }
@@ -318,7 +331,7 @@ fun EmailTextField(viewModel: SignUpViewModel, passwordFocusRequester: FocusRequ
             isError = viewModel.userEmailError,
             onValueChange = { new ->
                 viewModel.userEmail = new
-                if (new.isNotEmpty() && viewModel.isEmailValid(viewModel.userEmail)) {
+                if (new.isNotEmpty() && viewModel.userEmail.isEmailValid()) {
                     viewModel.userEmailError = false
                     errorText = ""
                 } else {
@@ -497,7 +510,7 @@ fun Authentication_6_BottomModal(
     // MutableStateList로 6자리 입력 값을 저장
     val codeDigits = remember { mutableStateListOf("", "", "", "", "", "") }
     val keyboardController = LocalSoftwareKeyboardController.current
-    val focusRequesters = List(6) { FocusRequester() }
+    val focusRequesters = remember { List(6) { FocusRequester() } }
 
     // 바텀시트가 다시 내려갔을 때 때 첫 번째 TextField에 포커스를 설정 && 텍스트필드값 초기화
     LaunchedEffect(scaffoldState.bottomSheetState.currentValue) {

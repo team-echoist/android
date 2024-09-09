@@ -1,5 +1,7 @@
 package com.echoist.linkedout.page.settings
 
+import android.view.Gravity
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
@@ -16,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -36,18 +39,22 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
@@ -57,15 +64,20 @@ import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
+import com.echoist.linkedout.Routes
+import com.echoist.linkedout.SharedPreferencesUtil
+import com.echoist.linkedout.isEmailValid
 import com.echoist.linkedout.page.login.Authentication_6_BottomModal
 import com.echoist.linkedout.ui.theme.LinkedInColor
-import com.echoist.linkedout.viewModels.SignUpViewModel
+import com.echoist.linkedout.viewModels.ChangeEmailViewModel
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun ChangeEmailPage(navController: NavController) {
-
+fun ChangeEmailPage(
+    navController: NavController,
+    viewModel: ChangeEmailViewModel = hiltViewModel()
+) {
     val configuration = LocalConfiguration.current
     val screenHeightDp = configuration.screenHeightDp // 화면의 높이를 DP 단위로 가져옴
 
@@ -77,6 +89,7 @@ fun ChangeEmailPage(navController: NavController) {
     )
     var email by remember { mutableStateOf("") }
     var isError by remember { mutableStateOf(false) }
+    var showToast by remember { mutableStateOf(false) }
 
     val annotatedString = remember {
         AnnotatedString.Builder().apply {
@@ -94,8 +107,26 @@ fun ChangeEmailPage(navController: NavController) {
         }.toAnnotatedString()
     }
 
-    val viewModel: SignUpViewModel = hiltViewModel()
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
+
+    val navigateToComplete by viewModel.navigateToComplete.collectAsState()
+
+    LaunchedEffect(navigateToComplete) {
+        if (navigateToComplete) {
+            bottomSheetState.hide()
+            showToast = true
+            delay(2000)
+            SharedPreferencesUtil.saveClickedAutoLogin(context, false)
+            navController.navigate(Routes.LoginPage) {
+                popUpTo(navController.graph.startDestinationId) {
+                    inclusive = true
+                }
+                launchSingleTop = true
+            }
+            showToast = false
+        }
+    }
 
     //이메일 보냄 api 가 끝나면 2초 후 사라지게
     LaunchedEffect(key1 = viewModel.isSendEmailVerifyApiFinished) {
@@ -105,7 +136,6 @@ fun ChangeEmailPage(navController: NavController) {
             viewModel.isSendEmailVerifyApiFinished = false
         }
     }
-
 
     BottomSheetScaffold(
         sheetContainerColor = Color(0xFF191919),
@@ -118,9 +148,10 @@ fun ChangeEmailPage(navController: NavController) {
                     }, //재요청 인증
                     isError = false,
                     isTypedLastNumber = { list -> //6자리 리스트
+                        viewModel.postAuthChangeEmail(list.joinToString(""))
                         //todo 마지막 넘버 입력시 인증 함수 필요 및 isError지정
                         keyboardController?.hide()
-                    },scaffoldState
+                    }, scaffoldState
                 )
                 if (viewModel.isLoading) {
                     Box(
@@ -131,13 +162,10 @@ fun ChangeEmailPage(navController: NavController) {
                     }
                 }
             }
-
-
         },
         sheetPeekHeight = (0.8 * screenHeightDp).dp
     ) {
         Scaffold(
-
             topBar = {
                 SettingTopAppBar("이메일 주소 변경", navController)
             },
@@ -159,21 +187,18 @@ fun ChangeEmailPage(navController: NavController) {
                     )
                     Spacer(modifier = Modifier.height(32.dp))
 
-
                     Text(text = "새 이메일 주소", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
                     Spacer(modifier = Modifier.height(10.dp))
-
-
-
 
                     CustomOutlinedTextField(
                         email,
                         { newText ->
                             email = newText
-                            isError = !viewModel.isEmailValid(email)
+                            isError = !email.isEmailValid()
                         },
                         isError = isError,
-                        hint = "이메일"
+                        hint = "이메일",
+                        singLine = true
                     )
                     if (isError) {
                         Text(
@@ -207,13 +232,10 @@ fun ChangeEmailPage(navController: NavController) {
                         colors = ButtonDefaults.buttonColors(
                             containerColor = LinkedInColor,
                             disabledContainerColor = Color(0xFF868686),
-
-                            )
+                        )
                     ) {
                         androidx.compose.material.Text(text = "인증하기")
                     }
-
-
                 }
                 AnimatedVisibility(
                     visible = viewModel.isSendEmailVerifyApiFinished,
@@ -244,10 +266,51 @@ fun ChangeEmailPage(navController: NavController) {
                             SendEmailFinishedAlert("새 이메일 주소로 인증메일이 발송됐습니다.") {
                                 viewModel.isSendEmailVerifyApiFinished = false
                             }
-
                         }
                     }
                 }
+                AnimatedVisibility(
+                    visible = navigateToComplete,
+                    enter = fadeIn(
+                        animationSpec = tween(
+                            durationMillis = 500,
+                            easing = FastOutSlowInEasing
+                        )
+                    ),
+                    exit = fadeOut(
+                        animationSpec = tween(
+                            durationMillis = 500,
+                            easing = LinearEasing
+                        )
+                    )
+                ) {
+                    Box(modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(0.7f))
+                        .clickable(enabled = false) { }) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .align(Alignment.Center)
+                                .height(60.dp)
+                                .padding(horizontal = 20.dp)
+                                .background(
+                                    Color(0xFF616FED),
+                                    shape = RoundedCornerShape(10)
+                                )
+                        ) {
+                            Text(
+                                text = "이메일 주소가 변경되었습니다. \n 다시 로그인해주세요.",
+                                color = Color.White,
+                                modifier = Modifier
+                                    .padding(horizontal = 20.dp)
+                                    .align(Alignment.Center),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                }
+
                 if (viewModel.isLoading) {
                     Box(
                         modifier = Modifier.fillMaxSize(),
@@ -256,8 +319,6 @@ fun ChangeEmailPage(navController: NavController) {
                         CircularProgressIndicator(color = LinkedInColor)
                     }
                 }
-
-
             }
         )
     }
@@ -270,6 +331,7 @@ fun CustomOutlinedTextField(
     hint: String,
     isError: Boolean,
     modifier: Modifier = Modifier,
+    singLine: Boolean = false
 ) {
     OutlinedTextField(
         shape = RoundedCornerShape(10),
@@ -289,8 +351,8 @@ fun CustomOutlinedTextField(
             focusedContainerColor = Color(0xFF111111),
             errorBorderColor = Color.Red,
             errorTextColor = Color(0xFF5D5D5D)
-
         ),
+        singleLine = singLine,
         trailingIcon = {
             if (text.isNotEmpty())
                 Icon(
@@ -300,7 +362,6 @@ fun CustomOutlinedTextField(
                         onTextChange("")
                     }
                 )
-
         })
 }
 
@@ -322,7 +383,6 @@ fun SendEmailFinishedAlert(text: String, isClicked: () -> Unit) {
             Column {
                 Text(text = text, fontSize = 14.sp)
                 Text(text = "링크를 클릭해 인증을 완료해주세요.", color = LinkedInColor, fontSize = 14.sp)
-
             }
         }
         Box(
@@ -336,8 +396,5 @@ fun SendEmailFinishedAlert(text: String, isClicked: () -> Unit) {
                 contentDescription = "close",
                 modifier = Modifier.clickable { isClicked() })
         }
-
-
     }
 }
-

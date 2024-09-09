@@ -46,17 +46,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.echoist.linkedout.isEmailValid
 import com.echoist.linkedout.page.login.Authentication_6_BottomModal
 import com.echoist.linkedout.ui.theme.LinkedInColor
+import com.echoist.linkedout.viewModels.ChangeEmailViewModel
+import com.echoist.linkedout.viewModels.ResetPwViewModel
 import com.echoist.linkedout.viewModels.SignUpViewModel
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ResetPwPageWithEmail(navController: NavController) {
+fun ResetPwPageWithEmail(
+    navController: NavController,
+    viewModel: ResetPwViewModel = hiltViewModel()
+) {
 
     val scrollState = rememberScrollState()
-    val viewModel: SignUpViewModel = hiltViewModel()
 
     val passwordFocusRequester = remember { FocusRequester() }
 
@@ -81,20 +86,20 @@ fun ResetPwPageWithEmail(navController: NavController) {
         }
     }
 
-
     BottomSheetScaffold(
         sheetContainerColor = Color(0xFF191919),
         scaffoldState = scaffoldState,
         sheetContent = {
             Box {
-                Authentication_6_BottomModal(reAuthentication =
-                {
-                    viewModel.requestChangePw(email)
-                }, //재요청 인증
+                Authentication_6_BottomModal(
+                    reAuthentication =
+                    {
+                        viewModel.requestChangePw(email)
+                    }, //재요청 인증
                     isError = false,
                     isTypedLastNumber = {
                         keyboardController?.hide()
-                    },scaffoldState
+                    }, scaffoldState
                 )
                 if (viewModel.isLoading) {
                     Box(
@@ -105,8 +110,6 @@ fun ResetPwPageWithEmail(navController: NavController) {
                     }
                 }
             }
-
-
         },
         sheetPeekHeight = (0.8 * screenHeightDp).dp
     ) {
@@ -142,11 +145,12 @@ fun ResetPwPageWithEmail(navController: NavController) {
                         email,
                         { newText ->
                             email = newText
-                            isError = !viewModel.isEmailValid(email)
+                            isError = !email.isEmailValid()
                         },
 
                         isError = isError,
-                        hint = "이메일"
+                        hint = "이메일",
+                        singLine = true
                     )
                     if (isError) {
                         Text(
@@ -159,7 +163,6 @@ fun ResetPwPageWithEmail(navController: NavController) {
 
                     val enabled = !(isError || email.isEmpty())
                     val focusManager = LocalFocusManager.current
-
 
                     Button(
                         //비번 변경 이메일요청
@@ -210,11 +213,9 @@ fun ResetPwPageWithEmail(navController: NavController) {
                             SendEmailFinishedAlert("이메일 주소로 인증메일이 발송됐습니다.") {
                                 viewModel.isSendEmailVerifyApiFinished = false
                             }
-
                         }
                     }
                 }
-
             }
         )
     }
