@@ -32,10 +32,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.ui.theme.LinkedInColor
-import com.echoist.linkedout.viewModels.SettingsViewModel
+import com.echoist.linkedout.viewModels.MyPageViewModel
 
 @Composable
-fun ChangePwPage(navController: NavController, viewModel: SettingsViewModel = hiltViewModel()) {
+fun ChangePwPage(navController: NavController, viewModel: MyPageViewModel = hiltViewModel()) {
 
     val scrollState = rememberScrollState()
     LaunchedEffect(true) {
@@ -130,8 +130,8 @@ fun ChangePwPage(navController: NavController, viewModel: SettingsViewModel = hi
                 val enabled = newPw == newPwCheck && newPw.isNotBlank() //문자가 있어야함
                 Button(
                     onClick = {
-                        viewModel.updateMyInfo(
-                            viewModel.newProfile.copy(password = newPw),
+                        viewModel.updatePw(
+                            newPw,
                             navController
                         )
                     },

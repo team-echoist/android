@@ -37,7 +37,7 @@ import com.echoist.linkedout.page.settings.MySettings
 import com.echoist.linkedout.page.settings.RecentEssayList
 import com.echoist.linkedout.page.settings.SelectProfileIconBottomSheet
 import com.echoist.linkedout.page.settings.SettingBar
-import com.echoist.linkedout.viewModels.SettingsViewModel
+import com.echoist.linkedout.viewModels.MyPageViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,7 +45,7 @@ import kotlinx.coroutines.launch
 fun TabletMyInfoRoute(
     modifier: Modifier = Modifier,
     navController: NavController,
-    viewModel: SettingsViewModel = hiltViewModel()
+    viewModel: MyPageViewModel = hiltViewModel()
 ) {
     var isApiFinished by remember {
         mutableStateOf(false)
@@ -87,8 +87,7 @@ fun TabletMyInfoRoute(
                     )
                 )
             ) {
-                Log.d(ContentValues.TAG, "MyPage: ${viewModel.newProfile}")
-                SelectProfileIconBottomSheet(viewModel)
+                //SelectProfileIconBottomSheet(viewModel)
             }
             //기본
 
@@ -109,14 +108,16 @@ fun TabletMyInfoRoute(
             ) {
                 ModifyMyProfileBottomSheet(
                     onClickComplete = {
-                        viewModel.updateMyInfo(viewModel.newProfile, navController)
+                        viewModel.updateMyInfo(navController)
                     },
                     onClickCancel = {
                         scope.launch {
                             bottomSheetState.hide()
-
                         }
-                    }, viewModel
+                    },
+                    onClickImageChange = {
+                        viewModel.isClickedModifyImage = true
+                    }
                 )
             }
 
@@ -141,7 +142,9 @@ fun TabletMyInfoRoute(
                 SettingBar("최근 본 글") { navController.navigate("RecentViewedEssayPage") }
                 RecentEssayList(
                     itemList = viewModel.getRecentViewedEssayList(),
-                    navController
+                    onClickEssayItem = { essayId ->
+                        // 에세이 디테일로 넘어가는 동작
+                    }
                 )
                 MembershipSettingBar("멤버십 관리") {}
                 SettingBar("계정 관리") { navController.navigate("AccountPage") }
