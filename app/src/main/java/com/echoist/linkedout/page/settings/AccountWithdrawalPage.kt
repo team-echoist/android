@@ -53,14 +53,14 @@ import com.echoist.linkedout.R
 import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.page.community.ReportTextField
 import com.echoist.linkedout.ui.theme.LinkedInColor
-import com.echoist.linkedout.viewModels.SettingsViewModel
+import com.echoist.linkedout.viewModels.MyPageViewModel
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun AccountWithdrawalPage(navController: NavController) {
 
     val scrollState = rememberScrollState()
-    val viewModel: SettingsViewModel = hiltViewModel()
+    val viewModel: MyPageViewModel = hiltViewModel()
 
     var isWithdrawalClicked by remember { mutableStateOf(false) }
     val reasonList = listOf(

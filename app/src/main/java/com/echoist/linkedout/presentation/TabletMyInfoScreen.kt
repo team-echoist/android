@@ -37,7 +37,7 @@ import com.echoist.linkedout.page.settings.MySettings
 import com.echoist.linkedout.page.settings.RecentEssayList
 import com.echoist.linkedout.page.settings.SelectProfileIconBottomSheet
 import com.echoist.linkedout.page.settings.SettingBar
-import com.echoist.linkedout.viewModels.SettingsViewModel
+import com.echoist.linkedout.viewModels.MyPageViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,7 +45,7 @@ import kotlinx.coroutines.launch
 fun TabletMyInfoRoute(
     modifier: Modifier = Modifier,
     navController: NavController,
-    viewModel: SettingsViewModel = hiltViewModel()
+    viewModel: MyPageViewModel = hiltViewModel()
 ) {
     var isApiFinished by remember {
         mutableStateOf(false)
@@ -88,7 +88,7 @@ fun TabletMyInfoRoute(
                 )
             ) {
                 Log.d(ContentValues.TAG, "MyPage: ${viewModel.newProfile}")
-                SelectProfileIconBottomSheet(viewModel)
+                //SelectProfileIconBottomSheet(viewModel)
             }
             //기본
 

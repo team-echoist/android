@@ -33,11 +33,11 @@ import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.page.home.LogoutBox
 import com.echoist.linkedout.page.settings.EmailBox
 import com.echoist.linkedout.page.settings.ModifyBox
-import com.echoist.linkedout.viewModels.SettingsViewModel
+import com.echoist.linkedout.viewModels.MyPageViewModel
 
 @Composable
 fun TabletAccountRoute(
-    viewModel: SettingsViewModel = hiltViewModel(),
+    viewModel: MyPageViewModel = hiltViewModel(),
     contentPadding: PaddingValues,
     onClickChangeEmail: () -> Unit,
     onClickChangePassword: () -> Unit,

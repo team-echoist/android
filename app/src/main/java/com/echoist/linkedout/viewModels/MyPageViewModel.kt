@@ -1,10 +1,8 @@
 package com.echoist.linkedout.viewModels
 
-import android.content.ContentResolver
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.net.Uri
-import android.provider.OpenableColumns
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,28 +19,25 @@ import com.echoist.linkedout.data.BadgeBoxItemWithTag
 import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.data.toBadgeBoxItem
+import com.echoist.linkedout.getFileFromUri
 import com.echoist.linkedout.page.myLog.Token
-import com.echoist.linkedout.page.myLog.Token.bearerAccessToken
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import java.io.File
-import java.io.FileOutputStream
-import java.io.InputStream
 import javax.inject.Inject
 
 @HiltViewModel
-class SettingsViewModel @Inject constructor(
+class MyPageViewModel @Inject constructor(
     private val essayApi: EssayApi,
     private val userApi: UserApi,
     private val exampleItems: ExampleItems
 ) : ViewModel() {
-    var isClickedModifyImage by mutableStateOf(false)
-
     var newProfile by mutableStateOf(UserInfo())
+    var isClickedModifyImage by mutableStateOf(false)
 
     var isLevelUpSuccess by mutableStateOf(false)
 
@@ -51,63 +46,43 @@ class SettingsViewModel @Inject constructor(
 
     var isLoading by mutableStateOf(false)
 
-    fun getFileFromUri(uri: Uri, context: Context): File {
-        val contentResolver = context.contentResolver
-        val fileName = getFileName(uri, contentResolver)
-        val file = File(context.cacheDir, fileName.toString())
-        val inputStream: InputStream? = contentResolver.openInputStream(uri)
-        val outputStream = FileOutputStream(file)
-        inputStream?.copyTo(outputStream)
-        inputStream?.close()
-        outputStream.close()
-        return file
-    }
+    private val _newProfile = MutableStateFlow(UserInfo())
+    //val newProfile: StateFlow<UserInfo> = _newProfile
 
-    private fun getFileName(uri: Uri, contentResolver: ContentResolver): String? {
-        var name: String? = null
-        val cursor = contentResolver.query(uri, null, null, null, null)
-        cursor?.use {
-            if (it.moveToFirst()) {
-                name = it.getString(it.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME))
-            }
-        }
-        return name
-    }
-
+    // mypageViewModel 분리
     suspend fun uploadImage(uri: Uri, context: Context): String? { //서버에 이미지 업로드하고 url을 반환
+        try {
+            val file = getFileFromUri(uri, context)
+            val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+            val body = MultipartBody.Part.createFormData("image", file.name, requestFile)
 
-            try {
-                val file = getFileFromUri(uri, context)
-                val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
-                val body = MultipartBody.Part.createFormData("image", file.name, requestFile)
+            // 서버로 업로드 요청 보내기
+            val response = userApi.userImageUpload(body)
 
-                // 서버로 업로드 요청 보내기
-                val response = userApi.userImageUpload( body)
-
-                if (response.isSuccessful){
-                    newProfile.profileImage = response.body()!!.data.imageUrl
-                    exampleItems.myProfile.profileImage = response.body()!!.data.imageUrl
-                    return response.body()!!.data.imageUrl
-                }else
-                    return  null
-
-                // 서버 응답에서 URL 추출
-            } catch (e: Exception) {
-                e.printStackTrace()
+            if (response.isSuccessful) {
+                _newProfile.value.profileImage = response.body()!!.data.imageUrl
+                exampleItems.myProfile.profileImage = response.body()!!.data.imageUrl
+                return response.body()!!.data.imageUrl
+            } else
                 return null
-            } finally {
 
-            }
-
+            // 서버 응답에서 URL 추출
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return null
+        } finally {
+        }
     }
-    fun getRecentViewedEssayList() : List<EssayApi.EssayItem>{
+
+    // mypageViewModel 분리
+    fun getRecentViewedEssayList(): List<EssayApi.EssayItem> {
         return exampleItems.recentViewedEssayList
     }
 
-    fun requestMyInfo(){
+    // mypageViewModel 분리
+    fun requestMyInfo() {
         viewModelScope.launch {
             try {
-
                 val response = userApi.getMyInfo()
 
                 Log.d(TAG, "readMyInfo: suc1")
@@ -115,21 +90,17 @@ class SettingsViewModel @Inject constructor(
                 exampleItems.myProfile.essayStats = response.data.essayStats
                 Log.i(TAG, "readMyInfo: ${exampleItems.myProfile}")
                 getMyInfo()
-
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 Log.d(TAG, "readMyInfo: error err")
                 e.printStackTrace()
                 Log.d(TAG, e.message.toString())
                 Log.d(TAG, e.cause.toString())
-
-
             }
         }
-
     }
 
-
-    fun getMyInfo() : UserInfo{
+    // mypageViewModel, AccountViewModel 분리
+    fun getMyInfo(): UserInfo {
         Log.d("example item", "readMyInfo: ${exampleItems.myProfile}")
         return exampleItems.myProfile
     }
@@ -139,26 +110,25 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 //readMyInfo()
-                val response = userApi.readBadgeList( )
+                val response = userApi.readBadgeList()
                 Log.d(TAG, "readSimpleBadgeList: ${response.body()!!.data.badges}")
-                response.body()?.data?.badges!!.let{badges ->
-                    exampleItems.simpleBadgeList = badges.map { it.toBadgeBoxItem() }.toMutableStateList()
+                response.body()?.data?.badges!!.let { badges ->
+                    exampleItems.simpleBadgeList =
+                        badges.map { it.toBadgeBoxItem() }.toMutableStateList()
                 }
                 Log.d(TAG, "readSimpleBadgeList: ${exampleItems.simpleBadgeList}")
-                Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
-
-
+                Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() }
+                    ?: Token.accessToken
             } catch (e: Exception) {
                 e.printStackTrace()
                 // api 요청 실패
                 Log.e("writeEssayApiFailed", "Failed to write essay: ${e.message}")
                 Log.e("writeEssayApiFailed", "Failed to write essay: ${e.localizedMessage}")
-
             }
         }
     }
 
-    fun getSimpleBadgeList() : List<BadgeBoxItem>{
+    fun getSimpleBadgeList(): List<BadgeBoxItem> {
         return exampleItems.simpleBadgeList.toList()
     }
 
@@ -168,11 +138,12 @@ class SettingsViewModel @Inject constructor(
                 val response = userApi.readBadgeWithTagsList()
                 response.body()?.data?.badges?.let { badges ->
                     // badges 리스트를 SnapshotStateList로 변환
-                    exampleItems.detailBadgeList = badges.map { it.toBadgeBoxItem() }.toMutableStateList() as SnapshotStateList<BadgeBoxItemWithTag>
+                    exampleItems.detailBadgeList = badges.map { it.toBadgeBoxItem() }
+                        .toMutableStateList() as SnapshotStateList<BadgeBoxItemWithTag>
                 }
                 Log.d(TAG, "readdetailList: ${exampleItems.detailBadgeList}")
-                Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
-
+                Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() }
+                    ?: Token.accessToken
 
                 navController.navigate("BadgePage")
             } catch (e: Exception) {
@@ -183,25 +154,25 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun getDetailBadgeList() : List<BadgeBoxItemWithTag>{
+    fun getDetailBadgeList(): List<BadgeBoxItemWithTag> {
         return exampleItems.detailBadgeList.toList()
     }
 
-    fun requestBadgeLevelUp(badgeId : Int) {
+    // badgeViewModel 분리
+    fun requestBadgeLevelUp(badgeId: Int) {
         viewModelScope.launch {
             try {
-
-                val response = userApi.requestBadgeLevelUp( badgeId)
+                val response = userApi.requestBadgeLevelUp(badgeId)
                 Log.d(TAG, "requestBadgeLevelUp: ${Token.accessToken}")
 
-                Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() }
+                    ?: Token.accessToken
 
-                if (response.body()!!.success){
+                if (response.body()!!.success) {
                     isLevelUpSuccess = true
                     delay(1000)
                     isLevelUpSuccess = false
                 }
-
             } catch (e: Exception) {
                 e.printStackTrace()
                 // api 요청 실패
@@ -210,117 +181,103 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun updateMyInfo(userInfo: UserInfo,navController: NavController) {
+    fun updateMyInfo(userInfo: UserInfo, navController: NavController) {
         viewModelScope.launch {
             isLoading = true
             try {
+                val response = userApi.userUpdate(userInfo)
 
-                val response = userApi.userUpdate( userInfo)
-
-                if (response.isSuccessful){
-                    Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
-
-                    Log.d("업데이트 요청 성공", "updateMyInfo: ${newProfile.profileImage}")
-
-                    exampleItems.myProfile.profileImage = newProfile.profileImage
-                    exampleItems.myProfile.nickname = newProfile.nickname
-
+                if (response.isSuccessful) {
+                    Token.accessToken =
+                        response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() }
+                            ?: Token.accessToken
+                    exampleItems.myProfile.profileImage = _newProfile.value.profileImage
+                    exampleItems.myProfile.nickname = _newProfile.value.nickname
                     readSimpleBadgeList()
                     getMyInfo()
                     navController.navigate("SETTINGS")
-                    newProfile = UserInfo()
-
-                }
-                else{
+                    _newProfile.value = UserInfo()
+                } else {
                     Log.e("업데이트 요청 실패", "updateMyInfo: ${response.code()}")
-
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
                 // api 요청 실패
                 Log.e("업데이트 요청 실패", "updateMyInfo: ${e.printStackTrace()}")
-
-            }
-            finally {
+            } finally {
                 isLoading = false
             }
         }
     }
 
     var isApiFinished by mutableStateOf(false)
-    fun readRecentEssays(){
+    fun readRecentEssays() {
         isApiFinished = false
         viewModelScope.launch {
             isLoading = true
-
             try {
                 val response = essayApi.readRecentEssays()
-
-                if (response.isSuccessful){
-                                        Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
-                    exampleItems.recentViewedEssayList = response.body()!!.data.essays.toMutableStateList()
+                if (response.isSuccessful) {
+                    Token.accessToken =
+                        response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() }
+                            ?: Token.accessToken
+                    exampleItems.recentViewedEssayList =
+                        response.body()!!.data.essays.toMutableStateList()
                     isApiFinished = true
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
                 // api 요청 실패
                 Log.e("writeEssayApiFailed", "Failed to write essay: ${e.message}")
-            }
-            finally {
+            } finally {
                 isLoading = false
             }
         }
     }
 
-    fun requestWithdrawal(reasons : List<String>, navController: NavController){
+    fun requestWithdrawal(reasons: List<String>, navController: NavController) {
         viewModelScope.launch {
             isLoading = true
             try {
-
                 val body = UserApi.RequestDeactivate(reasons)
                 val response = userApi.requestDeactivate(body)
                 Log.d(TAG, "requestWithdrawal: $reasons")
-
-                if (response.isSuccessful){
-                    Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
-                    navController.navigate("LoginPage"){
+                if (response.isSuccessful) {
+                    Token.accessToken =
+                        response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() }
+                            ?: Token.accessToken
+                    navController.navigate("LoginPage") {
                         popUpTo(navController.graph.startDestinationId) {
                             inclusive = true
                         }
                     }
-                }
-                else{
+                } else {
                     Log.e("탈퇴 실패", "코드 :  ${response.code()}")
                 }
-            }catch (e: Exception) {
+            } catch (e: Exception) {
                 e.printStackTrace()
                 // api 요청 실패
                 Log.e("탈퇴 요청 실패", "${e.message}")
-            }
-            finally {
+            } finally {
                 isLoading = false
             }
         }
     }
 
     var nicknameCheckCode by mutableStateOf(200)
-    fun requestNicknameDuplicated(nickname : String){
+    fun requestNicknameDuplicated(nickname: String) {
         viewModelScope.launch {
             try {
-
                 val nickname = UserApi.NickName(nickname)
                 val response = userApi.requestNicknameDuplicated(nickname)
                 Log.d("닉네임 중복검사", "requestNicknameDuplicated: $nickname")
-
-                if (response.isSuccessful){ //실시간요청이기때문에 토큰사용 x
+                if (response.isSuccessful) { //실시간요청이기때문에 토큰사용 x
                     //                    Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
                     Log.d("닉네임 중복검사 성공", "코드: ${response.code()}")
                     nicknameCheckCode = response.code()
-                }
-                else{
+                } else {
                     Log.e("닉네임 중복검사 실패", "코드: ${response.code()}")
                     nicknameCheckCode = response.code()
-
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -329,5 +286,4 @@ class SettingsViewModel @Inject constructor(
             }
         }
     }
-
 }

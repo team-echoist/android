@@ -107,7 +107,7 @@ import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.home.MyBottomNavigation
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.viewModels.CommunityViewModel
-import com.echoist.linkedout.viewModels.SettingsViewModel
+import com.echoist.linkedout.viewModels.MyPageViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -116,7 +116,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun MyPage(
     navController: NavController,
-    viewModel: SettingsViewModel = hiltViewModel()
+    viewModel: MyPageViewModel = hiltViewModel()
 ) {
 
     var isApiFinished by remember {
@@ -459,7 +459,7 @@ fun RecentEssayList(itemList: List<EssayApi.EssayItem>, navController: NavContro
 }
 
 @Composable
-fun BadgeDescriptionBox(badgeBoxItem: BadgeBoxItem, viewModel: SettingsViewModel) {
+fun BadgeDescriptionBox(badgeBoxItem: BadgeBoxItem, viewModel: MyPageViewModel) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -522,7 +522,7 @@ fun BadgeDescriptionBox(badgeBoxItem: BadgeBoxItem, viewModel: SettingsViewModel
 @Composable
 fun LinkedOutBadgeItem(
     badgeBoxItem: BadgeBoxItem,
-    viewModel: SettingsViewModel
+    viewModel: MyPageViewModel
 ) {
     // 기본 Modifier 정의
     val baseModifier = Modifier
@@ -567,7 +567,7 @@ fun LinkedOutBadgeItem(
 
 
 @Composable
-fun LinkedOutBadgeGrid(viewModel: SettingsViewModel) {
+fun LinkedOutBadgeGrid(viewModel: MyPageViewModel) {
     val badgeList by remember {
         mutableStateOf(viewModel.getSimpleBadgeList())
     }
@@ -601,7 +601,7 @@ fun LinkedOutBadgeGrid(viewModel: SettingsViewModel) {
 }
 
 @Composable
-fun ModifyNickNameTextField(viewModel: SettingsViewModel) {
+fun ModifyNickNameTextField(viewModel: MyPageViewModel) {
 
     var text by remember { mutableStateOf(viewModel.getMyInfo().nickname ?: "에러") }
     var message by remember {
@@ -663,7 +663,7 @@ fun ModifyNickNameTextField(viewModel: SettingsViewModel) {
 fun ModifyMyProfileBottomSheet(
     onClickComplete: () -> Unit,
     onClickCancel: () -> Unit,
-    viewModel: SettingsViewModel
+    viewModel: MyPageViewModel
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -783,7 +783,7 @@ fun SelectProfileImageIcon(onClickModifyImage: () -> Unit, imageUrl: String) {
 
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun SelectProfileIconBottomSheet(viewModel: SettingsViewModel) {
+fun SelectProfileIconBottomSheet(viewModel: MyPageViewModel) {
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()

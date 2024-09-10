@@ -64,10 +64,10 @@ import androidx.navigation.NavController
 import com.echoist.linkedout.R
 import com.echoist.linkedout.data.BadgeBoxItemWithTag
 import com.echoist.linkedout.page.home.MyBottomNavigation
-import com.echoist.linkedout.viewModels.SettingsViewModel
+import com.echoist.linkedout.viewModels.MyPageViewModel
 
 @Composable
-fun BadgePage(navController: NavController, viewModel: SettingsViewModel) {
+fun BadgePage(navController: NavController, viewModel: MyPageViewModel) {
     val hasCalledApi = remember { mutableStateOf(false) }
 
     val badgeBoxItems = viewModel.getDetailBadgeList()
@@ -125,7 +125,7 @@ fun BadgeTopAppBar(navController: NavController) {
 }
 
 @Composable
-fun BadgeItem(badgeBoxItem: BadgeBoxItemWithTag, viewModel: SettingsViewModel) {
+fun BadgeItem(badgeBoxItem: BadgeBoxItemWithTag, viewModel: MyPageViewModel) {
     val badgeTagList = badgeBoxItem.tags
     var isClicked by remember { mutableStateOf(false) }
     val arrowImage = if (isClicked) R.drawable.arrowup else R.drawable.arrowdown
@@ -291,7 +291,7 @@ fun BadgeImg(badgeBoxItem: BadgeBoxItemWithTag) {
 
 //레벨업 보상획득 시 페이지
 @Composable
-fun BadgeLevelUpSuccess(viewModel: SettingsViewModel, badgeBoxItem: BadgeBoxItemWithTag) {
+fun BadgeLevelUpSuccess(viewModel: MyPageViewModel, badgeBoxItem: BadgeBoxItemWithTag) {
 
     AnimatedVisibility(
         viewModel.isLevelUpSuccess,
