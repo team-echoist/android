@@ -111,17 +111,24 @@ import com.echoist.linkedout.viewModels.MyPageViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyPage(
     navController: NavController,
     viewModel: MyPageViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
+    val scrollState = rememberScrollState()
+    val scope = rememberCoroutineScope()
 
-    var isApiFinished by remember {
-        mutableStateOf(false)
-    }
+    var isApiFinished by remember { mutableStateOf(false) }
+
+    val bottomSheetState =
+        rememberStandardBottomSheetState(initialValue = SheetValue.Hidden, skipHiddenState = false)
+    val scaffoldState = androidx.compose.material3.rememberBottomSheetScaffoldState(
+        bottomSheetState = bottomSheetState
+    )
+
     LaunchedEffect(key1 = isApiFinished) {
         viewModel.requestMyInfo()
         viewModel.readSimpleBadgeList()
@@ -129,15 +136,6 @@ fun MyPage(
         viewModel.readRecentEssays()
         isApiFinished = false
     }
-
-    val scrollState = rememberScrollState()
-    val scope = rememberCoroutineScope()
-
-    val bottomSheetState =
-        rememberStandardBottomSheetState(initialValue = SheetValue.Hidden, skipHiddenState = false)
-    val scaffoldState = androidx.compose.material3.rememberBottomSheetScaffoldState(
-        bottomSheetState = bottomSheetState
-    )
 
     BottomSheetScaffold(
         sheetContainerColor = Color(0xFF111111),
@@ -150,10 +148,20 @@ fun MyPage(
                 exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
             ) {
                 Log.d(TAG, "MyPage: ${viewModel.newProfile}")
-                SelectProfileIconBottomSheet(viewModel)
+                SelectProfileIconBottomSheet(
+                    uploadImage = { uri ->
+                        scope.launch {
+                            viewModel.uploadImage(uri, context)
+                        }
+                    },
+                    onClickImage = { imageUrl ->
+                        viewModel.newProfile.profileImage = imageUrl
+                        viewModel.isClickedModifyImage = false
+                    },
+                    onClickBack = { viewModel.isClickedModifyImage = false }
+                )
             }
             //기본
-
             AnimatedVisibility(
                 visible = !viewModel.isClickedModifyImage,
                 enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = LinearEasing)),
@@ -780,32 +788,13 @@ fun SelectProfileImageIcon(onClickModifyImage: () -> Unit, imageUrl: String) {
     }
 }
 
-
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun SelectProfileIconBottomSheet(viewModel: MyPageViewModel) {
-
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
-    val galleryLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            selectedImageUri = result.data?.data
-            selectedImageUri?.let {
-                // 선택된 이미지를 ViewModel에 저장합니다.
-                viewModel.newProfile.profileImage = it.toString()
-                viewModel.isClickedModifyImage = false
-                Log.d(TAG, "MyPage: ${viewModel.newProfile}")
-
-                scope.launch {
-                    viewModel.uploadImage(it, context = context)
-                }
-            }
-        }
-    }
-
+fun SelectProfileIconBottomSheet(
+    uploadImage: (Uri) -> Unit,
+    onClickImage: (String) -> Unit,
+    onClickBack: () -> Unit
+) {
     val icons = listOf(
         PROFILE_IMAGE_01,
         PROFILE_IMAGE_02,
@@ -821,6 +810,20 @@ fun SelectProfileIconBottomSheet(viewModel: MyPageViewModel) {
         PROFILE_IMAGE_12
     )
 
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            selectedImageUri = result.data?.data
+            selectedImageUri?.let {
+                uploadImage(it)
+                onClickImage(it.toString())
+            }
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -828,7 +831,6 @@ fun SelectProfileIconBottomSheet(viewModel: MyPageViewModel) {
             .height(770.dp)
     ) {
         Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
                 title = {
@@ -844,12 +846,11 @@ fun SelectProfileIconBottomSheet(viewModel: MyPageViewModel) {
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "arrow back",
                         modifier = Modifier
-                            .clickable { viewModel.isClickedModifyImage = false }
+                            .clickable { onClickBack() }
                             .padding(start = 10.dp)
                             .size(30.dp),
                         tint = Color.White
                     )
-
                 }
             )
             Spacer(modifier = Modifier.height(20.dp))
@@ -871,7 +872,6 @@ fun SelectProfileIconBottomSheet(viewModel: MyPageViewModel) {
                                     val intent = Intent(Intent.ACTION_PICK)
                                     intent.type = "image/*"
                                     galleryLauncher.launch(intent)
-
                                 }
                         )
                     } else {
@@ -882,23 +882,15 @@ fun SelectProfileIconBottomSheet(viewModel: MyPageViewModel) {
                             Modifier
                                 .size(120.dp)
                                 .clickable {
-                                    viewModel.isClickedModifyImage = false
-                                    viewModel.newProfile.profileImage = icon
-                                    Log.d(TAG, "MyPage: ${viewModel.newProfile}")
+                                    onClickImage(icon)
                                 }
                         )
                     }
                 }
                 item {
                     Spacer(modifier = Modifier.height(15.dp))
-
                 }
             }
-
         }
     }
 }
-
-
-
-
