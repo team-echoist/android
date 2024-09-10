@@ -109,14 +109,16 @@ fun TabletMyInfoRoute(
             ) {
                 ModifyMyProfileBottomSheet(
                     onClickComplete = {
-                        viewModel.updateMyInfo(viewModel.newProfile, navController)
+                        viewModel.updateMyInfo(navController)
                     },
                     onClickCancel = {
                         scope.launch {
                             bottomSheetState.hide()
-
                         }
-                    }, viewModel
+                    },
+                    onClickImageChange = {
+                        viewModel.isClickedModifyImage = true
+                    }
                 )
             }
 

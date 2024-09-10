@@ -24,6 +24,7 @@ import com.echoist.linkedout.page.myLog.Token
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -46,21 +47,22 @@ class MyPageViewModel @Inject constructor(
 
     var isLoading by mutableStateOf(false)
 
-    private val _newProfile = MutableStateFlow(UserInfo())
-    //val newProfile: StateFlow<UserInfo> = _newProfile
+    private val _userProfile = MutableStateFlow(exampleItems.myProfile)
+    val userProfile: StateFlow<UserInfo> = _userProfile
 
-    // mypageViewModel 분리
+    private val _tempProfile = MutableStateFlow(userProfile.value)
+    val tempProfile: StateFlow<UserInfo> = _tempProfile
+
     suspend fun uploadImage(uri: Uri, context: Context): String? { //서버에 이미지 업로드하고 url을 반환
         try {
             val file = getFileFromUri(uri, context)
             val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
             val body = MultipartBody.Part.createFormData("image", file.name, requestFile)
 
-            // 서버로 업로드 요청 보내기
             val response = userApi.userImageUpload(body)
 
             if (response.isSuccessful) {
-                _newProfile.value.profileImage = response.body()!!.data.imageUrl
+                _userProfile.value.profileImage = response.body()!!.data.imageUrl
                 exampleItems.myProfile.profileImage = response.body()!!.data.imageUrl
                 return response.body()!!.data.imageUrl
             } else
@@ -74,12 +76,10 @@ class MyPageViewModel @Inject constructor(
         }
     }
 
-    // mypageViewModel 분리
     fun getRecentViewedEssayList(): List<EssayApi.EssayItem> {
         return exampleItems.recentViewedEssayList
     }
 
-    // mypageViewModel 분리
     fun requestMyInfo() {
         viewModelScope.launch {
             try {
@@ -99,7 +99,6 @@ class MyPageViewModel @Inject constructor(
         }
     }
 
-    // mypageViewModel, AccountViewModel 분리
     fun getMyInfo(): UserInfo {
         Log.d("example item", "readMyInfo: ${exampleItems.myProfile}")
         return exampleItems.myProfile
@@ -181,22 +180,22 @@ class MyPageViewModel @Inject constructor(
         }
     }
 
-    fun updateMyInfo(userInfo: UserInfo, navController: NavController) {
+    fun updateMyInfo(navController: NavController) {
         viewModelScope.launch {
             isLoading = true
             try {
-                val response = userApi.userUpdate(userInfo)
+                val response = userApi.userUpdate(tempProfile.value)
 
                 if (response.isSuccessful) {
                     Token.accessToken =
                         response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() }
                             ?: Token.accessToken
-                    exampleItems.myProfile.profileImage = _newProfile.value.profileImage
-                    exampleItems.myProfile.nickname = _newProfile.value.nickname
+                    exampleItems.myProfile.profileImage = tempProfile.value.profileImage
+                    exampleItems.myProfile.nickname = tempProfile.value.nickname
+                    _userProfile.value = tempProfile.value
                     readSimpleBadgeList()
                     getMyInfo()
                     navController.navigate("SETTINGS")
-                    _newProfile.value = UserInfo()
                 } else {
                     Log.e("업데이트 요청 실패", "updateMyInfo: ${response.code()}")
                 }
@@ -265,24 +264,29 @@ class MyPageViewModel @Inject constructor(
     }
 
     var nicknameCheckCode by mutableStateOf(200)
-    fun requestNicknameDuplicated(nickname: String) {
+
+    fun onNicknameChange(nickname: String) {
+        _tempProfile.value.nickname = nickname
+        requestNicknameDuplicated(nickname)  // 닉네임 중복 체크
+    }
+
+    fun onImageChange(url: String) {
+        _tempProfile.value.profileImage = url
+    }
+
+    private fun requestNicknameDuplicated(nickname: String) {
         viewModelScope.launch {
             try {
-                val nickname = UserApi.NickName(nickname)
-                val response = userApi.requestNicknameDuplicated(nickname)
-                Log.d("닉네임 중복검사", "requestNicknameDuplicated: $nickname")
-                if (response.isSuccessful) { //실시간요청이기때문에 토큰사용 x
-                    //                    Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
-                    Log.d("닉네임 중복검사 성공", "코드: ${response.code()}")
+                val nicknameRequest = UserApi.NickName(nickname)
+                val response = userApi.requestNicknameDuplicated(nicknameRequest)
+                if (response.isSuccessful) {
                     nicknameCheckCode = response.code()
                 } else {
-                    Log.e("닉네임 중복검사 실패", "코드: ${response.code()}")
                     nicknameCheckCode = response.code()
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                // api 요청 실패
-                Log.e("ApiFailed", "Failed to write essay: ${e.message}")
+                Log.e("ApiFailed", "Failed to check nickname: ${e.message}")
             }
         }
     }
