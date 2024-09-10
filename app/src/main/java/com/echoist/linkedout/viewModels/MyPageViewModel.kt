@@ -208,6 +208,35 @@ class MyPageViewModel @Inject constructor(
         }
     }
 
+    fun updatePw(password: String, navController: NavController) {
+        viewModelScope.launch {
+            isLoading = true
+            try {
+                val response = userApi.userUpdate(tempProfile.value.copy(password = password))
+
+                if (response.isSuccessful) {
+                    Token.accessToken =
+                        response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() }
+                            ?: Token.accessToken
+                    exampleItems.myProfile.profileImage = tempProfile.value.profileImage
+                    exampleItems.myProfile.nickname = tempProfile.value.nickname
+                    _userProfile.value = tempProfile.value
+                    readSimpleBadgeList()
+                    getMyInfo()
+                    navController.navigate("SETTINGS")
+                } else {
+                    Log.e("업데이트 요청 실패", "updateMyInfo: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                // api 요청 실패
+                Log.e("업데이트 요청 실패", "updateMyInfo: ${e.printStackTrace()}")
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
     var isApiFinished by mutableStateOf(false)
     fun readRecentEssays() {
         isApiFinished = false

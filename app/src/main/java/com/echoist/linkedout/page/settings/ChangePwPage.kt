@@ -130,8 +130,8 @@ fun ChangePwPage(navController: NavController, viewModel: MyPageViewModel = hilt
                 val enabled = newPw == newPwCheck && newPw.isNotBlank() //문자가 있어야함
                 Button(
                     onClick = {
-                        viewModel.updateMyInfo(
-                            viewModel.newProfile.copy(password = newPw),
+                        viewModel.updatePw(
+                            newPw,
                             navController
                         )
                     },
