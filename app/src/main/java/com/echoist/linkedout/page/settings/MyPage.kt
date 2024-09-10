@@ -98,6 +98,7 @@ import com.echoist.linkedout.PROFILE_IMAGE_10
 import com.echoist.linkedout.PROFILE_IMAGE_11
 import com.echoist.linkedout.PROFILE_IMAGE_12
 import com.echoist.linkedout.R
+import com.echoist.linkedout.Routes
 import com.echoist.linkedout.TYPE_RECOMMEND
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.BadgeBoxItem
@@ -114,7 +115,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun MyPage(
     navController: NavController,
-    viewModel: MyPageViewModel = hiltViewModel()
+    viewModel: MyPageViewModel = hiltViewModel(),
+    communityViewModel: CommunityViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
@@ -212,10 +214,13 @@ fun MyPage(
                         SettingBar("링크드아웃 배지") { viewModel.readDetailBadgeList(navController) }
                         LinkedOutBadgeGrid(viewModel)
                         SettingBar("최근 본 글") { navController.navigate("RecentViewedEssayPage") }
-                        RecentEssayList(
-                            itemList = viewModel.getRecentViewedEssayList(),
-                            navController
-                        )
+                        RecentEssayList(itemList = viewModel.getRecentViewedEssayList()) {
+                            communityViewModel.readDetailRecentEssay(
+                                it,
+                                navController,
+                                TYPE_RECOMMEND
+                            )
+                        }
                         MembershipSettingBar("멤버십 관리") {}
                         SettingBar("계정 관리") { navController.navigate("AccountPage") }
                     }
@@ -409,13 +414,12 @@ fun MembershipSettingBar(text: String, onClick: () -> Unit) {
 @Composable
 fun RecentEssayItem(
     item: EssayApi.EssayItem,
-    viewModel: CommunityViewModel = hiltViewModel(),
-    navController: NavController
+    onClickEssayItem: (Int) -> Unit
 ) {
     Box(modifier = Modifier
         .size(150.dp, 120.dp)
         .clickable { /* 에세이로 이동 */
-            viewModel.readDetailRecentEssay(item.id!!, navController, TYPE_RECOMMEND)
+            onClickEssayItem(item.id!!)
         }) {
         Column {
             Text(text = item.title!!)
@@ -432,7 +436,10 @@ fun RecentEssayItem(
 }
 
 @Composable
-fun RecentEssayList(itemList: List<EssayApi.EssayItem>, navController: NavController) {
+fun RecentEssayList(
+    itemList: List<EssayApi.EssayItem>,
+    onClickEssayItem: (Int) -> Unit
+) {
     if (itemList.isEmpty()) {
         Text(
             text = "최근 본 글이 없습니다.",
@@ -442,7 +449,7 @@ fun RecentEssayList(itemList: List<EssayApi.EssayItem>, navController: NavContro
     } else {
         LazyRow(Modifier.padding(start = 20.dp)) {
             itemsIndexed(itemList) { index, item ->
-                RecentEssayItem(item, navController = navController)
+                RecentEssayItem(item, onClickEssayItem)
                 // 마지막 항목인 경우에만 Spacer와 VerticalDivider 실행
                 if (index < itemList.size - 1) {
                     Spacer(modifier = Modifier.width(10.dp))

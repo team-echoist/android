@@ -37,7 +37,6 @@ class MyPageViewModel @Inject constructor(
     private val userApi: UserApi,
     private val exampleItems: ExampleItems
 ) : ViewModel() {
-    var newProfile by mutableStateOf(UserInfo())
     var isClickedModifyImage by mutableStateOf(false)
 
     var isLevelUpSuccess by mutableStateOf(false)

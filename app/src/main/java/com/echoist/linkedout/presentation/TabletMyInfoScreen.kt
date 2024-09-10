@@ -87,7 +87,6 @@ fun TabletMyInfoRoute(
                     )
                 )
             ) {
-                Log.d(ContentValues.TAG, "MyPage: ${viewModel.newProfile}")
                 //SelectProfileIconBottomSheet(viewModel)
             }
             //기본
@@ -143,7 +142,9 @@ fun TabletMyInfoRoute(
                 SettingBar("최근 본 글") { navController.navigate("RecentViewedEssayPage") }
                 RecentEssayList(
                     itemList = viewModel.getRecentViewedEssayList(),
-                    navController
+                    onClickEssayItem = { essayId ->
+                        // 에세이 디테일로 넘어가는 동작
+                    }
                 )
                 MembershipSettingBar("멤버십 관리") {}
                 SettingBar("계정 관리") { navController.navigate("AccountPage") }
