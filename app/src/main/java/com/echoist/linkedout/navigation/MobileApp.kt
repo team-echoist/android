@@ -76,7 +76,6 @@ fun MobileApp(
     val signUpViewModel: SignUpViewModel = hiltViewModel()
     val myLogViewModel: MyLogViewModel = hiltViewModel()
     val communityViewModel: CommunityViewModel = hiltViewModel()
-    val settingsViewModel: MyPageViewModel = hiltViewModel()
     val supportViewModel: SupportViewModel = hiltViewModel()
 
     NavHost(
@@ -259,7 +258,7 @@ fun MobileApp(
             AccountWithdrawalPage(navController)
         }
         composable(Routes.BadgePage) {
-            BadgePage(navController, settingsViewModel)
+            BadgePage(navController)
         }
         composable(
             Routes.WritingPage,

@@ -329,7 +329,7 @@ fun ModalBottomSheetContent(viewModel: HomeViewModel, navController: NavControll
                 isLogoutClicked = false
                 navController.navigate(Routes.LoginPage) {
                     // 기존의 모든 백스택을 제거하고 login 루트로 설정
-                    popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                    popUpTo(Routes.LoginPage) { inclusive = true }
                     launchSingleTop = true
                 }
                 //로컬 자동로그인, id pw 값 초기화

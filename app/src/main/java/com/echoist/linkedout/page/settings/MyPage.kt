@@ -108,7 +108,6 @@ import com.echoist.linkedout.page.home.MyBottomNavigation
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.viewModels.CommunityViewModel
 import com.echoist.linkedout.viewModels.MyPageViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -121,7 +120,9 @@ fun MyPage(
     val context = LocalContext.current
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
+
     val userInfo by viewModel.userProfile.collectAsState()
+    val badgeList by viewModel.badgeList.collectAsState()
 
     var isApiFinished by remember { mutableStateOf(false) }
 
@@ -211,8 +212,11 @@ fun MyPage(
                         }
                     }
                     if (viewModel.isApiFinished) {
-                        SettingBar("링크드아웃 배지") { viewModel.readDetailBadgeList(navController) }
-                        LinkedOutBadgeGrid(viewModel)
+                        SettingBar("링크드아웃 배지") { navController.navigate(Routes.BadgePage) }
+                        LinkedOutBadgeGrid(badgeList) {
+                            viewModel.badgeBoxItem = it
+                            viewModel.isBadgeClicked = true
+                        }
                         SettingBar("최근 본 글") { navController.navigate("RecentViewedEssayPage") }
                         RecentEssayList(itemList = viewModel.getRecentViewedEssayList()) {
                             communityViewModel.readDetailRecentEssay(
@@ -230,7 +234,9 @@ fun MyPage(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-                        BadgeDescriptionBox(viewModel.badgeBoxItem!!, viewModel)
+                        BadgeDescriptionBox(viewModel.badgeBoxItem!!) {
+                            viewModel.isBadgeClicked = false
+                        }
                     }
                 }
             }
@@ -462,7 +468,7 @@ fun RecentEssayList(
 }
 
 @Composable
-fun BadgeDescriptionBox(badgeBoxItem: BadgeBoxItem, viewModel: MyPageViewModel) {
+fun BadgeDescriptionBox(badgeBoxItem: BadgeBoxItem, isBadgeClicked: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -509,7 +515,7 @@ fun BadgeDescriptionBox(badgeBoxItem: BadgeBoxItem, viewModel: MyPageViewModel) 
             }
             Spacer(modifier = Modifier.height(23.dp))
             Button(
-                onClick = { viewModel.isBadgeClicked = false },
+                onClick = { isBadgeClicked() },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(20)
             ) {
@@ -525,15 +531,14 @@ fun BadgeDescriptionBox(badgeBoxItem: BadgeBoxItem, viewModel: MyPageViewModel) 
 @Composable
 fun LinkedOutBadgeItem(
     badgeBoxItem: BadgeBoxItem,
-    viewModel: MyPageViewModel
+    onClickBadge: (BadgeBoxItem) -> Unit
 ) {
     // 기본 Modifier 정의
     val baseModifier = Modifier
         .size(110.dp)
         .clickable {
             if (badgeBoxItem.level >= 1) {
-                viewModel.badgeBoxItem = badgeBoxItem
-                viewModel.isBadgeClicked = true
+                onClickBadge(badgeBoxItem)
             }
         }
         .background(
@@ -567,17 +572,8 @@ fun LinkedOutBadgeItem(
     }
 }
 
-
 @Composable
-fun LinkedOutBadgeGrid(viewModel: MyPageViewModel) {
-    val badgeList by remember {
-        mutableStateOf(viewModel.getSimpleBadgeList())
-    }
-
-    LaunchedEffect(Unit) {
-        delay(50)
-    }
-
+fun LinkedOutBadgeGrid(badgeList: List<BadgeBoxItem>, onClickBadge: (BadgeBoxItem) -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -593,7 +589,9 @@ fun LinkedOutBadgeGrid(viewModel: MyPageViewModel) {
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             items(badgeList) {
-                LinkedOutBadgeItem(it, viewModel)
+                LinkedOutBadgeItem(it) {
+                    onClickBadge(it)
+                }
             }
             // 각 아이템에 대한 UI를 구성
             // 여기에는 각 아이템을 표시하는 Composable 함수 호출
