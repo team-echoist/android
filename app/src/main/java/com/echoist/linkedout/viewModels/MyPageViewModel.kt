@@ -7,7 +7,6 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,14 +14,12 @@ import androidx.navigation.NavController
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.api.UserApi
 import com.echoist.linkedout.data.BadgeBoxItem
-import com.echoist.linkedout.data.BadgeBoxItemWithTag
 import com.echoist.linkedout.data.ExampleItems
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.data.toBadgeBoxItem
 import com.echoist.linkedout.getFileFromUri
 import com.echoist.linkedout.page.myLog.Token
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -39,18 +36,22 @@ class MyPageViewModel @Inject constructor(
 ) : ViewModel() {
     var isClickedModifyImage by mutableStateOf(false)
 
-    var isLevelUpSuccess by mutableStateOf(false)
-
     var isBadgeClicked by mutableStateOf(false)
     var badgeBoxItem: BadgeBoxItem? by mutableStateOf(null)
 
     var isLoading by mutableStateOf(false)
+    var isApiFinished by mutableStateOf(false)
+
+    var nicknameCheckCode by mutableStateOf(200)
 
     private val _userProfile = MutableStateFlow(exampleItems.myProfile)
     val userProfile: StateFlow<UserInfo> = _userProfile
 
     private val _tempProfile = MutableStateFlow(userProfile.value)
     val tempProfile: StateFlow<UserInfo> = _tempProfile
+
+    private val _badgeList = MutableStateFlow<List<BadgeBoxItem>>(emptyList())
+    val badgeList: StateFlow<List<BadgeBoxItem>> = _badgeList
 
     suspend fun uploadImage(uri: Uri, context: Context): String? { //서버에 이미지 업로드하고 url을 반환
         try {
@@ -66,7 +67,6 @@ class MyPageViewModel @Inject constructor(
                 return response.body()!!.data.imageUrl
             } else
                 return null
-
             // 서버 응답에서 URL 추출
         } catch (e: Exception) {
             e.printStackTrace()
@@ -111,10 +111,8 @@ class MyPageViewModel @Inject constructor(
                 val response = userApi.readBadgeList()
                 Log.d(TAG, "readSimpleBadgeList: ${response.body()!!.data.badges}")
                 response.body()?.data?.badges!!.let { badges ->
-                    exampleItems.simpleBadgeList =
-                        badges.map { it.toBadgeBoxItem() }.toMutableStateList()
+                    _badgeList.value = badges.map { it.toBadgeBoxItem() }
                 }
-                Log.d(TAG, "readSimpleBadgeList: ${exampleItems.simpleBadgeList}")
                 Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() }
                     ?: Token.accessToken
             } catch (e: Exception) {
@@ -122,59 +120,6 @@ class MyPageViewModel @Inject constructor(
                 // api 요청 실패
                 Log.e("writeEssayApiFailed", "Failed to write essay: ${e.message}")
                 Log.e("writeEssayApiFailed", "Failed to write essay: ${e.localizedMessage}")
-            }
-        }
-    }
-
-    fun getSimpleBadgeList(): List<BadgeBoxItem> {
-        return exampleItems.simpleBadgeList.toList()
-    }
-
-    fun readDetailBadgeList(navController: NavController) {
-        viewModelScope.launch {
-            try {
-                val response = userApi.readBadgeWithTagsList()
-                response.body()?.data?.badges?.let { badges ->
-                    // badges 리스트를 SnapshotStateList로 변환
-                    exampleItems.detailBadgeList = badges.map { it.toBadgeBoxItem() }
-                        .toMutableStateList() as SnapshotStateList<BadgeBoxItemWithTag>
-                }
-                Log.d(TAG, "readdetailList: ${exampleItems.detailBadgeList}")
-                Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() }
-                    ?: Token.accessToken
-
-                navController.navigate("BadgePage")
-            } catch (e: Exception) {
-                e.printStackTrace()
-                // API 요청 실패
-                Log.e("writeEssayApiFailed", "Failed to write essay: ${e.message}")
-            }
-        }
-    }
-
-    fun getDetailBadgeList(): List<BadgeBoxItemWithTag> {
-        return exampleItems.detailBadgeList.toList()
-    }
-
-    // badgeViewModel 분리
-    fun requestBadgeLevelUp(badgeId: Int) {
-        viewModelScope.launch {
-            try {
-                val response = userApi.requestBadgeLevelUp(badgeId)
-                Log.d(TAG, "requestBadgeLevelUp: ${Token.accessToken}")
-
-                Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() }
-                    ?: Token.accessToken
-
-                if (response.body()!!.success) {
-                    isLevelUpSuccess = true
-                    delay(1000)
-                    isLevelUpSuccess = false
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                // api 요청 실패
-                Log.e("writeEssayApiFailed", "Failed to write essay: ${e.message}")
             }
         }
     }
@@ -237,7 +182,6 @@ class MyPageViewModel @Inject constructor(
         }
     }
 
-    var isApiFinished by mutableStateOf(false)
     fun readRecentEssays() {
         isApiFinished = false
         viewModelScope.launch {
@@ -290,8 +234,6 @@ class MyPageViewModel @Inject constructor(
             }
         }
     }
-
-    var nicknameCheckCode by mutableStateOf(200)
 
     fun onNicknameChange(nickname: String) {
         _tempProfile.value.nickname = nickname
