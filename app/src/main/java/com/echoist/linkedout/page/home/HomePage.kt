@@ -272,7 +272,7 @@ fun HomePage(
                 .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center
         )
         {
-            Notice_Main(isClickedClose = {
+            NoticeAlert(isClickedClose = {
                 viewModel.latestNoticeId = null
             }, isClickedOpened = {
                 viewModel.requestDetailNotice(viewModel.latestNoticeId!!, navController)
@@ -1232,12 +1232,12 @@ fun ReactivateOrDeleteBox(isClickedReActivate: () -> Unit, isClickedDeActivate: 
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun Notice_Main(isClickedClose: () -> Unit, isClickedOpened: () -> Unit) {
+fun NoticeAlert(isClickedClose: () -> Unit, isClickedOpened: () -> Unit) {
 
     Box(
         modifier = Modifier
             .width(280.dp)
-            .height(411.dp)
+            .height(203.dp)
             .background(color = Color(0xFF121212), shape = RoundedCornerShape(size = 10.dp)),
         contentAlignment = Alignment.Center
     ) {
@@ -1254,15 +1254,7 @@ fun Notice_Main(isClickedClose: () -> Unit, isClickedOpened: () -> Unit) {
                     textAlign = TextAlign.Center,
                 )
             )
-            Spacer(modifier = Modifier.height(6.dp))
-            Text(
-                text = "자세히 보기를 눌러 공지를 확인하세요.",
-                textAlign = TextAlign.Center,
-                color = Color.White,
-                modifier = Modifier
-                    .height(240.dp)
-                    .verticalScroll(rememberScrollState())
-            )
+            Spacer(modifier = Modifier.height(39.dp))
             Row {
                 Button(
                     onClick = { isClickedOpened() },
@@ -1291,7 +1283,7 @@ fun Notice_Main(isClickedClose: () -> Unit, isClickedOpened: () -> Unit) {
 }
 
 @Composable
-fun ReLogInWaringBox(isClicked: () -> Unit) {
+fun ReLogInWaringAlert(isClicked: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
