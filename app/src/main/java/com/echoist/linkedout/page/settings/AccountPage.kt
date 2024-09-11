@@ -54,10 +54,10 @@ import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.home.LogoutBox
 import com.echoist.linkedout.ui.theme.LinkedInColor
-import com.echoist.linkedout.viewModels.SettingsViewModel
+import com.echoist.linkedout.viewModels.MyPageViewModel
 
 @Composable
-fun AccountPage(navController: NavController, viewModel: SettingsViewModel = hiltViewModel()) {
+fun AccountPage(navController: NavController, viewModel: MyPageViewModel = hiltViewModel()) {
     val scrollState = rememberScrollState()
     val context = LocalContext.current
 

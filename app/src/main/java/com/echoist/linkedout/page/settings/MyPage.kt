@@ -1,10 +1,8 @@
 package com.echoist.linkedout.page.settings
 
 import android.app.Activity
-import android.content.ContentValues.TAG
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -56,6 +54,7 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -99,6 +98,7 @@ import com.echoist.linkedout.PROFILE_IMAGE_10
 import com.echoist.linkedout.PROFILE_IMAGE_11
 import com.echoist.linkedout.PROFILE_IMAGE_12
 import com.echoist.linkedout.R
+import com.echoist.linkedout.Routes
 import com.echoist.linkedout.TYPE_RECOMMEND
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.data.BadgeBoxItem
@@ -107,21 +107,30 @@ import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.home.MyBottomNavigation
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.viewModels.CommunityViewModel
-import com.echoist.linkedout.viewModels.SettingsViewModel
+import com.echoist.linkedout.viewModels.MyPageViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyPage(
     navController: NavController,
-    viewModel: SettingsViewModel = hiltViewModel()
+    viewModel: MyPageViewModel = hiltViewModel(),
+    communityViewModel: CommunityViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
+    val scrollState = rememberScrollState()
+    val scope = rememberCoroutineScope()
+    val userInfo by viewModel.userProfile.collectAsState()
 
-    var isApiFinished by remember {
-        mutableStateOf(false)
-    }
+    var isApiFinished by remember { mutableStateOf(false) }
+
+    val bottomSheetState =
+        rememberStandardBottomSheetState(initialValue = SheetValue.Hidden, skipHiddenState = false)
+    val scaffoldState = androidx.compose.material3.rememberBottomSheetScaffoldState(
+        bottomSheetState = bottomSheetState
+    )
+
     LaunchedEffect(key1 = isApiFinished) {
         viewModel.requestMyInfo()
         viewModel.readSimpleBadgeList()
@@ -129,15 +138,6 @@ fun MyPage(
         viewModel.readRecentEssays()
         isApiFinished = false
     }
-
-    val scrollState = rememberScrollState()
-    val scope = rememberCoroutineScope()
-
-    val bottomSheetState =
-        rememberStandardBottomSheetState(initialValue = SheetValue.Hidden, skipHiddenState = false)
-    val scaffoldState = androidx.compose.material3.rememberBottomSheetScaffoldState(
-        bottomSheetState = bottomSheetState
-    )
 
     BottomSheetScaffold(
         sheetContainerColor = Color(0xFF111111),
@@ -149,11 +149,20 @@ fun MyPage(
                 enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = LinearEasing)),
                 exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
             ) {
-                Log.d(TAG, "MyPage: ${viewModel.newProfile}")
-                SelectProfileIconBottomSheet(viewModel)
+                SelectProfileIconBottomSheet(
+                    uploadImage = { uri ->
+                        scope.launch {
+                            viewModel.uploadImage(uri, context)
+                        }
+                    },
+                    onClickImage = { imageUrl ->
+                        viewModel.onImageChange(imageUrl)
+                        viewModel.isClickedModifyImage = false
+                    },
+                    onClickBack = { viewModel.isClickedModifyImage = false }
+                )
             }
             //기본
-
             AnimatedVisibility(
                 visible = !viewModel.isClickedModifyImage,
                 enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = LinearEasing)),
@@ -161,14 +170,16 @@ fun MyPage(
             ) {
                 ModifyMyProfileBottomSheet(
                     onClickComplete = {
-                        viewModel.updateMyInfo(viewModel.newProfile, navController)
+                        viewModel.updateMyInfo(navController)
                     },
                     onClickCancel = {
                         scope.launch {
                             bottomSheetState.hide()
-
                         }
-                    }, viewModel
+                    },
+                    onClickImageChange = {
+                        viewModel.isClickedModifyImage = true
+                    }
                 )
             }
         },
@@ -194,7 +205,7 @@ fun MyPage(
                         .verticalScroll(scrollState)
 
                 ) {
-                    MySettings(viewModel.getMyInfo()) {
+                    MySettings(userInfo) {
                         scope.launch {
                             bottomSheetState.expand()
                         }
@@ -203,17 +214,17 @@ fun MyPage(
                         SettingBar("링크드아웃 배지") { viewModel.readDetailBadgeList(navController) }
                         LinkedOutBadgeGrid(viewModel)
                         SettingBar("최근 본 글") { navController.navigate("RecentViewedEssayPage") }
-                        RecentEssayList(
-                            itemList = viewModel.getRecentViewedEssayList(),
-                            navController
-                        )
+                        RecentEssayList(itemList = viewModel.getRecentViewedEssayList()) {
+                            communityViewModel.readDetailRecentEssay(
+                                it,
+                                navController,
+                                TYPE_RECOMMEND
+                            )
+                        }
                         MembershipSettingBar("멤버십 관리") {}
                         SettingBar("계정 관리") { navController.navigate("AccountPage") }
                     }
-
-
                 }
-
                 if (viewModel.isBadgeClicked) {
                     Box(
                         modifier = Modifier.fillMaxSize(),
@@ -222,13 +233,10 @@ fun MyPage(
                         BadgeDescriptionBox(viewModel.badgeBoxItem!!, viewModel)
                     }
                 }
-
-
             }
         )
     }
 }
-
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -346,7 +354,6 @@ fun MySettings(item: UserInfo, onClick: () -> Unit) {
         ) {
             Text(text = "프로필 편집", fontSize = 14.sp, color = Color.Black)
         }
-
     }
 }
 
@@ -371,7 +378,6 @@ fun SettingBar(text: String, onClick: () -> Unit) {
                 contentDescription = "navigate",
                 tint = Color(0xFF686868)
             )
-
         }
     }
 }
@@ -379,7 +385,6 @@ fun SettingBar(text: String, onClick: () -> Unit) {
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun MembershipSettingBar(text: String, onClick: () -> Unit) {
-
     Box(modifier = Modifier
         .fillMaxWidth()
         .clickable { onClick() }
@@ -401,9 +406,7 @@ fun MembershipSettingBar(text: String, onClick: () -> Unit) {
                 contentAlignment = Alignment.Center
             ) {
                 GlideImage(model = R.drawable.icon_comingsoon, contentDescription = "comingsoon")
-
             }
-
         }
     }
 }
@@ -411,13 +414,12 @@ fun MembershipSettingBar(text: String, onClick: () -> Unit) {
 @Composable
 fun RecentEssayItem(
     item: EssayApi.EssayItem,
-    viewModel: CommunityViewModel = hiltViewModel(),
-    navController: NavController
+    onClickEssayItem: (Int) -> Unit
 ) {
     Box(modifier = Modifier
         .size(150.dp, 120.dp)
         .clickable { /* 에세이로 이동 */
-            viewModel.readDetailRecentEssay(item.id!!, navController, TYPE_RECOMMEND)
+            onClickEssayItem(item.id!!)
         }) {
         Column {
             Text(text = item.title!!)
@@ -434,7 +436,10 @@ fun RecentEssayItem(
 }
 
 @Composable
-fun RecentEssayList(itemList: List<EssayApi.EssayItem>, navController: NavController) {
+fun RecentEssayList(
+    itemList: List<EssayApi.EssayItem>,
+    onClickEssayItem: (Int) -> Unit
+) {
     if (itemList.isEmpty()) {
         Text(
             text = "최근 본 글이 없습니다.",
@@ -444,8 +449,7 @@ fun RecentEssayList(itemList: List<EssayApi.EssayItem>, navController: NavContro
     } else {
         LazyRow(Modifier.padding(start = 20.dp)) {
             itemsIndexed(itemList) { index, item ->
-                RecentEssayItem(item, navController = navController)
-
+                RecentEssayItem(item, onClickEssayItem)
                 // 마지막 항목인 경우에만 Spacer와 VerticalDivider 실행
                 if (index < itemList.size - 1) {
                     Spacer(modifier = Modifier.width(10.dp))
@@ -455,11 +459,10 @@ fun RecentEssayList(itemList: List<EssayApi.EssayItem>, navController: NavContro
             }
         }
     }
-
 }
 
 @Composable
-fun BadgeDescriptionBox(badgeBoxItem: BadgeBoxItem, viewModel: SettingsViewModel) {
+fun BadgeDescriptionBox(badgeBoxItem: BadgeBoxItem, viewModel: MyPageViewModel) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -522,7 +525,7 @@ fun BadgeDescriptionBox(badgeBoxItem: BadgeBoxItem, viewModel: SettingsViewModel
 @Composable
 fun LinkedOutBadgeItem(
     badgeBoxItem: BadgeBoxItem,
-    viewModel: SettingsViewModel
+    viewModel: MyPageViewModel
 ) {
     // 기본 Modifier 정의
     val baseModifier = Modifier
@@ -551,7 +554,6 @@ fun LinkedOutBadgeItem(
     }
 
     Box(contentAlignment = Alignment.Center, modifier = finalModifier) { //todo 수정
-
         Image(
             modifier = Modifier.size(80.dp),
             painter = painterResource(id = badgeBoxItem.badgeResourceId),
@@ -567,7 +569,7 @@ fun LinkedOutBadgeItem(
 
 
 @Composable
-fun LinkedOutBadgeGrid(viewModel: SettingsViewModel) {
+fun LinkedOutBadgeGrid(viewModel: MyPageViewModel) {
     val badgeList by remember {
         mutableStateOf(viewModel.getSimpleBadgeList())
     }
@@ -582,7 +584,6 @@ fun LinkedOutBadgeGrid(viewModel: SettingsViewModel) {
             .height(240.dp)
             .padding(horizontal = 16.dp), // 수평 방향으로 패딩 추가
         contentAlignment = Alignment.Center
-
     ) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
@@ -601,25 +602,27 @@ fun LinkedOutBadgeGrid(viewModel: SettingsViewModel) {
 }
 
 @Composable
-fun ModifyNickNameTextField(viewModel: SettingsViewModel) {
-
-    var text by remember { mutableStateOf(viewModel.getMyInfo().nickname ?: "에러") }
+fun ModifyNickNameTextField(
+    nickname: String,
+    nicknameCheckCode: Int,
+    onNicknameChange: (String) -> Unit,
+) {
+    var text by remember { mutableStateOf(nickname) }
     var message by remember {
         mutableStateOf("   *필명은 최대 6자, 한글로만 입력 가능합니다.")
     }
-    message = when (viewModel.nicknameCheckCode) {
+
+    message = when (nicknameCheckCode) {
         200, 201 -> "   * 사용가능한 닉네임입니다!"
         409 -> "   * 이미 사용중인 닉네임입니다."
         400 -> "   * 필명은 3자 이상 6자 이하의 완성된 한글 단어로만 구성할 수 있습니다."
-        else -> ("   * ${viewModel.nicknameCheckCode}")          //에러코드
+        else -> ("   * $nicknameCheckCode")  // 에러코드
     }
-    val color = when (viewModel.nicknameCheckCode) {
-        409 -> Color.Red
-        400 -> Color.Red
+
+    val color = when (nicknameCheckCode) {
+        409, 400 -> Color.Red
         else -> LinkedInColor
     }
-    //수정 안했을때 기본 닉네임 설정. 원래 닉네임으로.
-    viewModel.newProfile.nickname = text
 
     Column(
         modifier = Modifier
@@ -629,13 +632,11 @@ fun ModifyNickNameTextField(viewModel: SettingsViewModel) {
         Spacer(modifier = Modifier.height(6.5.dp))
         OutlinedTextField(
             value = text,
-            isError = viewModel.nicknameCheckCode == 409 || viewModel.nicknameCheckCode == 400,
+            isError = nicknameCheckCode == 409 || nicknameCheckCode == 400,
             onValueChange = {
                 if (it.length < 7) {
                     text = it
-                    viewModel.newProfile.nickname = text //수정할때마다 새 프로필 닉네임 변경
-                    Log.d(TAG, "ModifyNickNameTextField: ${viewModel.newProfile}")
-                    viewModel.requestNicknameDuplicated(text)
+                    onNicknameChange(it) // 상위에서 처리하는 이벤트로 변경
                 }
             },
             modifier = Modifier
@@ -658,22 +659,20 @@ fun ModifyNickNameTextField(viewModel: SettingsViewModel) {
     }
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ModifyMyProfileBottomSheet(
+    viewModel: MyPageViewModel = hiltViewModel(),
     onClickComplete: () -> Unit,
     onClickCancel: () -> Unit,
-    viewModel: SettingsViewModel
+    onClickImageChange: () -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
+    val userProfile by viewModel.tempProfile.collectAsState()
 
-    val url = viewModel.newProfile.profileImage //널이 아닐경우 그대로사용
-        ?: viewModel.getMyInfo().profileImage //널일경우 이 값을사용
-        ?: PRIVATE_POPUP_URL // 둘다 널일경우 기본.
-
-    viewModel.newProfile.profileImage = url
-
-
+    val url = userProfile.profileImage
+        ?: PRIVATE_POPUP_URL
 
     Box(modifier = Modifier
         .clickable { focusManager.clearFocus() }
@@ -703,8 +702,6 @@ fun ModifyMyProfileBottomSheet(
                             .clickable {
                                 onClickComplete()
                                 focusManager.clearFocus()
-                                Log.d(TAG, "MyPage: ${viewModel.newProfile}")
-
                             }
                     )
                 },
@@ -715,35 +712,29 @@ fun ModifyMyProfileBottomSheet(
                         modifier = Modifier
                             .padding(start = 10.dp)
                             .clickable {
-                                //새로운 프로필을 공백으로 다시 초기화
                                 onClickCancel()
                                 focusManager.clearFocus()
                             }
-
                     )
                 }
             )
-
             Spacer(modifier = Modifier.height(40.dp))
-
-            SelectProfileImageIcon(
-                { viewModel.isClickedModifyImage = true },
-                imageUrl = url
-            )
+            SelectProfileImageIcon(imageUrl = url) {
+                onClickImageChange()
+            }
             Spacer(modifier = Modifier.height(26.dp))
-            ModifyNickNameTextField(viewModel)
-
-        }//이미지변경
-
+            ModifyNickNameTextField(
+                nickname = userProfile.nickname ?: "에러",
+                nicknameCheckCode = viewModel.nicknameCheckCode,
+                onNicknameChange = { viewModel.onNicknameChange(it) }
+            )
+        }
     }
 }
 
-
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun SelectProfileImageIcon(onClickModifyImage: () -> Unit, imageUrl: String) {
-
-
+fun SelectProfileImageIcon(imageUrl: String, onClickModifyImage: () -> Unit) {
     Box(modifier = Modifier.size(120.dp)) {
         Box(
             modifier = Modifier
@@ -774,38 +765,18 @@ fun SelectProfileImageIcon(onClickModifyImage: () -> Unit, imageUrl: String) {
                     Modifier
                         .size(15.dp)
                         .clickable { onClickModifyImage() })
-
             }
         }
     }
 }
 
-
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun SelectProfileIconBottomSheet(viewModel: SettingsViewModel) {
-
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
-    val galleryLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            selectedImageUri = result.data?.data
-            selectedImageUri?.let {
-                // 선택된 이미지를 ViewModel에 저장합니다.
-                viewModel.newProfile.profileImage = it.toString()
-                viewModel.isClickedModifyImage = false
-                Log.d(TAG, "MyPage: ${viewModel.newProfile}")
-
-                scope.launch {
-                    viewModel.uploadImage(it, context = context)
-                }
-            }
-        }
-    }
-
+fun SelectProfileIconBottomSheet(
+    uploadImage: (Uri) -> Unit,
+    onClickImage: (String) -> Unit,
+    onClickBack: () -> Unit
+) {
     val icons = listOf(
         PROFILE_IMAGE_01,
         PROFILE_IMAGE_02,
@@ -821,6 +792,20 @@ fun SelectProfileIconBottomSheet(viewModel: SettingsViewModel) {
         PROFILE_IMAGE_12
     )
 
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            selectedImageUri = result.data?.data
+            selectedImageUri?.let {
+                uploadImage(it)
+                onClickImage(it.toString())
+            }
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -828,7 +813,6 @@ fun SelectProfileIconBottomSheet(viewModel: SettingsViewModel) {
             .height(770.dp)
     ) {
         Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
                 title = {
@@ -844,12 +828,11 @@ fun SelectProfileIconBottomSheet(viewModel: SettingsViewModel) {
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "arrow back",
                         modifier = Modifier
-                            .clickable { viewModel.isClickedModifyImage = false }
+                            .clickable { onClickBack() }
                             .padding(start = 10.dp)
                             .size(30.dp),
                         tint = Color.White
                     )
-
                 }
             )
             Spacer(modifier = Modifier.height(20.dp))
@@ -871,7 +854,6 @@ fun SelectProfileIconBottomSheet(viewModel: SettingsViewModel) {
                                     val intent = Intent(Intent.ACTION_PICK)
                                     intent.type = "image/*"
                                     galleryLauncher.launch(intent)
-
                                 }
                         )
                     } else {
@@ -882,23 +864,15 @@ fun SelectProfileIconBottomSheet(viewModel: SettingsViewModel) {
                             Modifier
                                 .size(120.dp)
                                 .clickable {
-                                    viewModel.isClickedModifyImage = false
-                                    viewModel.newProfile.profileImage = icon
-                                    Log.d(TAG, "MyPage: ${viewModel.newProfile}")
+                                    onClickImage(icon)
                                 }
                         )
                     }
                 }
                 item {
                     Spacer(modifier = Modifier.height(15.dp))
-
                 }
             }
-
         }
     }
 }
-
-
-
-

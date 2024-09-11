@@ -61,7 +61,7 @@ import com.echoist.linkedout.page.settings.ResetPwPageWithEmail
 import com.echoist.linkedout.viewModels.CommunityViewModel
 import com.echoist.linkedout.viewModels.HomeViewModel
 import com.echoist.linkedout.viewModels.MyLogViewModel
-import com.echoist.linkedout.viewModels.SettingsViewModel
+import com.echoist.linkedout.viewModels.MyPageViewModel
 import com.echoist.linkedout.viewModels.SignUpViewModel
 import com.echoist.linkedout.viewModels.SupportViewModel
 import com.echoist.linkedout.viewModels.WritingViewModel
@@ -76,7 +76,7 @@ fun MobileApp(
     val signUpViewModel: SignUpViewModel = hiltViewModel()
     val myLogViewModel: MyLogViewModel = hiltViewModel()
     val communityViewModel: CommunityViewModel = hiltViewModel()
-    val settingsViewModel: SettingsViewModel = hiltViewModel()
+    val settingsViewModel: MyPageViewModel = hiltViewModel()
     val supportViewModel: SupportViewModel = hiltViewModel()
 
     NavHost(
