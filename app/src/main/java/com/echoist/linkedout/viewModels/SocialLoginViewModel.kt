@@ -11,11 +11,6 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.result.ActivityResult
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -26,6 +21,7 @@ import androidx.navigation.NavController
 import com.echoist.linkedout.BuildConfig
 import com.echoist.linkedout.Routes
 import com.echoist.linkedout.SharedPreferencesUtil
+import com.echoist.linkedout.TokenRepository
 import com.echoist.linkedout.api.NaverApiService
 import com.echoist.linkedout.api.SignUpApi
 import com.echoist.linkedout.api.SocialSignUpApi
@@ -65,7 +61,8 @@ class SocialLoginViewModel @Inject constructor(
     private val exampleItems: ExampleItems,
     private val signUpApi: SignUpApi,
     private val socialSignUpApi: SocialSignUpApi,
-    private val supportApi: SupportApi
+    private val supportApi: SupportApi,
+    private val tokenRepository: TokenRepository
 ) : ViewModel() {
     private val auth: FirebaseAuth = Firebase.auth
 
@@ -133,6 +130,7 @@ class SocialLoginViewModel @Inject constructor(
 
                     loginStatusCode = response.code()
                     navController.popBackStack("OnBoarding", false) //onboarding까지 전부 삭제.
+                    tokenRepository.setReAuthenticationRequired(false)
 
                     when{
                         //자동로그인 클릭 + 로그인 성공 시 엑세스토큰, 리프레시토큰 저장 + 토큰의 30일 이후 날짜 계산
@@ -530,6 +528,7 @@ class SocialLoginViewModel @Inject constructor(
 
                     Token.accessToken = accessToken
                     Token.refreshToken = refreshToken
+                    tokenRepository.setReAuthenticationRequired(false)
 
                     Log.i("server header access token($loginType)", accessToken)
                     Log.i("server refresh token($loginType)", refreshToken)
@@ -549,7 +548,6 @@ class SocialLoginViewModel @Inject constructor(
                     loginStatusCode = response.code()
                     Log.e("$loginType 서버와 api", "Failed ${response.code()}")
                 }
-
             } catch (e: Exception) {
                 // API 요청 실패
                 e.printStackTrace()
@@ -557,19 +555,4 @@ class SocialLoginViewModel @Inject constructor(
             }
         }
     }
-
-
-}
-
-@Composable
-fun LoginSuccessDialog(successMsg: String, dialogState: MutableState<Boolean>) {
-    AlertDialog(
-        onDismissRequest = { dialogState.value = false },
-        confirmButton = {
-            Button(onClick = { dialogState.value = false }) {
-                Text(text = "확인")
-            }
-        },
-        text = { Text(text = successMsg) },
-    )
 }

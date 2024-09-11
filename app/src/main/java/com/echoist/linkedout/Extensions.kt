@@ -5,12 +5,18 @@ import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.util.Patterns
+import androidx.navigation.NavController
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 
 fun String.isEmailValid(): Boolean {
     return Patterns.EMAIL_ADDRESS.matcher(this).matches()
+}
+
+fun getCurrentRoute(navController: NavController): String? {
+    // 현재 BackStackEntry를 가져와서 경로를 반환
+    return navController.currentBackStackEntry?.destination?.route
 }
 
 fun getFileFromUri(uri: Uri, context: Context): File {

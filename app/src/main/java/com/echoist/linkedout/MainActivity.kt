@@ -29,7 +29,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.echoist.linkedout.components.ExitAppErrorBox
 import com.echoist.linkedout.navigation.MobileApp
-import com.echoist.linkedout.page.home.ReLogInWaringBox
+import com.echoist.linkedout.page.home.ReLogInWaringAlert
 import com.echoist.linkedout.page.myLog.Token
 import com.echoist.linkedout.presentation.TabletApp
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
@@ -134,12 +134,17 @@ import kotlinx.coroutines.delay
                     ) { ExitAppErrorBox() }
                 }
 
-                if (isReAuthenticationRequired) {
+                val currentRoute = getCurrentRoute(navController)
+
+                //온보딩,로그인 화면 에서는 401에도 재 로그인 ui 표시 x
+                if (isReAuthenticationRequired &&
+                    currentRoute != Routes.OnBoarding && currentRoute != Routes.LoginPage) {
+
                     Box(modifier = Modifier
                         .fillMaxSize()
                         .clickable(enabled = false) { }
                         .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center) {
-                        ReLogInWaringBox {
+                        ReLogInWaringAlert {
                             navigateWithClearBackStack(navController, Routes.LoginPage)
                             homeViewModel.setReAuthenticationRequired(false)
                         }
