@@ -367,23 +367,6 @@ class HomeViewModel @Inject constructor(
             userApi.requestDeleteUser()
         }
     }
-
-    //notice 세부 사항 읽은 후 세부 페이지로 이동
-    fun requestDetailNotice(noticeId: Int, navController: NavController) {
-
-        apiCall(onSuccess =
-        { response ->
-            Log.d("공지사항 디테일 확인", "성공 공지 내용 : ${response.data.content}")
-
-            val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
-            val jsonAdapter = moshi.adapter(Notice::class.java)
-            val json = jsonAdapter.toJson(response.data)
-            navController.navigate("${Routes.NoticeDetailPage}/$json")
-
-        }) {
-            supportApi.readNoticeDetail(noticeId)
-        }
-    }
 }
 
 

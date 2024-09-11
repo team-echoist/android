@@ -275,7 +275,7 @@ fun HomePage(
             NoticeAlert(isClickedClose = {
                 viewModel.latestNoticeId = null
             }, isClickedOpened = {
-                viewModel.requestDetailNotice(viewModel.latestNoticeId!!, navController)
+                navController.navigate("${Routes.NoticeDetailPage}/${viewModel.latestNoticeId!!}")
             })
         }
     } //토큰 만료시
