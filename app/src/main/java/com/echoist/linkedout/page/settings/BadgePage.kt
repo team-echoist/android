@@ -1,5 +1,6 @@
 package com.echoist.linkedout.page.settings
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -41,6 +42,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,41 +63,43 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.R
+import com.echoist.linkedout.data.BadgeBoxItem
 import com.echoist.linkedout.data.BadgeBoxItemWithTag
 import com.echoist.linkedout.page.home.MyBottomNavigation
+import com.echoist.linkedout.viewModels.BadgeViewModel
 import com.echoist.linkedout.viewModels.MyPageViewModel
+import kotlin.math.truncate
 
 @Composable
-fun BadgePage(navController: NavController, viewModel: MyPageViewModel) {
-    val hasCalledApi = remember { mutableStateOf(false) }
+fun BadgePage(navController: NavController, viewModel: BadgeViewModel = hiltViewModel()) {
 
-    val badgeBoxItems = viewModel.getDetailBadgeList()
-
-    if (!hasCalledApi.value) {
-
-        hasCalledApi.value = true
-    }
+    val badgeList by viewModel.badgeList.collectAsState()
 
     Scaffold(
         topBar = {
-
-
-            BadgeTopAppBar(navController)
-
+            BadgeTopAppBar { navController.popBackStack() }
         },
-        bottomBar = { MyBottomNavigation(navController) },
         content = {
-            Column(
-                Modifier
-                    .padding(it)
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 20.dp)
-            ) {
-                badgeBoxItems.forEach { it ->
-                    BadgeItem(it, viewModel)
-                    Spacer(modifier = Modifier.height(10.dp))
+            Box {
+                Column(
+                    Modifier
+                        .padding(it)
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 20.dp)
+                ) {
+                    badgeList.forEach { item ->
+                        BadgeItem(item) {
+                            viewModel.requestBadgeLevelUp(item)
+                        }
+                        Spacer(modifier = Modifier.height(10.dp))
+                    }
+                }
+
+                if (viewModel.isLevelUpSuccess && viewModel.levelUpBadgeItem != null) {
+                    BadgeLevelUpSuccess(viewModel.levelUpBadgeItem!!)
                 }
             }
         }
@@ -103,7 +108,7 @@ fun BadgePage(navController: NavController, viewModel: MyPageViewModel) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BadgeTopAppBar(navController: NavController) {
+fun BadgeTopAppBar(onBackPressed: () -> Unit) {
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
         title = {
@@ -111,21 +116,22 @@ fun BadgeTopAppBar(navController: NavController) {
         },
         navigationIcon = {
             Icon(
-
                 modifier = Modifier
                     .padding(10.dp)
                     .size(30.dp)
-                    .clickable { navController.popBackStack() },
+                    .clickable { onBackPressed() },
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "back",
             )
         },
-
-        )
+    )
 }
 
 @Composable
-fun BadgeItem(badgeBoxItem: BadgeBoxItemWithTag, viewModel: MyPageViewModel) {
+fun BadgeItem(
+    badgeBoxItem: BadgeBoxItemWithTag,
+    requestBadgeLevelUp: (BadgeBoxItemWithTag) -> Unit
+) {
     val badgeTagList = badgeBoxItem.tags
     var isClicked by remember { mutableStateOf(false) }
     val arrowImage = if (isClicked) R.drawable.arrowup else R.drawable.arrowdown
@@ -144,10 +150,6 @@ fun BadgeItem(badgeBoxItem: BadgeBoxItemWithTag, viewModel: MyPageViewModel) {
             append("사용하기")
         }.toAnnotatedString()
     }
-
-
-    //레벨업 성공 시 레벨업 성공 표시
-    BadgeLevelUpSuccess(viewModel, badgeBoxItem)
 
     Column {
         Text(text = badgeBoxItem.badgeName)
@@ -170,7 +172,6 @@ fun BadgeItem(badgeBoxItem: BadgeBoxItemWithTag, viewModel: MyPageViewModel) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     //경험치가 10 이상이면 보상받기 open / 클릭 시 레벨업 요청
-
                     BadgeImg(badgeBoxItem)
                     Spacer(modifier = Modifier.width(27.dp))
                     Column(
@@ -200,7 +201,9 @@ fun BadgeItem(badgeBoxItem: BadgeBoxItemWithTag, viewModel: MyPageViewModel) {
                             .fillMaxSize()
                             .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center
                     ) {
-                        Button(onClick = { viewModel.requestBadgeLevelUp(badgeBoxItem.badgeId!!) }) {
+                        Button(onClick = {
+                            requestBadgeLevelUp(badgeBoxItem)
+                        }) {
                             Text(text = "보상 받기")
                         }
                     }
@@ -215,7 +218,6 @@ fun BadgeItem(badgeBoxItem: BadgeBoxItemWithTag, viewModel: MyPageViewModel) {
                         .height(150.dp)
                         .padding(15.dp)
                 ) {
-
                     if (badgeTagList.isNotEmpty()) {
                         LazyVerticalGrid(
                             columns = GridCells.Fixed(4),
@@ -254,7 +256,6 @@ fun BadgeItem(badgeBoxItem: BadgeBoxItemWithTag, viewModel: MyPageViewModel) {
                             )
                         }
                     }
-
                 }
             }
         }
@@ -263,7 +264,6 @@ fun BadgeItem(badgeBoxItem: BadgeBoxItemWithTag, viewModel: MyPageViewModel) {
 
 @Composable
 fun BadgeImg(badgeBoxItem: BadgeBoxItemWithTag) {
-
     val baseModifier = Modifier
         .size(70.dp)
         .background(
@@ -291,10 +291,9 @@ fun BadgeImg(badgeBoxItem: BadgeBoxItemWithTag) {
 
 //레벨업 보상획득 시 페이지
 @Composable
-fun BadgeLevelUpSuccess(viewModel: MyPageViewModel, badgeBoxItem: BadgeBoxItemWithTag) {
-
+fun BadgeLevelUpSuccess(badgeBoxItem: BadgeBoxItemWithTag) {
     AnimatedVisibility(
-        viewModel.isLevelUpSuccess,
+        true,
         enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)),
         exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
     ) {
@@ -320,7 +319,6 @@ fun BadgeLevelUpSuccess(viewModel: MyPageViewModel, badgeBoxItem: BadgeBoxItemWi
 fun ExpProgressBar(progress: Float, max: Int) {
     val progressBarWidth = 170.dp // 프로그레스 바의 너비
     val progressBarHeight = 20.dp // 프로그레스 바의 높이
-
     Box(
         modifier = Modifier
             .width(progressBarWidth)

@@ -14,29 +14,33 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.echoist.linkedout.page.settings.BadgeItem
+import com.echoist.linkedout.viewModels.BadgeViewModel
 import com.echoist.linkedout.viewModels.MyPageViewModel
 
 @Composable
 fun TabletBadgeRoute(
     contentPadding: PaddingValues,
-    viewModel: MyPageViewModel = hiltViewModel()
+    viewModel: BadgeViewModel = hiltViewModel()
 ) {
     val hasCalledApi = remember { mutableStateOf(false) }
-    val badgeBoxItems = viewModel.getDetailBadgeList()
 
     if (!hasCalledApi.value) {
         hasCalledApi.value = true
     }
+    /*
+        Column(
+            Modifier
+                .verticalScroll(rememberScrollState())
+                .padding(contentPadding)
+                .padding(horizontal = 20.dp)
+        ) {
+            badgeBoxItems.forEach {
+                BadgeItem(it, viewModel) {
 
-    Column(
-        Modifier
-            .verticalScroll(rememberScrollState())
-            .padding(contentPadding)
-            .padding(horizontal = 20.dp)
-    ) {
-        badgeBoxItems.forEach {
-            BadgeItem(it, viewModel)
-            Spacer(modifier = Modifier.height(10.dp))
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+            }
         }
-    }
+
+     */
 }

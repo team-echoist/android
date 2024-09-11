@@ -18,6 +18,7 @@ import androidx.compose.material3.SheetValue
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.echoist.linkedout.Routes
 import com.echoist.linkedout.page.settings.BadgeDescriptionBox
 import com.echoist.linkedout.page.settings.LinkedOutBadgeGrid
 import com.echoist.linkedout.page.settings.MembershipSettingBar
@@ -50,6 +52,9 @@ fun TabletMyInfoRoute(
     var isApiFinished by remember {
         mutableStateOf(false)
     }
+
+    val badgeList by viewModel.badgeList.collectAsState()
+
     LaunchedEffect(key1 = isApiFinished) {
         viewModel.requestMyInfo()
         viewModel.readSimpleBadgeList()
@@ -137,8 +142,11 @@ fun TabletMyInfoRoute(
                 }
             }
             if (viewModel.isApiFinished) {
-                SettingBar("링크드아웃 배지") { viewModel.readDetailBadgeList(navController) }
-                LinkedOutBadgeGrid(viewModel)
+                SettingBar("링크드아웃 배지") { navController.navigate(Routes.BadgePage) }
+                LinkedOutBadgeGrid(badgeList) {
+                    viewModel.badgeBoxItem = it
+                    viewModel.isBadgeClicked = true
+                }
                 SettingBar("최근 본 글") { navController.navigate("RecentViewedEssayPage") }
                 RecentEssayList(
                     itemList = viewModel.getRecentViewedEssayList(),
@@ -156,7 +164,9 @@ fun TabletMyInfoRoute(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                BadgeDescriptionBox(viewModel.badgeBoxItem!!, viewModel)
+                BadgeDescriptionBox(viewModel.badgeBoxItem!!) {
+                    viewModel.isBadgeClicked = false
+                }
             }
         }
     }
