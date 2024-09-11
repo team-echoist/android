@@ -134,7 +134,12 @@ import kotlinx.coroutines.delay
                     ) { ExitAppErrorBox() }
                 }
 
-                if (isReAuthenticationRequired) {
+                val currentRoute = getCurrentRoute(navController)
+
+                //온보딩,로그인 화면 에서는 401에도 재 로그인 ui 표시 x
+                if (isReAuthenticationRequired &&
+                    currentRoute != Routes.OnBoarding && currentRoute != Routes.LoginPage) {
+
                     Box(modifier = Modifier
                         .fillMaxSize()
                         .clickable(enabled = false) { }
