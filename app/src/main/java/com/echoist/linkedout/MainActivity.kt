@@ -8,6 +8,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -34,6 +35,7 @@ import com.echoist.linkedout.page.myLog.Token
 import com.echoist.linkedout.presentation.TabletApp
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.HomeViewModel
+import com.echoist.linkedout.viewModels.SocialLoginViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.kakao.sdk.common.KakaoSdk
@@ -55,6 +57,12 @@ import kotlinx.coroutines.delay
 
         getSSAID(this)
         Log.d("SSAID", "SSAID: ${DeviceId.ssaid}") //고유식별자
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val viewModel : SocialLoginViewModel by viewModels()
+        viewModel.requestAppVersion(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -95,7 +95,6 @@ fun LoginPage(
 
     // 앱버전 체크 후 최신버전 아닌경우 마켓업데이트.
     LaunchedEffect(key1 = Unit) {
-        viewModel.requestAppVersion(context)
         // 온보딩 확인했다는 체크
         SharedPreferencesUtil.saveIsOnboardingFinished(context, true)
     }
