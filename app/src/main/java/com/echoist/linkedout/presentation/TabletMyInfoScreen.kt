@@ -39,6 +39,7 @@ import com.echoist.linkedout.page.settings.MySettings
 import com.echoist.linkedout.page.settings.RecentEssayList
 import com.echoist.linkedout.page.settings.SelectProfileIconBottomSheet
 import com.echoist.linkedout.page.settings.SettingBar
+import com.echoist.linkedout.viewModels.EssayViewModel
 import com.echoist.linkedout.viewModels.MyPageViewModel
 import kotlinx.coroutines.launch
 
@@ -47,20 +48,17 @@ import kotlinx.coroutines.launch
 fun TabletMyInfoRoute(
     modifier: Modifier = Modifier,
     navController: NavController,
-    viewModel: MyPageViewModel = hiltViewModel()
+    viewModel: MyPageViewModel = hiltViewModel(),
+    essayViewModel: EssayViewModel = hiltViewModel()
 ) {
-    var isApiFinished by remember {
-        mutableStateOf(false)
-    }
 
     val badgeList by viewModel.badgeList.collectAsState()
+    val recentEssayList by essayViewModel.recentEssayList.collectAsState()
 
-    LaunchedEffect(key1 = isApiFinished) {
+    LaunchedEffect(true) {
         viewModel.requestMyInfo()
         viewModel.readSimpleBadgeList()
         viewModel.getMyInfo()
-        viewModel.readRecentEssays()
-        isApiFinished = false
     }
 
     val scrollState = rememberScrollState()
@@ -141,22 +139,20 @@ fun TabletMyInfoRoute(
                     bottomSheetState.expand()
                 }
             }
-            if (viewModel.isApiFinished) {
-                SettingBar("링크드아웃 배지") { navController.navigate(Routes.BadgePage) }
-                LinkedOutBadgeGrid(badgeList) {
-                    viewModel.badgeBoxItem = it
-                    viewModel.isBadgeClicked = true
-                }
-                SettingBar("최근 본 글") { navController.navigate("RecentViewedEssayPage") }
-                RecentEssayList(
-                    itemList = viewModel.getRecentViewedEssayList(),
-                    onClickEssayItem = { essayId ->
-                        // 에세이 디테일로 넘어가는 동작
-                    }
-                )
-                MembershipSettingBar("멤버십 관리") {}
-                SettingBar("계정 관리") { navController.navigate("AccountPage") }
+            SettingBar("링크드아웃 배지") { navController.navigate(Routes.BadgePage) }
+            LinkedOutBadgeGrid(badgeList) {
+                viewModel.badgeBoxItem = it
+                viewModel.isBadgeClicked = true
             }
+            SettingBar("최근 본 글") { navController.navigate("RecentViewedEssayPage") }
+            RecentEssayList(
+                recentEssayList,
+                onClickEssayItem = { essayId ->
+                    // 에세이 디테일로 넘어가는 동작
+                }
+            )
+            MembershipSettingBar("멤버십 관리") {}
+            SettingBar("계정 관리") { navController.navigate("AccountPage") }
         }
 
         if (viewModel.isBadgeClicked) {
