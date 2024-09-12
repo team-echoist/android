@@ -19,6 +19,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,48 +35,52 @@ import com.echoist.linkedout.TYPE_RECOMMEND
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.components.EssayListItem
 import com.echoist.linkedout.viewModels.CommunityViewModel
+import com.echoist.linkedout.viewModels.EssayViewModel
 
 @Composable
 fun RecentViewedEssayPage(
     navController: NavController,
-    viewModel: CommunityViewModel = hiltViewModel()
+    viewModel: CommunityViewModel = hiltViewModel(),
+    essayViewModel: EssayViewModel = hiltViewModel()
 ) {
+
+    val recentEssayList by essayViewModel.recentEssayList.collectAsState()
 
     Scaffold(
         topBar = {
             SettingTopAppBar("최근 본 글", navController)
         },
         content = {
-            Column(Modifier.padding(it)) {
-                LazyColumn(
-                    Modifier
-                        .padding(top = 20.dp)
-                ) {
-                    items(viewModel.getRecentEssayList()) { it ->
-                        EssayListItem(
-                            item = it,
-                            viewModel = viewModel,
-                            navController = navController
+            Column(
+                modifier = Modifier.padding(it)
+            ) {
+                if (recentEssayList.isNotEmpty()) {
+                    LazyColumn(
+                        modifier = Modifier.padding(top = 20.dp)
+                    ) {
+                        items(recentEssayList) { essay ->
+                            EssayListItem(
+                                item = essay,
+                                viewModel = viewModel,
+                                navController = navController
+                            )
+                        }
+                    }
+                } else {
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Text(
+                            text = "최근 본 글이 없습니다.",
+                            modifier = Modifier.align(Alignment.Center),
+                            color = Color.Gray
                         )
                     }
                 }
             }
-            if (viewModel.getRecentEssayList().isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    Text(
-                        text = "최근 본 글이 없습니다.",
-                        modifier = Modifier.align(Alignment.Center),
-                        color = Color.Gray
-                    )
-                }
-            }
-
         }
-
-
     )
 }
-
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -119,7 +125,6 @@ fun RecentEssayListItemNoTime(
 
                 }
 
-
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(
                     text = item.content!!,
@@ -131,7 +136,6 @@ fun RecentEssayListItemNoTime(
                     overflow = TextOverflow.Ellipsis
                 )
             }
-
             if (item.thumbnail != null) {
                 GlideImage(
                     model = item.thumbnail,
@@ -143,7 +147,6 @@ fun RecentEssayListItemNoTime(
                 )
             }
         }
-
 
         Box(
             contentAlignment = Alignment.BottomStart, modifier = Modifier
@@ -163,9 +166,6 @@ fun RecentEssayListItemNoTime(
             HorizontalDivider(color = Color(0xFF686868))
         }
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
-
         }
-
-
     }
 }
