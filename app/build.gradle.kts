@@ -7,9 +7,8 @@ plugins {
     kotlin("kapt")    // kapt 플러그인 추가
     id("com.google.dagger.hilt.android")
     id("com.google.gms.google-services")
-
-
 }
+
 val keystorePropertiesFile = rootProject.file("local.properties")
 val keystoreProperties = Properties()
 keystoreProperties.load(FileInputStream(keystorePropertiesFile))
@@ -22,8 +21,8 @@ android {
         applicationId = "com.echoist.linkedout"
         minSdk = 26
         targetSdk = 34
-        versionCode = 5 //todo 릴리즈 생성마다 +1
-        versionName = "1.0.1" //1번수정
+        versionCode = 7 //todo 릴리즈 생성마다 +1
+        versionName = "1.0.2" //1번수정
         //git ignore 용입니다.
         //구글 네이티브 앱 키
         buildConfigField(
