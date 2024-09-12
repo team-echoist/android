@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import com.echoist.linkedout.components.ExitAppErrorBox
 import com.echoist.linkedout.navigation.MobileApp
@@ -41,6 +42,7 @@ import com.google.firebase.ktx.Firebase
 import com.kakao.sdk.common.KakaoSdk
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
     class MainActivity : ComponentActivity() {
@@ -64,7 +66,16 @@ import kotlinx.coroutines.delay
 
     override fun onResume() {
         super.onResume()
-        viewModel.requestAppVersion(this)
+        viewModel.requestAppVersion()
+
+        lifecycleScope.launch {
+            viewModel.isVersionMatching.collect { isVersionMatching ->
+                if (!isVersionMatching) {
+                    // 다른 클래스의 메서드 호출 시 this를 context로 전달
+                    startActivityToPlayStore(this@MainActivity)
+                }
+            }
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

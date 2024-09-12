@@ -6,15 +6,12 @@ import android.app.Activity.RESULT_OK
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
-import android.os.Bundle
 import android.util.Log
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.result.ActivityResult
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
@@ -48,6 +45,8 @@ import com.navercorp.nid.NaverIdLoginSDK
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -87,6 +86,9 @@ class SocialLoginViewModel @Inject constructor(
 
     var userId by mutableStateOf("")
     var userPw by mutableStateOf("")
+
+    private val _isVersionMatching = MutableStateFlow(true)
+    val isVersionMatching: StateFlow<Boolean> get() = _isVersionMatching
 
     private suspend fun readMyInfo(navController: NavController){
 
@@ -163,7 +165,8 @@ class SocialLoginViewModel @Inject constructor(
         }
     }
     //앱 버전 확인
-    fun requestAppVersion(context: Context){
+    fun requestAppVersion(){
+        _isVersionMatching.value = true
         viewModelScope.launch {
             try {
                 val response = supportApi.requestAppVersion()
@@ -176,11 +179,7 @@ class SocialLoginViewModel @Inject constructor(
                     else{
                         //버전 불일치 시 플레이 스토어로 이동
                         Log.e("버전 일치 확인", "버전 불일치. 최신 버전 : $latestVersion\n현재 버전 : $currentVersion")
-                        val playStoreIntent = Intent(Intent.ACTION_VIEW).apply {
-                            data = Uri.parse("https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}")
-                            setPackage("com.android.vending")
-                        }
-                        startActivity(context,playStoreIntent, Bundle.EMPTY)
+                        _isVersionMatching.value = false
                     }
                 }
                 else{

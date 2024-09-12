@@ -2,9 +2,12 @@ package com.echoist.linkedout
 
 import android.content.ContentResolver
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
 import android.provider.OpenableColumns
 import android.util.Patterns
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import java.io.File
 import java.io.FileOutputStream
@@ -40,4 +43,12 @@ private fun getFileName(uri: Uri, contentResolver: ContentResolver): String? {
         }
     }
     return name
+}
+
+fun startActivityToPlayStore(context: Context){
+    val playStoreIntent = Intent(Intent.ACTION_VIEW).apply {
+        data = Uri.parse("https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}")
+        setPackage("com.android.vending")
+    }
+    ContextCompat.startActivity(context, playStoreIntent, Bundle.EMPTY)
 }
