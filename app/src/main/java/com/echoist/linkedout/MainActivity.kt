@@ -44,6 +44,9 @@ import kotlinx.coroutines.delay
 
 @AndroidEntryPoint
     class MainActivity : ComponentActivity() {
+        
+    val viewModel : SocialLoginViewModel by viewModels()
+    
     private fun getSSAID(context: Context) {
         DeviceId.ssaid =
             Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
@@ -61,7 +64,6 @@ import kotlinx.coroutines.delay
 
     override fun onResume() {
         super.onResume()
-        val viewModel : SocialLoginViewModel by viewModels()
         viewModel.requestAppVersion(this)
     }
 
