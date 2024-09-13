@@ -107,13 +107,13 @@ class WritingViewModel @Inject constructor(
 
     fun getEssayById(id: Int,navController: NavController) {
         viewModelScope.launch(Dispatchers.IO) {
+
             storedDetailEssay = essayStoreDao.getEssayById(id)!!
             title.value = TextFieldValue(storedDetailEssay.title.toString())
             content = storedDetailEssay.content.toString()
             longitude = storedDetailEssay.longitude
             latitude = storedDetailEssay.latitude
             essayPrimaryId = storedDetailEssay.essayPrimaryId
-
 
             Log.d(TAG, "getEssayById: $storedDetailEssay")
             withContext(Dispatchers.Main) {
@@ -123,11 +123,20 @@ class WritingViewModel @Inject constructor(
         }
     }
 
-
+    fun deleteEssay(essayId : Int){
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                essayStoreDao.deleteEssayById(essayId)
+                getAllStoredData()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
     fun deleteEssays(essayIds: List<Int?>) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                essayStoreDao.deleteEssaysByIds(essayIds!!) //todo 공백도 허용할것?
+                essayStoreDao.deleteEssaysByIds(essayIds)
                 getAllStoredData()
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -138,8 +147,7 @@ class WritingViewModel @Inject constructor(
     fun updateOrInsertEssay(essayItem: EssayApi.EssayItem) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                essayStoreDao.updateOrInsertEssay(essayItem) //todo 공백도 허용할것?
-
+                essayStoreDao.updateOrInsertEssay(essayItem)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
