@@ -12,7 +12,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,6 +37,12 @@ import com.echoist.linkedout.viewModels.MyPageViewModel
 fun ChangePwPage(navController: NavController, viewModel: MyPageViewModel = hiltViewModel()) {
 
     val scrollState = rememberScrollState()
+
+    var oldPw by remember { mutableStateOf("") }
+    var oldPwErr by remember { mutableStateOf(false) } //todo 에러처리 할 구문 생각해야할것.
+    var newPw by remember { mutableStateOf("") } //todo 이 값들을 페이지 나갔다 들어와도 유지되게끔 할것인지.
+    var newPwErr by remember { mutableStateOf(false) } //todo 에러처리 할 구문 생각해야할것.
+
     LaunchedEffect(true) {
         viewModel.getMyInfo()
     }
@@ -55,9 +60,6 @@ fun ChangePwPage(navController: NavController, viewModel: MyPageViewModel = hilt
                 Spacer(modifier = Modifier.height(42.dp))
                 Text(text = "현재 비밀번호", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
                 Spacer(modifier = Modifier.height(10.dp))
-
-                var oldPw by remember { mutableStateOf("") }
-                var oldPwErr by remember { mutableStateOf(false) } //todo 에러처리 할 구문 생각해야할것.
 
                 CustomOutlinedTextField(
                     oldPw,
@@ -86,9 +88,6 @@ fun ChangePwPage(navController: NavController, viewModel: MyPageViewModel = hilt
 
                 Text(text = "새 비밀번호", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
                 Spacer(modifier = Modifier.height(10.dp))
-
-                var newPw by remember { mutableStateOf("") } //todo 이 값들을 페이지 나갔다 들어와도 유지되게끔 할것인지.
-                var newPwErr by remember { mutableStateOf(false) } //todo 에러처리 할 구문 생각해야할것.
 
                 CustomOutlinedTextField(
                     newPw,

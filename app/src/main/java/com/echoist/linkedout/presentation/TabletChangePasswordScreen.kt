@@ -27,13 +27,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.echoist.linkedout.page.settings.CustomOutlinedTextField
 import com.echoist.linkedout.ui.theme.LinkedInColor
+import com.echoist.linkedout.viewModels.MyPageViewModel
 
 @Composable
 fun TabletChangePasswordScreen(
+    navController: NavController,
     contentPadding: PaddingValues,
-    onClickResetPassword: () -> Unit
+    onClickResetPassword: () -> Unit,
+    viewModel: MyPageViewModel = hiltViewModel()
 ) {
     var oldPw by remember { mutableStateOf("") }
     var oldPwErr by remember { mutableStateOf(false) }
@@ -59,7 +64,8 @@ fun TabletChangePasswordScreen(
                     oldPw = newText
                 },
                 isError = oldPwErr,
-                hint = "비밀번호"
+                hint = "비밀번호",
+                singLine = true
             )
             if (oldPwErr) {
                 Text(text = "올바른 이메일 형식이 아닙니다.", color = Color.Red, fontSize = 12.sp)
@@ -86,7 +92,8 @@ fun TabletChangePasswordScreen(
                     newPw = newText
                 },
                 isError = newPwErr,
-                hint = "새 비밀번호"
+                hint = "새 비밀번호",
+                singLine = true
             )
             if (newPwErr) {
                 Text(text = "올바른 이메일 형식이 아닙니다.", color = Color.Red, fontSize = 12.sp)
@@ -107,7 +114,8 @@ fun TabletChangePasswordScreen(
                     if (newPw != newPwCheck) newPwCheckErr = true
                 },
                 isError = newPwCheckErr,
-                hint = "새 비밀번호 확인"
+                hint = "새 비밀번호 확인",
+                singLine = true
             )
             if (newPwCheckErr) {
                 Text(text = "비밀번호가 일치하지 않습니다.", color = Color.Red, fontSize = 12.sp)
@@ -117,7 +125,12 @@ fun TabletChangePasswordScreen(
 
             val enabled = newPw == newPwCheck && newPw.isNotBlank() //문자가 있어야함
             Button(
-                onClick = { /* todo 비밀번호 변경 기능구현 */ },
+                onClick = {
+                    viewModel.updatePw(
+                        newPw,
+                        navController
+                    )
+                },
                 enabled = enabled,
                 shape = RoundedCornerShape(20),
                 modifier = Modifier

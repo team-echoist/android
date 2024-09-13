@@ -142,6 +142,7 @@ fun TabletNavHost(
         }
         composable(Routes.ChangePassword) {
             TabletChangePasswordScreen(
+                navController = navController,
                 contentPadding = contentPadding,
                 onClickResetPassword = { navController.navigate(Routes.ResetPwPageWithEmail) }
             )
