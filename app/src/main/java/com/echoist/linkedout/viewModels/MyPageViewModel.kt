@@ -7,7 +7,6 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
@@ -30,7 +29,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MyPageViewModel @Inject constructor(
-    private val essayApi: EssayApi,
     private val userApi: UserApi,
     private val exampleItems: ExampleItems
 ) : ViewModel() {
@@ -40,7 +38,6 @@ class MyPageViewModel @Inject constructor(
     var badgeBoxItem: BadgeBoxItem? by mutableStateOf(null)
 
     var isLoading by mutableStateOf(false)
-    var isApiFinished by mutableStateOf(false)
 
     var nicknameCheckCode by mutableStateOf(200)
 
@@ -73,10 +70,6 @@ class MyPageViewModel @Inject constructor(
             return null
         } finally {
         }
-    }
-
-    fun getRecentViewedEssayList(): List<EssayApi.EssayItem> {
-        return exampleItems.recentViewedEssayList
     }
 
     fun requestMyInfo() {
@@ -176,30 +169,6 @@ class MyPageViewModel @Inject constructor(
                 e.printStackTrace()
                 // api 요청 실패
                 Log.e("업데이트 요청 실패", "updateMyInfo: ${e.printStackTrace()}")
-            } finally {
-                isLoading = false
-            }
-        }
-    }
-
-    fun readRecentEssays() {
-        isApiFinished = false
-        viewModelScope.launch {
-            isLoading = true
-            try {
-                val response = essayApi.readRecentEssays()
-                if (response.isSuccessful) {
-                    Token.accessToken =
-                        response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() }
-                            ?: Token.accessToken
-                    exampleItems.recentViewedEssayList =
-                        response.body()!!.data.essays.toMutableStateList()
-                    isApiFinished = true
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                // api 요청 실패
-                Log.e("writeEssayApiFailed", "Failed to write essay: ${e.message}")
             } finally {
                 isLoading = false
             }
