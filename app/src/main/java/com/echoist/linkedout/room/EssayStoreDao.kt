@@ -1,7 +1,6 @@
 package com.echoist.linkedout.room
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
@@ -18,9 +17,6 @@ interface EssayStoreDao {
 
     @Update
     suspend fun updateEssay(essayItem: EssayApi.EssayItem)
-
-    @Delete
-    suspend fun deleteEssay(essayItem: EssayApi.EssayItem) : Int
 
     @Query("DELETE FROM EssayItem WHERE essayPrimaryId = :essayPrimaryId")
     suspend fun deleteEssayById(essayPrimaryId: Int) : Int
@@ -40,5 +36,4 @@ interface EssayStoreDao {
             updateEssay(essayItem)
         }
     }
-
 }
