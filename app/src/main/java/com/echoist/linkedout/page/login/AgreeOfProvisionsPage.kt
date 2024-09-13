@@ -36,6 +36,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,6 +61,7 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.LOCATION_POLICY_URL
 import com.echoist.linkedout.PRIVACY_POLICY_URL
 import com.echoist.linkedout.R
+import com.echoist.linkedout.Routes
 import com.echoist.linkedout.TERMS_POLICY_URL
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.viewModels.SignUpViewModel
@@ -76,6 +79,13 @@ fun AgreeOfProvisionsPage(navController: NavController, viewModel: SignUpViewMod
     var isLoading by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
+    val navigateToComplete by viewModel.navigateToComplete.collectAsState()
+    LaunchedEffect(key1 = navigateToComplete) {
+        if (navigateToComplete){
+            navController.navigate(Routes.SignUpComplete)
+            viewModel.onNavigated()
+        }
+    }
 
     Scaffold { it ->
         Box(
