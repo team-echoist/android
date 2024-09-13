@@ -9,6 +9,7 @@ import android.provider.OpenableColumns
 import android.util.Patterns
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
+import com.echoist.linkedout.viewModels.WritingViewModel
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
@@ -51,4 +52,16 @@ fun startActivityToPlayStore(context: Context){
         setPackage("com.android.vending")
     }
     ContextCompat.startActivity(context, playStoreIntent, Bundle.EMPTY)
+}
+
+// 공통 버튼 로직을 함수로 추출
+fun handleEssayAction(status: String, viewModel : WritingViewModel , navController: NavController) {
+    if (viewModel.isModifyClicked) {
+        viewModel.modifyEssay(navController, status)
+    } else {
+        viewModel.writeEssay(navController, status)
+    }
+    viewModel.essayPrimaryId?.let { essayId ->
+        viewModel.deleteEssay(essayId = essayId)
+    }
 }
