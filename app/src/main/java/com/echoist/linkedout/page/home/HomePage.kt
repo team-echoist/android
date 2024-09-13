@@ -56,6 +56,7 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -96,6 +97,7 @@ import com.echoist.linkedout.calculateDaysDifference
 import com.echoist.linkedout.data.BottomNavItem
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.getCurrentDateFormatted
+import com.echoist.linkedout.navigateWithClearBackStack
 import com.echoist.linkedout.page.myLog.Token
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.viewModels.HomeViewModel
@@ -115,14 +117,14 @@ import java.util.Locale
 @Composable
 fun HomePage(
     navController: NavController,
-    viewModel: HomeViewModel,
+    viewModel: HomeViewModel = hiltViewModel(),
     writingViewModel: WritingViewModel,
     statusCode: Int
 ) {
 
     val context = LocalContext.current
+    val isUserDeleteApiFinished by viewModel.isUserDeleteApiFinished.collectAsState()
 
-    Log.d("유저의 상태코드", statusCode.toString())
     Log.d("header token by autoLogin: in home", "${Token.accessToken} \n ${Token.refreshToken}")
     var userStatus by remember { mutableStateOf(UserStatus.Activated) }
 
@@ -139,6 +141,13 @@ fun HomePage(
         viewModel.requestUnreadAlerts()
         viewModel.requestLatestNotice()
         viewModel.requestRegisterDevice(context) //로그인 후 홈 진입 시 한번만 회원정보 등록
+    }
+
+    LaunchedEffect(key1 = isUserDeleteApiFinished) {
+        if (isUserDeleteApiFinished) {
+            navigateWithClearBackStack(navController,Routes.LoginPage)
+            viewModel.setApiStatusToFalse()
+        }
     }
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -261,7 +270,7 @@ fun HomePage(
                     userStatus = UserStatus.Activated
                 })
             {
-                viewModel.requestUserDelete(navController)
+                viewModel.requestUserDelete()
             }
         }
     }
