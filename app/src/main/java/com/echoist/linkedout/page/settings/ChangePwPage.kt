@@ -16,6 +16,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,6 +43,14 @@ fun ChangePwPage(navController: NavController, viewModel: MyPageViewModel = hilt
     var oldPwErr by remember { mutableStateOf(false) } //todo 에러처리 할 구문 생각해야할것.
     var newPw by remember { mutableStateOf("") } //todo 이 값들을 페이지 나갔다 들어와도 유지되게끔 할것인지.
     var newPwErr by remember { mutableStateOf(false) } //todo 에러처리 할 구문 생각해야할것.
+
+    val isChangePwFinished by viewModel.isChangePwFinished.collectAsState()
+
+    LaunchedEffect(isChangePwFinished) {
+        if (isChangePwFinished) {
+            navController.popBackStack()
+        }
+    }
 
     LaunchedEffect(true) {
         viewModel.getMyInfo()
@@ -128,12 +137,7 @@ fun ChangePwPage(navController: NavController, viewModel: MyPageViewModel = hilt
 
                 val enabled = newPw == newPwCheck && newPw.isNotBlank() //문자가 있어야함
                 Button(
-                    onClick = {
-                        viewModel.updatePw(
-                            newPw,
-                            navController
-                        )
-                    },
+                    onClick = { viewModel.updatePw(newPw) },
                     enabled = enabled,
                     shape = RoundedCornerShape(20),
                     modifier = Modifier
@@ -142,8 +146,7 @@ fun ChangePwPage(navController: NavController, viewModel: MyPageViewModel = hilt
                     colors = ButtonDefaults.buttonColors(
                         containerColor = LinkedInColor,
                         disabledContainerColor = Color(0xFF868686),
-
-                        )
+                    )
                 ) {
                     Text(text = "변경하기", color = Color.Black)
                 }

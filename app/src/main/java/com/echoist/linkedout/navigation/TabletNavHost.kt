@@ -142,9 +142,9 @@ fun TabletNavHost(
         }
         composable(Routes.ChangePassword) {
             TabletChangePasswordScreen(
-                navController = navController,
                 contentPadding = contentPadding,
-                onClickResetPassword = { navController.navigate(Routes.ResetPwPageWithEmail) }
+                onClickResetPassword = { navController.navigate(Routes.ResetPwPageWithEmail) },
+                onChangePwFinished = { navController.popBackStack() }
             )
         }
         composable(Routes.DeleteAccount) {

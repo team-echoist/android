@@ -15,6 +15,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,22 +30,29 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.echoist.linkedout.page.settings.CustomOutlinedTextField
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.viewModels.MyPageViewModel
 
 @Composable
 fun TabletChangePasswordScreen(
-    navController: NavController,
     contentPadding: PaddingValues,
+    viewModel: MyPageViewModel = hiltViewModel(),
     onClickResetPassword: () -> Unit,
-    viewModel: MyPageViewModel = hiltViewModel()
+    onChangePwFinished: () -> Unit
 ) {
     var oldPw by remember { mutableStateOf("") }
     var oldPwErr by remember { mutableStateOf(false) }
     var newPw by remember { mutableStateOf("") } //todo 이 값들을 페이지 나갔다 들어와도 유지되게끔 할것인지.
     var newPwErr by remember { mutableStateOf(false) } //todo 에러처리 할 구문 생각해야할것.
+
+    val isChangePwFinished by viewModel.isChangePwFinished.collectAsState()
+
+    LaunchedEffect(isChangePwFinished) {
+        if (isChangePwFinished) {
+            onChangePwFinished()
+        }
+    }
 
     Box(
         Modifier
@@ -125,12 +134,7 @@ fun TabletChangePasswordScreen(
 
             val enabled = newPw == newPwCheck && newPw.isNotBlank() //문자가 있어야함
             Button(
-                onClick = {
-                    viewModel.updatePw(
-                        newPw,
-                        navController
-                    )
-                },
+                onClick = { viewModel.updatePw(newPw) },
                 enabled = enabled,
                 shape = RoundedCornerShape(20),
                 modifier = Modifier
