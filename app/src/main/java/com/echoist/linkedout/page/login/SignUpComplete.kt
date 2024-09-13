@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -38,7 +39,7 @@ import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun SignUpCompletePage(homeViewModel: HomeViewModel, navController: NavController) {
+fun SignUpCompletePage(homeViewModel: HomeViewModel = hiltViewModel(), navController: NavController) {
     var isLoading by remember { androidx.compose.runtime.mutableStateOf(true) }
 
     LaunchedEffect(key1 = Unit) {
