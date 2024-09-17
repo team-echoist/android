@@ -11,6 +11,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -524,12 +525,18 @@ fun Authentication_6_BottomModal(
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center, // 수직 중앙 정렬
         modifier = Modifier
+            .fillMaxWidth() // 가로로 꽉 채우기
             .imePadding()
             .padding(bottom = 20.dp)
             .navigationBarsPadding()
     ) {
-        Column(modifier = Modifier.padding(horizontal = 20.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth() // 가로로 꽉 채우기
+                .padding(horizontal = 20.dp)
+        ) {
             Spacer(modifier = Modifier.height(37.dp))
             Text(text = "인증번호 입력하기", fontSize = 20.sp, color = Color.White)
             Spacer(modifier = Modifier.height(6.dp))
@@ -539,7 +546,12 @@ fun Authentication_6_BottomModal(
             )
             Spacer(modifier = Modifier.height(41.dp))
 
-            Row(Modifier.horizontalScroll(rememberScrollState())) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth() // 가로로 꽉 채우기
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.Center // 가로 중앙 정렬
+            ) {
                 (0..5).forEach { index ->
                     Authentication_TextField(
                         text = codeDigits[index], // 해당 인덱스의 값을 전달
@@ -566,6 +578,7 @@ fun Authentication_6_BottomModal(
                     }
                 }
             }
+
             if (isError) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
@@ -576,7 +589,11 @@ fun Authentication_6_BottomModal(
             }
             Spacer(modifier = Modifier.height(56.dp))
         }
-        Row {
+
+        Row(
+            horizontalArrangement = Arrangement.Center, // 가로 중앙 정렬
+            modifier = Modifier.fillMaxWidth() // 가로로 꽉 채우기
+        ) {
             Text(
                 text = "인증번호를 못 받으셨나요?",
                 style = TextStyle(
@@ -600,6 +617,7 @@ fun Authentication_6_BottomModal(
             )
         }
     }
+
 }
 
 

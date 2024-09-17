@@ -33,6 +33,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -50,17 +52,20 @@ import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
+import com.echoist.linkedout.Routes
 import com.echoist.linkedout.SharedPreferencesUtil
+import com.echoist.linkedout.navigateWithClearBackStack
 import com.echoist.linkedout.page.community.ReportTextField
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.viewModels.MyPageViewModel
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun AccountWithdrawalPage(navController: NavController) {
-
+fun AccountWithdrawalPage(
+    navController: NavController,
+    viewModel: MyPageViewModel = hiltViewModel()
+) {
     val scrollState = rememberScrollState()
-    val viewModel: MyPageViewModel = hiltViewModel()
 
     var isWithdrawalClicked by remember { mutableStateOf(false) }
     val reasonList = listOf(
@@ -69,8 +74,14 @@ fun AccountWithdrawalPage(navController: NavController) {
     )
     val selectedItems = remember { mutableStateListOf<String>() }
     val context = LocalContext.current
-    Log.d(TAG, "AccountWithdrawalPage: $selectedItems")
 
+    val withdrawalSuccess by viewModel.isWithdrawalSuccess.collectAsState()
+
+    LaunchedEffect(withdrawalSuccess) {
+        if (withdrawalSuccess) {
+            navigateWithClearBackStack(navController, Routes.LoginPage)
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -161,7 +172,12 @@ fun AccountWithdrawalPage(navController: NavController) {
                         easing = FastOutSlowInEasing
                     )
                 ),
-                exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
+                exit = fadeOut(
+                    animationSpec = tween(
+                        durationMillis = 500,
+                        easing = LinearEasing
+                    )
+                )
             )
             {
                 Box(
@@ -175,7 +191,7 @@ fun AccountWithdrawalPage(navController: NavController) {
                         isCancelClicked = { isWithdrawalClicked = false },
                         isWithdrawalClicked = {
                             Log.d(TAG, "AccountWithdrawalPage: $selectedItems")
-                            viewModel.requestWithdrawal(selectedItems.toList(), navController)
+                            viewModel.requestWithdrawal(selectedItems.toList())
                         }
                     )
                 }
