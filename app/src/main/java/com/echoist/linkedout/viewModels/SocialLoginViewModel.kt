@@ -22,7 +22,6 @@ import com.echoist.linkedout.TokenRepository
 import com.echoist.linkedout.api.NaverApiService
 import com.echoist.linkedout.api.SignUpApi
 import com.echoist.linkedout.api.SocialSignUpApi
-import com.echoist.linkedout.api.SupportApi
 import com.echoist.linkedout.api.UserApi
 import com.echoist.linkedout.calculateDateAfter30Days
 import com.echoist.linkedout.data.ExampleItems
@@ -45,8 +44,6 @@ import com.navercorp.nid.NaverIdLoginSDK
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -60,7 +57,6 @@ class SocialLoginViewModel @Inject constructor(
     private val exampleItems: ExampleItems,
     private val signUpApi: SignUpApi,
     private val socialSignUpApi: SocialSignUpApi,
-    private val supportApi: SupportApi,
     private val tokenRepository: TokenRepository
 ) : ViewModel() {
     private val auth: FirebaseAuth = Firebase.auth
@@ -82,15 +78,12 @@ class SocialLoginViewModel @Inject constructor(
     private var appleUserToken by mutableStateOf("")
     private var appleUserId by mutableStateOf("")
 
-    var clickedAutoLogin by  mutableStateOf(false)
+    var clickedAutoLogin by mutableStateOf(false)
 
     var userId by mutableStateOf("")
     var userPw by mutableStateOf("")
 
-    private val _isVersionMatching = MutableStateFlow(true)
-    val isVersionMatching: StateFlow<Boolean> get() = _isVersionMatching
-
-    private suspend fun readMyInfo(navController: NavController){
+    private suspend fun readMyInfo(navController: NavController) {
 
         try {
             Log.d("헤더 토큰 여부", Token.accessToken)
@@ -103,21 +96,21 @@ class SocialLoginViewModel @Inject constructor(
             exampleItems.myProfile.essayStats = response.data.essayStats
             Log.i("본인 유저 정보 + 에세이", "readMyInfo: ${exampleItems.myProfile}")
 
-            if (response.data.user.isFirst == true){
-                Log.d("첫 회원가입 여부 체크","true")
+            if (response.data.user.isFirst == true) {
+                Log.d("첫 회원가입 여부 체크", "true")
                 navController.navigate("AgreeOfProvisionsPage")
-            }
-            else { //아니라면 바로 홈화면으로 이동
+            } else { //아니라면 바로 홈화면으로 이동
                 Log.d("첫 회원가입 여부 체크", "false")
                 navController.navigate("${Routes.Home}/200")
             }
-        }catch (e: Exception){
+        } catch (e: Exception) {
             Log.e("내 정보 요청 에러", "readMyInfo: error")
             e.printStackTrace()
         }
     }
 
     var loginStatusCode by mutableStateOf(200)
+
     //로그인
     fun login(navController: NavController) {
         viewModelScope.launch {
@@ -134,21 +127,29 @@ class SocialLoginViewModel @Inject constructor(
                     navController.popBackStack("OnBoarding", false) //onboarding까지 전부 삭제.
                     tokenRepository.setReAuthenticationRequired(false)
 
-                    when{
+                    when {
                         //자동로그인 클릭 + 로그인 성공 시 엑세스토큰, 리프레시토큰 저장 + 토큰의 30일 이후 날짜 계산
                         clickedAutoLogin -> {
-                            saveLocalTokens(navController.context, Token.accessToken, Token.refreshToken)
-                            SharedPreferencesUtil.saveRefreshTokenValidTime(navController.context, calculateDateAfter30Days()) //토큰 유효 기간 저장
+                            saveLocalTokens(
+                                navController.context,
+                                Token.accessToken,
+                                Token.refreshToken
+                            )
+                            SharedPreferencesUtil.saveRefreshTokenValidTime(
+                                navController.context,
+                                calculateDateAfter30Days()
+                            ) //토큰 유효 기간 저장
                         }
                         //자동로그인 클릭x 시 빈 값 저장
-                        !clickedAutoLogin -> saveLocalTokens(navController.context, "","")
+                        !clickedAutoLogin -> saveLocalTokens(navController.context, "", "")
                     }
 
-                    when(response.code()){
+                    when (response.code()) {
                         202 -> { // 탈퇴유저. 정보 읽지 않고 홈으로 이동.
                             Log.d("유저 상태코드", "${response.code()} 탈퇴 신청 유저 입니다. ")
                             navController.navigate("HOME/${response.code()}")
                         }
+
                         else -> readMyInfo(navController)// 첫 회원가입 여부 확인하고 화면이동
                     }
 
@@ -164,33 +165,7 @@ class SocialLoginViewModel @Inject constructor(
             }
         }
     }
-    //앱 버전 확인
-    fun requestAppVersion(){
-        _isVersionMatching.value = true
-        viewModelScope.launch {
-            try {
-                val response = supportApi.requestAppVersion()
-                if (response.isSuccessful){
-                    val currentVersion = BuildConfig.VERSION_NAME
-                    val latestVersion = response.body()!!.data.versions.android_mobile
 
-                    if (currentVersion == latestVersion)
-                        Log.d("버전 일치 확인", "버전 일치. 최신 버전 : $latestVersion\n현재 버전 : $currentVersion")
-                    else{
-                        //버전 불일치 시 플레이 스토어로 이동
-                        Log.e("버전 일치 확인", "버전 불일치. 최신 버전 : $latestVersion\n현재 버전 : $currentVersion")
-                        _isVersionMatching.value = false
-                    }
-                }
-                else{
-                    Log.e("앱 버전 체크 실패", "${response.code()}")
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Log.e("앱 버전 체크 실패", e.message.toString())
-            }
-        }
-    }
     fun signInWithGoogle(
         launcher: ManagedActivityResultLauncher<Intent, ActivityResult>,
         context: Context
@@ -368,7 +343,10 @@ class SocialLoginViewModel @Inject constructor(
             RESULT_CANCELED -> {
                 // 실패 or 에러
                 Log.d("Naver_errorCode", NaverIdLoginSDK.getLastErrorCode().code)
-                Log.d("Naver_errorDescription", NaverIdLoginSDK.getLastErrorDescription().toString())
+                Log.d(
+                    "Naver_errorDescription",
+                    NaverIdLoginSDK.getLastErrorDescription().toString()
+                )
 
                 // Handle failure accordingly
             }
@@ -420,6 +398,7 @@ class SocialLoginViewModel @Inject constructor(
         }
 
     }
+
     // 네이버 sdk 거친 후에 서버로 카카오인증 토큰,아이디 보내고 홈화면진입
     private fun requestNaverLogin(navController: NavController) {
         requestSocialLogin(navController, naverUserToken, "네이버") { userAccount ->
@@ -427,7 +406,7 @@ class SocialLoginViewModel @Inject constructor(
         }
     }
 
-    fun appleLoginHandle(activity : Activity,navController: NavController){
+    fun appleLoginHandle(activity: Activity, navController: NavController) {
         val provider = OAuthProvider.newBuilder("apple.com")
         provider.setScopes(arrayOf("email", "name").toMutableList())
         // Localize the Apple authentication screen in 한국어
@@ -452,9 +431,9 @@ class SocialLoginViewModel @Inject constructor(
                             "\nPhoneNumber: ${authResult.user!!.phoneNumber}" +//번호
                             "\nProviderId: ${authResult.user!!.providerId}" +// 제공자 파이어베이스
                             "\nProvider: ${authResult.credential!!.provider}" + // apple.com
-                            "\nUid: $appleUserId"+
-                            "\nProviderData: ${authResult.user!!.providerData}"+
-                            "\nsecret : $${credential.secret}"+
+                            "\nUid: $appleUserId" +
+                            "\nProviderData: ${authResult.user!!.providerData}" +
+                            "\nsecret : $${credential.secret}" +
                             "\nid 토큰 굉장히 긴것. : $${credential.idToken}"
 
                 )
@@ -484,9 +463,9 @@ class SocialLoginViewModel @Inject constructor(
                                 "\nPhoneNumber: ${authResult.user!!.phoneNumber}" +//번호
                                 "\nProviderId: ${authResult.user!!.providerId}" +// 제공자 파이어베이스
                                 "\nProvider: ${authResult.credential!!.provider}" + // apple.com
-                                "\nUid: $appleUserId"+
-                                "\nProviderData: ${authResult.user!!.providerData}"+
-                                "\nsecret : $${credential.secret}"+
+                                "\nUid: $appleUserId" +
+                                "\nProviderData: ${authResult.user!!.providerData}" +
+                                "\nsecret : $${credential.secret}" +
                                 "\nid토큰 굉장히 긴것. : $${credential.idToken}"
 
                     )
@@ -500,16 +479,18 @@ class SocialLoginViewModel @Inject constructor(
 
 
     }
+
     private fun requestAppleLogin(navController: NavController) {
         requestSocialLogin(navController, appleUserToken, "애플") { userAccount ->
             socialSignUpApi.requestAppleLogin(userAccount)
         }
     }
 
-    private fun saveLocalTokens(context: Context, accessToken : String, refreshToken : String){
+    private fun saveLocalTokens(context: Context, accessToken: String, refreshToken: String) {
         SharedPreferencesUtil.saveTokensInfo(context, accessToken, refreshToken)
         SharedPreferencesUtil.saveClickedAutoLogin(context, clickedAutoLogin)
     }
+
     private fun requestSocialLogin(
         navController: NavController,
         userToken: String,
@@ -540,7 +521,10 @@ class SocialLoginViewModel @Inject constructor(
                         // 첫 회원가입 여부 확인하고 화면 이동
                         clickedAutoLogin = true
                         saveLocalTokens(navController.context, accessToken, refreshToken)
-                        SharedPreferencesUtil.saveRefreshTokenValidTime(navController.context, calculateDateAfter30Days()) // 토큰 유효 기간 저장
+                        SharedPreferencesUtil.saveRefreshTokenValidTime(
+                            navController.context,
+                            calculateDateAfter30Days()
+                        ) // 토큰 유효 기간 저장
                         readMyInfo(navController)
                     }
                 } else {

@@ -36,7 +36,7 @@ import com.echoist.linkedout.page.myLog.Token
 import com.echoist.linkedout.presentation.TabletApp
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.HomeViewModel
-import com.echoist.linkedout.viewModels.SocialLoginViewModel
+import com.echoist.linkedout.viewModels.MainViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.kakao.sdk.common.KakaoSdk
@@ -45,10 +45,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-    class MainActivity : ComponentActivity() {
-        
-    val viewModel : SocialLoginViewModel by viewModels()
-    
+class MainActivity : ComponentActivity() {
+
+    val viewModel: MainViewModel by viewModels()
+
     private fun getSSAID(context: Context) {
         DeviceId.ssaid =
             Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
@@ -104,7 +104,7 @@ import kotlinx.coroutines.launch
 
         setContent {
 
-            val homeViewModel : HomeViewModel = hiltViewModel()
+            val homeViewModel: HomeViewModel = hiltViewModel()
             val isReAuthenticationRequired by homeViewModel.isReAuthenticationRequired.collectAsState()
 
             var isClickedExit by remember {
@@ -137,7 +137,7 @@ import kotlinx.coroutines.launch
                     }
                 }
 
-                  //release 버전에는 아직 테블릿 제외
+                //release 버전에는 아직 테블릿 제외
                 if (isTablet) {
                     TabletApp(this, navController)
                 } else { //mobile
@@ -159,7 +159,8 @@ import kotlinx.coroutines.launch
 
                 //온보딩,로그인 화면 에서는 401에도 재 로그인 ui 표시 x
                 if (isReAuthenticationRequired &&
-                    currentRoute != Routes.OnBoarding && currentRoute != Routes.LoginPage) {
+                    currentRoute != Routes.OnBoarding && currentRoute != Routes.LoginPage
+                ) {
 
                     Box(modifier = Modifier
                         .fillMaxSize()
