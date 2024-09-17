@@ -289,6 +289,15 @@ fun HomePage(
         }
     } //토큰 만료시
 
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center
+    )
+    {
+        UpdateAlert({},{})
+    }
+
 }
 
 
@@ -1323,6 +1332,73 @@ fun ReLogInWaringAlert(isClicked: () -> Unit) {
                 .padding(bottom = 20.dp, end = 20.dp), contentAlignment = Alignment.BottomEnd
         ) {
             Text(text = "확인", color = LinkedInColor, modifier = Modifier.clickable { isClicked() })
+        }
+    }
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun UpdateAlert(isClickedClose: () -> Unit, isClickedOpened: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .width(280.dp)
+            .height(411.dp)
+            .background(color = Color(0xFF121212), shape = RoundedCornerShape(size = 10.dp)),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Spacer(modifier = Modifier.height(24.dp))
+            GlideImage(model = R.drawable.badge_update, contentDescription = "")
+            Spacer(modifier = Modifier.height(40.dp))
+            GlideImage(model = R.drawable.logo_update, contentDescription = "", modifier = Modifier.size(146.dp,97.33.dp))
+            Spacer(modifier = Modifier.height(37.dp))
+            Text(
+                text = "아무개님, 새로운 버전으로\n업데이트되었습니다!",
+                style = TextStyle(
+                    fontSize = 16.sp,
+                    lineHeight = 24.sp,
+                    fontWeight = FontWeight(700),
+                    color = Color(0xFFFFE045),
+                    textAlign = TextAlign.Center,
+                )
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "[자세히 보기]를 탭해 업데이트 히스토리를 확인해보세요.",
+                style = TextStyle(
+                    fontSize = 11.sp,
+                    lineHeight = 24.sp,
+                    fontWeight = FontWeight(700),
+                    color = Color(0xFFFFE045),
+                    textAlign = TextAlign.Center,
+                )
+            )
+            Spacer(modifier = Modifier.height(27.dp))
+
+            Row {
+                Button(
+                    onClick = { isClickedOpened() },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF868686)),
+                    shape = RoundedCornerShape(20), modifier = Modifier
+                        .height(50.dp)
+                        .padding(start = 15.dp, end = 5.dp)
+                        .weight(1f)
+                ) {
+
+                    Text(text = "자세히 보기", color = Color.Black, fontSize = 12.sp,textAlign = TextAlign.Center)
+                }
+                Button(
+                    onClick = { isClickedClose() },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFE045)),
+                    shape = RoundedCornerShape(20),
+                    modifier = Modifier
+                        .height(50.dp)
+                        .padding(start = 5.dp, end = 15.dp)
+                        .weight(1f)
+                ) {
+                    Text(text = "닫기", color = Color.Black, fontSize = 12.sp)
+                }
+            }
         }
     }
 }
