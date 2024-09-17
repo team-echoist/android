@@ -41,6 +41,9 @@ class MyPageViewModel @Inject constructor(
 
     var nicknameCheckCode by mutableStateOf(200)
 
+    private val _isWithdrawalSuccess = MutableStateFlow(false)
+    val isWithdrawalSuccess: StateFlow<Boolean> = _isWithdrawalSuccess
+
     private val _userProfile = MutableStateFlow(exampleItems.myProfile)
     val userProfile: StateFlow<UserInfo> = _userProfile
 
@@ -178,7 +181,7 @@ class MyPageViewModel @Inject constructor(
         }
     }
 
-    fun requestWithdrawal(reasons: List<String>, navController: NavController) {
+    fun requestWithdrawal(reasons: List<String>) {
         viewModelScope.launch {
             isLoading = true
             try {
@@ -189,11 +192,7 @@ class MyPageViewModel @Inject constructor(
                     Token.accessToken =
                         response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() }
                             ?: Token.accessToken
-                    navController.navigate("LoginPage") {
-                        popUpTo(navController.graph.startDestinationId) {
-                            inclusive = true
-                        }
-                    }
+                    _isWithdrawalSuccess.value = true
                 } else {
                     Log.e("탈퇴 실패", "코드 :  ${response.code()}")
                 }
