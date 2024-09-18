@@ -86,7 +86,6 @@ fun getPeriodString(index: Int): String = periodMap[index] ?: "오전"
 fun getHourString(index: Int): String = hourMap[index] ?: "01"
 fun getMinuteString(index: Int): String = minuteMap[index] ?: "00"
 
-
 @Composable
 fun keyboardAsState(): State<Keyboard> {
     val keyboardState = remember { mutableStateOf(Keyboard.Closed) }
