@@ -36,6 +36,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,12 +55,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.LOCATION_POLICY_URL
 import com.echoist.linkedout.PRIVACY_POLICY_URL
 import com.echoist.linkedout.R
+import com.echoist.linkedout.Routes
 import com.echoist.linkedout.TERMS_POLICY_URL
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.viewModels.SignUpViewModel
@@ -66,7 +70,10 @@ import com.echoist.linkedout.viewModels.SignUpViewModel
 @SuppressLint("SetJavaScriptEnabled")
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun AgreeOfProvisionsPage(navController: NavController, viewModel: SignUpViewModel) {
+fun AgreeOfProvisionsPage(
+    navController: NavController,
+    viewModel: SignUpViewModel = hiltViewModel()
+) {
 
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp // 화면의 높이를 DP 단위로 가져옴
@@ -75,7 +82,14 @@ fun AgreeOfProvisionsPage(navController: NavController, viewModel: SignUpViewMod
     var isClicked by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val isAgreeOfProvisions by viewModel.isAgreeOfProvisions.collectAsState()
 
+    LaunchedEffect(isAgreeOfProvisions) {
+        if (isAgreeOfProvisions) {
+            navController.navigate(Routes.SignUpComplete)
+            viewModel.onNavigated()
+        }
+    }
 
     Scaffold { it ->
         Box(

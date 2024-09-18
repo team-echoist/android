@@ -20,6 +20,7 @@ import com.echoist.linkedout.Routes
 import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.navigateWithClearBackStack
 import com.echoist.linkedout.page.home.HomePage
+import com.echoist.linkedout.page.login.AgreeOfProvisionsPage
 import com.echoist.linkedout.page.login.OnBoardingPage
 import com.echoist.linkedout.presentation.TabletAccountRoute
 import com.echoist.linkedout.presentation.TabletBadgeRoute
@@ -148,6 +149,9 @@ fun TabletNavHost(
                 contentPadding = contentPadding,
                 navController = navController
             )
+        }
+        composable(Routes.AgreeOfProvisionsPage) {
+            AgreeOfProvisionsPage(navController)
         }
     }
 }
