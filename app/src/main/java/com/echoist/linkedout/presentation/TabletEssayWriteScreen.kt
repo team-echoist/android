@@ -49,13 +49,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.echoist.linkedout.Keyboard
 import com.echoist.linkedout.components.HashTagBtn
 import com.echoist.linkedout.components.HashTagGroup
 import com.echoist.linkedout.components.LocationBox
 import com.echoist.linkedout.components.LocationBtn
 import com.echoist.linkedout.components.LocationGroup
-import com.echoist.linkedout.page.login.Keyboard
-import com.echoist.linkedout.page.login.keyboardAsState
+import com.echoist.linkedout.keyboardAsState
 import com.echoist.linkedout.page.myLog.ContentTextField
 import com.echoist.linkedout.page.myLog.KeyboardLocationFunc
 import com.echoist.linkedout.page.myLog.TextEditBar

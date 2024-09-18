@@ -3,10 +3,18 @@ package com.echoist.linkedout
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
+import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
 import android.util.Patterns
+import android.view.ViewTreeObserver
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalView
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.echoist.linkedout.viewModels.WritingViewModel
@@ -46,16 +54,17 @@ private fun getFileName(uri: Uri, contentResolver: ContentResolver): String? {
     return name
 }
 
-fun startActivityToPlayStore(context: Context){
+fun startActivityToPlayStore(context: Context) {
     val playStoreIntent = Intent(Intent.ACTION_VIEW).apply {
-        data = Uri.parse("https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}")
+        data =
+            Uri.parse("https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}")
         setPackage("com.android.vending")
     }
     ContextCompat.startActivity(context, playStoreIntent, Bundle.EMPTY)
 }
 
 // 공통 버튼 로직을 함수로 추출
-fun handleEssayAction(status: String, viewModel : WritingViewModel , navController: NavController) {
+fun handleEssayAction(status: String, viewModel: WritingViewModel, navController: NavController) {
     if (viewModel.isModifyClicked) {
         viewModel.modifyEssay(navController, status)
     } else {
@@ -64,4 +73,33 @@ fun handleEssayAction(status: String, viewModel : WritingViewModel , navControll
     viewModel.essayPrimaryId?.let { essayId ->
         viewModel.deleteEssay(essayId = essayId)
     }
+}
+
+@Composable
+fun keyboardAsState(): State<Keyboard> {
+    val keyboardState = remember { mutableStateOf(Keyboard.Closed) }
+    val view = LocalView.current
+    DisposableEffect(view) {
+        val onGlobalListener = ViewTreeObserver.OnGlobalLayoutListener {
+            val rect = Rect()
+            view.getWindowVisibleDisplayFrame(rect)
+            val screenHeight = view.rootView.height
+            val keypadHeight = screenHeight - rect.bottom
+            keyboardState.value = if (keypadHeight > screenHeight * 0.15) {
+                Keyboard.Opened
+            } else {
+                Keyboard.Closed
+            }
+        }
+        view.viewTreeObserver.addOnGlobalLayoutListener(onGlobalListener)
+
+        onDispose {
+            view.viewTreeObserver.removeOnGlobalLayoutListener(onGlobalListener)
+        }
+    }
+    return keyboardState
+}
+
+enum class Keyboard {
+    Opened, Closed
 }
