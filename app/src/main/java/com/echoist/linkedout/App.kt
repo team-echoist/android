@@ -35,6 +35,9 @@ class App : Application() {
 @InstallIn(SingletonComponent::class)
 object AppModule {
     @Provides
+    fun provideContext(application: Application): Context = application.applicationContext
+
+    @Provides
     @Singleton
     fun provideRetrofit(errorHandlingInterceptor: ErrorHandlingInterceptor): Retrofit {
         val moshi = Moshi.Builder()
