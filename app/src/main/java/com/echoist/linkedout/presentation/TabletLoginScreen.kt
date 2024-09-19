@@ -34,6 +34,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,17 +55,21 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.echoist.linkedout.R
+import com.echoist.linkedout.Routes
+import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.page.login.IdTextField
 import com.echoist.linkedout.page.login.PwTextField
 import com.echoist.linkedout.page.login.UnderlineText
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
+import com.echoist.linkedout.viewModels.LoginState
 import com.echoist.linkedout.viewModels.SocialLoginViewModel
 import com.navercorp.nid.NaverIdLoginSDK
+import kotlin.math.truncate
 
 @Composable
 fun TabletLoginRoute(
-    navController: NavHostController,
+    navController: NavController,
     viewModel: SocialLoginViewModel = hiltViewModel(),
     onBackPressed: () -> Unit,
     navigateToResetPassword: () -> Unit,
@@ -73,62 +78,67 @@ fun TabletLoginRoute(
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
 
-    LaunchedEffect(key1 = Unit) {
-        viewModel.initializeNaverLogin(context)
+    val loginState by viewModel.loginState.collectAsState()
+
+    val googleLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+    ) { result ->
+        viewModel.handleGoogleLogin(result.data)
+    }
+
+    val naverLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        viewModel.handleNaverLoginResult(result)
+    }
+
+    LaunchedEffect(key1 = true) {
+        viewModel.initializeNaverLogin()
+        SharedPreferencesUtil.saveIsOnboardingFinished(context, true)
+    }
+
+    LaunchedEffect(loginState) {
+        when (loginState) {
+            is LoginState.Home -> navController.navigate(
+                "${Routes.Home}/${(loginState as LoginState.Home).statusCode}"
+            )
+
+            LoginState.AgreeOfProvisions -> navController.navigate(Routes.AgreeOfProvisionsPage)
+
+            else -> {}
+        }
     }
 
     TabletLoginScreen(
-        navController = navController,
         viewModel = viewModel,
         horizontalPadding = if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 350 else 100,
         onBackPressed = { onBackPressed() },
         navigateToResetPassword = { navigateToResetPassword() },
         navigateToSignUp = { navigateToSignUp() },
-        onLoginButtonClick = { viewModel.login(navController) },
-        onGoogleLoginClick = {
-            val launcher = rememberLauncher(navController) { result, navController ->
-                viewModel.handleGoogleLogin(result?.data, navController)
-            }
-            viewModel.signInWithGoogle(launcher, context)
-        },
-        onKakaoLoginClick = { viewModel.handleKaKaoLogin(context, navController) },
+        onLoginButtonClick = { viewModel.login() },
+        onGoogleLoginClick = { viewModel.signInWithGoogle(googleLauncher) },
+        onKakaoLoginClick = { viewModel.handleKaKaoLogin() },
         onNaverLoginClick = {
-            val launcher = rememberLauncher(navController) { result, navController ->
-                result?.let { viewModel.handleNaverLoginResult(it, navController) }
-            }
-            NaverIdLoginSDK.authenticate(context, launcher)
+            NaverIdLoginSDK.authenticate(context, naverLauncher)
         },
         onAppleLoginClick = {
             val activity = context as Activity
-            viewModel.appleLoginHandle(activity, navController)
+            viewModel.appleLoginHandle(activity)
         }
     )
 }
 
 @Composable
-fun rememberLauncher(
-    navController: NavController,
-    handleLoginResult: (result: ActivityResult?, navController: NavController) -> Unit
-): ManagedActivityResultLauncher<Intent, ActivityResult> {
-    return rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-    ) { result ->
-        handleLoginResult(result, navController)
-    }
-}
-
-@Composable
 internal fun TabletLoginScreen(
-    navController: NavHostController,
     viewModel: SocialLoginViewModel,
     horizontalPadding: Int = 100,
     onBackPressed: () -> Unit,
     navigateToResetPassword: () -> Unit,
     navigateToSignUp: () -> Unit,
     onLoginButtonClick: () -> Unit,
-    onGoogleLoginClick: @Composable () -> Unit,
+    onGoogleLoginClick: () -> Unit,
     onKakaoLoginClick: () -> Unit,
-    onNaverLoginClick: @Composable () -> Unit,
+    onNaverLoginClick: () -> Unit,
     onAppleLoginClick: () -> Unit
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -177,7 +187,7 @@ internal fun TabletLoginScreen(
                         color = Color.White,
                     )
 
-                    LoginTextFields(viewModel, navController)
+                    LoginTextFields(viewModel)
 
                     var clickedAutoLogin by remember { mutableStateOf(false) }
                     val autoLoginColor = if (clickedAutoLogin) LinkedInColor else Color.Gray
@@ -254,10 +264,10 @@ internal fun TabletLoginScreen(
                         )
                     }
                     SocialLoginButtonGroup(
-                        onGoogleLoginClick = onGoogleLoginClick,
-                        onKakaoLoginClick = onKakaoLoginClick,
-                        onNaverLoginClick = onNaverLoginClick,
-                        onAppleLoginClick = onAppleLoginClick
+                        onGoogleLoginClick = { onGoogleLoginClick() },
+                        onKakaoLoginClick = { onKakaoLoginClick() },
+                        onNaverLoginClick = { onNaverLoginClick() },
+                        onAppleLoginClick = { onAppleLoginClick() }
                     )
                     Spacer(modifier = Modifier.height(20.dp))
                 }
@@ -268,20 +278,19 @@ internal fun TabletLoginScreen(
 
 @Composable
 fun LoginTextFields(
-    viewModel: SocialLoginViewModel = hiltViewModel(),
-    navController: NavController
+    viewModel: SocialLoginViewModel = hiltViewModel()
 ) {
     val passwordFocusRequester = remember { FocusRequester() }
 
     IdTextField(viewModel, passwordFocusRequester)
-    PwTextField(navController, viewModel, passwordFocusRequester)
+    PwTextField(viewModel, passwordFocusRequester)
 }
 
 @Composable
 fun SocialLoginButtonGroup(
-    onGoogleLoginClick: @Composable () -> Unit,
+    onGoogleLoginClick: () -> Unit,
     onKakaoLoginClick: () -> Unit,
-    onNaverLoginClick: @Composable () -> Unit,
+    onNaverLoginClick: () -> Unit,
     onAppleLoginClick: () -> Unit
 ) {
     Row(
@@ -321,14 +330,14 @@ fun SocialLoginButtonGroup(
 fun SocialLoginButton(
     @DrawableRes iconRes: Int,
     contentDescription: String,
-    onClick: @Composable () -> Unit
+    onClick: () -> Unit
 ) {
     Icon(
         painter = painterResource(id = iconRes),
         contentDescription = contentDescription,
         modifier = Modifier
             .size(40.dp)
-            .clickable { onClick },
+            .clickable { onClick() },
         tint = Color.Unspecified
     )
 }
