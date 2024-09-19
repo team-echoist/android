@@ -34,8 +34,11 @@ class App : Application() {
 @InstallIn(SingletonComponent::class)
 object AppModule {
     @Provides
+    fun provideContext(application: Application): Context = application.applicationContext
+
+    @Provides
     @Singleton
-    fun provideRetrofit(errorHandlingInterceptor: ErrorHandlingInterceptor) : Retrofit{
+    fun provideRetrofit(errorHandlingInterceptor: ErrorHandlingInterceptor): Retrofit {
         val moshi = Moshi.Builder()
             .addLast(KotlinJsonAdapterFactory())
             .build()
@@ -76,39 +79,40 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideSignUpApiClient(retrofit: Retrofit) : SignUpApi {
+    fun provideSignUpApiClient(retrofit: Retrofit): SignUpApi {
         return retrofit.create(SignUpApi::class.java)
     }
 
     @Provides
     @Singleton
-    fun provideGoogleSignUpApiClient(retrofit: Retrofit) : SocialSignUpApi {
+    fun provideGoogleSignUpApiClient(retrofit: Retrofit): SocialSignUpApi {
         return retrofit.create(SocialSignUpApi::class.java)
     }
 
     @Provides
     @Singleton
-    fun provideUserApiClient(retrofit: Retrofit) : UserApi {
+    fun provideUserApiClient(retrofit: Retrofit): UserApi {
         return retrofit.create(UserApi::class.java)
     }
 
     @Provides
     @Singleton
-    fun provideStoryApiClient(retrofit: Retrofit) : StoryApi {
+    fun provideStoryApiClient(retrofit: Retrofit): StoryApi {
         return retrofit.create(StoryApi::class.java)
     }
 
     @Provides
     @Singleton
-    fun provideBookMarkApiClient(retrofit: Retrofit) : BookMarkApi {
+    fun provideBookMarkApiClient(retrofit: Retrofit): BookMarkApi {
         return retrofit.create(BookMarkApi::class.java)
     }
 
     @Provides
     @Singleton
-    fun provideSupportApiClient(retrofit: Retrofit) : SupportApi {
+    fun provideSupportApiClient(retrofit: Retrofit): SupportApi {
         return retrofit.create(SupportApi::class.java)
     }
+
     @Singleton
     @Provides
     fun provideDatabase(@ApplicationContext context: Context): EssayStorageDB {
@@ -123,8 +127,4 @@ object AppModule {
     fun provideEssayStoreDao(database: EssayStorageDB): EssayStoreDao {
         return database.essayStoreDao()
     }
-
 }
-
-
-
