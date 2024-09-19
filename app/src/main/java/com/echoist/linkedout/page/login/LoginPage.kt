@@ -90,6 +90,7 @@ fun LoginPage(
     viewModel.clickedAutoLogin = SharedPreferencesUtil.getClickedAutoLogin(context)
 
     val loginState by viewModel.loginState.collectAsState()
+    var showError by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = Unit) {
         SharedPreferencesUtil.saveIsOnboardingFinished(context, true)
@@ -101,9 +102,11 @@ fun LoginPage(
                 "${Routes.Home}/${(loginState as LoginState.Home).statusCode}"
             )
 
-            LoginState.AgreeOfProvisions -> navController.navigate(Routes.AgreeOfProvisionsPage)
+            is LoginState.Error -> showError = true
 
-            else -> {}
+            is LoginState.AgreeOfProvisions -> navController.navigate(Routes.AgreeOfProvisionsPage)
+
+            else -> showError = false
         }
     }
 
@@ -205,41 +208,39 @@ fun LoginPage(
                 Spacer(modifier = Modifier.height(20.dp))
             }
 
-            if (loginState is LoginState.Error) {
-                AnimatedVisibility(
-                    visible = true,
-                    enter = fadeIn(
-                        animationSpec = tween(
-                            durationMillis = 500,
-                            easing = FastOutSlowInEasing
-                        )
-                    ),
-                    exit = fadeOut(animationSpec = tween(durationMillis = 0, easing = LinearEasing))
+            AnimatedVisibility(
+                visible = showError,
+                enter = fadeIn(
+                    animationSpec = tween(
+                        durationMillis = 500,
+                        easing = FastOutSlowInEasing
+                    )
+                ),
+                exit = fadeOut(animationSpec = tween(durationMillis = 0, easing = LinearEasing))
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(0.7f))
                 ) {
                     Box(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.Black.copy(0.7f))
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .align(Alignment.Center)
-                                .height(60.dp)
-                                .padding(horizontal = 20.dp)
-                                .background(
-                                    Color(0xFFE43446),
-                                    shape = RoundedCornerShape(10)
-                                )
-                        ) {
-                            Text(
-                                text = (loginState as LoginState.Error).message,
-                                color = Color.White,
-                                modifier = Modifier
-                                    .padding(horizontal = 20.dp)
-                                    .align(Alignment.Center)
+                            .fillMaxWidth()
+                            .align(Alignment.Center)
+                            .height(60.dp)
+                            .padding(horizontal = 20.dp)
+                            .background(
+                                Color(0xFFE43446),
+                                shape = RoundedCornerShape(10)
                             )
-                        }
+                    ) {
+                        Text(
+                            text = (loginState as LoginState.Error).message,
+                            color = Color.White,
+                            modifier = Modifier
+                                .padding(horizontal = 20.dp)
+                                .align(Alignment.Center)
+                        )
                     }
                 }
             }
