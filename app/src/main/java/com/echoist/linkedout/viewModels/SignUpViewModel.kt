@@ -54,6 +54,9 @@ class SignUpViewModel @Inject constructor(
     private val _navigateToComplete = MutableStateFlow(false)
     val navigateToComplete: StateFlow<Boolean> = _navigateToComplete
 
+    private val _isAgreeOfProvisions = MutableStateFlow(false)
+    val isAgreeOfProvisions: StateFlow<Boolean> = _isAgreeOfProvisions
+
     private suspend fun readMyInfo() {
         try {
             val response = userApi.getMyInfo()
@@ -194,7 +197,7 @@ class SignUpViewModel @Inject constructor(
                 if (response.isSuccessful) {
                     Log.d(TAG, "마케팅 동의 저장 성공: ${response.code()}")
 
-                    _navigateToComplete.value = true
+                    _isAgreeOfProvisions.value = true
                 } else {
                     Log.e(TAG, "마케팅 동의 저장 실패: ${response.code()}")
                     Log.e(TAG, "마케팅 동의 저장 실패: ${response.errorBody()}")
