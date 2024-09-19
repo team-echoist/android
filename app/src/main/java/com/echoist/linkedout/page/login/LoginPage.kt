@@ -81,10 +81,6 @@ fun LoginPage(
     navController: NavController,
     viewModel: SocialLoginViewModel = hiltViewModel()
 ) {
-<<<<<<< HEAD
-=======
-    val context = LocalContext.current
->>>>>>> 14b1475 (feat: 소셜로그인 뷰모델 수정)
     val scrollState = rememberScrollState()
     val keyboardController = LocalSoftwareKeyboardController.current
     val clickedAutoLogin by viewModel.clickedAutoLogin.collectAsState()
@@ -93,13 +89,6 @@ fun LoginPage(
         if (clickedAutoLogin) LinkedInColor else Color.Gray
 
     val loginState by viewModel.loginState.collectAsState()
-<<<<<<< HEAD
-=======
-
-    LaunchedEffect(key1 = Unit) {
-        SharedPreferencesUtil.saveIsOnboardingFinished(context, true)
-    }
->>>>>>> 14b1475 (feat: 소셜로그인 뷰모델 수정)
 
     LaunchedEffect(loginState) {
         when (loginState) {
@@ -107,11 +96,7 @@ fun LoginPage(
                 "${Routes.Home}/${(loginState as LoginState.Home).statusCode}"
             )
 
-<<<<<<< HEAD
             is LoginState.AgreeOfProvisions -> navController.navigate(Routes.AgreeOfProvisionsPage)
-=======
-            LoginState.AgreeOfProvisions -> navController.navigate(Routes.AgreeOfProvisionsPage)
->>>>>>> 14b1475 (feat: 소셜로그인 뷰모델 수정)
 
             else -> {}
         }
