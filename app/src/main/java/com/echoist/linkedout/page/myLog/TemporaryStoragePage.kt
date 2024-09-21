@@ -88,7 +88,8 @@ fun TemporaryStoragePage(navController: NavController, viewModel: WritingViewMod
             )
             val btnColor = if (selectedItems.isEmpty()) Color(0xFF868686) else LinkedInColor
             val selectedIds = selectedItems.map { it.essayPrimaryId }
-            DeleteBtn(count = selectedItems.size,
+            DeleteBtn(
+                count = selectedItems.size,
                 onDeleteClicked = {
                     viewModel.deleteEssays(selectedIds)
                     Log.d(TAG, "TemporaryStoragePage: $selectedIds")
@@ -210,14 +211,18 @@ fun StorageEssayItem(
 ) {
     val color = if (isSelected) LinkedInColor else Color(0xFF252525)
 
-    Box(modifier = Modifier
-        .padding(horizontal = 35.dp)
-        .fillMaxWidth()
-        .clickable { if (!isModifyClicked) isEssayClicked() } //수정 상태가 아닐 때만 클릭 가능
-        .height(73.dp)) {
+    Box(
+        modifier = Modifier
+            .padding(horizontal = 35.dp)
+            .fillMaxWidth()
+            .height(73.dp)
+    ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.clickable { onItemSelected(!isSelected) }
+            modifier = Modifier.clickable {
+                if (!isModifyClicked) isEssayClicked()
+                else onItemSelected(!isSelected)
+            }
         ) {
             Column(
                 Modifier
@@ -244,8 +249,6 @@ fun StorageEssayItem(
                     )
                 }
             }
-
-
         }
         if (isModifyClicked && !isSelected) {
             Box(
@@ -253,10 +256,8 @@ fun StorageEssayItem(
                     .fillMaxSize()
                     .background(Color.Black.copy(0.4f))
             )
-
         }
     }
-
 }
 
 

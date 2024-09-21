@@ -1,7 +1,5 @@
 package com.echoist.linkedout.presentation
 
-import android.content.ContentValues
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
@@ -20,17 +18,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.Routes
+import com.echoist.linkedout.TYPE_RECOMMEND
 import com.echoist.linkedout.page.settings.BadgeDescriptionBox
 import com.echoist.linkedout.page.settings.LinkedOutBadgeGrid
 import com.echoist.linkedout.page.settings.MembershipSettingBar
@@ -39,6 +36,7 @@ import com.echoist.linkedout.page.settings.MySettings
 import com.echoist.linkedout.page.settings.RecentEssayList
 import com.echoist.linkedout.page.settings.SelectProfileIconBottomSheet
 import com.echoist.linkedout.page.settings.SettingBar
+import com.echoist.linkedout.viewModels.CommunityViewModel
 import com.echoist.linkedout.viewModels.EssayViewModel
 import com.echoist.linkedout.viewModels.MyPageViewModel
 import kotlinx.coroutines.launch
@@ -49,26 +47,29 @@ fun TabletMyInfoRoute(
     modifier: Modifier = Modifier,
     navController: NavController,
     viewModel: MyPageViewModel = hiltViewModel(),
-    essayViewModel: EssayViewModel = hiltViewModel()
+    essayViewModel: EssayViewModel = hiltViewModel(),
+    communityViewModel: CommunityViewModel = hiltViewModel()
 ) {
 
-    val badgeList by viewModel.badgeList.collectAsState()
-    val recentEssayList by essayViewModel.recentEssayList.collectAsState()
-
-    LaunchedEffect(true) {
-        viewModel.requestMyInfo()
-        viewModel.readSimpleBadgeList()
-        viewModel.getMyInfo()
-    }
-
+    val context = LocalContext.current
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
+
+    val userInfo by viewModel.userProfile.collectAsState()
+    val badgeList by viewModel.badgeList.collectAsState()
+    val recentEssayList by essayViewModel.recentEssayList.collectAsState()
 
     val bottomSheetState =
         rememberStandardBottomSheetState(initialValue = SheetValue.Hidden, skipHiddenState = false)
     val scaffoldState = androidx.compose.material3.rememberBottomSheetScaffoldState(
         bottomSheetState = bottomSheetState
     )
+
+    LaunchedEffect(true) {
+        viewModel.requestMyInfo()
+        viewModel.readSimpleBadgeList()
+        viewModel.getMyInfo()
+    }
 
     BottomSheetScaffold(
         sheetContainerColor = Color(0xFF111111),
@@ -90,10 +91,20 @@ fun TabletMyInfoRoute(
                     )
                 )
             ) {
-                //SelectProfileIconBottomSheet(viewModel)
+                SelectProfileIconBottomSheet(
+                    uploadImage = { uri ->
+                        scope.launch {
+                            viewModel.uploadImage(uri, context)
+                        }
+                    },
+                    onClickImage = { imageUrl ->
+                        viewModel.onImageChange(imageUrl)
+                        viewModel.isClickedModifyImage = false
+                    },
+                    onClickBack = { viewModel.isClickedModifyImage = false }
+                )
             }
             //기본
-
             AnimatedVisibility(
                 visible = !viewModel.isClickedModifyImage,
                 enter = fadeIn(
@@ -123,18 +134,14 @@ fun TabletMyInfoRoute(
                     }
                 )
             }
-
-
         },
         sheetPeekHeight = 0.dp
     ) {
         Column(
             modifier = modifier
                 .verticalScroll(scrollState)
-
         ) {
-            MySettings(item = viewModel.getMyInfo()) {
-                Log.d(ContentValues.TAG, "MyPage: ${viewModel.getMyInfo()}")
+            MySettings(userInfo) {
                 scope.launch {
                     bottomSheetState.expand()
                 }
@@ -144,15 +151,16 @@ fun TabletMyInfoRoute(
                 viewModel.badgeBoxItem = it
                 viewModel.isBadgeClicked = true
             }
-            SettingBar("최근 본 글") { navController.navigate("RecentViewedEssayPage") }
-            RecentEssayList(
-                recentEssayList,
-                onClickEssayItem = { essayId ->
-                    // 에세이 디테일로 넘어가는 동작
-                }
-            )
+            SettingBar("최근 본 글") { navController.navigate(Routes.RecentViewedEssayPage) }
+            RecentEssayList(recentEssayList) {
+                communityViewModel.readDetailRecentEssay(
+                    it,
+                    navController,
+                    TYPE_RECOMMEND
+                )
+            }
             MembershipSettingBar("멤버십 관리") {}
-            SettingBar("계정 관리") { navController.navigate("AccountPage") }
+            SettingBar("계정 관리") { navController.navigate(Routes.AccountPage) }
         }
 
         if (viewModel.isBadgeClicked) {

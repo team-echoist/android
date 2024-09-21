@@ -41,6 +41,9 @@ class MyPageViewModel @Inject constructor(
 
     var nicknameCheckCode by mutableStateOf(200)
 
+    private val _isWithdrawalSuccess = MutableStateFlow(false)
+    val isWithdrawalSuccess: StateFlow<Boolean> = _isWithdrawalSuccess
+
     private val _userProfile = MutableStateFlow(exampleItems.myProfile)
     val userProfile: StateFlow<UserInfo> = _userProfile
 
@@ -49,6 +52,9 @@ class MyPageViewModel @Inject constructor(
 
     private val _badgeList = MutableStateFlow<List<BadgeBoxItem>>(emptyList())
     val badgeList: StateFlow<List<BadgeBoxItem>> = _badgeList
+
+    private val _isChangePwFinished = MutableStateFlow(false)
+    val isChangePwFinished: StateFlow<Boolean> = _isChangePwFinished
 
     suspend fun uploadImage(uri: Uri, context: Context): String? { //서버에 이미지 업로드하고 url을 반환
         try {
@@ -146,7 +152,7 @@ class MyPageViewModel @Inject constructor(
         }
     }
 
-    fun updatePw(password: String, navController: NavController) {
+    fun updatePw(password: String) {
         viewModelScope.launch {
             isLoading = true
             try {
@@ -161,7 +167,7 @@ class MyPageViewModel @Inject constructor(
                     _userProfile.value = tempProfile.value
                     readSimpleBadgeList()
                     getMyInfo()
-                    navController.navigate("SETTINGS")
+                    _isChangePwFinished.value = true
                 } else {
                     Log.e("업데이트 요청 실패", "updateMyInfo: ${response.code()}")
                 }
@@ -175,7 +181,7 @@ class MyPageViewModel @Inject constructor(
         }
     }
 
-    fun requestWithdrawal(reasons: List<String>, navController: NavController) {
+    fun requestWithdrawal(reasons: List<String>) {
         viewModelScope.launch {
             isLoading = true
             try {
@@ -186,11 +192,7 @@ class MyPageViewModel @Inject constructor(
                     Token.accessToken =
                         response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() }
                             ?: Token.accessToken
-                    navController.navigate("LoginPage") {
-                        popUpTo(navController.graph.startDestinationId) {
-                            inclusive = true
-                        }
-                    }
+                    _isWithdrawalSuccess.value = true
                 } else {
                     Log.e("탈퇴 실패", "코드 :  ${response.code()}")
                 }

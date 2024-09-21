@@ -55,6 +55,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -69,7 +70,10 @@ import com.echoist.linkedout.viewModels.SignUpViewModel
 @SuppressLint("SetJavaScriptEnabled")
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun AgreeOfProvisionsPage(navController: NavController, viewModel: SignUpViewModel) {
+fun AgreeOfProvisionsPage(
+    navController: NavController,
+    viewModel: SignUpViewModel = hiltViewModel()
+) {
 
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp // 화면의 높이를 DP 단위로 가져옴
@@ -78,10 +82,10 @@ fun AgreeOfProvisionsPage(navController: NavController, viewModel: SignUpViewMod
     var isClicked by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val isAgreeOfProvisions by viewModel.isAgreeOfProvisions.collectAsState()
 
-    val navigateToComplete by viewModel.navigateToComplete.collectAsState()
-    LaunchedEffect(key1 = navigateToComplete) {
-        if (navigateToComplete){
+    LaunchedEffect(isAgreeOfProvisions) {
+        if (isAgreeOfProvisions) {
             navController.navigate(Routes.SignUpComplete)
             viewModel.onNavigated()
         }

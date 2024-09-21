@@ -23,6 +23,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -36,7 +38,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
@@ -48,10 +49,13 @@ import com.echoist.linkedout.viewModels.MyPageViewModel
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun TabletDeleteAccountRoute(contentPadding: PaddingValues, navController: NavController) {
+fun TabletDeleteAccountRoute(
+    contentPadding: PaddingValues,
+    viewModel: MyPageViewModel = hiltViewModel(),
+    onWithdrawalSuccess: () -> Unit
+) {
 
     val scrollState = rememberScrollState()
-    val viewModel: MyPageViewModel = hiltViewModel()
 
     var isWithdrawalClicked by remember { mutableStateOf(false) }
     val reasonList = listOf(
@@ -66,6 +70,14 @@ fun TabletDeleteAccountRoute(contentPadding: PaddingValues, navController: NavCo
             selectedItems.remove(selectedItem)
         } else {
             selectedItems.add(selectedItem)
+        }
+    }
+
+    val withdrawalSuccess by viewModel.isWithdrawalSuccess.collectAsState()
+
+    LaunchedEffect(withdrawalSuccess) {
+        if (withdrawalSuccess) {
+            onWithdrawalSuccess()
         }
     }
 
@@ -149,11 +161,10 @@ fun TabletDeleteAccountRoute(contentPadding: PaddingValues, navController: NavCo
                     .background(Color.Black.copy(0.7f)),
                 contentAlignment = Alignment.BottomCenter
             ) {
-
                 WithdrawalWarningBox(
                     isCancelClicked = { isWithdrawalClicked = false },
                     isWithdrawalClicked = {
-                        viewModel.requestWithdrawal(selectedItems.toList(), navController)
+                        viewModel.requestWithdrawal(selectedItems.toList())
                     }
                 )
             }

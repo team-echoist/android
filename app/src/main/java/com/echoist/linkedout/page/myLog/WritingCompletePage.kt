@@ -73,6 +73,7 @@ import com.echoist.linkedout.R
 import com.echoist.linkedout.Routes
 import com.echoist.linkedout.components.HashTagGroup
 import com.echoist.linkedout.components.LocationGroup
+import com.echoist.linkedout.handleEssayAction
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.viewModels.WritingViewModel
 import kotlinx.coroutines.launch
@@ -454,9 +455,7 @@ fun WritingCompletePager(viewModel: WritingViewModel, navController: NavControll
 
                         }
                     }
-
                 }
-
             }
 
             1 -> {
@@ -476,30 +475,18 @@ fun WritingCompletePager(viewModel: WritingViewModel, navController: NavControll
                             color = Color.White
                         )
 
-                        Writing_Btn("저장", R.drawable.btn_privated) {
-                            if (viewModel.isModifyClicked) viewModel.modifyEssay(
-                                navController,
-                                status = "private"
-                            )
-                            else viewModel.writeEssay(navController, status = "private")
-                        }
+                        // 버튼들을 리스트로 처리
+                        val buttons = listOf(
+                            Triple("저장", R.drawable.btn_privated, "private"),
+                            Triple("발행", R.drawable.btn_published, "published"),
+                            Triple("linked-out", R.drawable.btn_linkedout, "linkedout")
+                        )
 
-                        Writing_Btn("발행", R.drawable.btn_published) {
-                            if (viewModel.isModifyClicked) viewModel.modifyEssay(
-                                navController,
-                                status = "published"
-                            )
-                            else viewModel.writeEssay(navController, status = "published")
+                        buttons.forEach { (label, drawable, status) ->
+                            Writing_Btn(label, drawable) {
+                                handleEssayAction(status,viewModel,navController)
+                            }
                         }
-
-                        Writing_Btn("linked-out", R.drawable.btn_linkedout) {
-                            if (viewModel.isModifyClicked) viewModel.modifyEssay(
-                                navController,
-                                status = "linkedout"
-                            )
-                            else viewModel.writeEssay(navController, status = "linkedout")
-                        }
-
                     }
                     Box(
                         modifier = Modifier
@@ -618,7 +605,5 @@ fun Writing_Btn(text: String, imageResource: Int, isBtnClicked: () -> Unit) {
             Text(text = text, color = Color.White, fontSize = 16.sp)
         }
     }
-
-
 }
 
