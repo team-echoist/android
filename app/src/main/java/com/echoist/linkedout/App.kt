@@ -2,6 +2,7 @@ package com.echoist.linkedout
 
 import android.app.Application
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.room.Room
 import com.echoist.linkedout.api.BookMarkApi
 import com.echoist.linkedout.api.EssayApi
@@ -34,9 +35,6 @@ class App : Application() {
 @InstallIn(SingletonComponent::class)
 object AppModule {
     @Provides
-    fun provideContext(application: Application): Context = application.applicationContext
-
-    @Provides
     @Singleton
     fun provideRetrofit(errorHandlingInterceptor: ErrorHandlingInterceptor): Retrofit {
         val moshi = Moshi.Builder()
@@ -57,6 +55,21 @@ object AppModule {
             .client(httpClient) //로그 확인가능한 클라이언트 추가
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
+    }
+
+    @Provides
+    fun provideContext(application: Application): Context = application.applicationContext
+
+    @Provides
+    @Singleton
+    fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserDataRepository(sharedPreferences: SharedPreferences): UserDataRepository {
+        return provideUserDataRepository(sharedPreferences)
     }
 
     @Provides
