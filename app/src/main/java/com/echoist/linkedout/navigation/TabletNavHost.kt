@@ -110,38 +110,34 @@ fun TabletNavHost(
                 onClickChangeEmail = { navController.navigate(Routes.ChangeEmail) },
                 onClickChangePassword = { navController.navigate(Routes.ChangePassword) },
                 onClickDeleteAccount = { navController.navigate(Routes.DeleteAccount) },
-                isLogoutClicked = {
-                    navController.popBackStack(
-                        Routes.LoginPage,
-                        true
-                    )
-                    navController.navigate(Routes.LoginPage)
-                }
+                isLogoutClicked = { navigateWithClearBackStack(navController, Routes.LoginPage) }
             )
         }
         composable(Routes.ChangeEmail) {
             TabletChangeEmailScreen(contentPadding = contentPadding) {
-                navController.navigate(Routes.LoginPage) {
-                    popUpTo(Routes.LoginPage) {
-                        inclusive = true
-                    }
-                }
+                navigateWithClearBackStack(navController, Routes.LoginPage)
             }
         }
         composable(Routes.ChangePassword) {
             TabletChangePasswordScreen(
                 contentPadding = contentPadding,
-                onClickResetPassword = { navController.navigate(Routes.ResetPwPageWithEmail) }
+                onClickResetPassword = { navController.navigate(Routes.ResetPwPageWithEmail) },
+                onChangePwFinished = { navController.popBackStack() }
             )
         }
         composable(Routes.DeleteAccount) {
-            TabletDeleteAccountRoute(contentPadding = contentPadding, navController = navController)
+            TabletDeleteAccountRoute(contentPadding = contentPadding) {
+                navigateWithClearBackStack(navController, Routes.LoginPage)
+            }
         }
         composable(Routes.RecentViewedEssayPage) {
             TabletRecentEssayScreen(
                 contentPadding = contentPadding,
                 navController = navController
             )
+        }
+        composable(Routes.AgreeOfProvisionsPage) {
+            AgreeOfProvisionsPage(navController)
         }
     }
 }

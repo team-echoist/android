@@ -59,6 +59,7 @@ import com.echoist.linkedout.viewModels.UserInfoViewModel
 @Composable
 fun AccountWithdrawalPage(
     navController: NavController,
+    navController: NavController,
     viewModel: MyPageViewModel = hiltViewModel(),
     userInfoViewModel: UserInfoViewModel = hiltViewModel()
 ) {
@@ -71,7 +72,14 @@ fun AccountWithdrawalPage(
     )
     val selectedItems = remember { mutableStateListOf<String>() }
     val context = LocalContext.current
-    Log.d(TAG, "AccountWithdrawalPage: $selectedItems")
+
+    val withdrawalSuccess by viewModel.isWithdrawalSuccess.collectAsState()
+
+    LaunchedEffect(withdrawalSuccess) {
+        if (withdrawalSuccess) {
+            navigateWithClearBackStack(navController, Routes.LoginPage)
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -159,7 +167,12 @@ fun AccountWithdrawalPage(
                         easing = FastOutSlowInEasing
                     )
                 ),
-                exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
+                exit = fadeOut(
+                    animationSpec = tween(
+                        durationMillis = 500,
+                        easing = LinearEasing
+                    )
+                )
             )
             {
                 Box(
@@ -173,7 +186,7 @@ fun AccountWithdrawalPage(
                         isCancelClicked = { isWithdrawalClicked = false },
                         isWithdrawalClicked = {
                             Log.d(TAG, "AccountWithdrawalPage: $selectedItems")
-                            viewModel.requestWithdrawal(selectedItems.toList(), navController)
+                            viewModel.requestWithdrawal(selectedItems.toList())
                         }
                     )
                 }

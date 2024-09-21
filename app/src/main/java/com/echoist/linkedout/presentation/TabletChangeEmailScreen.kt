@@ -68,18 +68,22 @@ fun TabletChangeEmailScreen(
     contentPadding: PaddingValues,
     moveToLoginPage: () -> Unit
 ) {
+    val context = LocalContext.current
     val configuration = LocalConfiguration.current
     val screenHeightDp = configuration.screenHeightDp // 화면의 높이를 DP 단위로 가져옴
-
     val keyboardController = LocalSoftwareKeyboardController.current
+
+    var email by remember { mutableStateOf("") }
+    var isError by remember { mutableStateOf(false) }
+    var showToast by remember { mutableStateOf(false) }
+
     val bottomSheetState =
         rememberStandardBottomSheetState(initialValue = SheetValue.Hidden, skipHiddenState = false)
     val scaffoldState = androidx.compose.material3.rememberBottomSheetScaffoldState(
         bottomSheetState = bottomSheetState
     )
-    var email by remember { mutableStateOf("") }
-    var isError by remember { mutableStateOf(false) }
-    var showToast by remember { mutableStateOf(false) }
+
+    val navigateToComplete by viewModel.navigateToComplete.collectAsState()
 
     val annotatedString = remember {
         AnnotatedString.Builder().apply {
@@ -97,9 +101,6 @@ fun TabletChangeEmailScreen(
         }.toAnnotatedString()
     }
 
-    val context = LocalContext.current
-    val navigateToComplete by changeEmailViewModel.navigateToComplete.collectAsState()
-
     LaunchedEffect(navigateToComplete) {
         if (navigateToComplete) {
             bottomSheetState.hide()
@@ -112,11 +113,11 @@ fun TabletChangeEmailScreen(
     }
 
     //이메일 보냄 api 가 끝나면 2초 후 사라지게
-    LaunchedEffect(key1 = changeEmailViewModel.isSendEmailVerifyApiFinished) {
-        if (changeEmailViewModel.isSendEmailVerifyApiFinished) {
+    LaunchedEffect(key1 = viewModel.isSendEmailVerifyApiFinished) {
+        if (viewModel.isSendEmailVerifyApiFinished) {
             bottomSheetState.show()
             delay(3000)
-            changeEmailViewModel.isSendEmailVerifyApiFinished = false
+            viewModel.isSendEmailVerifyApiFinished = false
         }
     }
 
@@ -127,15 +128,15 @@ fun TabletChangeEmailScreen(
             Box {
                 Authentication_6_BottomModal(
                     reAuthentication = {
-                        changeEmailViewModel.sendEmailVerificationForChange(email)
+                        viewModel.sendEmailVerificationForChange(email)
                     }, //재요청 인증
                     isError = false,
                     isTypedLastNumber = { list ->
-                        changeEmailViewModel.postAuthChangeEmail(list.joinToString(""))
+                        viewModel.postAuthChangeEmail(list.joinToString(""))
                         keyboardController?.hide()
                     }, scaffoldState
                 )
-                if (changeEmailViewModel.isLoading) {
+                if (viewModel.isLoading) {
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
@@ -161,7 +162,7 @@ fun TabletChangeEmailScreen(
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Text(
-                    text = changeEmailViewModel.getMyInfo().email ?: "noEmail",
+                    text = viewModel.getMyInfo().email ?: "noEmail",
                     fontSize = 16.sp,
                     color = Color(0xFF5D5D5D)
                 )
@@ -203,7 +204,7 @@ fun TabletChangeEmailScreen(
 
                 val enabled = !(isError || email.isEmpty())
                 Button(
-                    onClick = { changeEmailViewModel.sendEmailVerificationForChange(email) },
+                    onClick = { viewModel.sendEmailVerificationForChange(email) },
                     enabled = enabled,
                     shape = RoundedCornerShape(20),
                     modifier = Modifier
@@ -212,14 +213,13 @@ fun TabletChangeEmailScreen(
                     colors = ButtonDefaults.buttonColors(
                         containerColor = LinkedInColor,
                         disabledContainerColor = Color(0xFF868686),
-
-                        )
+                    )
                 ) {
                     Text(text = "인증하기")
                 }
             }
             AnimatedVisibility(
-                visible = changeEmailViewModel.isSendEmailVerifyApiFinished,
+                visible = viewModel.isSendEmailVerifyApiFinished,
                 enter = fadeIn(
                     animationSpec = tween(
                         durationMillis = 500,
@@ -245,9 +245,8 @@ fun TabletChangeEmailScreen(
                         contentAlignment = Alignment.BottomCenter
                     ) {
                         SendEmailFinishedAlert("새 이메일 주소로 인증메일이 발송됐습니다.") {
-                            changeEmailViewModel.isSendEmailVerifyApiFinished = false
+                            viewModel.isSendEmailVerifyApiFinished = false
                         }
-
                     }
                 }
             }
@@ -292,7 +291,7 @@ fun TabletChangeEmailScreen(
                     }
                 }
             }
-            if (changeEmailViewModel.isLoading) {
+            if (viewModel.isLoading) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
