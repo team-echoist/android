@@ -15,10 +15,8 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
 import com.echoist.linkedout.AlarmReceiver
 import com.echoist.linkedout.HomeRepository
-import com.echoist.linkedout.Routes
 import com.echoist.linkedout.TokenRepository
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.api.SignUpApiImpl
@@ -26,16 +24,13 @@ import com.echoist.linkedout.api.SupportApi
 import com.echoist.linkedout.api.UserApi
 import com.echoist.linkedout.apiCall
 import com.echoist.linkedout.data.ExampleItems
-import com.echoist.linkedout.data.Notice
 import com.echoist.linkedout.data.NotificationSettings
 import com.echoist.linkedout.data.Release
 import com.echoist.linkedout.data.UserInfo
-import com.echoist.linkedout.navigateWithClearBackStack
 import com.echoist.linkedout.page.myLog.Token
 import com.google.firebase.messaging.FirebaseMessaging
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -67,6 +62,22 @@ class HomeViewModel @Inject constructor(
 
     var isVisibleGeulRoquis by mutableStateOf(true)
     val isReAuthenticationRequired: StateFlow<Boolean> = tokenRepository.isReAuthenticationRequired
+
+    private val _isUserDeleteApiFinished = MutableStateFlow(false)
+    val isUserDeleteApiFinished: StateFlow<Boolean> = _isUserDeleteApiFinished
+    private val _isUpdateUserNotificationApiFinished = MutableStateFlow(false)
+    val isUpdateUserNotificationApiFinished: StateFlow<Boolean> = _isUpdateUserNotificationApiFinished
+
+    private val _isExistLatestUpdate = MutableStateFlow(false)
+    val isExistLatestUpdate: StateFlow<Boolean> = _isExistLatestUpdate
+    fun updateIsExistLatestUpdate(value: Boolean) {
+        _isExistLatestUpdate.value = value
+    }
+
+    fun setApiStatusToFalse() {
+        _isUserDeleteApiFinished.value = false
+        _isUpdateUserNotificationApiFinished.value = false
+    }
 
     fun setReAuthenticationRequired(value: Boolean) {
         tokenRepository.setReAuthenticationRequired(value)
@@ -176,27 +187,26 @@ class HomeViewModel @Inject constructor(
     }
 
     //사용자 알림설정 update
-    fun updateUserNotification(navController: NavController, locationAgreement: Boolean) {
+    fun updateUserNotification(locationAgreement: Boolean) {
         val body =
             NotificationSettings(viewedNotification, reportNotification, marketingNotification)
         viewModelScope.launch {
             try {
                 supportApi.updateUserNotification(body)
-                Log.d(TAG, "updateUserNotification success: $body")
+                Log.d(TAG, "알림 저장 성공: $body")
 
                 val userInfo = UserInfo(locationConsent = locationAgreement)
                 val response = userApi.userUpdate(userInfo)
-                Log.d(TAG, "위치서비스 동의 저장 성공: ${response.code()}")
-                Log.d(TAG, "위치서비스 동의 저장 성공: $locationNotification")
+                if (response.isSuccessful){
+                    Log.d(TAG, "위치서비스 동의 저장 성공: ${response.code()}")
 
-                navController.navigate("${Routes.Home}/200")
+                    _isUpdateUserNotificationApiFinished.value = true
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
-                Log.d(TAG, "noti update failed: ${e.message}")
-
+                Log.d("알림 설정 실패", "${e.message}")
             }
         }
-
     }
 
     fun setAlarmFromTimeString(context: Context, hour: String, min: String, period: String) {
@@ -297,6 +307,18 @@ class HomeViewModel @Inject constructor(
         ) { supportApi.requestLatestNotice() }
     }
 
+    //최신 업데이트 여부
+    fun requestLatestUpdate() {
+        apiCall(
+            onSuccess = { response ->
+                _isExistLatestUpdate.value = response.data.newRelease
+            },
+            onError = { e ->
+                Log.e("최신 업데이트 확인", "확인 실패 ${e.message}")
+            }
+        ) { supportApi.requestLatestUpdate() }
+    }
+
     //업데이트 히스토리
     fun requestUpdatedHistory() {
         isLoading = true
@@ -359,10 +381,10 @@ class HomeViewModel @Inject constructor(
         apiCall { userApi.requestReactivate() }
     }
 
-    fun requestUserDelete(navController: NavController) {
+    fun requestUserDelete() {
         apiCall(onSuccess = {
             Log.d("유저 즉시 탈퇴", "성공")
-            navigateWithClearBackStack(navController, Routes.LoginPage)
+            _isUserDeleteApiFinished.value = true
         }) {
             userApi.requestDeleteUser()
         }

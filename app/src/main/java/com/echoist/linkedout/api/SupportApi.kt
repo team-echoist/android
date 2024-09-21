@@ -7,6 +7,7 @@ import com.echoist.linkedout.data.Inquiry
 import com.echoist.linkedout.data.InquiryResponse
 import com.echoist.linkedout.data.IsFirstCheckResponse
 import com.echoist.linkedout.data.LatestNoticeResponse
+import com.echoist.linkedout.data.LatestUpdateResponse
 import com.echoist.linkedout.data.NoticeDetailResponse
 import com.echoist.linkedout.data.NoticeResponse
 import com.echoist.linkedout.data.NotificationResponse
@@ -46,6 +47,11 @@ interface SupportApi {
     suspend fun readInquiryDetail(
         @Path("inquiryId") inquiryId : Int
     ): Response<InquiryResponse>
+
+    //최신 업데이트 공지 조회
+    @GET("api/support/release/latest")
+    suspend fun requestLatestUpdate(
+    ): Response<LatestUpdateResponse>
 
     @GET("api/support/release")
     suspend fun readUpdatedHistories(

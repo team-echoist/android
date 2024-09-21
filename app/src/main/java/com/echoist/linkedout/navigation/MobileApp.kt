@@ -59,9 +59,7 @@ import com.echoist.linkedout.page.settings.RecentViewedEssayPage
 import com.echoist.linkedout.page.settings.ResetPwPage
 import com.echoist.linkedout.page.settings.ResetPwPageWithEmail
 import com.echoist.linkedout.viewModels.CommunityViewModel
-import com.echoist.linkedout.viewModels.HomeViewModel
 import com.echoist.linkedout.viewModels.MyLogViewModel
-import com.echoist.linkedout.viewModels.MyPageViewModel
 import com.echoist.linkedout.viewModels.SignUpViewModel
 import com.echoist.linkedout.viewModels.SupportViewModel
 import com.echoist.linkedout.viewModels.WritingViewModel
@@ -71,7 +69,6 @@ fun MobileApp(
     navController: NavHostController,
     startDestination: String
 ) {
-    val homeViewModel: HomeViewModel = hiltViewModel()
     val writingViewModel: WritingViewModel = hiltViewModel()
     val signUpViewModel: SignUpViewModel = hiltViewModel()
     val myLogViewModel: MyLogViewModel = hiltViewModel()
@@ -95,7 +92,7 @@ fun MobileApp(
             AgreeOfProvisionsPage(navController, signUpViewModel)
         }
         composable(Routes.SignUpComplete) {
-            SignUpCompletePage(homeViewModel, navController)
+            SignUpCompletePage(navController = navController)
         }
         composable(
             "${Routes.Home}/{statusCode}",
@@ -105,7 +102,7 @@ fun MobileApp(
         ) { backStackEntry ->
             val statusCode =
                 backStackEntry.arguments?.getInt("statusCode") ?: 200
-            HomePage(navController, homeViewModel, writingViewModel, statusCode)
+            HomePage(navController,writingViewModel= writingViewModel, statusCode = statusCode)
         }
         composable(Routes.DarkModeSettingPage) {
             DarkModeSettingPage(navController)

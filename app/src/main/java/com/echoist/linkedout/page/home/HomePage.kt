@@ -56,6 +56,7 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -96,6 +97,7 @@ import com.echoist.linkedout.calculateDaysDifference
 import com.echoist.linkedout.data.BottomNavItem
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.getCurrentDateFormatted
+import com.echoist.linkedout.navigateWithClearBackStack
 import com.echoist.linkedout.page.myLog.Token
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.viewModels.HomeViewModel
@@ -115,14 +117,16 @@ import java.util.Locale
 @Composable
 fun HomePage(
     navController: NavController,
-    viewModel: HomeViewModel,
+    viewModel: HomeViewModel = hiltViewModel(),
     writingViewModel: WritingViewModel,
     statusCode: Int
 ) {
 
     val context = LocalContext.current
+    val isUserDeleteApiFinished by viewModel.isUserDeleteApiFinished.collectAsState()
 
-    Log.d("유저의 상태코드", statusCode.toString())
+    val isExistLatestUpdate by viewModel.isExistLatestUpdate.collectAsState()
+
     Log.d("header token by autoLogin: in home", "${Token.accessToken} \n ${Token.refreshToken}")
     var userStatus by remember { mutableStateOf(UserStatus.Activated) }
 
@@ -139,6 +143,14 @@ fun HomePage(
         viewModel.requestUnreadAlerts()
         viewModel.requestLatestNotice()
         viewModel.requestRegisterDevice(context) //로그인 후 홈 진입 시 한번만 회원정보 등록
+        viewModel.requestLatestUpdate()
+    }
+
+    LaunchedEffect(key1 = isUserDeleteApiFinished) {
+        if (isUserDeleteApiFinished) {
+            navigateWithClearBackStack(navController,Routes.LoginPage)
+            viewModel.setApiStatusToFalse()
+        }
     }
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -261,7 +273,7 @@ fun HomePage(
                     userStatus = UserStatus.Activated
                 })
             {
-                viewModel.requestUserDelete(navController)
+                viewModel.requestUserDelete()
             }
         }
     }
@@ -278,7 +290,24 @@ fun HomePage(
                 navController.navigate("${Routes.NoticeDetailPage}/${viewModel.latestNoticeId!!}")
             })
         }
-    } //토큰 만료시
+    }
+
+    if (isExistLatestUpdate){
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center
+        )
+        {
+            UpdateAlert(isClickedClose={
+                viewModel.updateIsExistLatestUpdate(false)
+                        },isClickedOpened={
+                navController.navigate(Routes.UpdateHistoryPage)
+                viewModel.updateIsExistLatestUpdate(false)
+            })
+        }
+    }
+
 
 }
 
@@ -1314,6 +1343,73 @@ fun ReLogInWaringAlert(isClicked: () -> Unit) {
                 .padding(bottom = 20.dp, end = 20.dp), contentAlignment = Alignment.BottomEnd
         ) {
             Text(text = "확인", color = LinkedInColor, modifier = Modifier.clickable { isClicked() })
+        }
+    }
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun UpdateAlert(isClickedClose: () -> Unit, isClickedOpened: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .width(280.dp)
+            .height(411.dp)
+            .background(color = Color(0xFF121212), shape = RoundedCornerShape(size = 10.dp)),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Spacer(modifier = Modifier.height(24.dp))
+            GlideImage(model = R.drawable.badge_update, contentDescription = "")
+            Spacer(modifier = Modifier.height(40.dp))
+            GlideImage(model = R.drawable.logo_update, contentDescription = "", modifier = Modifier.size(146.dp,97.33.dp))
+            Spacer(modifier = Modifier.height(37.dp))
+            Text(
+                text = "아무개님, 새로운 버전으로\n업데이트되었습니다!",
+                style = TextStyle(
+                    fontSize = 16.sp,
+                    lineHeight = 24.sp,
+                    fontWeight = FontWeight(700),
+                    color = Color(0xFFFFE045),
+                    textAlign = TextAlign.Center,
+                )
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "[자세히 보기]를 탭해 업데이트 히스토리를 확인해보세요.",
+                style = TextStyle(
+                    fontSize = 11.sp,
+                    lineHeight = 24.sp,
+                    fontWeight = FontWeight(700),
+                    color = Color(0xFFFFE045),
+                    textAlign = TextAlign.Center,
+                )
+            )
+            Spacer(modifier = Modifier.height(27.dp))
+
+            Row {
+                Button(
+                    onClick = { isClickedOpened() },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF868686)),
+                    shape = RoundedCornerShape(20), modifier = Modifier
+                        .height(50.dp)
+                        .padding(start = 15.dp, end = 5.dp)
+                        .weight(1f)
+                ) {
+
+                    Text(text = "자세히 보기", color = Color.Black, fontSize = 12.sp,textAlign = TextAlign.Center)
+                }
+                Button(
+                    onClick = { isClickedClose() },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFE045)),
+                    shape = RoundedCornerShape(20),
+                    modifier = Modifier
+                        .height(50.dp)
+                        .padding(start = 5.dp, end = 15.dp)
+                        .weight(1f)
+                ) {
+                    Text(text = "닫기", color = Color.Black, fontSize = 12.sp)
+                }
+            }
         }
     }
 }

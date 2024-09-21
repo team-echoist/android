@@ -176,3 +176,12 @@ data class DevicesVersions(
     val desktop_mac : String,
     val desktop_windows : String,
 )
+data class LatestUpdateResponse(
+    val data: LatestUpdate,
+    val path: String,
+    val success: Boolean,
+    val timestamp: String,
+    val statusCode : Int,
+)
+
+data class LatestUpdate(val newRelease : Boolean)
