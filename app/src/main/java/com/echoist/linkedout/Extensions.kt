@@ -75,6 +75,18 @@ fun handleEssayAction(status: String, viewModel: WritingViewModel, navController
     }
 }
 
+val periodMap = mapOf(0 to "AM", 1 to "PM")
+val hourMap = (0..11).associateWith { (it + 1).toString().padStart(2, '0') }
+val minuteMap = (0..5).associateWith { (it * 10).toString().padStart(2, '0') }
+
+data class LocalAccountInfo(val id: String, val pw: String)
+//셀프알림 리마인드 true, false 설정
+
+fun getPeriodString(index: Int): String = periodMap[index] ?: "오전"
+fun getHourString(index: Int): String = hourMap[index] ?: "01"
+fun getMinuteString(index: Int): String = minuteMap[index] ?: "00"
+
+
 @Composable
 fun keyboardAsState(): State<Keyboard> {
     val keyboardState = remember { mutableStateOf(Keyboard.Closed) }
