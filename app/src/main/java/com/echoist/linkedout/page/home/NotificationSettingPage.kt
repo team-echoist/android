@@ -52,9 +52,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.R
-import com.echoist.linkedout.Routes
 import com.echoist.linkedout.components.ImageSwitch
-import com.echoist.linkedout.navigateWithClearBackStack
 import com.echoist.linkedout.page.settings.SettingTopAppBar
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.viewModels.HomeViewModel
@@ -74,15 +72,6 @@ fun NotificationSettingPage(
     val min by notificationViewModel.min.collectAsState()
     val period by notificationViewModel.period.collectAsState()
     val writingRemindNotification by notificationViewModel.writingRemindNotification.collectAsState()
-
-    val isUpdateUserNotificationApiFinished by homeViewModel.isUpdateUserNotificationApiFinished.collectAsState()
-
-    LaunchedEffect(key1 = isUpdateUserNotificationApiFinished) {
-        if (isUpdateUserNotificationApiFinished) {
-            navigateWithClearBackStack(navController, "${Routes.Home}/200")
-            homeViewModel.setApiStatusToFalse()
-        }
-    }
 
     Scaffold(
         topBar = {
@@ -185,7 +174,6 @@ fun NotificationSettingPage(
                     Spacer(modifier = Modifier.height(20.dp))
                 }
             }
-
             AnimatedVisibility(
                 visible = isClickedTimeSelection,
                 enter = fadeIn(
@@ -209,11 +197,12 @@ fun NotificationSettingPage(
                     .fillMaxWidth()
                     .height(61.dp), shape = RoundedCornerShape(20),
                     onClick = {
-                        homeViewModel.updateUserNotification(homeViewModel.locationNotification)
-
+                        homeViewModel.updateUserNotification(
+                            homeViewModel.locationNotification
+                        )
                         notificationViewModel.saveWritingRemindNotification(
                             writingRemindNotification
-                        ) //글쓰기 시간 알림 설정 저장//글쓰기 시간 알림 설정 저장
+                        ) //글쓰기 시간 알림 설정 저장
                         if (writingRemindNotification) {
                             //homeViewModel.setAlarmAfter10(context) //테스트용 1초후알람
                             homeViewModel.setAlarmFromTimeString(
@@ -552,4 +541,3 @@ data class TimeSelectionIndex(
     val hourIndex: Int,
     val minuteIndex: Int
 )
-

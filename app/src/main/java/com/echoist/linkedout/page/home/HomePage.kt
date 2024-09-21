@@ -125,6 +125,7 @@ fun HomePage(
 ) {
 
     val context = LocalContext.current
+
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 

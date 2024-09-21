@@ -153,5 +153,4 @@ class MainActivity : ComponentActivity() {
         DeviceId.ssaid =
             Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
     }
-
 }
