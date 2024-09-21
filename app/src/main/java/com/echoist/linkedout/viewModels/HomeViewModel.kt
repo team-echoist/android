@@ -68,6 +68,12 @@ class HomeViewModel @Inject constructor(
     private val _isUpdateUserNotificationApiFinished = MutableStateFlow(false)
     val isUpdateUserNotificationApiFinished: StateFlow<Boolean> = _isUpdateUserNotificationApiFinished
 
+    private val _isExistLatestUpdate = MutableStateFlow(false)
+    val isExistLatestUpdate: StateFlow<Boolean> = _isExistLatestUpdate
+    fun updateIsExistLatestUpdate(value: Boolean) {
+        _isExistLatestUpdate.value = value
+    }
+
     fun setApiStatusToFalse() {
         _isUserDeleteApiFinished.value = false
         _isUpdateUserNotificationApiFinished.value = false
@@ -299,6 +305,18 @@ class HomeViewModel @Inject constructor(
                 Log.e("최신공지 확인", "확인 실패 ${e.message}")
             }
         ) { supportApi.requestLatestNotice() }
+    }
+
+    //최신 업데이트 여부
+    fun requestLatestUpdate() {
+        apiCall(
+            onSuccess = { response ->
+                _isExistLatestUpdate.value = response.data.newRelease
+            },
+            onError = { e ->
+                Log.e("최신 업데이트 확인", "확인 실패 ${e.message}")
+            }
+        ) { supportApi.requestLatestUpdate() }
     }
 
     //업데이트 히스토리

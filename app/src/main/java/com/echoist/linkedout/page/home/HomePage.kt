@@ -125,6 +125,8 @@ fun HomePage(
     val context = LocalContext.current
     val isUserDeleteApiFinished by viewModel.isUserDeleteApiFinished.collectAsState()
 
+    val isExistLatestUpdate by viewModel.isExistLatestUpdate.collectAsState()
+
     Log.d("header token by autoLogin: in home", "${Token.accessToken} \n ${Token.refreshToken}")
     var userStatus by remember { mutableStateOf(UserStatus.Activated) }
 
@@ -141,6 +143,7 @@ fun HomePage(
         viewModel.requestUnreadAlerts()
         viewModel.requestLatestNotice()
         viewModel.requestRegisterDevice(context) //로그인 후 홈 진입 시 한번만 회원정보 등록
+        viewModel.requestLatestUpdate()
     }
 
     LaunchedEffect(key1 = isUserDeleteApiFinished) {
@@ -287,16 +290,24 @@ fun HomePage(
                 navController.navigate("${Routes.NoticeDetailPage}/${viewModel.latestNoticeId!!}")
             })
         }
-    } //토큰 만료시
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center
-    )
-    {
-        UpdateAlert({},{})
     }
+
+    if (isExistLatestUpdate){
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center
+        )
+        {
+            UpdateAlert(isClickedClose={
+                viewModel.updateIsExistLatestUpdate(false)
+                        },isClickedOpened={
+                navController.navigate(Routes.UpdateHistoryPage)
+                viewModel.updateIsExistLatestUpdate(false)
+            })
+        }
+    }
+
 
 }
 
