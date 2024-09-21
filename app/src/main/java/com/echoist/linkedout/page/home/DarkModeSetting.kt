@@ -18,8 +18,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,7 +31,6 @@ import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
-import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.page.settings.SettingTopAppBar
 import com.echoist.linkedout.ui.theme.LinkedInColor
 
@@ -43,6 +40,7 @@ fun DarkModeSettingPage(navController: NavController) {
 
     val context = LocalContext.current
     // Destructuring Declaration을 통해 두 값을 나누어 사용 selectedMode를 설정하는 함수로 사용가능
+    /*
     val (selectedMode, setSelectedMode) = remember {
         mutableStateOf<String?>(
             SharedPreferencesUtil.getDisplayInfo(
@@ -50,8 +48,7 @@ fun DarkModeSettingPage(navController: NavController) {
             )
         )
     }
-
-
+     */
 
     Scaffold(
         topBar = {

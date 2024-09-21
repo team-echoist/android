@@ -69,7 +69,7 @@ object AppModule {
     @Provides
     @Singleton
     fun provideUserDataRepository(sharedPreferences: SharedPreferences): UserDataRepository {
-        return provideUserDataRepository(sharedPreferences)
+        return UserDataRepository(sharedPreferences)
     }
 
     @Provides

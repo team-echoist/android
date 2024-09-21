@@ -1,6 +1,7 @@
 package com.echoist.linkedout.page.home
 
 import android.util.Log
+import androidx.collection.forEach
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
@@ -88,7 +89,6 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
 import com.echoist.linkedout.Routes
-import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.TUTORIAL_BULB
 import com.echoist.linkedout.UserStatus
 import com.echoist.linkedout.api.EssayApi
@@ -99,6 +99,7 @@ import com.echoist.linkedout.getCurrentDateFormatted
 import com.echoist.linkedout.page.myLog.Token
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.viewModels.HomeViewModel
+import com.echoist.linkedout.viewModels.UserInfoViewModel
 import com.echoist.linkedout.viewModels.WritingViewModel
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
@@ -106,6 +107,7 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -121,7 +123,6 @@ fun HomePage(
 ) {
 
     val context = LocalContext.current
-
     Log.d("유저의 상태코드", statusCode.toString())
     Log.d("header token by autoLogin: in home", "${Token.accessToken} \n ${Token.refreshToken}")
     var userStatus by remember { mutableStateOf(UserStatus.Activated) }
@@ -183,7 +184,8 @@ fun HomePage(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(start = 165.dp, bottom = 130.dp), contentAlignment = Alignment.Center
+                        .padding(start = 165.dp, bottom = 130.dp),
+                    contentAlignment = Alignment.Center
                 ) {
                     Box(
                         Modifier
@@ -284,7 +286,11 @@ fun HomePage(
 
 
 @Composable
-fun ModalBottomSheetContent(viewModel: HomeViewModel, navController: NavController) {
+fun ModalBottomSheetContent(
+    viewModel: HomeViewModel,
+    navController: NavController,
+    userInfoViewModel: UserInfoViewModel = hiltViewModel()
+) {
     var isLogoutClicked by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
     val context = LocalContext.current
@@ -326,21 +332,25 @@ fun ModalBottomSheetContent(viewModel: HomeViewModel, navController: NavControll
         LogoutBox(
             isCancelClicked = { isLogoutClicked = false },
             isLogoutClicked = {
+                userInfoViewModel.logout()
                 isLogoutClicked = false
                 navController.navigate(Routes.LoginPage) {
-                    // 기존의 모든 백스택을 제거하고 login 루트로 설정
-                    popUpTo(Routes.LoginPage) { inclusive = true }
+                    popUpTo(Routes.LoginPage) {
+                        inclusive = true
+                    }
                     launchSingleTop = true
                 }
-                //로컬 자동로그인, id pw 값 초기화
-                SharedPreferencesUtil.saveClickedAutoLogin(context, false)
             }
         )
     }
 }
 
 @Composable
-fun WriteFTB(navController: NavController,viewModel: HomeViewModel = hiltViewModel(),writingViewModel: WritingViewModel = hiltViewModel()) {
+fun WriteFTB(
+    navController: NavController,
+    viewModel: HomeViewModel = hiltViewModel(),
+    writingViewModel: WritingViewModel = hiltViewModel()
+) {
 
     FloatingActionButton(
         modifier = Modifier.padding(end = 25.dp, bottom = 25.dp),

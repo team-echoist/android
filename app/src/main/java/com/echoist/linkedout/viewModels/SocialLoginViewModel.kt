@@ -15,8 +15,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.echoist.linkedout.BuildConfig
-import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.TokenRepository
+import com.echoist.linkedout.UserDataRepository
 import com.echoist.linkedout.api.NaverApiService
 import com.echoist.linkedout.api.SignUpApi
 import com.echoist.linkedout.api.SocialSignUpApi
@@ -44,6 +44,7 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -57,6 +58,7 @@ class SocialLoginViewModel @Inject constructor(
     private val signUpApi: SignUpApi,
     private val socialSignUpApi: SocialSignUpApi,
     private val tokenRepository: TokenRepository,
+    private val userDataRepository: UserDataRepository,
     private val context: Context
 ) : ViewModel() {
     private val auth: FirebaseAuth = Firebase.auth
@@ -66,10 +68,21 @@ class SocialLoginViewModel @Inject constructor(
     private var loginToken by mutableStateOf("")
     private var loginUserId by mutableStateOf("")
 
-    var clickedAutoLogin by mutableStateOf(false)
+    private val _clickedAutoLogin =
+        MutableStateFlow(userDataRepository.getClickedAutoLogin())
+    val clickedAutoLogin: StateFlow<Boolean> = _clickedAutoLogin
 
     var userId by mutableStateOf("")
     var userPw by mutableStateOf("")
+
+    init {
+        userDataRepository.saveIsOnboardingFinished(true)
+        initializeNaverLogin()
+    }
+
+    fun onChangeClickAutoLogin() {
+        _clickedAutoLogin.value = !_clickedAutoLogin.value
+    }
 
     private suspend fun isFirstLoginAfterSignUp() {
         try {
@@ -103,13 +116,12 @@ class SocialLoginViewModel @Inject constructor(
 
                     tokenRepository.setReAuthenticationRequired(false)
 
-                    if (clickedAutoLogin) {
+                    if (clickedAutoLogin.value) {
                         saveLocalTokens(
                             Token.accessToken,
                             Token.refreshToken
                         )
-                        SharedPreferencesUtil.saveRefreshTokenValidTime(
-                            context,
+                        userDataRepository.saveRefreshTokenValidTime(
                             calculateDateAfter30Days()
                         )
                     } else {
@@ -415,8 +427,8 @@ class SocialLoginViewModel @Inject constructor(
     }
 
     private fun saveLocalTokens(accessToken: String, refreshToken: String) {
-        SharedPreferencesUtil.saveTokensInfo(context, accessToken, refreshToken)
-        SharedPreferencesUtil.saveClickedAutoLogin(context, clickedAutoLogin)
+        userDataRepository.saveTokensInfo(accessToken, refreshToken)
+        userDataRepository.saveClickedAutoLogin(clickedAutoLogin.value)
     }
 
     private fun requestSocialLogin(
@@ -440,10 +452,9 @@ class SocialLoginViewModel @Inject constructor(
                         loginState.value = LoginState.Home(response.code())
                     } else {
                         // 첫 회원가입 여부 확인하고 화면 이동
-                        clickedAutoLogin = true
+                        _clickedAutoLogin.value = true
                         saveLocalTokens(accessToken, refreshToken)
-                        SharedPreferencesUtil.saveRefreshTokenValidTime(
-                            context,
+                        userDataRepository.saveRefreshTokenValidTime(
                             calculateDateAfter30Days()
                         ) // 토큰 유효 기간 저장
                         isFirstLoginAfterSignUp()

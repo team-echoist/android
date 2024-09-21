@@ -36,6 +36,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -51,35 +52,26 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.R
-import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.components.ImageSwitch
 import com.echoist.linkedout.page.settings.SettingTopAppBar
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.viewModels.HomeViewModel
+import com.echoist.linkedout.viewModels.NotificationViewModel
 
 @Composable
 fun NotificationSettingPage(
     navController: NavController,
-    homeViewModel: HomeViewModel = hiltViewModel()
+    homeViewModel: HomeViewModel = hiltViewModel(),
+    notificationViewModel: NotificationViewModel = hiltViewModel()
 ) {
 
     homeViewModel.readUserNotification()
     val context = LocalContext.current
 
-    val savedTimeSelection = remember { SharedPreferencesUtil.getTimeSelection(context) }
-    val hour by remember { mutableStateOf(SharedPreferencesUtil.getHourString(savedTimeSelection.hourIndex)) }
-    val min by remember { mutableStateOf(SharedPreferencesUtil.getMinuteString(savedTimeSelection.minuteIndex)) }
-    val period by remember { mutableStateOf(SharedPreferencesUtil.getPeriodString(savedTimeSelection.periodIndex)) }
-
-    var writingRemindNotification by remember {
-        mutableStateOf(
-            SharedPreferencesUtil.getWritingRemindNotification(
-                context
-            )
-        )
-    }
-
-
+    val hour by notificationViewModel.hour.collectAsState()
+    val min by notificationViewModel.min.collectAsState()
+    val period by notificationViewModel.period.collectAsState()
+    val writingRemindNotification by notificationViewModel.writingRemindNotification.collectAsState()
 
     Scaffold(
         topBar = {
@@ -87,7 +79,6 @@ fun NotificationSettingPage(
         },
         content = {
             var isClickedTimeSelection by remember { mutableStateOf(false) }
-
 
             if (homeViewModel.isApifinished) {
                 Column(
@@ -138,7 +129,7 @@ fun NotificationSettingPage(
                     WritingNotificationBox(
                         writingRemindNotification,
                         { it ->
-                            writingRemindNotification = it
+                            notificationViewModel.updateWritingRemindNotification(it)
                             Log.d(TAG, "NotificationPage: $it")
                         },
                         { isClickedTimeSelection = true },
@@ -181,14 +172,8 @@ fun NotificationSettingPage(
                         Log.d(TAG, "NotificationPage: $it")
                     }
                     Spacer(modifier = Modifier.height(20.dp))
-
-
                 }
             }
-
-
-
-
             AnimatedVisibility(
                 visible = isClickedTimeSelection,
                 enter = fadeIn(
@@ -216,8 +201,7 @@ fun NotificationSettingPage(
                             navController,
                             homeViewModel.locationNotification
                         )
-                        SharedPreferencesUtil.saveWritingRemindNotification(
-                            context,
+                        notificationViewModel.saveWritingRemindNotification(
                             writingRemindNotification
                         ) //글쓰기 시간 알림 설정 저장
                         if (writingRemindNotification) {
@@ -236,7 +220,6 @@ fun NotificationSettingPage(
                 }
             }
         }
-
     )
 }
 
@@ -353,10 +336,14 @@ fun WritingNotificationBox(
 }
 
 @Composable
-fun NotificationTimePickerBox(isCancelClicked: () -> Unit, navController: NavController) {
+fun NotificationTimePickerBox(
+    isCancelClicked: () -> Unit,
+    navController: NavController,
+    notificationViewModel: NotificationViewModel = hiltViewModel()
+) {
     val context = LocalContext.current
     var selectedTime by remember { mutableStateOf<TimeSelectionIndex?>(null) }
-    val savedTimeSelection = remember { SharedPreferencesUtil.getTimeSelection(context) }
+    val savedTimeSelection = remember { notificationViewModel.getTimeSelection() }
 
     Log.d("NotificationTimePickerBox", "Saved Time: $savedTimeSelection")
 
@@ -405,7 +392,7 @@ fun NotificationTimePickerBox(isCancelClicked: () -> Unit, navController: NavCon
                             val message =
                                 "${time.periodIndex} ${time.hourIndex}:${time.minuteIndex}"
                             Log.d("NotificationTimePickerBox", "Selected Time: $message")
-                            SharedPreferencesUtil.saveTimeSelection(context, time)
+                            notificationViewModel.saveTimeSelection(time)
                             navController.navigate("notificationSettingPage")
                         }
                     },

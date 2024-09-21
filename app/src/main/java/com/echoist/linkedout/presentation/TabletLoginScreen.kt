@@ -1,11 +1,8 @@
 package com.echoist.linkedout.presentation
 
 import android.app.Activity
-import android.content.Intent
 import android.content.res.Configuration
-import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.clickable
@@ -53,10 +50,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import com.echoist.linkedout.R
 import com.echoist.linkedout.Routes
-import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.page.login.IdTextField
 import com.echoist.linkedout.page.login.PwTextField
 import com.echoist.linkedout.page.login.UnderlineText
@@ -65,7 +60,6 @@ import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.viewModels.LoginState
 import com.echoist.linkedout.viewModels.SocialLoginViewModel
 import com.navercorp.nid.NaverIdLoginSDK
-import kotlin.math.truncate
 
 @Composable
 fun TabletLoginRoute(
@@ -90,11 +84,6 @@ fun TabletLoginRoute(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
         viewModel.handleNaverLoginResult(result)
-    }
-
-    LaunchedEffect(key1 = true) {
-        viewModel.initializeNaverLogin()
-        SharedPreferencesUtil.saveIsOnboardingFinished(context, true)
     }
 
     LaunchedEffect(loginState) {

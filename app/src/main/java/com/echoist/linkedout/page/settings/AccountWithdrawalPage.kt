@@ -50,17 +50,19 @@ import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
-import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.page.community.ReportTextField
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.viewModels.MyPageViewModel
+import com.echoist.linkedout.viewModels.UserInfoViewModel
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun AccountWithdrawalPage(navController: NavController) {
-
+fun AccountWithdrawalPage(
+    navController: NavController,
+    viewModel: MyPageViewModel = hiltViewModel(),
+    userInfoViewModel: UserInfoViewModel = hiltViewModel()
+) {
     val scrollState = rememberScrollState()
-    val viewModel: MyPageViewModel = hiltViewModel()
 
     var isWithdrawalClicked by remember { mutableStateOf(false) }
     val reasonList = listOf(
@@ -70,7 +72,6 @@ fun AccountWithdrawalPage(navController: NavController) {
     val selectedItems = remember { mutableStateListOf<String>() }
     val context = LocalContext.current
     Log.d(TAG, "AccountWithdrawalPage: $selectedItems")
-
 
     Scaffold(
         topBar = {
@@ -122,16 +123,14 @@ fun AccountWithdrawalPage(navController: NavController) {
                     }
                 }
 
-
                 MultiSelectDeleteList(reasonList, selectedItems, onItemSelected)
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-
                 Button(
                     onClick = {
                         isWithdrawalClicked = true
-                        SharedPreferencesUtil.saveClickedAutoLogin(context, false)
+                        userInfoViewModel.logout()
                     },
                     enabled = !selectedItems.isEmpty(),
                     shape = RoundedCornerShape(20),
@@ -143,8 +142,7 @@ fun AccountWithdrawalPage(navController: NavController) {
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFFE43446),
                         disabledContainerColor = Color(0xFF868686),
-
-                        )
+                    )
                 ) {
                     Text(text = "탈퇴하기", color = Color.Black)
                 }

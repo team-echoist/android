@@ -71,7 +71,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.R
 import com.echoist.linkedout.Routes
-import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.viewModels.LoginState
 import com.echoist.linkedout.viewModels.SocialLoginViewModel
@@ -82,19 +81,14 @@ fun LoginPage(
     navController: NavController,
     viewModel: SocialLoginViewModel = hiltViewModel()
 ) {
-    val context = LocalContext.current
     val scrollState = rememberScrollState()
     val keyboardController = LocalSoftwareKeyboardController.current
+    val clickedAutoLogin by viewModel.clickedAutoLogin.collectAsState()
+
     val autoLoginColor =
-        if (viewModel.clickedAutoLogin) LinkedInColor else Color.Gray
-    viewModel.clickedAutoLogin = SharedPreferencesUtil.getClickedAutoLogin(context)
+        if (clickedAutoLogin) LinkedInColor else Color.Gray
 
     val loginState by viewModel.loginState.collectAsState()
-    var showError by remember { mutableStateOf(false) }
-
-    LaunchedEffect(key1 = Unit) {
-        SharedPreferencesUtil.saveIsOnboardingFinished(context, true)
-    }
 
     LaunchedEffect(loginState) {
         when (loginState) {
@@ -102,11 +96,9 @@ fun LoginPage(
                 "${Routes.Home}/${(loginState as LoginState.Home).statusCode}"
             )
 
-            is LoginState.Error -> showError = true
-
             is LoginState.AgreeOfProvisions -> navController.navigate(Routes.AgreeOfProvisionsPage)
 
-            else -> showError = false
+            else -> {}
         }
     }
 
@@ -150,7 +142,7 @@ fun LoginPage(
                         contentDescription = "check",
                         modifier = Modifier
                             .clickable {
-                                viewModel.clickedAutoLogin = !viewModel.clickedAutoLogin
+                                viewModel.onChangeClickAutoLogin()
                             }
                     )
                     Text(text = "자동 로그인", fontSize = 14.sp, color = autoLoginColor)
@@ -208,39 +200,41 @@ fun LoginPage(
                 Spacer(modifier = Modifier.height(20.dp))
             }
 
-            AnimatedVisibility(
-                visible = showError,
-                enter = fadeIn(
-                    animationSpec = tween(
-                        durationMillis = 500,
-                        easing = FastOutSlowInEasing
-                    )
-                ),
-                exit = fadeOut(animationSpec = tween(durationMillis = 0, easing = LinearEasing))
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Black.copy(0.7f))
+            if (loginState is LoginState.Error) {
+                AnimatedVisibility(
+                    visible = true,
+                    enter = fadeIn(
+                        animationSpec = tween(
+                            durationMillis = 500,
+                            easing = FastOutSlowInEasing
+                        )
+                    ),
+                    exit = fadeOut(animationSpec = tween(durationMillis = 0, easing = LinearEasing))
                 ) {
                     Box(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.Center)
-                            .height(60.dp)
-                            .padding(horizontal = 20.dp)
-                            .background(
-                                Color(0xFFE43446),
-                                shape = RoundedCornerShape(10)
-                            )
+                            .fillMaxSize()
+                            .background(Color.Black.copy(0.7f))
                     ) {
-                        Text(
-                            text = (loginState as LoginState.Error).message,
-                            color = Color.White,
+                        Box(
                             modifier = Modifier
-                                .padding(horizontal = 20.dp)
+                                .fillMaxWidth()
                                 .align(Alignment.Center)
-                        )
+                                .height(60.dp)
+                                .padding(horizontal = 20.dp)
+                                .background(
+                                    Color(0xFFE43446),
+                                    shape = RoundedCornerShape(10)
+                                )
+                        ) {
+                            Text(
+                                text = (loginState as LoginState.Error).message,
+                                color = Color.White,
+                                modifier = Modifier
+                                    .padding(horizontal = 20.dp)
+                                    .align(Alignment.Center)
+                            )
+                        }
                     }
                 }
             }
