@@ -33,7 +33,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -41,20 +40,20 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
-import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.page.settings.MultiSelectDeleteList
 import com.echoist.linkedout.page.settings.WithdrawalWarningBox
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.viewModels.MyPageViewModel
+import com.echoist.linkedout.viewModels.UserInfoViewModel
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun TabletDeleteAccountRoute(
     contentPadding: PaddingValues,
     viewModel: MyPageViewModel = hiltViewModel(),
+    userInfoViewModel: UserInfoViewModel = hiltViewModel(),
     onWithdrawalSuccess: () -> Unit
 ) {
-
     val scrollState = rememberScrollState()
 
     var isWithdrawalClicked by remember { mutableStateOf(false) }
@@ -63,7 +62,6 @@ fun TabletDeleteAccountRoute(
         "앱 사용 중에 자꾸 문제가 생겨서(버그, 오류 등)", "다른 서비스가 더 좋아서", "기타 문제"
     )
     val selectedItems = remember { mutableStateListOf<String>() }
-    val context = LocalContext.current
 
     val onItemSelected: (String) -> Unit = { selectedItem ->
         if (selectedItems.contains(selectedItem)) {
@@ -125,7 +123,7 @@ fun TabletDeleteAccountRoute(
             Button(
                 onClick = {
                     isWithdrawalClicked = true
-                    SharedPreferencesUtil.saveClickedAutoLogin(context, false)
+                    userInfoViewModel.logout()
                 },
                 enabled = !selectedItems.isEmpty(),
                 shape = RoundedCornerShape(20),

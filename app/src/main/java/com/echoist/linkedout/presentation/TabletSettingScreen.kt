@@ -7,61 +7,47 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.page.home.EssayNotificationBox
 import com.echoist.linkedout.page.home.NotificationTimePickerBox
 import com.echoist.linkedout.page.home.WritingNotificationBox
 import com.echoist.linkedout.viewModels.HomeViewModel
+import com.echoist.linkedout.viewModels.NotificationViewModel
 
 @Composable
 fun TabletSettingRoute(
     navController: NavController,
     viewModel: HomeViewModel = hiltViewModel(),
+    notificationViewModel: NotificationViewModel = hiltViewModel(),
     onCloseClick: () -> Unit
 ) {
-
     viewModel.readUserNotification()
-    val context = LocalContext.current
 
-    val savedTimeSelection = remember { SharedPreferencesUtil.getTimeSelection(context) }
-    val hour by remember { mutableStateOf(SharedPreferencesUtil.getHourString(savedTimeSelection.hourIndex)) }
-    val min by remember { mutableStateOf(SharedPreferencesUtil.getMinuteString(savedTimeSelection.minuteIndex)) }
-    val period by remember { mutableStateOf(SharedPreferencesUtil.getPeriodString(savedTimeSelection.periodIndex)) }
+    val hour by notificationViewModel.hour.collectAsState()
+    val min by notificationViewModel.min.collectAsState()
+    val period by notificationViewModel.period.collectAsState()
+    val writingRemindNotification by notificationViewModel.writingRemindNotification.collectAsState()
 
-    var writingRemindNotification by remember {
-        mutableStateOf(
-            SharedPreferencesUtil.getWritingRemindNotification(
-                context
-            )
-        )
-    }
     var isClickedTimeSelection by remember { mutableStateOf(false) }
     if (viewModel.isApifinished) {
         Column(
@@ -81,7 +67,11 @@ fun TabletSettingRoute(
             Spacer(modifier = Modifier.height(20.dp))
             WriteNotificationSettings(
                 writingRemindNotification,
-                onWriteNotificationChange = { writingRemindNotification = it },
+                onWriteNotificationChange = {
+                    notificationViewModel.updateWritingRemindNotification(
+                        it
+                    )
+                },
                 onWriteTimeChange = { isClickedTimeSelection = true },
                 hour, min, period
             )

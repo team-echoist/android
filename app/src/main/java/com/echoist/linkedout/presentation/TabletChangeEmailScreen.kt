@@ -51,19 +51,20 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
-import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.isEmailValid
 import com.echoist.linkedout.page.login.Authentication_6_BottomModal
 import com.echoist.linkedout.page.settings.CustomOutlinedTextField
 import com.echoist.linkedout.page.settings.SendEmailFinishedAlert
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.viewModels.ChangeEmailViewModel
+import com.echoist.linkedout.viewModels.UserInfoViewModel
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalGlideComposeApi::class)
 @Composable
 fun TabletChangeEmailScreen(
     viewModel: ChangeEmailViewModel = hiltViewModel(),
+    userInfoViewModel: UserInfoViewModel = hiltViewModel(),
     contentPadding: PaddingValues,
     moveToLoginPage: () -> Unit
 ) {
@@ -105,7 +106,7 @@ fun TabletChangeEmailScreen(
             bottomSheetState.hide()
             showToast = true
             delay(2000)
-            SharedPreferencesUtil.saveClickedAutoLogin(context, false)
+            userInfoViewModel.logout()
             moveToLoginPage()
             showToast = false
         }

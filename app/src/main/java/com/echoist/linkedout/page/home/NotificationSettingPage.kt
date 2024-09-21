@@ -53,42 +53,35 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.R
 import com.echoist.linkedout.Routes
-import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.components.ImageSwitch
 import com.echoist.linkedout.navigateWithClearBackStack
 import com.echoist.linkedout.page.settings.SettingTopAppBar
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.viewModels.HomeViewModel
+import com.echoist.linkedout.viewModels.NotificationViewModel
 
 @Composable
 fun NotificationSettingPage(
     navController: NavController,
-    homeViewModel: HomeViewModel = hiltViewModel()
+    homeViewModel: HomeViewModel = hiltViewModel(),
+    notificationViewModel: NotificationViewModel = hiltViewModel()
 ) {
 
     homeViewModel.readUserNotification()
     val context = LocalContext.current
 
-    val savedTimeSelection = remember { SharedPreferencesUtil.getTimeSelection(context) }
-    val hour by remember { mutableStateOf(SharedPreferencesUtil.getHourString(savedTimeSelection.hourIndex)) }
-    val min by remember { mutableStateOf(SharedPreferencesUtil.getMinuteString(savedTimeSelection.minuteIndex)) }
-    val period by remember { mutableStateOf(SharedPreferencesUtil.getPeriodString(savedTimeSelection.periodIndex)) }
+    val hour by notificationViewModel.hour.collectAsState()
+    val min by notificationViewModel.min.collectAsState()
+    val period by notificationViewModel.period.collectAsState()
+    val writingRemindNotification by notificationViewModel.writingRemindNotification.collectAsState()
 
     val isUpdateUserNotificationApiFinished by homeViewModel.isUpdateUserNotificationApiFinished.collectAsState()
 
     LaunchedEffect(key1 = isUpdateUserNotificationApiFinished) {
         if (isUpdateUserNotificationApiFinished) {
-            navigateWithClearBackStack(navController,"${Routes.Home}/200")
+            navigateWithClearBackStack(navController, "${Routes.Home}/200")
             homeViewModel.setApiStatusToFalse()
         }
-    }
-
-    var writingRemindNotification by remember {
-        mutableStateOf(
-            SharedPreferencesUtil.getWritingRemindNotification(
-                context
-            )
-        )
     }
 
     Scaffold(
@@ -97,7 +90,6 @@ fun NotificationSettingPage(
         },
         content = {
             var isClickedTimeSelection by remember { mutableStateOf(false) }
-
 
             if (homeViewModel.isApifinished) {
                 Column(
@@ -148,7 +140,7 @@ fun NotificationSettingPage(
                     WritingNotificationBox(
                         writingRemindNotification,
                         { it ->
-                            writingRemindNotification = it
+                            notificationViewModel.updateWritingRemindNotification(it)
                             Log.d(TAG, "NotificationPage: $it")
                         },
                         { isClickedTimeSelection = true },
@@ -191,8 +183,6 @@ fun NotificationSettingPage(
                         Log.d(TAG, "NotificationPage: $it")
                     }
                     Spacer(modifier = Modifier.height(20.dp))
-
-
                 }
             }
 
@@ -219,13 +209,11 @@ fun NotificationSettingPage(
                     .fillMaxWidth()
                     .height(61.dp), shape = RoundedCornerShape(20),
                     onClick = {
-
                         homeViewModel.updateUserNotification(homeViewModel.locationNotification)
 
-                        SharedPreferencesUtil.saveWritingRemindNotification(
-                            context,
+                        notificationViewModel.saveWritingRemindNotification(
                             writingRemindNotification
-                        ) //글쓰기 시간 알림 설정 저장
+                        ) //글쓰기 시간 알림 설정 저장//글쓰기 시간 알림 설정 저장
                         if (writingRemindNotification) {
                             //homeViewModel.setAlarmAfter10(context) //테스트용 1초후알람
                             homeViewModel.setAlarmFromTimeString(
@@ -358,10 +346,14 @@ fun WritingNotificationBox(
 }
 
 @Composable
-fun NotificationTimePickerBox(isCancelClicked: () -> Unit, navController: NavController) {
+fun NotificationTimePickerBox(
+    isCancelClicked: () -> Unit,
+    navController: NavController,
+    notificationViewModel: NotificationViewModel = hiltViewModel()
+) {
     val context = LocalContext.current
     var selectedTime by remember { mutableStateOf<TimeSelectionIndex?>(null) }
-    val savedTimeSelection = remember { SharedPreferencesUtil.getTimeSelection(context) }
+    val savedTimeSelection = remember { notificationViewModel.getTimeSelection() }
 
     Log.d("NotificationTimePickerBox", "Saved Time: $savedTimeSelection")
 
@@ -410,7 +402,7 @@ fun NotificationTimePickerBox(isCancelClicked: () -> Unit, navController: NavCon
                             val message =
                                 "${time.periodIndex} ${time.hourIndex}:${time.minuteIndex}"
                             Log.d("NotificationTimePickerBox", "Selected Time: $message")
-                            SharedPreferencesUtil.saveTimeSelection(context, time)
+                            notificationViewModel.saveTimeSelection(time)
                             navController.navigate("notificationSettingPage")
                         }
                     },

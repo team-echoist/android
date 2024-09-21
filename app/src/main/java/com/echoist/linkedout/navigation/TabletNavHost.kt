@@ -1,27 +1,17 @@
 package com.echoist.linkedout.navigation
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.echoist.linkedout.Routes
-import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.navigateWithClearBackStack
-import com.echoist.linkedout.page.home.HomePage
 import com.echoist.linkedout.page.login.AgreeOfProvisionsPage
-import com.echoist.linkedout.page.login.OnBoardingPage
 import com.echoist.linkedout.presentation.TabletAccountRoute
 import com.echoist.linkedout.presentation.TabletBadgeRoute
 import com.echoist.linkedout.presentation.TabletChangeEmailScreen
@@ -37,10 +27,8 @@ import com.echoist.linkedout.presentation.TabletOnBoardingRoute
 import com.echoist.linkedout.presentation.TabletRecentEssayScreen
 import com.echoist.linkedout.presentation.TabletResetPwRoute
 import com.echoist.linkedout.presentation.TabletSearchScreen
-import com.echoist.linkedout.presentation.TabletSettingRoute
 import com.echoist.linkedout.presentation.TabletSignUpCompleteRoute
 import com.echoist.linkedout.presentation.TabletSignUpRoute
-import okhttp3.Route
 
 @Composable
 fun TabletNavHost(

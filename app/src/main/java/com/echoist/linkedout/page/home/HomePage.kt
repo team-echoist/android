@@ -1,6 +1,7 @@
 package com.echoist.linkedout.page.home
 
 import android.util.Log
+import androidx.collection.forEach
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
@@ -89,7 +90,6 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
 import com.echoist.linkedout.Routes
-import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.TUTORIAL_BULB
 import com.echoist.linkedout.UserStatus
 import com.echoist.linkedout.api.EssayApi
@@ -101,6 +101,7 @@ import com.echoist.linkedout.navigateWithClearBackStack
 import com.echoist.linkedout.page.myLog.Token
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.viewModels.HomeViewModel
+import com.echoist.linkedout.viewModels.UserInfoViewModel
 import com.echoist.linkedout.viewModels.WritingViewModel
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
@@ -108,6 +109,7 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -123,8 +125,10 @@ fun HomePage(
 ) {
 
     val context = LocalContext.current
-    val isUserDeleteApiFinished by viewModel.isUserDeleteApiFinished.collectAsState()
+    val scope = rememberCoroutineScope()
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
+    val isUserDeleteApiFinished by viewModel.isUserDeleteApiFinished.collectAsState()
     val isExistLatestUpdate by viewModel.isExistLatestUpdate.collectAsState()
 
     Log.d("header token by autoLogin: in home", "${Token.accessToken} \n ${Token.refreshToken}")
@@ -148,13 +152,10 @@ fun HomePage(
 
     LaunchedEffect(key1 = isUserDeleteApiFinished) {
         if (isUserDeleteApiFinished) {
-            navigateWithClearBackStack(navController,Routes.LoginPage)
+            navigateWithClearBackStack(navController, Routes.LoginPage)
             viewModel.setApiStatusToFalse()
         }
     }
-
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -195,7 +196,8 @@ fun HomePage(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(start = 165.dp, bottom = 130.dp), contentAlignment = Alignment.Center
+                        .padding(start = 165.dp, bottom = 130.dp),
+                    contentAlignment = Alignment.Center
                 ) {
                     Box(
                         Modifier
@@ -292,16 +294,16 @@ fun HomePage(
         }
     }
 
-    if (isExistLatestUpdate){
+    if (isExistLatestUpdate) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Black.copy(0.7f)), contentAlignment = Alignment.Center
         )
         {
-            UpdateAlert(isClickedClose={
+            UpdateAlert(isClickedClose = {
                 viewModel.updateIsExistLatestUpdate(false)
-                        },isClickedOpened={
+            }, isClickedOpened = {
                 navController.navigate(Routes.UpdateHistoryPage)
                 viewModel.updateIsExistLatestUpdate(false)
             })
@@ -313,7 +315,11 @@ fun HomePage(
 
 
 @Composable
-fun ModalBottomSheetContent(viewModel: HomeViewModel, navController: NavController) {
+fun ModalBottomSheetContent(
+    viewModel: HomeViewModel,
+    navController: NavController,
+    userInfoViewModel: UserInfoViewModel = hiltViewModel()
+) {
     var isLogoutClicked by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
     val context = LocalContext.current
@@ -355,21 +361,25 @@ fun ModalBottomSheetContent(viewModel: HomeViewModel, navController: NavControll
         LogoutBox(
             isCancelClicked = { isLogoutClicked = false },
             isLogoutClicked = {
+                userInfoViewModel.logout()
                 isLogoutClicked = false
                 navController.navigate(Routes.LoginPage) {
-                    // 기존의 모든 백스택을 제거하고 login 루트로 설정
-                    popUpTo(Routes.LoginPage) { inclusive = true }
+                    popUpTo(Routes.LoginPage) {
+                        inclusive = true
+                    }
                     launchSingleTop = true
                 }
-                //로컬 자동로그인, id pw 값 초기화
-                SharedPreferencesUtil.saveClickedAutoLogin(context, false)
             }
         )
     }
 }
 
 @Composable
-fun WriteFTB(navController: NavController,viewModel: HomeViewModel = hiltViewModel(),writingViewModel: WritingViewModel = hiltViewModel()) {
+fun WriteFTB(
+    navController: NavController,
+    viewModel: HomeViewModel = hiltViewModel(),
+    writingViewModel: WritingViewModel = hiltViewModel()
+) {
 
     FloatingActionButton(
         modifier = Modifier.padding(end = 25.dp, bottom = 25.dp),
@@ -1361,7 +1371,11 @@ fun UpdateAlert(isClickedClose: () -> Unit, isClickedOpened: () -> Unit) {
             Spacer(modifier = Modifier.height(24.dp))
             GlideImage(model = R.drawable.badge_update, contentDescription = "")
             Spacer(modifier = Modifier.height(40.dp))
-            GlideImage(model = R.drawable.logo_update, contentDescription = "", modifier = Modifier.size(146.dp,97.33.dp))
+            GlideImage(
+                model = R.drawable.logo_update,
+                contentDescription = "",
+                modifier = Modifier.size(146.dp, 97.33.dp)
+            )
             Spacer(modifier = Modifier.height(37.dp))
             Text(
                 text = "아무개님, 새로운 버전으로\n업데이트되었습니다!",
@@ -1396,7 +1410,12 @@ fun UpdateAlert(isClickedClose: () -> Unit, isClickedOpened: () -> Unit) {
                         .weight(1f)
                 ) {
 
-                    Text(text = "자세히 보기", color = Color.Black, fontSize = 12.sp,textAlign = TextAlign.Center)
+                    Text(
+                        text = "자세히 보기",
+                        color = Color.Black,
+                        fontSize = 12.sp,
+                        textAlign = TextAlign.Center
+                    )
                 }
                 Button(
                     onClick = { isClickedClose() },

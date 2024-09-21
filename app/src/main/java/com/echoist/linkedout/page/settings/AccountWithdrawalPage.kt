@@ -53,17 +53,18 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
 import com.echoist.linkedout.Routes
-import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.navigateWithClearBackStack
 import com.echoist.linkedout.page.community.ReportTextField
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.viewModels.MyPageViewModel
+import com.echoist.linkedout.viewModels.UserInfoViewModel
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun AccountWithdrawalPage(
     navController: NavController,
-    viewModel: MyPageViewModel = hiltViewModel()
+    viewModel: MyPageViewModel = hiltViewModel(),
+    userInfoViewModel: UserInfoViewModel = hiltViewModel()
 ) {
     val scrollState = rememberScrollState()
 
@@ -133,16 +134,14 @@ fun AccountWithdrawalPage(
                     }
                 }
 
-
                 MultiSelectDeleteList(reasonList, selectedItems, onItemSelected)
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-
                 Button(
                     onClick = {
                         isWithdrawalClicked = true
-                        SharedPreferencesUtil.saveClickedAutoLogin(context, false)
+                        userInfoViewModel.logout()
                     },
                     enabled = !selectedItems.isEmpty(),
                     shape = RoundedCornerShape(20),
@@ -154,8 +153,7 @@ fun AccountWithdrawalPage(
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFFE43446),
                         disabledContainerColor = Color(0xFF868686),
-
-                        )
+                    )
                 ) {
                     Text(text = "탈퇴하기", color = Color.Black)
                 }
