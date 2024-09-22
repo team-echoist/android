@@ -41,7 +41,7 @@
             android:exported="true" />
 
         <activity
-            android:name=".page.login.SplashPage"
+            android:name=".presentation.mobile.login.SplashPage"
             android:exported="true"
             android:theme="@style/SplashTheme">
             <intent-filter>
