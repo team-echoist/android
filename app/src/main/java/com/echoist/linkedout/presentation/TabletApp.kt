@@ -1,6 +1,5 @@
 package com.echoist.linkedout.presentation
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,7 +40,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.echoist.linkedout.R
 import com.echoist.linkedout.Routes
-import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.api.EssayApi
 import com.echoist.linkedout.navigation.TabletNavHost
 import com.echoist.linkedout.page.home.LineChartExample
@@ -56,8 +54,8 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun TabletApp(
-    context: Context,
     navController: NavHostController,
+    startDestination: String,
     homeViewModel: HomeViewModel = hiltViewModel(),
     myLogViewModel: MyLogViewModel = hiltViewModel()
 ) {
@@ -75,9 +73,6 @@ fun TabletApp(
     var isLogoutClicked by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
     var isNotificationClicked by remember { mutableStateOf(false) }
-
-    val isOnboardingFinished = SharedPreferencesUtil.getIsOnboardingFinished(context)
-    val startDestination = if (isOnboardingFinished) Routes.LoginPage else Routes.OnBoarding
 
     Surface(
         modifier = Modifier.fillMaxSize(),

@@ -1,9 +1,6 @@
 package com.echoist.linkedout.page.login
 
 import android.app.Activity
-import android.graphics.Rect
-import android.util.Log
-import android.view.ViewTreeObserver
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -34,7 +31,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
@@ -47,9 +43,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -62,7 +57,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -75,42 +69,37 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.echoist.linkedout.BuildConfig
 import com.echoist.linkedout.R
-import com.echoist.linkedout.SharedPreferencesUtil
+import com.echoist.linkedout.Routes
 import com.echoist.linkedout.ui.theme.LinkedInColor
+import com.echoist.linkedout.viewModels.LoginState
 import com.echoist.linkedout.viewModels.SocialLoginViewModel
 import com.navercorp.nid.NaverIdLoginSDK
-import kotlinx.coroutines.delay
+
 @Composable
 fun LoginPage(
     navController: NavController,
     viewModel: SocialLoginViewModel = hiltViewModel()
 ) {
-    val keyboardController = LocalSoftwareKeyboardController.current
     val scrollState = rememberScrollState()
-    Log.d("현재 사용중인 안드로이드 앱 버전", BuildConfig.VERSION_NAME)
-    val context = LocalContext.current
-    viewModel.clickedAutoLogin = SharedPreferencesUtil.getClickedAutoLogin(context)
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val clickedAutoLogin by viewModel.clickedAutoLogin.collectAsState()
 
-    // 앱버전 체크 후 최신버전 아닌경우 마켓업데이트.
-    LaunchedEffect(key1 = Unit) {
-        // 온보딩 확인했다는 체크
-        SharedPreferencesUtil.saveIsOnboardingFinished(context, true)
-    }
+    val autoLoginColor =
+        if (clickedAutoLogin) LinkedInColor else Color.Gray
 
-    // 로그인 상태코드로 인한 에러처리.
-    LaunchedEffect(key1 = viewModel.loginStatusCode) {
-        delay(1000)
-        viewModel.loginStatusCode = 200
-    }
+    val loginState by viewModel.loginState.collectAsState()
 
-    val errorText = when (viewModel.loginStatusCode) { // todo 유형 별 코드 파악
-        400, 401 -> "이메일 또는 비밀번호가 잘못되었습니다."
-        403 -> "정지된 계정입니다."
-        409 -> "중복된 이메일 계정이 존재합니다."
-        500 -> "예기치 못한 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."
-        else -> "예기치 못한 오류가 발생했습니다. 잠시 후 다시 시도해 주세요. ${viewModel.loginStatusCode}"
+    LaunchedEffect(loginState) {
+        when (loginState) {
+            is LoginState.Home -> navController.navigate(
+                "${Routes.Home}/${(loginState as LoginState.Home).statusCode}"
+            )
+
+            is LoginState.AgreeOfProvisions -> navController.navigate(Routes.AgreeOfProvisionsPage)
+
+            else -> {}
+        }
     }
 
     Scaffold(
@@ -125,17 +114,7 @@ fun LoginPage(
                     .padding(it)
                     .verticalScroll(scrollState)
             ) {
-                Spacer(modifier = Modifier.height(20.dp))
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "arrowback",
-                    tint = Color.White,
-                    modifier = Modifier
-                        .size(30.dp)
-                        .padding(16.dp)
-                        .clickable { navController.popBackStack() } // 뒤로가기
-                )
-                Spacer(modifier = Modifier.height(30.dp))
+                Spacer(modifier = Modifier.height(80.dp))
                 Text(
                     text = "안녕하세요!",
                     fontSize = 20.sp,
@@ -151,10 +130,7 @@ fun LoginPage(
                     color = Color.White
                 )
 
-                LoginTextFields(viewModel, navController)
-
-                val autoLoginColor =
-                    if (viewModel.clickedAutoLogin) LinkedInColor else Color.Gray
+                LoginTextFields(viewModel)
 
                 Row(
                     modifier = Modifier.padding(horizontal = 20.dp),
@@ -166,20 +142,19 @@ fun LoginPage(
                         contentDescription = "check",
                         modifier = Modifier
                             .clickable {
-                                viewModel.clickedAutoLogin = !viewModel.clickedAutoLogin
+                                viewModel.onChangeClickAutoLogin()
                             }
                     )
                     Text(text = "자동 로그인", fontSize = 14.sp, color = autoLoginColor)
                 }
                 Spacer(modifier = Modifier.height(10.dp))
-                LoginBtn(navController = navController, viewModel)
+                LoginBtn(viewModel)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 32.dp),
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    // UnderlineText(text = "아이디 찾기") { } //아이디찾기 페이지 이동
                     // 임시 아이디 찾기 닫아둠.
                     Text(
                         text = "아이디 찾기",
@@ -190,8 +165,8 @@ fun LoginPage(
                             .padding(end = 25.dp)
                             .clickable(enabled = false) { }
                     )
-                    UnderlineText(text = "비밀번호 재설정") { navController.navigate("ResetPwPageWithEmail") } // 비밀번호 재설정 페이지 이동
-                    UnderlineText(text = "회원가입") { navController.navigate("SIGNUP") } // 회원가입 페이지 이동
+                    UnderlineText(text = "비밀번호 재설정") { navController.navigate(Routes.ResetPwPageWithEmail) }
+                    UnderlineText(text = "회원가입") { navController.navigate(Routes.SignUp) }
                 }
                 Spacer(modifier = Modifier.height(150.dp))
 
@@ -221,157 +196,62 @@ fun LoginPage(
                             .padding(12.dp)
                     )
                 }
-                SocialLoginBar(navController, viewModel)
+                SocialLoginBar(viewModel)
                 Spacer(modifier = Modifier.height(20.dp))
             }
 
-            // 에러 박스
-            AnimatedVisibility(
-                visible = viewModel.loginStatusCode >= 400,
-                enter = fadeIn(
-                    animationSpec = tween(
-                        durationMillis = 500,
-                        easing = FastOutSlowInEasing
-                    )
-                ),
-                exit = fadeOut(animationSpec = tween(durationMillis = 0, easing = LinearEasing))
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Black.copy(0.7f))
+            if (loginState is LoginState.Error) {
+                AnimatedVisibility(
+                    visible = true,
+                    enter = fadeIn(
+                        animationSpec = tween(
+                            durationMillis = 500,
+                            easing = FastOutSlowInEasing
+                        )
+                    ),
+                    exit = fadeOut(animationSpec = tween(durationMillis = 0, easing = LinearEasing))
                 ) {
                     Box(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.Center)
-                            .height(60.dp)
-                            .padding(horizontal = 20.dp)
-                            .background(
-                                Color(0xFFE43446),
-                                shape = RoundedCornerShape(10)
-                            )
+                            .fillMaxSize()
+                            .background(Color.Black.copy(0.7f))
                     ) {
-                        Text(
-                            text = errorText,
-                            color = Color.White,
+                        Box(
                             modifier = Modifier
-                                .padding(horizontal = 20.dp)
+                                .fillMaxWidth()
                                 .align(Alignment.Center)
-                        )
+                                .height(60.dp)
+                                .padding(horizontal = 20.dp)
+                                .background(
+                                    Color(0xFFE43446),
+                                    shape = RoundedCornerShape(10)
+                                )
+                        ) {
+                            Text(
+                                text = (loginState as LoginState.Error).message,
+                                color = Color.White,
+                                modifier = Modifier
+                                    .padding(horizontal = 20.dp)
+                                    .align(Alignment.Center)
+                            )
+                        }
                     }
                 }
             }
         }
     )
 }
-//구글로그인 버튼
-@Composable
-fun GoogleLoginBtn(navController: NavController, viewModel: SocialLoginViewModel) {
-
-    val context = LocalContext.current
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-    ) { result ->
-        viewModel.handleGoogleLogin(result.data, navController)
-    }
-    Icon(
-        painter = painterResource(id = R.drawable.social_googlebtn),
-        contentDescription = "naver Login btn",
-        modifier = Modifier
-            .size(40.dp)
-            .clickable { viewModel.signInWithGoogle(launcher, context) },
-        tint = Color.Unspecified
-    )
-}
 
 @Composable
-fun KakaoLoginBtn(navController: NavController, viewModel: SocialLoginViewModel) {
-    val context = LocalContext.current
-
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Icon(
-            painter = painterResource(id = R.drawable.social_kakaobtn),
-            contentDescription = "naver Login btn",
-            modifier = Modifier
-                .size(40.dp)
-                .clickable { viewModel.handleKaKaoLogin(context, navController) },
-            tint = Color.Unspecified
-        )
-    }
-}
-
-@Composable
-fun NaverLoginBtn(navController: NavController, viewModel: SocialLoginViewModel) {
-    val context = LocalContext.current
-
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        viewModel.handleNaverLoginResult(result, navController)
-    }
-    viewModel.initializeNaverLogin(context)
-
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Icon(
-            painter = painterResource(id = R.drawable.social_naverbtn),
-            contentDescription = "naver Login btn",
-            modifier = Modifier
-                .size(40.dp)
-                .clickable { NaverIdLoginSDK.authenticate(context, launcher) },
-            tint = Color.Unspecified
-        )
-    }
-}
-
-@Composable
-fun AppleLoginBtn(navController: NavController, viewModel: SocialLoginViewModel) {
-
-    val context = LocalContext.current
-    val activity = context as Activity
-
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Icon(
-            painter = painterResource(id = R.drawable.social_applebtn),
-            contentDescription = "naver Login btn",
-            modifier = Modifier
-                .size(40.dp)
-                .clickable { viewModel.appleLoginHandle(activity, navController) },
-            tint = Color.Unspecified
-        )
-    }
-}
-
-@Composable
-fun LoginTextFields(viewModel: SocialLoginViewModel, navController: NavController) {
+fun LoginTextFields(viewModel: SocialLoginViewModel) {
     val passwordFocusRequester = remember { FocusRequester() }
 
     IdTextField(viewModel, passwordFocusRequester)
-    PwTextField(navController, viewModel, passwordFocusRequester)
-}
-
-@Composable
-fun SocialLoginBar(navController: NavController, viewModel: SocialLoginViewModel) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .navigationBarsPadding(),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        GoogleLoginBtn(navController = navController, viewModel)
-        Spacer(modifier = Modifier.width(25.dp))
-        KakaoLoginBtn(navController = navController, viewModel)
-        Spacer(modifier = Modifier.width(25.dp))
-        NaverLoginBtn(navController = navController, viewModel)
-        Spacer(modifier = Modifier.width(25.dp))
-        AppleLoginBtn(navController = navController, viewModel)
-    }
+    PwTextField(viewModel, passwordFocusRequester)
 }
 
 @Composable
 fun IdTextField(viewModel: SocialLoginViewModel, passwordFocusRequester: FocusRequester) {
-    val context = LocalContext.current
     var text by remember { mutableStateOf("") }
     viewModel.userId = text //초기값 설정 빈값으로 두지 않기위함
 
@@ -423,11 +303,9 @@ fun IdTextField(viewModel: SocialLoginViewModel, passwordFocusRequester: FocusRe
 
 @Composable
 fun PwTextField(
-    navController: NavController,
     viewModel: SocialLoginViewModel,
     passwordFocusRequester: FocusRequester
 ) {
-    val context = LocalContext.current
     var text by remember { mutableStateOf("") }
     viewModel.userPw = text
     var passwordVisible by remember { mutableStateOf(false) }
@@ -455,7 +333,7 @@ fun PwTextField(
         ),
         keyboardActions = KeyboardActions(
             onDone = {
-                viewModel.login(navController)
+                viewModel.login()
             }
         ),
         trailingIcon = { // 비밀번호 표시 여부입니다.
@@ -488,7 +366,6 @@ fun PwTextField(
 
 @Composable
 fun LoginBtn(
-    navController: NavController,
     viewModel: SocialLoginViewModel
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -498,7 +375,7 @@ fun LoginBtn(
         shape = RoundedCornerShape(10.dp),
         enabled = !error,
         onClick = {
-            viewModel.login(navController)
+            viewModel.login()
         },
         colors = ButtonDefaults.buttonColors(
             containerColor = if (error) Color.Gray else LinkedInColor
@@ -511,10 +388,7 @@ fun LoginBtn(
     ) {
         Text(text = "로그인", color = if (error) Color(0xFF919191) else Color.Black)
     }
-
-
 }
-
 
 @Composable
 fun UnderlineText(
@@ -532,32 +406,88 @@ fun UnderlineText(
     )
 }
 
-
-enum class Keyboard {
-    Opened, Closed
+@Composable
+fun SocialLoginBar(viewModel: SocialLoginViewModel) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .navigationBarsPadding(),
+        horizontalArrangement = Arrangement.spacedBy(25.dp, Alignment.CenterHorizontally),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        GoogleLoginBtn(viewModel)
+        KakaoLoginBtn(viewModel)
+        NaverLoginBtn(viewModel)
+        AppleLoginBtn(viewModel)
+    }
 }
 
 @Composable
-fun keyboardAsState(): State<Keyboard> {
-    val keyboardState = remember { mutableStateOf(Keyboard.Closed) }
-    val view = LocalView.current
-    DisposableEffect(view) {
-        val onGlobalListener = ViewTreeObserver.OnGlobalLayoutListener {
-            val rect = Rect()
-            view.getWindowVisibleDisplayFrame(rect)
-            val screenHeight = view.rootView.height
-            val keypadHeight = screenHeight - rect.bottom
-            keyboardState.value = if (keypadHeight > screenHeight * 0.15) {
-                Keyboard.Opened
-            } else {
-                Keyboard.Closed
-            }
-        }
-        view.viewTreeObserver.addOnGlobalLayoutListener(onGlobalListener)
-
-        onDispose {
-            view.viewTreeObserver.removeOnGlobalLayoutListener(onGlobalListener)
-        }
+fun GoogleLoginBtn(viewModel: SocialLoginViewModel) {
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+    ) { result ->
+        viewModel.handleGoogleLogin(result.data)
     }
-    return keyboardState
+    Icon(
+        painter = painterResource(id = R.drawable.social_googlebtn),
+        contentDescription = "naver Login btn",
+        modifier = Modifier
+            .size(40.dp)
+            .clickable { viewModel.signInWithGoogle(launcher) },
+        tint = Color.Unspecified
+    )
+}
+
+@Composable
+fun KakaoLoginBtn(viewModel: SocialLoginViewModel) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Icon(
+            painter = painterResource(id = R.drawable.social_kakaobtn),
+            contentDescription = "naver Login btn",
+            modifier = Modifier
+                .size(40.dp)
+                .clickable { viewModel.handleKaKaoLogin() },
+            tint = Color.Unspecified
+        )
+    }
+}
+
+@Composable
+fun NaverLoginBtn(viewModel: SocialLoginViewModel) {
+    val context = LocalContext.current
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        viewModel.handleNaverLoginResult(result)
+    }
+    viewModel.initializeNaverLogin()
+
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Icon(
+            painter = painterResource(id = R.drawable.social_naverbtn),
+            contentDescription = "naver Login btn",
+            modifier = Modifier
+                .size(40.dp)
+                .clickable { NaverIdLoginSDK.authenticate(context, launcher) },
+            tint = Color.Unspecified
+        )
+    }
+}
+
+@Composable
+fun AppleLoginBtn(viewModel: SocialLoginViewModel) {
+    val context = LocalContext.current
+    val activity = context as Activity
+
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Icon(
+            painter = painterResource(id = R.drawable.social_applebtn),
+            contentDescription = "naver Login btn",
+            modifier = Modifier
+                .size(40.dp)
+                .clickable { viewModel.appleLoginHandle(activity) },
+            tint = Color.Unspecified
+        )
+    }
 }

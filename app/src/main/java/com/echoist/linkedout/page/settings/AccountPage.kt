@@ -50,14 +50,18 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.echoist.linkedout.Routes
-import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.data.UserInfo
 import com.echoist.linkedout.page.home.LogoutBox
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.viewModels.MyPageViewModel
+import com.echoist.linkedout.viewModels.UserInfoViewModel
 
 @Composable
-fun AccountPage(navController: NavController, viewModel: MyPageViewModel = hiltViewModel()) {
+fun AccountPage(
+    navController: NavController,
+    viewModel: MyPageViewModel = hiltViewModel(),
+    userInfoViewModel: UserInfoViewModel = hiltViewModel()
+) {
     val scrollState = rememberScrollState()
     val context = LocalContext.current
 
@@ -138,8 +142,7 @@ fun AccountPage(navController: NavController, viewModel: MyPageViewModel = hiltV
                         isCancelClicked = { isLogoutClicked = false },
                         isLogoutClicked = {
                             isLogoutClicked = false
-                            //로컬 자동로그인, id pw 값 초기화
-                            SharedPreferencesUtil.saveClickedAutoLogin(context, false)
+                            userInfoViewModel.logout()
 
                             navController.navigate(Routes.LoginPage) {
                                 popUpTo(Routes.LoginPage) {

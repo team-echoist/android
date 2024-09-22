@@ -29,15 +29,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.echoist.linkedout.SharedPreferencesUtil
 import com.echoist.linkedout.page.home.LogoutBox
 import com.echoist.linkedout.page.settings.EmailBox
 import com.echoist.linkedout.page.settings.ModifyBox
 import com.echoist.linkedout.viewModels.MyPageViewModel
+import com.echoist.linkedout.viewModels.UserInfoViewModel
 
 @Composable
 fun TabletAccountRoute(
     viewModel: MyPageViewModel = hiltViewModel(),
+    userInfoViewModel: UserInfoViewModel = hiltViewModel(),
     contentPadding: PaddingValues,
     onClickChangeEmail: () -> Unit,
     onClickChangePassword: () -> Unit,
@@ -101,8 +102,7 @@ fun TabletAccountRoute(
                     isCancelClicked = { isLogoutClicked = false },
                     isLogoutClicked = {
                         isLogoutClicked = false
-                        SharedPreferencesUtil.saveClickedAutoLogin(context, false)
-
+                        userInfoViewModel.logout()
                         isLogoutClicked()
                     }
                 )

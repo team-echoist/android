@@ -48,6 +48,16 @@ const val LOCATION_POLICY_URL = "https://www.linkedoutapp.com/location-terms" //
 const val OPERATIONAL_POLICY_URL = "https://www.linkedoutapp.com/operational_policy" // 운영정책
 const val TERMS_POLICY_URL = "https://www.linkedoutapp.com/terms" // 이용약관
 
+const val PREFS_NAME = "prefs"
+const val KEY_PERIOD_INDEX = "period_index"
+const val KEY_HOUR_INDEX = "hour_index"
+const val KEY_MINUTE_INDEX = "minute_index"
+
+const val ID_LOCAL_STORAGE = "id"
+const val PW_LOCAL_STORAGE = "pw"
+
+const val DISPLAY_INFO = DARK_MODE
+
 object DeviceType {
     const val DESKTOP = "Desktop"
     const val LAPTOP = "Laptop"
