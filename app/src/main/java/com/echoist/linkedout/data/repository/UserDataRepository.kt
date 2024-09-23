@@ -6,7 +6,7 @@ import com.echoist.linkedout.presentation.util.KEY_HOUR_INDEX
 import com.echoist.linkedout.presentation.util.KEY_MINUTE_INDEX
 import com.echoist.linkedout.presentation.util.KEY_PERIOD_INDEX
 import com.echoist.linkedout.data.dto.Tokens
-import com.echoist.linkedout.presentation.mobile.home.TimeSelectionIndex
+import com.echoist.linkedout.presentation.home.TimeSelectionIndex
 import javax.inject.Inject
 
 class UserDataRepository @Inject constructor(

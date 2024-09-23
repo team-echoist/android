@@ -6,7 +6,7 @@ import com.echoist.linkedout.data.api.UserApi
 import com.echoist.linkedout.data.dto.NotificationResponse
 import com.echoist.linkedout.data.dto.UserGraphSummaryResponse
 import com.echoist.linkedout.data.dto.UserInfo
-import com.echoist.linkedout.presentation.mobile.myLog.Token
+import com.echoist.linkedout.presentation.myLog.Token
 import retrofit2.Response
 import javax.inject.Inject
 

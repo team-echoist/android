@@ -15,7 +15,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.echoist.linkedout.presentation.viewModels.WritingViewModel
+import com.echoist.linkedout.presentation.essay.WritingViewModel
 import javax.inject.Inject
 
 //gps 위치권한을 받아오는 Class

@@ -2,7 +2,7 @@ package com.echoist.linkedout.data.api
 
 import android.util.Log
 import com.echoist.linkedout.data.repository.TokenRepository
-import com.echoist.linkedout.presentation.mobile.myLog.Token
+import com.echoist.linkedout.presentation.myLog.Token
 import okhttp3.Interceptor
 import okhttp3.Response
 import javax.inject.Inject

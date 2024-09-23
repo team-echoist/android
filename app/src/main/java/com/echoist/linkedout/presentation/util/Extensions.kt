@@ -18,7 +18,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.echoist.linkedout.BuildConfig
-import com.echoist.linkedout.presentation.viewModels.WritingViewModel
+import com.echoist.linkedout.presentation.essay.WritingViewModel
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
