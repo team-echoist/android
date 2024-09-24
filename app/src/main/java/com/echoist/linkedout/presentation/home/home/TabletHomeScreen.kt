@@ -1,4 +1,4 @@
-package com.echoist.linkedout.presentation.home
+package com.echoist.linkedout.presentation.home.home
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background

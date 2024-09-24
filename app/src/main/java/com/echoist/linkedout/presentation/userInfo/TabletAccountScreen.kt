@@ -29,11 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.echoist.linkedout.presentation.home.LogoutBox
-import com.echoist.linkedout.presentation.userInfo.EmailBox
-import com.echoist.linkedout.presentation.userInfo.ModifyBox
-import com.echoist.linkedout.presentation.userInfo.MyPageViewModel
-import com.echoist.linkedout.presentation.userInfo.UserInfoViewModel
+import com.echoist.linkedout.presentation.home.home.LogoutBox
 
 @Composable
 fun TabletAccountRoute(

@@ -50,7 +50,7 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.presentation.util.PROFILE_IMAGE_01
 import com.echoist.linkedout.presentation.userInfo.CommuTopAppBar
 import com.echoist.linkedout.data.dto.UserInfo
-import com.echoist.linkedout.presentation.home.MyBottomNavigation
+import com.echoist.linkedout.presentation.home.home.MyBottomNavigation
 import kotlinx.coroutines.launch
 
 

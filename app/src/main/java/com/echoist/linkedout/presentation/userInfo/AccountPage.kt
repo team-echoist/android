@@ -51,7 +51,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.echoist.linkedout.presentation.util.Routes
 import com.echoist.linkedout.data.dto.UserInfo
-import com.echoist.linkedout.presentation.home.LogoutBox
+import com.echoist.linkedout.presentation.home.home.LogoutBox
 import com.echoist.linkedout.ui.theme.LinkedInColor
 
 @Composable

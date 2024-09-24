@@ -26,7 +26,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.echoist.linkedout.presentation.home.MyBottomNavigation
+import com.echoist.linkedout.presentation.home.home.MyBottomNavigation
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState

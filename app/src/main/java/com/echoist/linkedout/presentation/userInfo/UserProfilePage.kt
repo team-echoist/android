@@ -18,7 +18,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.navigation.NavController
 import com.echoist.linkedout.presentation.community.SearchingPage
-import com.echoist.linkedout.presentation.home.MyBottomNavigation
+import com.echoist.linkedout.presentation.home.home.MyBottomNavigation
 import com.echoist.linkedout.presentation.community.CommunityViewModel
 import kotlinx.coroutines.launch
 

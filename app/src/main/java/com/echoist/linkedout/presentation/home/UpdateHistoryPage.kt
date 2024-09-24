@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.data.dto.Release
+import com.echoist.linkedout.presentation.home.home.HomeViewModel
 import com.echoist.linkedout.presentation.userInfo.SettingTopAppBar
 import com.echoist.linkedout.ui.theme.LinkedInColor
 

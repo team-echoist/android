@@ -1,4 +1,4 @@
-package com.echoist.linkedout.presentation.home
+package com.echoist.linkedout.presentation.home.home
 
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
@@ -88,19 +88,19 @@ import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
+import com.echoist.linkedout.data.api.EssayApi
+import com.echoist.linkedout.data.dto.BottomNavItem
+import com.echoist.linkedout.data.dto.UserInfo
+import com.echoist.linkedout.presentation.essay.WritingViewModel
+import com.echoist.linkedout.presentation.myLog.Token
+import com.echoist.linkedout.presentation.userInfo.UserInfoViewModel
 import com.echoist.linkedout.presentation.util.Routes
 import com.echoist.linkedout.presentation.util.TUTORIAL_BULB
 import com.echoist.linkedout.presentation.util.UserStatus
-import com.echoist.linkedout.data.api.EssayApi
 import com.echoist.linkedout.presentation.util.calculateDaysDifference
-import com.echoist.linkedout.data.dto.BottomNavItem
-import com.echoist.linkedout.data.dto.UserInfo
 import com.echoist.linkedout.presentation.util.getCurrentDateFormatted
 import com.echoist.linkedout.presentation.util.navigateWithClearBackStack
-import com.echoist.linkedout.presentation.myLog.Token
 import com.echoist.linkedout.ui.theme.LinkedInColor
-import com.echoist.linkedout.presentation.userInfo.UserInfoViewModel
-import com.echoist.linkedout.presentation.essay.WritingViewModel
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry

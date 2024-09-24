@@ -20,6 +20,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.presentation.TabletDrawableTopBar
+import com.echoist.linkedout.presentation.home.home.HomeViewModel
 
 @Composable
 fun TabletUpdateHistoryRoute(

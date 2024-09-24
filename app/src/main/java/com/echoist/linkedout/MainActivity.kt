@@ -31,14 +31,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import com.echoist.linkedout.presentation.myLog.ExitAppErrorBox
 import com.echoist.linkedout.navigation.MobileApp
-import com.echoist.linkedout.presentation.home.ReLogInWaringAlert
+import com.echoist.linkedout.presentation.home.home.ReLogInWaringAlert
 import com.echoist.linkedout.presentation.TabletApp
 import com.echoist.linkedout.presentation.util.Routes
 import com.echoist.linkedout.presentation.util.getCurrentRoute
 import com.echoist.linkedout.presentation.util.navigateWithClearBackStack
 import com.echoist.linkedout.presentation.util.startActivityToPlayStore
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
-import com.echoist.linkedout.presentation.home.HomeViewModel
+import com.echoist.linkedout.presentation.home.home.HomeViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.kakao.sdk.common.KakaoSdk

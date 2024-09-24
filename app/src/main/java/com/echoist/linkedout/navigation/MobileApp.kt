@@ -19,7 +19,7 @@ import com.echoist.linkedout.presentation.community.CommunityPage
 import com.echoist.linkedout.presentation.community.CommunitySavedEssayPage
 import com.echoist.linkedout.presentation.community.FullSubscriberPage
 import com.echoist.linkedout.presentation.home.DarkModeSettingPage
-import com.echoist.linkedout.presentation.home.HomePage
+import com.echoist.linkedout.presentation.home.home.HomePage
 import com.echoist.linkedout.presentation.home.InquiryPage
 import com.echoist.linkedout.presentation.home.LinkedOutSupportPage
 import com.echoist.linkedout.presentation.home.NoticeDetailPage

@@ -1,4 +1,4 @@
-package com.echoist.linkedout.presentation.home
+package com.echoist.linkedout.presentation.home.home
 
 import android.annotation.SuppressLint
 import android.app.AlarmManager
@@ -13,21 +13,21 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import com.echoist.linkedout.data.api.apiCall
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.echoist.linkedout.AlarmReceiver
-import com.echoist.linkedout.data.repository.HomeRepository
-import com.echoist.linkedout.data.repository.TokenRepository
 import com.echoist.linkedout.data.api.EssayApi
 import com.echoist.linkedout.data.api.SignUpApiImpl
 import com.echoist.linkedout.data.api.SupportApi
 import com.echoist.linkedout.data.api.UserApi
+import com.echoist.linkedout.data.api.apiCall
 import com.echoist.linkedout.data.dto.ExampleItems
 import com.echoist.linkedout.data.dto.NotificationSettings
 import com.echoist.linkedout.data.dto.Release
 import com.echoist.linkedout.data.dto.UserInfo
+import com.echoist.linkedout.data.repository.HomeRepository
+import com.echoist.linkedout.data.repository.TokenRepository
 import com.echoist.linkedout.presentation.myLog.Token
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel

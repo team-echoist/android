@@ -19,7 +19,7 @@ import com.echoist.linkedout.presentation.userInfo.TabletChangePasswordScreen
 import com.echoist.linkedout.presentation.community.TabletCommunityRoute
 import com.echoist.linkedout.presentation.userInfo.TabletDeleteAccountRoute
 import com.echoist.linkedout.presentation.essay.TabletEssayWriteRoute
-import com.echoist.linkedout.presentation.home.TabletHomeRoute
+import com.echoist.linkedout.presentation.home.home.TabletHomeRoute
 import com.echoist.linkedout.presentation.login.TabletLoginRoute
 import com.echoist.linkedout.presentation.userInfo.TabletMyInfoRoute
 import com.echoist.linkedout.presentation.myLog.TabletMyLogRoute

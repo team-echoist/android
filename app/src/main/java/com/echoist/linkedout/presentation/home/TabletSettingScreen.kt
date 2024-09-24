@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.presentation.TabletDrawableTopBar
+import com.echoist.linkedout.presentation.home.home.HomeViewModel
 
 @Composable
 fun TabletSettingRoute(
