@@ -24,7 +24,7 @@ class AlarmReceiver : BroadcastReceiver() {
         val notification = NotificationCompat.Builder(context, "alarm_channel")
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle("알람입니다.")
-            .setContentText("글 쓸 시간 입니다 ~")
+            .setContentText("글 쓸 시간 입니다 !!")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)

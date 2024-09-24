@@ -12,57 +12,57 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
-import com.echoist.linkedout.Routes
-import com.echoist.linkedout.components.CropImagePage
-import com.echoist.linkedout.page.community.CommunityDetailPage
-import com.echoist.linkedout.page.community.CommunityPage
-import com.echoist.linkedout.page.community.CommunitySavedEssayPage
-import com.echoist.linkedout.page.community.FullSubscriberPage
-import com.echoist.linkedout.page.home.DarkModeSettingPage
-import com.echoist.linkedout.page.home.HomePage
-import com.echoist.linkedout.page.home.InquiryPage
-import com.echoist.linkedout.page.home.LinkedOutSupportPage
-import com.echoist.linkedout.page.home.NoticeDetailPage
-import com.echoist.linkedout.page.home.NoticePage
-import com.echoist.linkedout.page.home.NotificationPage
-import com.echoist.linkedout.page.home.NotificationSettingPage
-import com.echoist.linkedout.page.home.SupportPage
-import com.echoist.linkedout.page.home.UpdateHistoryPage
-import com.echoist.linkedout.page.home.legal_Notice.FontCopyRight
-import com.echoist.linkedout.page.home.legal_Notice.LocationPolicyPage
-import com.echoist.linkedout.page.home.legal_Notice.PrivacyPolicyPage
-import com.echoist.linkedout.page.home.legal_Notice.TermsAndConditionsPage
-import com.echoist.linkedout.page.login.AgreeOfProvisionsPage
-import com.echoist.linkedout.page.login.LoginPage
-import com.echoist.linkedout.page.login.OnBoardingPage
-import com.echoist.linkedout.page.login.SignUpCompletePage
-import com.echoist.linkedout.page.login.SignUpPage
-import com.echoist.linkedout.page.myLog.CompletedEssayPage
-import com.echoist.linkedout.page.myLog.DetailEssayInStoryPage
-import com.echoist.linkedout.page.myLog.MyLogDetailPage
-import com.echoist.linkedout.page.myLog.MyLogPage
-import com.echoist.linkedout.page.myLog.StoryDetailPage
-import com.echoist.linkedout.page.myLog.StoryPage
-import com.echoist.linkedout.page.myLog.TemporaryStoragePage
-import com.echoist.linkedout.page.myLog.Token
-import com.echoist.linkedout.page.myLog.WritingCompletePage
-import com.echoist.linkedout.page.myLog.WritingPage
-import com.echoist.linkedout.page.settings.AccountPage
-import com.echoist.linkedout.page.settings.AccountWithdrawalPage
-import com.echoist.linkedout.page.settings.BadgePage
-import com.echoist.linkedout.page.settings.ChangeEmailPage
-import com.echoist.linkedout.page.settings.ChangePwPage
-import com.echoist.linkedout.page.settings.MyPage
-import com.echoist.linkedout.page.settings.ProfilePage
-import com.echoist.linkedout.page.settings.RecentEssayDetailPage
-import com.echoist.linkedout.page.settings.RecentViewedEssayPage
-import com.echoist.linkedout.page.settings.ResetPwPage
-import com.echoist.linkedout.page.settings.ResetPwPageWithEmail
-import com.echoist.linkedout.viewModels.CommunityViewModel
-import com.echoist.linkedout.viewModels.MyLogViewModel
-import com.echoist.linkedout.viewModels.SignUpViewModel
-import com.echoist.linkedout.viewModels.SupportViewModel
-import com.echoist.linkedout.viewModels.WritingViewModel
+import com.echoist.linkedout.presentation.community.CommunityPage
+import com.echoist.linkedout.presentation.community.CommunityViewModel
+import com.echoist.linkedout.presentation.community.FullSubscriberPage
+import com.echoist.linkedout.presentation.community.bookmark.CommunitySavedEssayPage
+import com.echoist.linkedout.presentation.essay.detail.CommunityDetailPage
+import com.echoist.linkedout.presentation.essay.write.CropImagePage
+import com.echoist.linkedout.presentation.essay.write.Token
+import com.echoist.linkedout.presentation.essay.write.WritingCompletePage
+import com.echoist.linkedout.presentation.essay.write.WritingPage
+import com.echoist.linkedout.presentation.essay.write.WritingViewModel
+import com.echoist.linkedout.presentation.home.HomePage
+import com.echoist.linkedout.presentation.home.drawable.setting.NotificationSettingScreen
+import com.echoist.linkedout.presentation.home.drawable.support.SupportScreen
+import com.echoist.linkedout.presentation.home.drawable.support.SupportViewModel
+import com.echoist.linkedout.presentation.home.drawable.support.inquiry.InquiryScreen
+import com.echoist.linkedout.presentation.home.drawable.support.legal_Notice.FontCopyRight
+import com.echoist.linkedout.presentation.home.drawable.support.legal_Notice.LocationPolicyPage
+import com.echoist.linkedout.presentation.home.drawable.support.legal_Notice.PrivacyPolicyPage
+import com.echoist.linkedout.presentation.home.drawable.support.legal_Notice.TermsAndConditionsPage
+import com.echoist.linkedout.presentation.home.drawable.support.linkedoutsupport.LinkedOutSupportScreen
+import com.echoist.linkedout.presentation.home.drawable.support.notice.NoticeDetailPage
+import com.echoist.linkedout.presentation.home.drawable.support.notice.NoticeScreen
+import com.echoist.linkedout.presentation.home.drawable.thememode.ThemeModeScreen
+import com.echoist.linkedout.presentation.home.drawable.updatehistory.UpdateHistoryScreen
+import com.echoist.linkedout.presentation.home.notification.NotificationPage
+import com.echoist.linkedout.presentation.login.LoginPage
+import com.echoist.linkedout.presentation.login.agreeofprovisions.AgreeOfProvisionsPage
+import com.echoist.linkedout.presentation.login.onboarding.OnBoardingPage
+import com.echoist.linkedout.presentation.login.signup.SignUpCompletePage
+import com.echoist.linkedout.presentation.login.signup.SignUpPage
+import com.echoist.linkedout.presentation.login.signup.SignUpViewModel
+import com.echoist.linkedout.presentation.myLog.TemporaryStoragePage
+import com.echoist.linkedout.presentation.myLog.mylog.CompletedEssayPage
+import com.echoist.linkedout.presentation.myLog.mylog.MyLogDetailPage
+import com.echoist.linkedout.presentation.myLog.mylog.MyLogPage
+import com.echoist.linkedout.presentation.myLog.mylog.MyLogViewModel
+import com.echoist.linkedout.presentation.myLog.story.DetailEssayInStoryScreen
+import com.echoist.linkedout.presentation.myLog.story.StoryDetailPage
+import com.echoist.linkedout.presentation.myLog.story.StoryPage
+import com.echoist.linkedout.presentation.userInfo.MyPage
+import com.echoist.linkedout.presentation.userInfo.account.AccountPage
+import com.echoist.linkedout.presentation.userInfo.account.changeemail.ChangeEmailPage
+import com.echoist.linkedout.presentation.userInfo.account.changepassword.ChangePwPage
+import com.echoist.linkedout.presentation.userInfo.account.changepassword.ResetPwPage
+import com.echoist.linkedout.presentation.userInfo.account.changepassword.ResetPwPageWithEmail
+import com.echoist.linkedout.presentation.userInfo.account.deleteaccount.AccountWithdrawalPage
+import com.echoist.linkedout.presentation.userInfo.badge.BadgePage
+import com.echoist.linkedout.presentation.userInfo.recentviewedessay.RecentEssayDetailPage
+import com.echoist.linkedout.presentation.userInfo.recentviewedessay.RecentViewedEssayPage
+import com.echoist.linkedout.presentation.userInfo.subscriber.ProfilePage
+import com.echoist.linkedout.presentation.util.Routes
 
 @Composable
 fun MobileApp(
@@ -102,28 +102,28 @@ fun MobileApp(
         ) { backStackEntry ->
             val statusCode =
                 backStackEntry.arguments?.getInt("statusCode") ?: 200
-            HomePage(navController,writingViewModel= writingViewModel, statusCode = statusCode)
+            HomePage(navController, writingViewModel = writingViewModel, statusCode = statusCode)
         }
-        composable(Routes.DarkModeSettingPage) {
-            DarkModeSettingPage(navController)
+        composable(Routes.ThemeModeScreen) {
+            ThemeModeScreen(navController)
         }
         composable(Routes.NotificationPage) {
             NotificationPage(navController)
         }
-        composable(Routes.NotificationSettingPage) {
-            NotificationSettingPage(navController)
+        composable(Routes.NotificationSettingScreen) {
+            NotificationSettingScreen(navController)
         }
-        composable(Routes.SupportPage) {
-            SupportPage(navController)
+        composable(Routes.SupportScreen) {
+            SupportScreen(navController)
         }
-        composable(Routes.LinkedOutSupportPage) {
-            LinkedOutSupportPage(navController)
+        composable(Routes.LinkedOutSupportScreen) {
+            LinkedOutSupportScreen(navController)
         }
-        composable(Routes.InquiryPage) {
-            InquiryPage(navController)
+        composable(Routes.InquiryScreen) {
+            InquiryScreen(navController)
         }
-        composable(Routes.NoticePage) {
-            NoticePage(navController, supportViewModel)
+        composable(Routes.NoticeScreen) {
+            NoticeScreen(navController, supportViewModel)
         }
         composable(
             route = "${Routes.NoticeDetailPage}/{noticeId}",
@@ -134,8 +134,8 @@ fun MobileApp(
             val noticeId = backStackEntry.arguments?.getInt("noticeId")
             NoticeDetailPage(navController, noticeId!!)
         }
-        composable(Routes.UpdateHistoryPage) {
-            UpdateHistoryPage(navController)
+        composable(Routes.UpdateHistoryScreen) {
+            UpdateHistoryScreen(navController)
         }
         composable(
             route = "${Routes.MyLog}/{page}",
@@ -166,7 +166,7 @@ fun MobileApp(
             StoryDetailPage(myLogViewModel, navController)
         }
         composable(Routes.DetailEssayInStoryPage) {
-            DetailEssayInStoryPage(
+            DetailEssayInStoryScreen(
                 navController,
                 myLogViewModel,
                 writingViewModel

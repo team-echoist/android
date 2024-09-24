@@ -3,8 +3,8 @@ package com.echoist.linkedout
 import android.content.ContentValues.TAG
 import android.provider.Settings
 import android.util.Log
-import com.echoist.linkedout.api.SignUpApiImpl
-import com.echoist.linkedout.page.myLog.Token
+import com.echoist.linkedout.data.api.SignUpApiImpl
+import com.echoist.linkedout.presentation.essay.write.Token
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import kotlinx.coroutines.CoroutineScope
