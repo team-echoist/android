@@ -91,7 +91,7 @@ import com.echoist.linkedout.data.dto.EssayStats
 import com.echoist.linkedout.data.dto.UserInfo
 import com.echoist.linkedout.presentation.community.CommunityViewModel
 import com.echoist.linkedout.presentation.userInfo.recentviewedessay.RecentEssayViewModel
-import com.echoist.linkedout.presentation.home.home.MyBottomNavigation
+import com.echoist.linkedout.presentation.home.MyBottomNavigation
 import com.echoist.linkedout.presentation.util.PRIVATE_POPUP_URL
 import com.echoist.linkedout.presentation.util.PROFILE_IMAGE_01
 import com.echoist.linkedout.presentation.util.PROFILE_IMAGE_02

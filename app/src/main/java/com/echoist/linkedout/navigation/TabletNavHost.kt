@@ -12,13 +12,13 @@ import androidx.navigation.navArgument
 import com.echoist.linkedout.presentation.community.TabletCommunityRoute
 import com.echoist.linkedout.presentation.community.search.TabletSearchScreen
 import com.echoist.linkedout.presentation.essay.write.TabletEssayWriteRoute
-import com.echoist.linkedout.presentation.home.home.TabletHomeRoute
+import com.echoist.linkedout.presentation.home.TabletHomeRoute
 import com.echoist.linkedout.presentation.login.agreeofprovisions.AgreeOfProvisionsPage
 import com.echoist.linkedout.presentation.login.TabletLoginRoute
 import com.echoist.linkedout.presentation.login.onboarding.TabletOnBoardingRoute
 import com.echoist.linkedout.presentation.login.signup.TabletSignUpCompleteRoute
 import com.echoist.linkedout.presentation.login.signup.TabletSignUpRoute
-import com.echoist.linkedout.presentation.myLog.TabletMyLogRoute
+import com.echoist.linkedout.presentation.myLog.mylog.TabletMyLogRoute
 import com.echoist.linkedout.presentation.userInfo.TabletMyInfoRoute
 import com.echoist.linkedout.presentation.userInfo.account.TabletAccountRoute
 import com.echoist.linkedout.presentation.userInfo.account.changeemail.TabletChangeEmailScreen

@@ -49,7 +49,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.data.dto.UserInfo
 import com.echoist.linkedout.presentation.community.search.SearchingViewModel
-import com.echoist.linkedout.presentation.home.home.MyBottomNavigation
+import com.echoist.linkedout.presentation.home.MyBottomNavigation
 import com.echoist.linkedout.presentation.userInfo.subscriber.CommuTopAppBar
 import com.echoist.linkedout.presentation.util.PROFILE_IMAGE_01
 import kotlinx.coroutines.launch

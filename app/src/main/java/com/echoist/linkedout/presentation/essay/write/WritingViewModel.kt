@@ -18,7 +18,6 @@ import androidx.navigation.NavController
 import com.echoist.linkedout.data.api.EssayApi
 import com.echoist.linkedout.data.dto.ExampleItems
 import com.echoist.linkedout.data.room.EssayStoreDao
-import com.echoist.linkedout.presentation.myLog.Token
 import com.mohamedrejeb.richeditor.model.RichTextState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

@@ -11,7 +11,7 @@ import com.echoist.linkedout.data.api.SignUpApi
 import com.echoist.linkedout.data.api.UserApi
 import com.echoist.linkedout.data.dto.ExampleItems
 import com.echoist.linkedout.data.dto.UserInfo
-import com.echoist.linkedout.presentation.myLog.Token
+import com.echoist.linkedout.presentation.essay.write.Token
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

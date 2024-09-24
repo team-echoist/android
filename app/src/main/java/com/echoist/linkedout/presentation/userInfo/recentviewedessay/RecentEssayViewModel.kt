@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.echoist.linkedout.data.api.EssayApi
 import com.echoist.linkedout.data.dto.ExampleItems
-import com.echoist.linkedout.presentation.myLog.Token
+import com.echoist.linkedout.presentation.essay.write.Token
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

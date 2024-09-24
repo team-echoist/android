@@ -17,7 +17,7 @@ import com.echoist.linkedout.data.dto.ExampleItems
 import com.echoist.linkedout.data.dto.NotificationSettings
 import com.echoist.linkedout.data.dto.RegisterCode
 import com.echoist.linkedout.data.dto.UserInfo
-import com.echoist.linkedout.presentation.myLog.Token
+import com.echoist.linkedout.presentation.essay.write.Token
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

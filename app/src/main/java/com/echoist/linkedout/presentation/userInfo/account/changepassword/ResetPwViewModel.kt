@@ -7,7 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.echoist.linkedout.data.api.SignUpApi
-import com.echoist.linkedout.presentation.myLog.Token
+import com.echoist.linkedout.presentation.essay.write.Token
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

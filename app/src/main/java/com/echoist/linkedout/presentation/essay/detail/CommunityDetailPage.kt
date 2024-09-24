@@ -81,7 +81,7 @@ import com.echoist.linkedout.data.dto.UserInfo
 import com.echoist.linkedout.presentation.community.CommunityViewModel
 import com.echoist.linkedout.presentation.community.EssayListItem
 import com.echoist.linkedout.presentation.community.SubscriberSimpleItem
-import com.echoist.linkedout.presentation.myLog.OptionItem
+import com.echoist.linkedout.presentation.myLog.mylog.OptionItem
 import com.echoist.linkedout.presentation.util.Routes
 import com.echoist.linkedout.presentation.util.TYPE_RECOMMEND
 import com.echoist.linkedout.presentation.util.formatDateTime

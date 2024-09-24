@@ -18,7 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.echoist.linkedout.presentation.TabletDrawableTopBar
-import com.echoist.linkedout.presentation.home.home.HomeViewModel
+import com.echoist.linkedout.presentation.home.HomeViewModel
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 

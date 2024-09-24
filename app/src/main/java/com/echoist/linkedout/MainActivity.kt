@@ -31,9 +31,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import com.echoist.linkedout.navigation.MobileApp
 import com.echoist.linkedout.presentation.TabletApp
-import com.echoist.linkedout.presentation.home.home.HomeViewModel
-import com.echoist.linkedout.presentation.home.home.ReLogInWaringAlert
-import com.echoist.linkedout.presentation.myLog.ExitAppErrorBox
+import com.echoist.linkedout.presentation.home.HomeViewModel
+import com.echoist.linkedout.presentation.home.ReLogInWaringAlert
+import com.echoist.linkedout.presentation.myLog.mylog.ExitAppErrorBox
 import com.echoist.linkedout.presentation.util.Routes
 import com.echoist.linkedout.presentation.util.getCurrentRoute
 import com.echoist.linkedout.presentation.util.navigateWithClearBackStack

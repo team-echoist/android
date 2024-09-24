@@ -23,7 +23,7 @@ import com.echoist.linkedout.data.dto.ExampleItems
 import com.echoist.linkedout.data.dto.TokensResponse
 import com.echoist.linkedout.data.repository.TokenRepository
 import com.echoist.linkedout.data.repository.UserDataRepository
-import com.echoist.linkedout.presentation.myLog.Token
+import com.echoist.linkedout.presentation.essay.write.Token
 import com.echoist.linkedout.presentation.util.calculateDateAfter30Days
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions

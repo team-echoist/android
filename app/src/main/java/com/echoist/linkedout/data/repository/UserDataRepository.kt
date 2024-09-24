@@ -2,7 +2,7 @@ package com.echoist.linkedout.data.repository
 
 import android.content.SharedPreferences
 import com.echoist.linkedout.data.dto.Tokens
-import com.echoist.linkedout.presentation.home.drawable.notificationsetting.TimeSelectionIndex
+import com.echoist.linkedout.presentation.home.drawable.setting.TimeSelectionIndex
 import com.echoist.linkedout.presentation.util.DISPLAY_INFO
 import com.echoist.linkedout.presentation.util.KEY_HOUR_INDEX
 import com.echoist.linkedout.presentation.util.KEY_MINUTE_INDEX

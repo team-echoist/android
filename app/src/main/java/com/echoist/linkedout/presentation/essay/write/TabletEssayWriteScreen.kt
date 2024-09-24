@@ -49,12 +49,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.echoist.linkedout.presentation.myLog.ContentTextField
-import com.echoist.linkedout.presentation.myLog.KeyboardLocationFunc
-import com.echoist.linkedout.presentation.myLog.TextEditBar
-import com.echoist.linkedout.presentation.myLog.TextSettingsBar
-import com.echoist.linkedout.presentation.myLog.WritingCancelCard
-import com.echoist.linkedout.presentation.myLog.WritingTopAppBar
 import com.echoist.linkedout.presentation.util.Keyboard
 import com.echoist.linkedout.presentation.util.keyboardAsState
 import com.echoist.linkedout.ui.theme.LinkedOutTheme

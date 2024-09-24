@@ -17,7 +17,7 @@ import com.echoist.linkedout.data.dto.ExampleItems
 import com.echoist.linkedout.data.dto.Inquiry
 import com.echoist.linkedout.data.dto.Notice
 import com.echoist.linkedout.data.dto.UserInfo
-import com.echoist.linkedout.presentation.myLog.Token
+import com.echoist.linkedout.presentation.essay.write.Token
 import com.echoist.linkedout.presentation.util.TYPE_RECOMMEND
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
