@@ -240,7 +240,7 @@ fun SettingTopAppBar(text: String, navController: NavController) {
                 contentDescription = "arrow back",
                 modifier = Modifier
                     .clickable {
-                        if (previousRoute == Routes.InquiryPage) {
+                        if (previousRoute == Routes.InquiryScreen) {
                             navController.navigate("${Routes.Home}/200") {
                                 // 기존의 모든 백스택을 제거하고 Home을 루트로 설정
                                 popUpTo(navController.graph.startDestinationId) {

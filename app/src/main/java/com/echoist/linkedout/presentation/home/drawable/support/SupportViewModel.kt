@@ -1,4 +1,4 @@
-package com.echoist.linkedout.presentation.home
+package com.echoist.linkedout.presentation.home.drawable.support
 
 import android.content.ContentValues.TAG
 import android.util.Log
@@ -10,7 +10,6 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.echoist.linkedout.presentation.util.TYPE_RECOMMEND
 import com.echoist.linkedout.data.api.EssayApi
 import com.echoist.linkedout.data.api.SupportApi
 import com.echoist.linkedout.data.dto.Alert
@@ -19,6 +18,7 @@ import com.echoist.linkedout.data.dto.Inquiry
 import com.echoist.linkedout.data.dto.Notice
 import com.echoist.linkedout.data.dto.UserInfo
 import com.echoist.linkedout.presentation.myLog.Token
+import com.echoist.linkedout.presentation.util.TYPE_RECOMMEND
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

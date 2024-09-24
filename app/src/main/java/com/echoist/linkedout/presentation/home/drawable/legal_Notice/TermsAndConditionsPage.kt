@@ -1,4 +1,4 @@
-package com.echoist.linkedout.presentation.home.legal_Notice
+package com.echoist.linkedout.presentation.home.drawable.legal_Notice
 
 import android.annotation.SuppressLint
 import android.webkit.WebView

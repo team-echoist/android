@@ -3,10 +3,10 @@ package com.echoist.linkedout.presentation.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.echoist.linkedout.data.repository.UserDataRepository
+import com.echoist.linkedout.presentation.home.drawable.notificationsetting.TimeSelectionIndex
 import com.echoist.linkedout.presentation.util.getHourString
 import com.echoist.linkedout.presentation.util.getMinuteString
 import com.echoist.linkedout.presentation.util.getPeriodString
-import com.echoist.linkedout.presentation.home.TimeSelectionIndex
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

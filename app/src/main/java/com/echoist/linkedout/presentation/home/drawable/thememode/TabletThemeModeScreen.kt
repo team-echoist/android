@@ -1,4 +1,4 @@
-package com.echoist.linkedout.presentation.home
+package com.echoist.linkedout.presentation.home.drawable.thememode
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

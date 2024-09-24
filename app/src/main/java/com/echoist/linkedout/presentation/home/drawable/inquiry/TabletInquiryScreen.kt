@@ -1,4 +1,4 @@
-package com.echoist.linkedout.presentation.home
+package com.echoist.linkedout.presentation.home.drawable.inquiry
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column

@@ -1,4 +1,4 @@
-package com.echoist.linkedout.presentation.home
+package com.echoist.linkedout.presentation.home.drawable.thememode
 
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -36,7 +36,7 @@ import com.echoist.linkedout.ui.theme.LinkedInColor
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun DarkModeSettingPage(navController: NavController) {
+fun ThemeModeScreen(navController: NavController) {
 
     val context = LocalContext.current
     // Destructuring Declaration을 통해 두 값을 나누어 사용 selectedMode를 설정하는 함수로 사용가능

@@ -1,4 +1,4 @@
-package com.echoist.linkedout.presentation.home
+package com.echoist.linkedout.presentation.home.drawable.updatehistory
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -34,7 +34,7 @@ fun groupHistoriesByDate(histories: List<Release>): Map<String, List<Release>> {
 }
 
 @Composable
-fun UpdateHistoryPage(navController: NavController, viewModel: HomeViewModel = hiltViewModel()) {
+fun UpdateHistoryScreen(navController: NavController, viewModel: HomeViewModel = hiltViewModel()) {
     viewModel.requestUpdatedHistory()
 
 

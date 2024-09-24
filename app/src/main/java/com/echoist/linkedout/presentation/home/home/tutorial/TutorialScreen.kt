@@ -1,6 +1,4 @@
-@file:OptIn(ExperimentalGlideComposeApi::class)
-
-package com.echoist.linkedout.presentation.home
+package com.echoist.linkedout.presentation.home.home.tutorial
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -10,19 +8,22 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,29 +38,29 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
-import com.echoist.linkedout.presentation.home.home.TutorialActionBtn
 import com.echoist.linkedout.presentation.util.TUTORIAL_BULB
 import kotlinx.coroutines.launch
 
 @Composable
-fun TabletTutorialScreen() {
+fun TutorialScreen(isCloseClicked: () -> Unit, isSkipClicked: () -> Unit) {
     val pagerstate = rememberPagerState { 4 }
     val coroutineScope = rememberCoroutineScope()
 
     HorizontalPager(state = pagerstate, modifier = Modifier.fillMaxSize()) { page ->
         when (page) {
-            0 -> Tutorial1Screen()
-
+            0 -> Tutorial_1()
             1 ->
-                Tutorial2Screen(draggedToLeft = {
+                Tutorial_2(draggedToLeft = {
                     coroutineScope.launch {
                         pagerstate.animateScrollToPage(
                             0,
@@ -79,11 +80,12 @@ fun TabletTutorialScreen() {
                                 easing = FastOutSlowInEasing
                             )
                         )
+
                     }
                 })
 
             2 ->
-                Tutorial3Screen(draggedToLeft = {
+                Tutorial_3(draggedToLeft = {
                     coroutineScope.launch {
                         pagerstate.animateScrollToPage(
                             1,
@@ -95,8 +97,10 @@ fun TabletTutorialScreen() {
 
                     }
                 })
+
             3 ->
-                Tutorial4Screen {
+                Tutorial_4 {
+                    isCloseClicked()
                 }
         }
     }
@@ -109,7 +113,7 @@ fun TabletTutorialScreen() {
         ) {
             Text(
                 text = "건너뛰기 >>",
-                modifier = Modifier.clickable { },
+                modifier = Modifier.clickable { isSkipClicked() },
                 style = TextStyle(
                     fontSize = 14.sp,
                     lineHeight = 21.sp,
@@ -149,6 +153,7 @@ fun TabletTutorialScreen() {
                                 .size(20.dp, 10.dp)
 
                         )
+
                     } else {
                         Box(
                             modifier = Modifier
@@ -156,16 +161,20 @@ fun TabletTutorialScreen() {
                                 .clip(CircleShape)
                                 .background(color)
                                 .size(10.dp, 10.dp)
+
                         )
                     }
+
                 }
             }
         }
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
+@Preview
 @Composable
-fun Tutorial1Screen() {
+fun Tutorial_1() {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -178,46 +187,52 @@ fun Tutorial1Screen() {
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun Tutorial2Screen(isTutorial3Clicked: () -> Unit, draggedToLeft: () -> Unit) {
+fun Tutorial_2(isTutorial3Clicked: () -> Unit, draggedToLeft: () -> Unit) {
     var isClicked by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
     Box {
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .pointerInput(Unit) {
-                detectHorizontalDragGestures { _, dragAmount ->
-                    coroutineScope.launch {
-                        if (dragAmount > 0) {
-                            draggedToLeft()
-                        } else {
-                            isClicked = true
-                        }
-                    }
-                }
-            }) {
-            GlideImage(
-                model = TUTORIAL_BULB,
-                contentDescription = "bulb_img",
-                modifier = Modifier
-                    .padding(start = 300.dp, bottom = 230.dp)
-                    .size(100.dp)
-                    .align(Alignment.Center)
-                    .clickable { isClicked = true }
-            )
+        Box(modifier = Modifier.fillMaxSize()) {
             GlideImage(
                 model = R.drawable.tutorial_2,
                 contentDescription = "home_img",
                 modifier = Modifier
-                    .size(550.dp, 900.dp)
-                    .align(Alignment.Center)
-                    .padding(start = 100.dp, bottom = 100.dp)
+                    .fillMaxSize()
+                    .pointerInput(Unit) {
+                        detectHorizontalDragGestures { _, dragAmount ->
+                            // 감지된 드래그 방향과 양에 따라 동작 수행
+                            coroutineScope.launch {
+                                if (dragAmount > 0) {
+                                    // 오른쪽으로 스와이프
+                                    draggedToLeft()
+
+                                } else {
+                                    // 왼쪽으로 스와이프
+                                    isClicked = true
+                                }
+                            }
+                        }
+                    }
                     .clickable { isClicked = true },
-                contentScale = ContentScale.FillBounds
+                contentScale = ContentScale.FillWidth
             )
         }
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 165.dp, bottom = 130.dp), contentAlignment = Alignment.Center
+        ) {
+            GlideImage(
+                model = TUTORIAL_BULB,
+                contentDescription = "bulb_img",
+                modifier = Modifier
+                    .size(80.dp)
+                    .clickable { isClicked = true }
+            )
 
+        }
         AnimatedVisibility(
             visible = isClicked,
             enter = slideInVertically(
@@ -235,6 +250,7 @@ fun Tutorial2Screen(isTutorial3Clicked: () -> Unit, draggedToLeft: () -> Unit) {
                     contentDescription = "home_img",
                     modifier = Modifier
                         .size(281.dp, 411.dp)
+
                         .clickable {
                             isClicked = true
                             isTutorial3Clicked()
@@ -242,11 +258,15 @@ fun Tutorial2Screen(isTutorial3Clicked: () -> Unit, draggedToLeft: () -> Unit) {
                 )
             }
         }
+
+
     }
+
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun Tutorial3Screen(draggedToLeft: () -> Unit) {
+fun Tutorial_3(draggedToLeft: () -> Unit) {
     var isClicked by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
@@ -254,7 +274,6 @@ fun Tutorial3Screen(draggedToLeft: () -> Unit) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 56.dp)
                 .pointerInput(Unit) {
                     detectHorizontalDragGestures { _, dragAmount ->
                         // 감지된 드래그 방향과 양에 따라 동작 수행
@@ -268,7 +287,8 @@ fun Tutorial3Screen(draggedToLeft: () -> Unit) {
                             }
                         }
                     }
-                },
+                }
+                .padding(bottom = 112.dp, end = 15.dp),
             contentAlignment = Alignment.BottomEnd
         ) {
             TutorialActionBtn { isClicked = true }
@@ -286,37 +306,30 @@ fun Tutorial3Screen(draggedToLeft: () -> Unit) {
             animationSpec = tween(durationMillis = 500)
         )
     ) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(0.4f)
-                    .padding(bottom = 56.dp)
-            ) {
-                GlideImage(
-                    model = R.drawable.tutorial_4,
-                    contentDescription = "home_img",
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.FillBounds
-                )
-            }
+
+        Box(modifier = Modifier.fillMaxSize()) {
+            GlideImage(
+                model = R.drawable.tutorial_4,
+                contentDescription = "home_img",
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.FillWidth
+            )
         }
+
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun Tutorial4Screen(isCloseClicked: () -> Unit) {
-    Box(
-        Modifier
-            .fillMaxSize()
-            .padding(bottom = 56.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Box(modifier = Modifier.fillMaxWidth(0.4f)) {
+fun Tutorial_4(isCloseClicked: () -> Unit) {
+
+    Box {
+        Box(modifier = Modifier.fillMaxSize()) {
             GlideImage(
                 model = R.drawable.tutorial_5,
                 contentDescription = "home_img",
                 modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.FillBounds
+                contentScale = ContentScale.FillWidth
             )
         }
         Box(
@@ -333,6 +346,33 @@ fun Tutorial4Screen(isCloseClicked: () -> Unit) {
                 modifier = Modifier
                     .size(30.dp)
                     .clickable { isCloseClicked() }
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun TutorialActionBtn(modifier: Modifier = Modifier, isFTBClicked: () -> Unit) {
+    Box(modifier) {
+        FloatingActionButton(
+            modifier = Modifier.padding(end = 25.dp, bottom = 25.dp),
+            onClick = { isFTBClicked() },
+            shape = RoundedCornerShape(100.dp),
+            containerColor = if (isSystemInDarkTheme()) Color.White else Color.Gray
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ftb_edit),
+                contentDescription = "edit",
+                modifier = Modifier.size(20.dp),
+                tint = Color.Black
+            )
+        }
+        Box(Modifier.offset(x = (-10).dp, y = (-10).dp)) {
+            GlideImage(
+                model = R.drawable.tutorial_circle,
+                contentDescription = "circle",
+                modifier = Modifier.size(75.dp)
             )
         }
     }

@@ -1,4 +1,4 @@
-package com.echoist.linkedout.presentation.home
+package com.echoist.linkedout.presentation.home.drawable.inquiry
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -58,13 +58,15 @@ import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
-import com.echoist.linkedout.presentation.util.Routes
+import com.echoist.linkedout.presentation.home.drawable.support.SupportViewModel
 import com.echoist.linkedout.presentation.userInfo.CustomOutlinedTextField
 import com.echoist.linkedout.presentation.userInfo.SettingTopAppBar
+import com.echoist.linkedout.presentation.util.Routes
 import com.echoist.linkedout.ui.theme.LinkedInColor
 
+//1:1 문의하기
 @Composable
-fun InquiryPage(
+fun InquiryScreen(
     navController: NavController,
     viewModel: SupportViewModel = hiltViewModel()
 ) {
@@ -90,7 +92,7 @@ fun InquiryPage(
 
     LaunchedEffect(key1 = navigateToLinkedOutSupport) {
         if (navigateToLinkedOutSupport) {
-            navController.navigate(Routes.LinkedOutSupportPage)
+            navController.navigate(Routes.LinkedOutSupportScreen)
             viewModel.onNavigated()
         }
     }

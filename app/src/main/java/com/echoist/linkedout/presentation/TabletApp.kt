@@ -39,26 +39,26 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.echoist.linkedout.R
-import com.echoist.linkedout.presentation.util.Routes
 import com.echoist.linkedout.data.api.EssayApi
 import com.echoist.linkedout.navigation.TabletNavHost
+import com.echoist.linkedout.presentation.home.TabletNotificationScreen
+import com.echoist.linkedout.presentation.home.drawable.inquiry.TabletInquiryScreen
+import com.echoist.linkedout.presentation.home.drawable.linkedoutsupport.TabletLinkedOutSupportRoute
+import com.echoist.linkedout.presentation.home.drawable.notificationsetting.TabletSettingRoute
+import com.echoist.linkedout.presentation.home.drawable.support.TabletSupportRoute
+import com.echoist.linkedout.presentation.home.drawable.thememode.TabletThemeModeScreen
+import com.echoist.linkedout.presentation.home.drawable.updatehistory.TabletUpdateHistoryRoute
+import com.echoist.linkedout.presentation.home.home.HomeViewModel
 import com.echoist.linkedout.presentation.home.home.LineChartExample
 import com.echoist.linkedout.presentation.home.home.LogoutBtn
 import com.echoist.linkedout.presentation.home.home.MyBottomNavigation
 import com.echoist.linkedout.presentation.home.home.MyLinkedOutBar
 import com.echoist.linkedout.presentation.home.home.MyProfile
 import com.echoist.linkedout.presentation.home.home.ShopDrawerItem
-import com.echoist.linkedout.presentation.home.home.HomeViewModel
 import com.echoist.linkedout.presentation.home.home.TabletDrawableItems
-import com.echoist.linkedout.presentation.home.TabletInquiryScreen
-import com.echoist.linkedout.presentation.home.TabletLinkedOutSupportRoute
-import com.echoist.linkedout.presentation.home.TabletNotificationScreen
-import com.echoist.linkedout.presentation.home.TabletSettingRoute
-import com.echoist.linkedout.presentation.home.TabletSupportRoute
-import com.echoist.linkedout.presentation.home.TabletThemeModeScreen
-import com.echoist.linkedout.presentation.home.TabletTutorialScreen
-import com.echoist.linkedout.presentation.home.TabletUpdateHistoryRoute
+import com.echoist.linkedout.presentation.home.home.tutorial.TabletTutorialScreen
 import com.echoist.linkedout.presentation.myLog.MyLogViewModel
+import com.echoist.linkedout.presentation.util.Routes
 import kotlinx.coroutines.launch
 
 @Composable

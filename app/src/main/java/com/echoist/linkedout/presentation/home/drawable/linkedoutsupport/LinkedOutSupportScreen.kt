@@ -1,4 +1,4 @@
-package com.echoist.linkedout.presentation.home
+package com.echoist.linkedout.presentation.home.drawable.linkedoutsupport
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -44,13 +44,15 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.data.dto.Inquiry
-import com.echoist.linkedout.presentation.util.formatDateTime
+import com.echoist.linkedout.presentation.home.drawable.support.SupportViewModel
 import com.echoist.linkedout.presentation.userInfo.SettingTopAppBar
+import com.echoist.linkedout.presentation.util.Routes
+import com.echoist.linkedout.presentation.util.formatDateTime
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import kotlinx.coroutines.launch
 
 @Composable
-fun LinkedOutSupportPage(
+fun LinkedOutSupportScreen(
     navController: NavController,
     viewModel: SupportViewModel = hiltViewModel()
 ) {
@@ -115,7 +117,7 @@ fun LinkedOutSupportPage(
                     .padding(horizontal = 20.dp, vertical = 20.dp)
                     .fillMaxWidth()
                     .height(61.dp),
-                onClick = { navController.navigate("InquiryPage") }
+                onClick = { navController.navigate(Routes.InquiryScreen) }
             ) {
                 Text(text = "1:1 문의하기", color = Color.Black, fontWeight = FontWeight.Bold)
             }

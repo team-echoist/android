@@ -1,4 +1,4 @@
-package com.echoist.linkedout.presentation.home
+package com.echoist.linkedout.presentation.home.drawable.notice
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,12 +36,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.presentation.util.Routes
 import com.echoist.linkedout.data.dto.Notice
+import com.echoist.linkedout.presentation.home.drawable.support.SupportViewModel
 import com.echoist.linkedout.presentation.util.formatDateTime
 import com.echoist.linkedout.presentation.userInfo.SettingTopAppBar
 import com.echoist.linkedout.presentation.util.parseAndFormatDateTime
 
 @Composable
-fun NoticePage(
+fun NoticeScreen(
     navController: NavController,
     viewModel: SupportViewModel
 ) {

@@ -1,4 +1,4 @@
-package com.echoist.linkedout.presentation.home
+package com.echoist.linkedout.presentation.home.drawable.support
 
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
@@ -31,20 +31,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.echoist.linkedout.R
-import com.echoist.linkedout.presentation.util.Routes
 import com.echoist.linkedout.presentation.userInfo.ModifyBox
 import com.echoist.linkedout.presentation.userInfo.SettingTopAppBar
+import com.echoist.linkedout.presentation.util.Routes
 
 @Composable
-fun SupportPage(navController: NavController) {
+fun SupportScreen(navController: NavController) {
 
     Scaffold(topBar = {
         SettingTopAppBar("고객지원", navController)
     }) {
 
         Column(Modifier.padding(it)) {
-            ModifyBox("링크드아웃 고객센터") { navController.navigate("LinkedOutSupportPage") }
-            ModifyBox("공지사항") { navController.navigate(Routes.NoticePage) }
+            ModifyBox("링크드아웃 고객센터") { navController.navigate(Routes.LinkedOutSupportScreen) }
+            ModifyBox("공지사항") { navController.navigate(Routes.NoticeScreen) }
             Legal_Notice(navController = navController)
 
         }

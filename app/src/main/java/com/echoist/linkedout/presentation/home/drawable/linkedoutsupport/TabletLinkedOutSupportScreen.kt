@@ -1,4 +1,4 @@
-package com.echoist.linkedout.presentation.home
+package com.echoist.linkedout.presentation.home.drawable.linkedoutsupport
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,8 +27,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.echoist.linkedout.presentation.TabletDrawableTopBar
+import com.echoist.linkedout.presentation.home.drawable.support.SupportViewModel
+import com.echoist.linkedout.ui.theme.LinkedOutTheme
 
 @Composable
 fun TabletLinkedOutSupportRoute(

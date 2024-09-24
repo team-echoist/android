@@ -1,4 +1,4 @@
-package com.echoist.linkedout.presentation.home
+package com.echoist.linkedout.presentation.home.drawable.notificationsetting
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.presentation.TabletDrawableTopBar
+import com.echoist.linkedout.presentation.home.NotificationViewModel
 import com.echoist.linkedout.presentation.home.home.HomeViewModel
 
 @Composable

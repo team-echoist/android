@@ -12,35 +12,39 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
-import com.echoist.linkedout.presentation.util.Routes
-import com.echoist.linkedout.presentation.essay.CropImagePage
 import com.echoist.linkedout.presentation.community.CommunityDetailPage
 import com.echoist.linkedout.presentation.community.CommunityPage
 import com.echoist.linkedout.presentation.community.CommunitySavedEssayPage
+import com.echoist.linkedout.presentation.community.CommunityViewModel
 import com.echoist.linkedout.presentation.community.FullSubscriberPage
-import com.echoist.linkedout.presentation.home.DarkModeSettingPage
-import com.echoist.linkedout.presentation.home.home.HomePage
-import com.echoist.linkedout.presentation.home.InquiryPage
-import com.echoist.linkedout.presentation.home.LinkedOutSupportPage
-import com.echoist.linkedout.presentation.home.NoticeDetailPage
-import com.echoist.linkedout.presentation.home.NoticePage
+import com.echoist.linkedout.presentation.essay.CropImagePage
+import com.echoist.linkedout.presentation.essay.WritingViewModel
 import com.echoist.linkedout.presentation.home.NotificationPage
-import com.echoist.linkedout.presentation.home.NotificationSettingPage
-import com.echoist.linkedout.presentation.home.SupportPage
-import com.echoist.linkedout.presentation.home.UpdateHistoryPage
-import com.echoist.linkedout.presentation.home.legal_Notice.FontCopyRight
-import com.echoist.linkedout.presentation.home.legal_Notice.LocationPolicyPage
-import com.echoist.linkedout.presentation.home.legal_Notice.PrivacyPolicyPage
-import com.echoist.linkedout.presentation.home.legal_Notice.TermsAndConditionsPage
+import com.echoist.linkedout.presentation.home.drawable.inquiry.InquiryScreen
+import com.echoist.linkedout.presentation.home.drawable.legal_Notice.FontCopyRight
+import com.echoist.linkedout.presentation.home.drawable.legal_Notice.LocationPolicyPage
+import com.echoist.linkedout.presentation.home.drawable.legal_Notice.PrivacyPolicyPage
+import com.echoist.linkedout.presentation.home.drawable.legal_Notice.TermsAndConditionsPage
+import com.echoist.linkedout.presentation.home.drawable.linkedoutsupport.LinkedOutSupportScreen
+import com.echoist.linkedout.presentation.home.drawable.notice.NoticeDetailPage
+import com.echoist.linkedout.presentation.home.drawable.notice.NoticeScreen
+import com.echoist.linkedout.presentation.home.drawable.notificationsetting.NotificationSettingScreen
+import com.echoist.linkedout.presentation.home.drawable.support.SupportScreen
+import com.echoist.linkedout.presentation.home.drawable.support.SupportViewModel
+import com.echoist.linkedout.presentation.home.drawable.thememode.ThemeModeScreen
+import com.echoist.linkedout.presentation.home.drawable.updatehistory.UpdateHistoryScreen
+import com.echoist.linkedout.presentation.home.home.HomePage
 import com.echoist.linkedout.presentation.login.AgreeOfProvisionsPage
 import com.echoist.linkedout.presentation.login.LoginPage
 import com.echoist.linkedout.presentation.login.OnBoardingPage
 import com.echoist.linkedout.presentation.login.SignUpCompletePage
 import com.echoist.linkedout.presentation.login.SignUpPage
+import com.echoist.linkedout.presentation.login.SignUpViewModel
 import com.echoist.linkedout.presentation.myLog.CompletedEssayPage
-import com.echoist.linkedout.presentation.myLog.DetailEssayInStoryPage
+import com.echoist.linkedout.presentation.myLog.DetailEssayInStoryScreen
 import com.echoist.linkedout.presentation.myLog.MyLogDetailPage
 import com.echoist.linkedout.presentation.myLog.MyLogPage
+import com.echoist.linkedout.presentation.myLog.MyLogViewModel
 import com.echoist.linkedout.presentation.myLog.StoryDetailPage
 import com.echoist.linkedout.presentation.myLog.StoryPage
 import com.echoist.linkedout.presentation.myLog.TemporaryStoragePage
@@ -58,11 +62,7 @@ import com.echoist.linkedout.presentation.userInfo.RecentEssayDetailPage
 import com.echoist.linkedout.presentation.userInfo.RecentViewedEssayPage
 import com.echoist.linkedout.presentation.userInfo.ResetPwPage
 import com.echoist.linkedout.presentation.userInfo.ResetPwPageWithEmail
-import com.echoist.linkedout.presentation.community.CommunityViewModel
-import com.echoist.linkedout.presentation.myLog.MyLogViewModel
-import com.echoist.linkedout.presentation.login.SignUpViewModel
-import com.echoist.linkedout.presentation.home.SupportViewModel
-import com.echoist.linkedout.presentation.essay.WritingViewModel
+import com.echoist.linkedout.presentation.util.Routes
 
 @Composable
 fun MobileApp(
@@ -104,26 +104,26 @@ fun MobileApp(
                 backStackEntry.arguments?.getInt("statusCode") ?: 200
             HomePage(navController,writingViewModel= writingViewModel, statusCode = statusCode)
         }
-        composable(Routes.DarkModeSettingPage) {
-            DarkModeSettingPage(navController)
+        composable(Routes.ThemeModeScreen) {
+            ThemeModeScreen(navController)
         }
         composable(Routes.NotificationPage) {
             NotificationPage(navController)
         }
-        composable(Routes.NotificationSettingPage) {
-            NotificationSettingPage(navController)
+        composable(Routes.NotificationSettingScreen) {
+            NotificationSettingScreen(navController)
         }
-        composable(Routes.SupportPage) {
-            SupportPage(navController)
+        composable(Routes.SupportScreen) {
+            SupportScreen(navController)
         }
-        composable(Routes.LinkedOutSupportPage) {
-            LinkedOutSupportPage(navController)
+        composable(Routes.LinkedOutSupportScreen) {
+            LinkedOutSupportScreen(navController)
         }
-        composable(Routes.InquiryPage) {
-            InquiryPage(navController)
+        composable(Routes.InquiryScreen) {
+            InquiryScreen(navController)
         }
-        composable(Routes.NoticePage) {
-            NoticePage(navController, supportViewModel)
+        composable(Routes.NoticeScreen) {
+            NoticeScreen(navController, supportViewModel)
         }
         composable(
             route = "${Routes.NoticeDetailPage}/{noticeId}",
@@ -134,8 +134,8 @@ fun MobileApp(
             val noticeId = backStackEntry.arguments?.getInt("noticeId")
             NoticeDetailPage(navController, noticeId!!)
         }
-        composable(Routes.UpdateHistoryPage) {
-            UpdateHistoryPage(navController)
+        composable(Routes.UpdateHistoryScreen) {
+            UpdateHistoryScreen(navController)
         }
         composable(
             route = "${Routes.MyLog}/{page}",
@@ -166,7 +166,7 @@ fun MobileApp(
             StoryDetailPage(myLogViewModel, navController)
         }
         composable(Routes.DetailEssayInStoryPage) {
-            DetailEssayInStoryPage(
+            DetailEssayInStoryScreen(
                 navController,
                 myLogViewModel,
                 writingViewModel

@@ -45,16 +45,16 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.echoist.linkedout.R
+import com.echoist.linkedout.data.api.EssayApi
+import com.echoist.linkedout.presentation.essay.WritingViewModel
 import com.echoist.linkedout.presentation.util.Routes
 import com.echoist.linkedout.presentation.util.TYPE_STORY
-import com.echoist.linkedout.data.api.EssayApi
 import com.echoist.linkedout.presentation.util.navigateWithClearBackStack
 import com.echoist.linkedout.ui.theme.LinkedInColor
-import com.echoist.linkedout.presentation.essay.WritingViewModel
 import kotlinx.coroutines.delay
 
 @Composable
-fun DetailEssayInStoryPage(
+fun DetailEssayInStoryScreen(
     navController: NavController,
     viewModel: MyLogViewModel,
     writingViewModel: WritingViewModel

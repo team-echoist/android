@@ -1,4 +1,4 @@
-package com.echoist.linkedout.presentation.home
+package com.echoist.linkedout.presentation.home.drawable.notificationsetting
 
 import android.content.ContentValues.TAG
 import android.util.Log
@@ -52,12 +52,14 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.R
+import com.echoist.linkedout.presentation.home.ImageSwitch
+import com.echoist.linkedout.presentation.home.NotificationViewModel
 import com.echoist.linkedout.presentation.home.home.HomeViewModel
 import com.echoist.linkedout.presentation.userInfo.SettingTopAppBar
 import com.echoist.linkedout.ui.theme.LinkedInColor
 
 @Composable
-fun NotificationSettingPage(
+fun NotificationSettingScreen(
     navController: NavController,
     homeViewModel: HomeViewModel = hiltViewModel(),
     notificationViewModel: NotificationViewModel = hiltViewModel()
@@ -390,7 +392,7 @@ fun NotificationTimePickerBox(
                                 "${time.periodIndex} ${time.hourIndex}:${time.minuteIndex}"
                             Log.d("NotificationTimePickerBox", "Selected Time: $message")
                             notificationViewModel.saveTimeSelection(time)
-                            navController.navigate("notificationSettingPage")
+                            navController.navigate("NotificationSettingScreen")
                         }
                     },
                     modifier = Modifier
