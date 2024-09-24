@@ -1,4 +1,4 @@
-package com.echoist.linkedout.presentation.community.communitymain
+package com.echoist.linkedout.presentation.community
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

@@ -47,8 +47,8 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
 import com.echoist.linkedout.data.dto.Story
 import com.echoist.linkedout.data.dto.UserInfo
-import com.echoist.linkedout.presentation.community.communitymain.CommunityViewModel
-import com.echoist.linkedout.presentation.community.communitymain.EssayListItem
+import com.echoist.linkedout.presentation.community.CommunityViewModel
+import com.echoist.linkedout.presentation.community.EssayListItem
 import com.echoist.linkedout.presentation.essay.write.StoryCountIcon
 import com.echoist.linkedout.presentation.util.formatDateTime
 import kotlinx.coroutines.launch

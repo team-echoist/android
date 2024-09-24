@@ -63,7 +63,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
 import com.echoist.linkedout.data.api.EssayApi
-import com.echoist.linkedout.presentation.community.communitymain.EssayListItem
+import com.echoist.linkedout.presentation.community.EssayListItem
 import com.echoist.linkedout.presentation.util.TYPE_RECOMMEND
 import com.echoist.linkedout.presentation.util.formatElapsedTime
 import kotlinx.coroutines.launch

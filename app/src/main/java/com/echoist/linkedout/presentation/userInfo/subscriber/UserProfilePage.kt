@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.navigation.NavController
-import com.echoist.linkedout.presentation.community.communitymain.CommunityViewModel
+import com.echoist.linkedout.presentation.community.CommunityViewModel
 import com.echoist.linkedout.presentation.community.search.SearchingPage
 import com.echoist.linkedout.presentation.home.home.MyBottomNavigation
 import kotlinx.coroutines.launch

@@ -4,7 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.echoist.linkedout.data.api.BookMarkApi
 import com.echoist.linkedout.data.api.EssayApi
 import com.echoist.linkedout.data.dto.ExampleItems
-import com.echoist.linkedout.presentation.community.communitymain.CommunityViewModel
+import com.echoist.linkedout.presentation.community.CommunityViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch

@@ -1,4 +1,4 @@
-package com.echoist.linkedout.presentation.community.communitymain
+package com.echoist.linkedout.presentation.community
 
 import android.content.ContentValues.TAG
 import android.util.Log

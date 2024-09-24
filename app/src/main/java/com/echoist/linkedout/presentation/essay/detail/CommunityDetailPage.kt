@@ -78,9 +78,9 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
 import com.echoist.linkedout.data.api.EssayApi
 import com.echoist.linkedout.data.dto.UserInfo
-import com.echoist.linkedout.presentation.community.communitymain.CommunityViewModel
-import com.echoist.linkedout.presentation.community.communitymain.EssayListItem
-import com.echoist.linkedout.presentation.community.communitymain.SubscriberSimpleItem
+import com.echoist.linkedout.presentation.community.CommunityViewModel
+import com.echoist.linkedout.presentation.community.EssayListItem
+import com.echoist.linkedout.presentation.community.SubscriberSimpleItem
 import com.echoist.linkedout.presentation.myLog.OptionItem
 import com.echoist.linkedout.presentation.util.Routes
 import com.echoist.linkedout.presentation.util.TYPE_RECOMMEND

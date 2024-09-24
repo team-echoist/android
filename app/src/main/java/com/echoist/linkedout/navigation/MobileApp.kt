@@ -13,9 +13,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import com.echoist.linkedout.presentation.community.bookmark.CommunitySavedEssayPage
-import com.echoist.linkedout.presentation.community.communitymain.CommunityPage
-import com.echoist.linkedout.presentation.community.communitymain.CommunityViewModel
-import com.echoist.linkedout.presentation.community.communitymain.FullSubscriberPage
+import com.echoist.linkedout.presentation.community.CommunityPage
+import com.echoist.linkedout.presentation.community.CommunityViewModel
+import com.echoist.linkedout.presentation.community.FullSubscriberPage
 import com.echoist.linkedout.presentation.essay.detail.CommunityDetailPage
 import com.echoist.linkedout.presentation.essay.write.CropImagePage
 import com.echoist.linkedout.presentation.essay.write.WritingViewModel

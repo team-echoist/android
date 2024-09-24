@@ -56,7 +56,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.data.api.EssayApi
 import com.echoist.linkedout.data.dto.ExampleItems
-import com.echoist.linkedout.presentation.community.communitymain.CommunityViewModel
+import com.echoist.linkedout.presentation.community.CommunityViewModel
 import com.echoist.linkedout.presentation.util.TYPE_RECOMMEND
 import com.echoist.linkedout.presentation.util.formatElapsedTime
 import com.echoist.linkedout.ui.theme.LinkedInColor

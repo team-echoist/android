@@ -21,7 +21,7 @@ import com.echoist.linkedout.data.dto.RelatedEssay
 import com.echoist.linkedout.data.dto.RelatedEssayResponse
 import com.echoist.linkedout.data.dto.Story
 import com.echoist.linkedout.data.dto.UserInfo
-import com.echoist.linkedout.presentation.community.communitymain.CommunityViewModel
+import com.echoist.linkedout.presentation.community.CommunityViewModel
 import com.echoist.linkedout.presentation.util.Routes
 import com.echoist.linkedout.presentation.util.TYPE_STORY
 import dagger.hilt.android.lifecycle.HiltViewModel

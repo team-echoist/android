@@ -14,8 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.echoist.linkedout.presentation.community.communitymain.CommunityViewModel
-import com.echoist.linkedout.presentation.community.communitymain.EssayListItem
+import com.echoist.linkedout.presentation.community.CommunityViewModel
+import com.echoist.linkedout.presentation.community.EssayListItem
 
 @Composable
 fun TabletRecentEssayScreen(

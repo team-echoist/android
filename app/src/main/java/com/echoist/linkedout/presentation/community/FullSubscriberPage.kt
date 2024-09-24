@@ -1,4 +1,4 @@
-package com.echoist.linkedout.presentation.community.communitymain
+package com.echoist.linkedout.presentation.community
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween

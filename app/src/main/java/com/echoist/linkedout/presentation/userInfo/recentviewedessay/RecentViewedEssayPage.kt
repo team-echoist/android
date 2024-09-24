@@ -32,8 +32,8 @@ import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.data.api.EssayApi
-import com.echoist.linkedout.presentation.community.communitymain.CommunityViewModel
-import com.echoist.linkedout.presentation.community.communitymain.EssayListItem
+import com.echoist.linkedout.presentation.community.CommunityViewModel
+import com.echoist.linkedout.presentation.community.EssayListItem
 import com.echoist.linkedout.presentation.userInfo.account.SettingTopAppBar
 import com.echoist.linkedout.presentation.util.TYPE_RECOMMEND
 

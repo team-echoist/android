@@ -9,7 +9,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.echoist.linkedout.presentation.community.communitymain.TabletCommunityRoute
+import com.echoist.linkedout.presentation.community.TabletCommunityRoute
 import com.echoist.linkedout.presentation.community.search.TabletSearchScreen
 import com.echoist.linkedout.presentation.essay.write.TabletEssayWriteRoute
 import com.echoist.linkedout.presentation.home.home.TabletHomeRoute

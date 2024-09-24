@@ -26,7 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.echoist.linkedout.presentation.community.communitymain.CommunityViewModel
+import com.echoist.linkedout.presentation.community.CommunityViewModel
 import com.echoist.linkedout.presentation.userInfo.recentviewedessay.RecentEssayViewModel
 import com.echoist.linkedout.presentation.util.Routes
 import com.echoist.linkedout.presentation.util.TYPE_RECOMMEND
