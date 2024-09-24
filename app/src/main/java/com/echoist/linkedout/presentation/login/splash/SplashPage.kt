@@ -1,4 +1,4 @@
-package com.echoist.linkedout.presentation.login
+package com.echoist.linkedout.presentation.login.splash
 
 import android.Manifest
 import android.content.Intent

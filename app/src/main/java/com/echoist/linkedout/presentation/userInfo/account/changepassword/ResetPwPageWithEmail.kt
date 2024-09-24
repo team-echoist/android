@@ -46,7 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.echoist.linkedout.presentation.login.Authentication_6_BottomModal
+import com.echoist.linkedout.presentation.login.signup.Authentication_6_BottomModal
 import com.echoist.linkedout.presentation.userInfo.account.SettingTopAppBar
 import com.echoist.linkedout.presentation.userInfo.account.changeemail.CustomOutlinedTextField
 import com.echoist.linkedout.presentation.userInfo.account.changeemail.SendEmailFinishedAlert

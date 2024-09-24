@@ -13,11 +13,11 @@ import com.echoist.linkedout.presentation.community.communitymain.TabletCommunit
 import com.echoist.linkedout.presentation.community.search.TabletSearchScreen
 import com.echoist.linkedout.presentation.essay.write.TabletEssayWriteRoute
 import com.echoist.linkedout.presentation.home.home.TabletHomeRoute
-import com.echoist.linkedout.presentation.login.AgreeOfProvisionsPage
+import com.echoist.linkedout.presentation.login.agreeofprovisions.AgreeOfProvisionsPage
 import com.echoist.linkedout.presentation.login.TabletLoginRoute
-import com.echoist.linkedout.presentation.login.TabletOnBoardingRoute
-import com.echoist.linkedout.presentation.login.TabletSignUpCompleteRoute
-import com.echoist.linkedout.presentation.login.TabletSignUpRoute
+import com.echoist.linkedout.presentation.login.onboarding.TabletOnBoardingRoute
+import com.echoist.linkedout.presentation.login.signup.TabletSignUpCompleteRoute
+import com.echoist.linkedout.presentation.login.signup.TabletSignUpRoute
 import com.echoist.linkedout.presentation.myLog.TabletMyLogRoute
 import com.echoist.linkedout.presentation.userInfo.TabletMyInfoRoute
 import com.echoist.linkedout.presentation.userInfo.account.TabletAccountRoute

@@ -1,4 +1,4 @@
-package com.echoist.linkedout.presentation.login
+package com.echoist.linkedout.presentation.login.agreeofprovisions
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
@@ -60,6 +60,8 @@ import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
+import com.echoist.linkedout.presentation.login.signup.AgreementText
+import com.echoist.linkedout.presentation.login.signup.SignUpViewModel
 import com.echoist.linkedout.presentation.util.LOCATION_POLICY_URL
 import com.echoist.linkedout.presentation.util.PRIVACY_POLICY_URL
 import com.echoist.linkedout.presentation.util.Routes

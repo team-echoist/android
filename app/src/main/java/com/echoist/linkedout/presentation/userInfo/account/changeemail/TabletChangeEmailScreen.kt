@@ -51,7 +51,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
-import com.echoist.linkedout.presentation.login.Authentication_6_BottomModal
+import com.echoist.linkedout.presentation.login.signup.Authentication_6_BottomModal
 import com.echoist.linkedout.presentation.userInfo.account.UserInfoViewModel
 import com.echoist.linkedout.presentation.util.isEmailValid
 import com.echoist.linkedout.ui.theme.LinkedInColor

@@ -1,4 +1,4 @@
-package com.echoist.linkedout.presentation.login
+package com.echoist.linkedout.presentation.login.onboarding
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

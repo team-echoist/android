@@ -1,4 +1,4 @@
-package com.echoist.linkedout.presentation.login
+package com.echoist.linkedout.presentation.login.signup
 
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility

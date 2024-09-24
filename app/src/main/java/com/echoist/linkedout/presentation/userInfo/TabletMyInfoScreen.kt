@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.presentation.community.communitymain.CommunityViewModel
-import com.echoist.linkedout.presentation.essay.EssayViewModel
+import com.echoist.linkedout.presentation.userInfo.recentviewedessay.RecentEssayViewModel
 import com.echoist.linkedout.presentation.util.Routes
 import com.echoist.linkedout.presentation.util.TYPE_RECOMMEND
 import kotlinx.coroutines.launch
@@ -38,7 +38,7 @@ fun TabletMyInfoRoute(
     modifier: Modifier = Modifier,
     navController: NavController,
     viewModel: MyPageViewModel = hiltViewModel(),
-    essayViewModel: EssayViewModel = hiltViewModel(),
+    recentEssayViewModel: RecentEssayViewModel = hiltViewModel(),
     communityViewModel: CommunityViewModel = hiltViewModel()
 ) {
 
@@ -48,7 +48,7 @@ fun TabletMyInfoRoute(
 
     val userInfo by viewModel.userProfile.collectAsState()
     val badgeList by viewModel.badgeList.collectAsState()
-    val recentEssayList by essayViewModel.recentEssayList.collectAsState()
+    val recentEssayList by recentEssayViewModel.recentEssayList.collectAsState()
 
     val bottomSheetState =
         rememberStandardBottomSheetState(initialValue = SheetValue.Hidden, skipHiddenState = false)

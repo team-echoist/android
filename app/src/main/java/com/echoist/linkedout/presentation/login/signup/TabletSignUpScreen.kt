@@ -1,4 +1,4 @@
-package com.echoist.linkedout.presentation.login
+package com.echoist.linkedout.presentation.login.signup
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
@@ -204,7 +204,10 @@ private fun SignUpContent(
                 color = Color(0xFF919191)
             )
             EmailTextField(viewModel, passwordFocusRequester)
-            PwTextField(viewModel, passwordFocusRequester)
+            PwTextField(
+                viewModel,
+                passwordFocusRequester
+            )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = "*비밀번호는 영문(대소문자), 특수문자, 숫자 포함 8~12자를 조합해 주세요.",

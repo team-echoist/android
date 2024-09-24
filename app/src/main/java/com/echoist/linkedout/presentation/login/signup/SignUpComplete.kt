@@ -1,4 +1,4 @@
-package com.echoist.linkedout.presentation.login
+package com.echoist.linkedout.presentation.login.signup
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn

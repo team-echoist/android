@@ -1,4 +1,4 @@
-package com.echoist.linkedout.presentation.essay
+package com.echoist.linkedout.presentation.userInfo.recentviewedessay
 
 import android.util.Log
 import androidx.compose.runtime.toMutableStateList
@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class EssayViewModel @Inject constructor(
+class RecentEssayViewModel @Inject constructor(
     private val essayApi: EssayApi,
     private val exampleItems: ExampleItems
 ) : ViewModel() {

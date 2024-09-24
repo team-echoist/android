@@ -1,4 +1,4 @@
-package com.echoist.linkedout.presentation.login
+package com.echoist.linkedout.presentation.login.onboarding
 
 import android.content.ContentValues.TAG
 import android.util.Log

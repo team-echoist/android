@@ -34,12 +34,12 @@ import com.echoist.linkedout.presentation.home.drawable.support.SupportViewModel
 import com.echoist.linkedout.presentation.home.drawable.thememode.ThemeModeScreen
 import com.echoist.linkedout.presentation.home.drawable.updatehistory.UpdateHistoryScreen
 import com.echoist.linkedout.presentation.home.home.HomePage
-import com.echoist.linkedout.presentation.login.AgreeOfProvisionsPage
+import com.echoist.linkedout.presentation.login.agreeofprovisions.AgreeOfProvisionsPage
 import com.echoist.linkedout.presentation.login.LoginPage
-import com.echoist.linkedout.presentation.login.OnBoardingPage
-import com.echoist.linkedout.presentation.login.SignUpCompletePage
-import com.echoist.linkedout.presentation.login.SignUpPage
-import com.echoist.linkedout.presentation.login.SignUpViewModel
+import com.echoist.linkedout.presentation.login.onboarding.OnBoardingPage
+import com.echoist.linkedout.presentation.login.signup.SignUpCompletePage
+import com.echoist.linkedout.presentation.login.signup.SignUpPage
+import com.echoist.linkedout.presentation.login.signup.SignUpViewModel
 import com.echoist.linkedout.presentation.myLog.CompletedEssayPage
 import com.echoist.linkedout.presentation.myLog.DetailEssayInStoryScreen
 import com.echoist.linkedout.presentation.myLog.MyLogDetailPage

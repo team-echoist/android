@@ -34,7 +34,6 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.data.api.EssayApi
 import com.echoist.linkedout.presentation.community.communitymain.CommunityViewModel
 import com.echoist.linkedout.presentation.community.communitymain.EssayListItem
-import com.echoist.linkedout.presentation.essay.EssayViewModel
 import com.echoist.linkedout.presentation.userInfo.account.SettingTopAppBar
 import com.echoist.linkedout.presentation.util.TYPE_RECOMMEND
 
@@ -42,10 +41,10 @@ import com.echoist.linkedout.presentation.util.TYPE_RECOMMEND
 fun RecentViewedEssayPage(
     navController: NavController,
     viewModel: CommunityViewModel = hiltViewModel(),
-    essayViewModel: EssayViewModel = hiltViewModel()
+    recentEssayViewModel: RecentEssayViewModel = hiltViewModel()
 ) {
 
-    val recentEssayList by essayViewModel.recentEssayList.collectAsState()
+    val recentEssayList by recentEssayViewModel.recentEssayList.collectAsState()
 
     Scaffold(
         topBar = {
