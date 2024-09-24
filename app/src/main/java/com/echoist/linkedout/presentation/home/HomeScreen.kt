@@ -7,8 +7,6 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,10 +20,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material3.Button
@@ -34,9 +30,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -60,7 +54,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -83,10 +76,10 @@ import com.echoist.linkedout.R
 import com.echoist.linkedout.data.api.EssayApi
 import com.echoist.linkedout.data.dto.BottomNavItem
 import com.echoist.linkedout.data.dto.UserInfo
-import com.echoist.linkedout.presentation.essay.write.WritingViewModel
-import com.echoist.linkedout.presentation.home.tutorial.TutorialScreen
 import com.echoist.linkedout.presentation.essay.write.Token
-import com.echoist.linkedout.presentation.userInfo.account.UserInfoViewModel
+import com.echoist.linkedout.presentation.essay.write.WritingViewModel
+import com.echoist.linkedout.presentation.home.drawable.DrawableScreen
+import com.echoist.linkedout.presentation.home.tutorial.TutorialScreen
 import com.echoist.linkedout.presentation.util.Routes
 import com.echoist.linkedout.presentation.util.TUTORIAL_BULB
 import com.echoist.linkedout.presentation.util.UserStatus
@@ -151,7 +144,7 @@ fun HomePage(
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            ModalBottomSheetContent(viewModel = viewModel, navController)
+            DrawableScreen(viewModel = viewModel, navController)
         },
     ) {
         Scaffold(
@@ -301,66 +294,6 @@ fun HomePage(
         }
     }
 }
-@Composable
-fun ModalBottomSheetContent(
-    viewModel: HomeViewModel,
-    navController: NavController,
-    userInfoViewModel: UserInfoViewModel = hiltViewModel()
-) {
-    var isLogoutClicked by remember { mutableStateOf(false) }
-    val scrollState = rememberScrollState()
-    val context = LocalContext.current
-
-    ModalDrawerSheet(
-        modifier = Modifier.fillMaxWidth(0.9f),
-        drawerShape = RectangleShape,
-        drawerContainerColor = Color(0xFF121212)
-    ) {
-        Column(Modifier.verticalScroll(scrollState)) {
-            MyProfile(item = viewModel.getMyInfo()) { navController.navigate("SETTINGS") }
-            HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
-            MyLinkedOutBar()
-            LineChartExample(essayCounts = viewModel.essayCount)
-            Spacer(modifier = Modifier.height(10.dp))
-            HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
-            ShopDrawerItem()
-            HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
-            MyDrawableItem("화면 설정") { navController.navigate(Routes.ThemeModeScreen) }
-            MyDrawableItem("환경 설정") { navController.navigate("NotificationSettingScreen") }
-            MyDrawableItem("고객지원") { navController.navigate("SupportScreen") }
-            MyDrawableItem("업데이트 기록") { navController.navigate("UpdateHistoryScreen") }
-
-            LogoutBtn { isLogoutClicked = true } //todo logout 기능 만들기
-            // ...other drawer items
-        }
-    }
-    AnimatedVisibility(
-        visible = isLogoutClicked,
-        enter = slideInVertically(
-            initialOffsetY = { 2000 },
-            animationSpec = tween(durationMillis = 500)
-        ),
-        exit = slideOutVertically(
-            targetOffsetY = { 2000 },
-            animationSpec = tween(durationMillis = 500)
-        )
-    ) {
-        LogoutBox(
-            isCancelClicked = { isLogoutClicked = false },
-            isLogoutClicked = {
-                userInfoViewModel.logout()
-                isLogoutClicked = false
-                navController.navigate(Routes.LoginPage) {
-                    popUpTo(Routes.LoginPage) {
-                        inclusive = true
-                    }
-                    launchSingleTop = true
-                }
-            }
-        )
-    }
-}
-
 @Composable
 fun WriteFTB(
     navController: NavController,
