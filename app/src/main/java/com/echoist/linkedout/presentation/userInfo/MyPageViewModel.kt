@@ -15,8 +15,8 @@ import com.echoist.linkedout.data.dto.BadgeBoxItem
 import com.echoist.linkedout.data.dto.ExampleItems
 import com.echoist.linkedout.data.dto.UserInfo
 import com.echoist.linkedout.data.dto.toBadgeBoxItem
-import com.echoist.linkedout.presentation.util.getFileFromUri
 import com.echoist.linkedout.presentation.myLog.Token
+import com.echoist.linkedout.presentation.util.getFileFromUri
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

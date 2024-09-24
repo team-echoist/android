@@ -32,9 +32,9 @@ import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
+import com.echoist.linkedout.presentation.home.home.HomeViewModel
 import com.echoist.linkedout.presentation.util.Routes
 import com.echoist.linkedout.ui.theme.LinkedInColor
-import com.echoist.linkedout.presentation.home.home.HomeViewModel
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalGlideComposeApi::class)

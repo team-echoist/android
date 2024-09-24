@@ -5,8 +5,8 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import com.echoist.linkedout.presentation.util.PRIVATE_POPUP_URL
 import com.echoist.linkedout.data.api.EssayApi
+import com.echoist.linkedout.presentation.util.PRIVATE_POPUP_URL
 import java.util.Stack
 import javax.inject.Inject
 import javax.inject.Singleton

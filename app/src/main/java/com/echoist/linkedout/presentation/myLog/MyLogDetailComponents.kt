@@ -38,10 +38,10 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.echoist.linkedout.data.api.EssayApi
 import com.echoist.linkedout.presentation.util.TYPE_PRIVATE
 import com.echoist.linkedout.presentation.util.TYPE_PUBLISHED
 import com.echoist.linkedout.presentation.util.TYPE_RECOMMEND
-import com.echoist.linkedout.data.api.EssayApi
 import com.echoist.linkedout.presentation.util.formatDateTime
 import kotlinx.coroutines.delay
 

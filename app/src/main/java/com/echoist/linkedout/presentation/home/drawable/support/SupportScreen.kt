@@ -31,8 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.echoist.linkedout.R
-import com.echoist.linkedout.presentation.userInfo.ModifyBox
-import com.echoist.linkedout.presentation.userInfo.SettingTopAppBar
+import com.echoist.linkedout.presentation.userInfo.account.ModifyBox
+import com.echoist.linkedout.presentation.userInfo.account.SettingTopAppBar
 import com.echoist.linkedout.presentation.util.Routes
 
 @Composable

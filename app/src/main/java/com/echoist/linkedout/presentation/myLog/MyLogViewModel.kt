@@ -10,8 +10,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.echoist.linkedout.presentation.util.Routes
-import com.echoist.linkedout.presentation.util.TYPE_STORY
 import com.echoist.linkedout.data.api.BookMarkApi
 import com.echoist.linkedout.data.api.EssayApi
 import com.echoist.linkedout.data.api.StoryApi
@@ -23,7 +21,9 @@ import com.echoist.linkedout.data.dto.RelatedEssay
 import com.echoist.linkedout.data.dto.RelatedEssayResponse
 import com.echoist.linkedout.data.dto.Story
 import com.echoist.linkedout.data.dto.UserInfo
-import com.echoist.linkedout.presentation.community.CommunityViewModel
+import com.echoist.linkedout.presentation.community.communitymain.CommunityViewModel
+import com.echoist.linkedout.presentation.util.Routes
+import com.echoist.linkedout.presentation.util.TYPE_STORY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import retrofit2.Response

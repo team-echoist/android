@@ -84,6 +84,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.echoist.linkedout.R
+import com.echoist.linkedout.data.api.EssayApi
+import com.echoist.linkedout.data.dto.BadgeBoxItem
+import com.echoist.linkedout.data.dto.EssayStats
+import com.echoist.linkedout.data.dto.UserInfo
+import com.echoist.linkedout.presentation.community.communitymain.CommunityViewModel
+import com.echoist.linkedout.presentation.essay.EssayViewModel
+import com.echoist.linkedout.presentation.home.home.MyBottomNavigation
 import com.echoist.linkedout.presentation.util.PRIVATE_POPUP_URL
 import com.echoist.linkedout.presentation.util.PROFILE_IMAGE_01
 import com.echoist.linkedout.presentation.util.PROFILE_IMAGE_02
@@ -97,17 +105,9 @@ import com.echoist.linkedout.presentation.util.PROFILE_IMAGE_09
 import com.echoist.linkedout.presentation.util.PROFILE_IMAGE_10
 import com.echoist.linkedout.presentation.util.PROFILE_IMAGE_11
 import com.echoist.linkedout.presentation.util.PROFILE_IMAGE_12
-import com.echoist.linkedout.R
 import com.echoist.linkedout.presentation.util.Routes
 import com.echoist.linkedout.presentation.util.TYPE_RECOMMEND
-import com.echoist.linkedout.data.api.EssayApi
-import com.echoist.linkedout.data.dto.BadgeBoxItem
-import com.echoist.linkedout.data.dto.EssayStats
-import com.echoist.linkedout.data.dto.UserInfo
-import com.echoist.linkedout.presentation.home.home.MyBottomNavigation
 import com.echoist.linkedout.ui.theme.LinkedInColor
-import com.echoist.linkedout.presentation.community.CommunityViewModel
-import com.echoist.linkedout.presentation.essay.EssayViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -10,8 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
+import com.echoist.linkedout.presentation.userInfo.account.SettingTopAppBar
 import com.echoist.linkedout.presentation.util.TERMS_POLICY_URL
-import com.echoist.linkedout.presentation.userInfo.SettingTopAppBar
 
 //이용약관 페이지
 @SuppressLint("SetJavaScriptEnabled")

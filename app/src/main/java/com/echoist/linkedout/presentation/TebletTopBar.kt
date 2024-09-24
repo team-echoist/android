@@ -30,9 +30,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.echoist.linkedout.R
-import com.echoist.linkedout.presentation.util.Routes
 import com.echoist.linkedout.presentation.home.home.HomeViewModel
 import com.echoist.linkedout.presentation.myLog.MyLogViewModel
+import com.echoist.linkedout.presentation.util.Routes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 

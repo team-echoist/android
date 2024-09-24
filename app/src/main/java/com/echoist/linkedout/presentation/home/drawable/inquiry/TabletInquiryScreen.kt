@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.echoist.linkedout.R
 import com.echoist.linkedout.presentation.TabletDrawableTopBar
-import com.echoist.linkedout.presentation.userInfo.CustomOutlinedTextField
+import com.echoist.linkedout.presentation.userInfo.account.changeemail.CustomOutlinedTextField
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.skydoves.balloon.ArrowPositionRules

@@ -12,13 +12,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
-import com.echoist.linkedout.presentation.community.CommunityDetailPage
-import com.echoist.linkedout.presentation.community.CommunityPage
-import com.echoist.linkedout.presentation.community.CommunitySavedEssayPage
-import com.echoist.linkedout.presentation.community.CommunityViewModel
-import com.echoist.linkedout.presentation.community.FullSubscriberPage
-import com.echoist.linkedout.presentation.essay.CropImagePage
-import com.echoist.linkedout.presentation.essay.WritingViewModel
+import com.echoist.linkedout.presentation.community.bookmark.CommunitySavedEssayPage
+import com.echoist.linkedout.presentation.community.communitymain.CommunityPage
+import com.echoist.linkedout.presentation.community.communitymain.CommunityViewModel
+import com.echoist.linkedout.presentation.community.communitymain.FullSubscriberPage
+import com.echoist.linkedout.presentation.essay.detail.CommunityDetailPage
+import com.echoist.linkedout.presentation.essay.write.CropImagePage
+import com.echoist.linkedout.presentation.essay.write.WritingViewModel
 import com.echoist.linkedout.presentation.home.NotificationPage
 import com.echoist.linkedout.presentation.home.drawable.inquiry.InquiryScreen
 import com.echoist.linkedout.presentation.home.drawable.legal_Notice.FontCopyRight
@@ -51,17 +51,17 @@ import com.echoist.linkedout.presentation.myLog.TemporaryStoragePage
 import com.echoist.linkedout.presentation.myLog.Token
 import com.echoist.linkedout.presentation.myLog.WritingCompletePage
 import com.echoist.linkedout.presentation.myLog.WritingPage
-import com.echoist.linkedout.presentation.userInfo.AccountPage
-import com.echoist.linkedout.presentation.userInfo.AccountWithdrawalPage
-import com.echoist.linkedout.presentation.userInfo.BadgePage
-import com.echoist.linkedout.presentation.userInfo.ChangeEmailPage
-import com.echoist.linkedout.presentation.userInfo.ChangePwPage
 import com.echoist.linkedout.presentation.userInfo.MyPage
-import com.echoist.linkedout.presentation.userInfo.ProfilePage
-import com.echoist.linkedout.presentation.userInfo.RecentEssayDetailPage
-import com.echoist.linkedout.presentation.userInfo.RecentViewedEssayPage
-import com.echoist.linkedout.presentation.userInfo.ResetPwPage
-import com.echoist.linkedout.presentation.userInfo.ResetPwPageWithEmail
+import com.echoist.linkedout.presentation.userInfo.account.AccountPage
+import com.echoist.linkedout.presentation.userInfo.account.changeemail.ChangeEmailPage
+import com.echoist.linkedout.presentation.userInfo.account.changepassword.ChangePwPage
+import com.echoist.linkedout.presentation.userInfo.account.changepassword.ResetPwPage
+import com.echoist.linkedout.presentation.userInfo.account.changepassword.ResetPwPageWithEmail
+import com.echoist.linkedout.presentation.userInfo.account.deleteaccount.AccountWithdrawalPage
+import com.echoist.linkedout.presentation.userInfo.badge.BadgePage
+import com.echoist.linkedout.presentation.userInfo.recentviewedessay.RecentEssayDetailPage
+import com.echoist.linkedout.presentation.userInfo.recentviewedessay.RecentViewedEssayPage
+import com.echoist.linkedout.presentation.userInfo.subscriber.ProfilePage
 import com.echoist.linkedout.presentation.util.Routes
 
 @Composable
@@ -102,7 +102,7 @@ fun MobileApp(
         ) { backStackEntry ->
             val statusCode =
                 backStackEntry.arguments?.getInt("statusCode") ?: 200
-            HomePage(navController,writingViewModel= writingViewModel, statusCode = statusCode)
+            HomePage(navController, writingViewModel = writingViewModel, statusCode = statusCode)
         }
         composable(Routes.ThemeModeScreen) {
             ThemeModeScreen(navController)

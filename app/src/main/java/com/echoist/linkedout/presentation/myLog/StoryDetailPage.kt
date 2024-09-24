@@ -40,10 +40,10 @@ import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
-import com.echoist.linkedout.presentation.util.Routes
-import com.echoist.linkedout.presentation.util.TYPE_STORY
 import com.echoist.linkedout.data.api.EssayApi
 import com.echoist.linkedout.data.dto.Story
+import com.echoist.linkedout.presentation.util.Routes
+import com.echoist.linkedout.presentation.util.TYPE_STORY
 import com.echoist.linkedout.presentation.util.formatDateTime
 import com.echoist.linkedout.presentation.util.navigateWithClearBackStack
 import com.echoist.linkedout.ui.theme.LinkedInColor

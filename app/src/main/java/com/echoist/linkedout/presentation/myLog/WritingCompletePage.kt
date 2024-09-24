@@ -70,12 +70,12 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.colintheshots.twain.MarkdownText
 import com.echoist.linkedout.R
+import com.echoist.linkedout.presentation.essay.write.HashTagGroup
+import com.echoist.linkedout.presentation.essay.write.LocationGroup
+import com.echoist.linkedout.presentation.essay.write.WritingViewModel
 import com.echoist.linkedout.presentation.util.Routes
-import com.echoist.linkedout.presentation.essay.HashTagGroup
-import com.echoist.linkedout.presentation.essay.LocationGroup
 import com.echoist.linkedout.presentation.util.handleEssayAction
 import com.echoist.linkedout.ui.theme.LinkedInColor
-import com.echoist.linkedout.presentation.essay.WritingViewModel
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter

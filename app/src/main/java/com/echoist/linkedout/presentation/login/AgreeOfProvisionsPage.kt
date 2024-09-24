@@ -59,9 +59,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.echoist.linkedout.R
 import com.echoist.linkedout.presentation.util.LOCATION_POLICY_URL
 import com.echoist.linkedout.presentation.util.PRIVACY_POLICY_URL
-import com.echoist.linkedout.R
 import com.echoist.linkedout.presentation.util.Routes
 import com.echoist.linkedout.presentation.util.TERMS_POLICY_URL
 import com.echoist.linkedout.ui.theme.LinkedInColor

@@ -47,8 +47,8 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
 import com.echoist.linkedout.data.api.EssayApi
+import com.echoist.linkedout.presentation.essay.write.WritingViewModel
 import com.echoist.linkedout.ui.theme.LinkedInColor
-import com.echoist.linkedout.presentation.essay.WritingViewModel
 
 
 @Composable

@@ -16,7 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.echoist.linkedout.presentation.userInfo.SettingTopAppBar
+import com.echoist.linkedout.presentation.userInfo.account.SettingTopAppBar
 
 @Composable
 fun FontCopyRight(navController : NavController){

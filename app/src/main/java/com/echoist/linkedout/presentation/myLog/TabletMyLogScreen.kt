@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.echoist.linkedout.presentation.essay.WritingViewModel
+import com.echoist.linkedout.presentation.essay.write.WritingViewModel
 import kotlinx.coroutines.launch
 
 @Composable

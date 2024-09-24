@@ -55,7 +55,7 @@ import com.echoist.linkedout.R
 import com.echoist.linkedout.presentation.home.ImageSwitch
 import com.echoist.linkedout.presentation.home.NotificationViewModel
 import com.echoist.linkedout.presentation.home.home.HomeViewModel
-import com.echoist.linkedout.presentation.userInfo.SettingTopAppBar
+import com.echoist.linkedout.presentation.userInfo.account.SettingTopAppBar
 import com.echoist.linkedout.ui.theme.LinkedInColor
 
 @Composable

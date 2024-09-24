@@ -83,10 +83,10 @@ import com.echoist.linkedout.R
 import com.echoist.linkedout.data.api.EssayApi
 import com.echoist.linkedout.data.dto.BottomNavItem
 import com.echoist.linkedout.data.dto.UserInfo
-import com.echoist.linkedout.presentation.essay.WritingViewModel
+import com.echoist.linkedout.presentation.essay.write.WritingViewModel
 import com.echoist.linkedout.presentation.home.home.tutorial.TutorialScreen
 import com.echoist.linkedout.presentation.myLog.Token
-import com.echoist.linkedout.presentation.userInfo.UserInfoViewModel
+import com.echoist.linkedout.presentation.userInfo.account.UserInfoViewModel
 import com.echoist.linkedout.presentation.util.Routes
 import com.echoist.linkedout.presentation.util.TUTORIAL_BULB
 import com.echoist.linkedout.presentation.util.UserStatus

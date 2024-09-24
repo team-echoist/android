@@ -34,11 +34,11 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.echoist.linkedout.presentation.community.SearchingPage
+import com.echoist.linkedout.presentation.community.search.SearchingPage
+import com.echoist.linkedout.presentation.essay.write.WritingViewModel
+import com.echoist.linkedout.presentation.home.home.HomeViewModel
 import com.echoist.linkedout.presentation.home.home.MyBottomNavigation
 import com.echoist.linkedout.presentation.home.home.WriteFTB
-import com.echoist.linkedout.presentation.home.home.HomeViewModel
-import com.echoist.linkedout.presentation.essay.WritingViewModel
 import kotlinx.coroutines.launch
 
 

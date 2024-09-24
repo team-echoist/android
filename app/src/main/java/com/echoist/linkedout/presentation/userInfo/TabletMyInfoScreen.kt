@@ -26,19 +26,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.echoist.linkedout.presentation.community.communitymain.CommunityViewModel
+import com.echoist.linkedout.presentation.essay.EssayViewModel
 import com.echoist.linkedout.presentation.util.Routes
 import com.echoist.linkedout.presentation.util.TYPE_RECOMMEND
-import com.echoist.linkedout.presentation.userInfo.BadgeDescriptionBox
-import com.echoist.linkedout.presentation.userInfo.LinkedOutBadgeGrid
-import com.echoist.linkedout.presentation.userInfo.MembershipSettingBar
-import com.echoist.linkedout.presentation.userInfo.ModifyMyProfileBottomSheet
-import com.echoist.linkedout.presentation.userInfo.MySettings
-import com.echoist.linkedout.presentation.userInfo.RecentEssayList
-import com.echoist.linkedout.presentation.userInfo.SelectProfileIconBottomSheet
-import com.echoist.linkedout.presentation.userInfo.SettingBar
-import com.echoist.linkedout.presentation.community.CommunityViewModel
-import com.echoist.linkedout.presentation.essay.EssayViewModel
-import com.echoist.linkedout.presentation.userInfo.MyPageViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

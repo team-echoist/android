@@ -46,7 +46,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.echoist.linkedout.R
 import com.echoist.linkedout.data.api.EssayApi
-import com.echoist.linkedout.presentation.essay.WritingViewModel
+import com.echoist.linkedout.presentation.essay.write.WritingViewModel
 import com.echoist.linkedout.presentation.util.Routes
 import com.echoist.linkedout.presentation.util.TYPE_STORY
 import com.echoist.linkedout.presentation.util.navigateWithClearBackStack
