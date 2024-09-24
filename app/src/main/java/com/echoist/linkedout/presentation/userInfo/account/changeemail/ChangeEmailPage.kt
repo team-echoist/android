@@ -65,6 +65,7 @@ import com.echoist.linkedout.presentation.userInfo.account.SettingTopAppBar
 import com.echoist.linkedout.presentation.userInfo.account.UserInfoViewModel
 import com.echoist.linkedout.presentation.util.Routes
 import com.echoist.linkedout.presentation.util.isEmailValid
+import com.echoist.linkedout.presentation.util.navigateWithClearBackStack
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import kotlinx.coroutines.delay
 
@@ -115,12 +116,7 @@ fun ChangeEmailPage(
             showToast = true
             delay(2000)
             userInfoViewModel.logout()
-            navController.navigate(Routes.LoginPage) {
-                popUpTo(navController.graph.startDestinationId) {
-                    inclusive = true
-                }
-                launchSingleTop = true
-            }
+            navigateWithClearBackStack(navController, Routes.LoginPage)
             showToast = false
         }
     }

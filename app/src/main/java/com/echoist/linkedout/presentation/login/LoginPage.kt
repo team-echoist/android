@@ -71,6 +71,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.R
 import com.echoist.linkedout.presentation.util.Routes
+import com.echoist.linkedout.presentation.util.navigateWithClearBackStack
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.navercorp.nid.NaverIdLoginSDK
 
@@ -90,7 +91,8 @@ fun LoginPage(
 
     LaunchedEffect(loginState) {
         when (loginState) {
-            is LoginState.Home -> navController.navigate(
+            is LoginState.Home -> navigateWithClearBackStack(
+                navController,
                 "${Routes.Home}/${(loginState as LoginState.Home).statusCode}"
             )
 
