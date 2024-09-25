@@ -20,6 +20,7 @@ class ResetPwViewModel @Inject constructor(
     var isLoading by mutableStateOf(false)
 
     var isSendEmailVerifyApiFinished by mutableStateOf(false)
+    var errorCode by mutableStateOf(200)
 
     fun requestChangePw(email: String) {
         isLoading = true
@@ -34,7 +35,9 @@ class ResetPwViewModel @Inject constructor(
                 //헤더에 토큰이 없다.
                 Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() }
                     ?: Token.accessToken
+                isSendEmailVerifyApiFinished = true
             } else {
+                errorCode = response.code()
                 // code == 400 잘못된 이메일주소
                 Log.e("authApiFailed2", "Failed : ${response.headers()}")
                 Log.e("authApiFailed2", "${response.code()}")
@@ -53,6 +56,7 @@ class ResetPwViewModel @Inject constructor(
                 Log.e("authApiSuccess2", "${response.code()}")
                 resetPw(token, newPw)
             } else {
+                errorCode = response.code()
                 // code == 404 유효하지 않은토큰. 토큰을 못받았거나 10분이 지났거나
                 Log.e("authApiFailed2", "Failed : ${response.headers()}")
                 Log.e("authApiFailed2", "${response.code()}")
@@ -67,6 +71,7 @@ class ResetPwViewModel @Inject constructor(
         if (response.code() == 200) { //성공
             Log.e("authApiSuccess2", "${response.code()}")
         } else {
+            errorCode = response.code()
             Log.e("authApiFailed2", "${response.code()}")
         }
     }
