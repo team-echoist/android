@@ -66,6 +66,7 @@ import com.echoist.linkedout.presentation.userInfo.account.UserInfoViewModel
 import com.echoist.linkedout.presentation.util.Routes
 import com.echoist.linkedout.presentation.util.isEmailValid
 import com.echoist.linkedout.presentation.util.navigateWithClearBackStack
+import com.echoist.linkedout.presentation.util.throttleClick
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import kotlinx.coroutines.delay
 
@@ -213,22 +214,25 @@ fun ChangeEmailPage(
                             .height(106.dp)
                     )
                     Spacer(modifier = Modifier.height(209.dp))
-
-                    val enabled = !(isError || email.isEmpty())
-                    Button(
-                        onClick = { viewModel.sendEmailVerificationForChange(email) },
-                        enabled = enabled,
-                        shape = RoundedCornerShape(20),
+                    val enabled = !isError && email.isNotEmpty() && !viewModel.isLoading
+                    Text(
+                        text = "인증하기",
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(61.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = LinkedInColor,
-                            disabledContainerColor = Color(0xFF868686),
-                        )
-                    ) {
-                        androidx.compose.material.Text(text = "인증하기")
-                    }
+                            .height(61.dp)
+                            .background(
+                                color = if (enabled) LinkedInColor else Color(0xFF868686),
+                                shape = RoundedCornerShape(20)
+                            )
+                            .throttleClick {
+                                if (enabled) {
+                                    viewModel.sendEmailVerificationForChange(email)
+                                }
+                            }
+                            .padding(vertical = 16.dp),
+                        color = Color.Black,
+                        textAlign = TextAlign.Center
+                    )
                 }
                 AnimatedVisibility(
                     visible = viewModel.isSendEmailVerifyApiFinished,
@@ -359,7 +363,11 @@ fun CustomOutlinedTextField(
 }
 
 @Composable
-fun SendEmailFinishedAlert(text: String, isClicked: () -> Unit) {
+fun SendEmailFinishedAlert(
+    mainText: String,
+    contentText: String = "링크를 클릭해 인증을 완료해주세요",
+    isClicked: () -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -374,8 +382,8 @@ fun SendEmailFinishedAlert(text: String, isClicked: () -> Unit) {
             contentAlignment = Alignment.CenterStart
         ) {
             Column {
-                Text(text = text, fontSize = 14.sp)
-                Text(text = "링크를 클릭해 인증을 완료해주세요.", color = LinkedInColor, fontSize = 14.sp)
+                Text(text = mainText, fontSize = 14.sp)
+                Text(text = contentText, color = LinkedInColor, fontSize = 14.sp)
             }
         }
         Box(
