@@ -52,7 +52,7 @@ fun TabletNavHost(
         }
         composable(Routes.OnBoarding) {
             TabletOnBoardingRoute(
-                onStartClick = { navController.navigate(Routes.LoginPage) }
+                onStartClick = { navigateWithClearBackStack(navController, Routes.LoginPage) }
             )
         }
         composable(Routes.ResetPwPageWithEmail) {
@@ -63,7 +63,7 @@ fun TabletNavHost(
         }
         composable(Routes.SignUpComplete) {
             TabletSignUpCompleteRoute {
-                navController.navigate("${Routes.Home}/200")
+                navigateWithClearBackStack(navController, "${Routes.Home}/200")
             }
         }
         composable(

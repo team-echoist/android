@@ -53,6 +53,7 @@ import com.echoist.linkedout.data.dto.UserInfo
 import com.echoist.linkedout.presentation.home.LogoutBox
 import com.echoist.linkedout.presentation.userInfo.MyPageViewModel
 import com.echoist.linkedout.presentation.util.Routes
+import com.echoist.linkedout.presentation.util.navigateWithClearBackStack
 import com.echoist.linkedout.ui.theme.LinkedInColor
 
 @Composable
@@ -143,11 +144,7 @@ fun AccountPage(
                             isLogoutClicked = false
                             userInfoViewModel.logout()
 
-                            navController.navigate(Routes.LoginPage) {
-                                popUpTo(Routes.LoginPage) {
-                                    inclusive = true
-                                }
-                            }
+                            navigateWithClearBackStack(navController, Routes.LoginPage)
                         }
                     )
                 }

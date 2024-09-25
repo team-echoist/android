@@ -33,6 +33,7 @@ import com.echoist.linkedout.presentation.home.MyProfile
 import com.echoist.linkedout.presentation.home.ShopDrawerItem
 import com.echoist.linkedout.presentation.userInfo.account.UserInfoViewModel
 import com.echoist.linkedout.presentation.util.Routes
+import com.echoist.linkedout.presentation.util.navigateWithClearBackStack
 
 @Composable
 fun DrawableScreen(
@@ -82,12 +83,7 @@ fun DrawableScreen(
             isLogoutClicked = {
                 userInfoViewModel.logout()
                 isLogoutClicked = false
-                navController.navigate(Routes.LoginPage) {
-                    popUpTo(Routes.LoginPage) {
-                        inclusive = true
-                    }
-                    launchSingleTop = true
-                }
+                navigateWithClearBackStack(navController, Routes.LoginPage)
             }
         )
     }
