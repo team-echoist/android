@@ -57,6 +57,7 @@ import com.echoist.linkedout.presentation.home.MyProfile
 import com.echoist.linkedout.presentation.home.ShopDrawerItem
 import com.echoist.linkedout.presentation.home.TabletDrawableItems
 import com.echoist.linkedout.presentation.home.tutorial.TabletTutorialScreen
+import com.echoist.linkedout.presentation.home.tutorial.TutorialScreen
 import com.echoist.linkedout.presentation.myLog.mylog.MyLogViewModel
 import com.echoist.linkedout.presentation.util.Routes
 import kotlinx.coroutines.launch
@@ -68,7 +69,6 @@ fun TabletApp(
     homeViewModel: HomeViewModel = hiltViewModel(),
     myLogViewModel: MyLogViewModel = hiltViewModel()
 ) {
-    var isClickedTutorial by remember { mutableStateOf(false) }
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val showBottomBar =
         navBackStackEntry?.destination?.route?.startsWith(Routes.Home) == true ||
@@ -197,10 +197,14 @@ fun TabletApp(
                         modifier = Modifier
                             .fillMaxWidth(if (isNotificationClicked) 0.7f else 1f),
                         currentRoute = currentRoute,
-                        drawerState = drawerState,
-                        scope = scope,
                         homeViewModel = homeViewModel,
                         myLogViewModel = myLogViewModel,
+                        onClickDrawable = {
+                            scope.launch {
+                                drawerState.open()
+                            }
+                            isNotificationClicked = false
+                        },
                         onClickSearch = {
                             navController.navigate(Routes.Search)
                         },
@@ -208,7 +212,7 @@ fun TabletApp(
                             isNotificationClicked = !isNotificationClicked
                         },
                         onClickTutorial = {
-                            isClickedTutorial = true
+                            homeViewModel.isFirstUser = true
                         },
                         onBackPress = { navController.popBackStack() }
                     )
@@ -287,13 +291,21 @@ fun TabletApp(
                 }
             }
         }
-        if (isClickedTutorial) { // 첫 회원이라면
+        if (homeViewModel.isFirstUser) { // 첫 회원이라면
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color.Black.copy(0.7f))
             )
-            TabletTutorialScreen()
+            TabletTutorialScreen(
+                isCloseClicked = {
+                    homeViewModel.isFirstUser = false
+                    homeViewModel.requestFirstUserToExistUser()
+                },
+                isSkipClicked = {
+                    homeViewModel.isFirstUser = false
+                    homeViewModel.requestFirstUserToExistUser()
+                })
         }
     }
 }
