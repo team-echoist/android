@@ -49,7 +49,7 @@ import com.echoist.linkedout.presentation.util.TUTORIAL_BULB
 import kotlinx.coroutines.launch
 
 @Composable
-fun TabletTutorialScreen() {
+fun TabletTutorialScreen(isCloseClicked: () -> Unit, isSkipClicked: () -> Unit) {
     val pagerstate = rememberPagerState { 4 }
     val coroutineScope = rememberCoroutineScope()
 
@@ -94,8 +94,10 @@ fun TabletTutorialScreen() {
 
                     }
                 })
+
             3 ->
                 Tutorial4Screen {
+                    isCloseClicked()
                 }
         }
     }
@@ -108,7 +110,7 @@ fun TabletTutorialScreen() {
         ) {
             Text(
                 text = "건너뛰기 >>",
-                modifier = Modifier.clickable { },
+                modifier = Modifier.clickable { isSkipClicked() },
                 style = TextStyle(
                     fontSize = 14.sp,
                     lineHeight = 21.sp,
