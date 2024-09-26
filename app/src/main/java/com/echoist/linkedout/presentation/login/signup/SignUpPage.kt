@@ -212,7 +212,6 @@ fun SignUpPage(
                             modifier = Modifier.padding(horizontal = 30.dp)
                         )
 
-
                         Button(
                             shape = RoundedCornerShape(10.dp),
                             colors = ButtonDefaults.buttonColors(
