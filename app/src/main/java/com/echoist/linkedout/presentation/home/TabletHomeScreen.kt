@@ -68,7 +68,7 @@ fun TabletHomeRoute(
         viewModel.requestGuleRoquis()
         viewModel.requestUnreadAlerts()
         viewModel.requestLatestNotice()
-       // viewModel.requestRegisterDevice(context) //로그인 후 홈 진입 시 한번만 회원정보 등록
+        // viewModel.requestRegisterDevice(context) //로그인 후 홈 진입 시 한번만 회원정보 등록
         viewModel.requestLatestUpdate()
     }
 
@@ -100,7 +100,7 @@ fun TabletHomeRoute(
         Box(
             Modifier
                 .size(80.dp)
-                .clickable { }) {
+                .clickable { viewModel.isVisibleGeulRoquis = true }) {
             GlideImage(
                 model = TUTORIAL_BULB,
                 contentDescription = "bulb_img",
