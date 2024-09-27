@@ -21,7 +21,7 @@ class NotificationViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _timeSelection = MutableStateFlow(userDataRepository.getTimeSelection())
-    
+
     private val _writingRemindNotification =
         MutableStateFlow(userDataRepository.getWritingRemindNotification())
     val writingRemindNotification: StateFlow<Boolean> = _writingRemindNotification
@@ -34,6 +34,10 @@ class NotificationViewModel @Inject constructor(
 
     val period: StateFlow<String> = _timeSelection.map { getPeriodString(it.periodIndex) }
         .stateIn(viewModelScope, SharingStarted.Lazily, "")
+
+    fun updateTimeSelection() {
+        _timeSelection.value = userDataRepository.getTimeSelection()
+    }
 
     fun updateWritingRemindNotification(isEnabled: Boolean) {
         _writingRemindNotification.value = isEnabled
