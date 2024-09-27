@@ -52,6 +52,8 @@ fun TabletHomeRoute(
     viewModel: HomeViewModel = hiltViewModel(),
     writingViewModel: WritingViewModel = hiltViewModel()
 ) {
+    val configuration = LocalConfiguration.current
+
     val isUserDeleteApiFinished by viewModel.isUserDeleteApiFinished.collectAsState()
     val isExistLatestUpdate by viewModel.isExistLatestUpdate.collectAsState()
     var userStatus by remember { mutableStateOf(UserStatus.Activated) }
@@ -92,8 +94,8 @@ fun TabletHomeRoute(
         modifier = Modifier
             .fillMaxSize()
             .padding(
-                start = (LocalConfiguration.current.screenWidthDp * 0.25).dp,
-                bottom = (LocalConfiguration.current.screenHeightDp * 0.30).dp
+                start = (configuration.screenWidthDp * 0.25).dp,
+                bottom = (configuration.screenHeightDp * 0.30).dp
             ),
         contentAlignment = Alignment.Center
     ) {
