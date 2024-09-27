@@ -110,7 +110,7 @@ fun TabletDrawableScreen(
                 }
 
                 "환경 설정" -> {
-                    TabletSettingRoute(navController = navController) {
+                    TabletSettingRoute{
                         selectedMenu = "Default"
                     }
                 }
