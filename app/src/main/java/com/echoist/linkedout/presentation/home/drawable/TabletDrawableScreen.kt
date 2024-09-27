@@ -38,7 +38,6 @@ import com.echoist.linkedout.presentation.home.drawable.updatehistory.TabletUpda
 
 @Composable
 fun TabletDrawableScreen(
-    navController: NavController,
     scrollState: ScrollState,
     userInfo: UserInfo,
     essayCounts: List<Int>,

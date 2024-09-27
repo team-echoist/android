@@ -1,6 +1,10 @@
 package com.echoist.linkedout.presentation
 
 import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -37,12 +41,15 @@ import com.echoist.linkedout.R
 import com.echoist.linkedout.data.api.EssayApi
 import com.echoist.linkedout.navigation.TabletNavHost
 import com.echoist.linkedout.presentation.home.HomeViewModel
+import com.echoist.linkedout.presentation.home.LogoutBox
 import com.echoist.linkedout.presentation.home.MyBottomNavigation
 import com.echoist.linkedout.presentation.home.drawable.TabletDrawableScreen
 import com.echoist.linkedout.presentation.home.notification.TabletNotificationScreen
 import com.echoist.linkedout.presentation.home.tutorial.TabletTutorialScreen
 import com.echoist.linkedout.presentation.myLog.mylog.MyLogViewModel
+import com.echoist.linkedout.presentation.userInfo.account.UserInfoViewModel
 import com.echoist.linkedout.presentation.util.Routes
+import com.echoist.linkedout.presentation.util.navigateWithClearBackStack
 import kotlinx.coroutines.launch
 
 @Composable
@@ -50,7 +57,8 @@ fun TabletApp(
     navController: NavHostController,
     startDestination: String,
     homeViewModel: HomeViewModel = hiltViewModel(),
-    myLogViewModel: MyLogViewModel = hiltViewModel()
+    myLogViewModel: MyLogViewModel = hiltViewModel(),
+    userInfoViewModel: UserInfoViewModel = hiltViewModel()
 ) {
     val configuration = LocalConfiguration.current
 
@@ -82,7 +90,6 @@ fun TabletApp(
             drawerState = drawerState,
             drawerContent = {
                 TabletDrawableScreen(
-                    navController = navController,
                     scrollState = scrollState,
                     userInfo = homeViewModel.getMyInfo(),
                     essayCounts = homeViewModel.essayCount,
@@ -201,6 +208,29 @@ fun TabletApp(
                     }
                 }
             }
+        }
+        AnimatedVisibility(
+            visible = isLogoutClicked,
+            enter = slideInVertically(
+                initialOffsetY = { 2000 },
+                animationSpec = tween(durationMillis = 500)
+            ),
+            exit = slideOutVertically(
+                targetOffsetY = { 2000 },
+                animationSpec = tween(durationMillis = 500)
+            )
+        ) {
+            LogoutBox(
+                isCancelClicked = { isLogoutClicked = false },
+                isLogoutClicked = {
+                    scope.launch {
+                        drawerState.close()
+                    }
+                    userInfoViewModel.logout()
+                    isLogoutClicked = false
+                    navigateWithClearBackStack(navController, Routes.LoginPage)
+                }
+            )
         }
         if (homeViewModel.isFirstUser) { // 첫 회원이라면
             Box(
