@@ -99,7 +99,7 @@ fun TabletSettingRoute(
             )
         )
     ) {
-        NotificationTimePickerBox({ isClickedTimeSelection = false }, navController)
+        //NotificationTimePickerBox({ isClickedTimeSelection = false }, navController)
     }
 }
 
