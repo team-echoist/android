@@ -52,9 +52,9 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.R
+import com.echoist.linkedout.presentation.home.HomeViewModel
 import com.echoist.linkedout.presentation.home.notification.ImageSwitch
 import com.echoist.linkedout.presentation.home.notification.NotificationViewModel
-import com.echoist.linkedout.presentation.home.HomeViewModel
 import com.echoist.linkedout.presentation.userInfo.account.SettingTopAppBar
 import com.echoist.linkedout.ui.theme.LinkedInColor
 
@@ -64,7 +64,6 @@ fun NotificationSettingScreen(
     homeViewModel: HomeViewModel = hiltViewModel(),
     notificationViewModel: NotificationViewModel = hiltViewModel()
 ) {
-
     homeViewModel.readUserNotification()
     val context = LocalContext.current
 
@@ -103,7 +102,6 @@ fun NotificationSettingScreen(
                         homeViewModel.viewedNotification
                     ) { it ->
                         homeViewModel.viewedNotification = it
-                        Log.d(TAG, "NotificationPage: $it")
                     }
 
                     EssayNotificationBox(
@@ -112,7 +110,6 @@ fun NotificationSettingScreen(
                         homeViewModel.reportNotification
                     ) { it ->
                         homeViewModel.reportNotification = it
-                        Log.d(TAG, "NotificationPage: $it")
                     }
 
                     Spacer(modifier = Modifier.height(20.dp))
@@ -125,12 +122,10 @@ fun NotificationSettingScreen(
                     )
                     Spacer(modifier = Modifier.height(20.dp))
 
-
                     WritingNotificationBox(
                         writingRemindNotification,
                         { it ->
                             notificationViewModel.updateWritingRemindNotification(it)
-                            Log.d(TAG, "NotificationPage: $it")
                         },
                         { isClickedTimeSelection = true },
                         hour, min, period
@@ -184,8 +179,13 @@ fun NotificationSettingScreen(
                 ),
                 exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
             ) {
-                NotificationTimePickerBox({ isClickedTimeSelection = false }, navController)
-
+                NotificationTimePickerBox(
+                    isCancelClicked = { isClickedTimeSelection = false },
+                    onSaveTime = {
+                        notificationViewModel.updateTimeSelection()
+                        isClickedTimeSelection = false
+                    }
+                )
             }
             Box(
                 modifier = Modifier
@@ -204,7 +204,6 @@ fun NotificationSettingScreen(
                             writingRemindNotification
                         ) //글쓰기 시간 알림 설정 저장
                         if (writingRemindNotification) {
-                            //homeViewModel.setAlarmAfter10(context) //테스트용 1초후알람
                             homeViewModel.setAlarmFromTimeString(
                                 context = context,
                                 hour,
@@ -221,7 +220,6 @@ fun NotificationSettingScreen(
         }
     )
 }
-
 
 @Composable
 fun EssayNotificationBox(
@@ -262,9 +260,7 @@ fun EssayNotificationBox(
                 }
             )
             //Switch(checked = isChecked, onCheckedChange = { onCheckChange(it) })
-
         }
-
     }
 }
 
@@ -277,7 +273,6 @@ fun WritingNotificationBox(
     min: String,
     period: String
 ) {
-
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -336,15 +331,12 @@ fun WritingNotificationBox(
 
 @Composable
 fun NotificationTimePickerBox(
+    notificationViewModel: NotificationViewModel = hiltViewModel(),
     isCancelClicked: () -> Unit,
-    navController: NavController,
-    notificationViewModel: NotificationViewModel = hiltViewModel()
+    onSaveTime: () -> Unit
 ) {
-    val context = LocalContext.current
     var selectedTime by remember { mutableStateOf<TimeSelectionIndex?>(null) }
     val savedTimeSelection = remember { notificationViewModel.getTimeSelection() }
-
-    Log.d("NotificationTimePickerBox", "Saved Time: $savedTimeSelection")
 
     Box(
         modifier = Modifier
@@ -388,11 +380,8 @@ fun NotificationTimePickerBox(
                 Button(
                     onClick = {
                         selectedTime?.let { time ->
-                            val message =
-                                "${time.periodIndex} ${time.hourIndex}:${time.minuteIndex}"
-                            Log.d("NotificationTimePickerBox", "Selected Time: $message")
                             notificationViewModel.saveTimeSelection(time)
-                            navController.navigate("NotificationSettingScreen")
+                            onSaveTime()
                         }
                     },
                     modifier = Modifier

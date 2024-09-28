@@ -14,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -33,17 +32,14 @@ import com.echoist.linkedout.R
 import com.echoist.linkedout.presentation.home.HomeViewModel
 import com.echoist.linkedout.presentation.myLog.mylog.MyLogViewModel
 import com.echoist.linkedout.presentation.util.Routes
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 @Composable
 fun TopBarForRoute(
     modifier: Modifier = Modifier,
     currentRoute: String?,
-    drawerState: DrawerState,
-    scope: CoroutineScope,
     homeViewModel: HomeViewModel = hiltViewModel(),
     myLogViewModel: MyLogViewModel = hiltViewModel(),
+    onClickDrawable: () -> Unit,
     onClickSearch: () -> Unit,
     onClickNotification: () -> Unit,
     onClickTutorial: () -> Unit,
@@ -54,9 +50,7 @@ fun TopBarForRoute(
         currentRoute?.contains(Routes.Home) == true -> {
             TabletHomeTopBar(
                 modifier = modifier.background(Color.Transparent),
-                onClick = {
-                    scope.launch { drawerState.open() }
-                },
+                onClick = { onClickDrawable() },
                 onClickNotification = { onClickNotification() },
                 isExistUnreadAlerts = homeViewModel.isExistUnreadAlerts,
                 isClickedTutorial = { onClickTutorial() }

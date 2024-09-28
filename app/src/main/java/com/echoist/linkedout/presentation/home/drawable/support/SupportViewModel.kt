@@ -35,8 +35,6 @@ class SupportViewModel @Inject constructor(
 
     var isLoading by mutableStateOf(false)
     var alertList: SnapshotStateList<Alert> = mutableStateListOf()
-    var noticeList: SnapshotStateList<Notice> = mutableStateListOf()
-    var detailNotice: Notice? by mutableStateOf(null)
 
     private val _inquiryList = MutableStateFlow<List<Inquiry>>(emptyList())
     val inquiryList: StateFlow<List<Inquiry>>
@@ -192,44 +190,6 @@ class SupportViewModel @Inject constructor(
             null // 예외 발생 시 null 반환
         } finally {
             isLoading = false
-        }
-    }
-
-    fun requestNoticesList() {
-        noticeList.clear()
-        viewModelScope.launch {
-            try {
-                val response = supportApi.readNotices()
-                if (response.isSuccessful) {
-                    Token.accessToken =
-                        response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() }
-                            ?: Token.accessToken
-                    noticeList.addAll(response.body()!!.data.Notices)
-                    Log.d("공지사항 목록 불러오기", "성공: $noticeList")
-                } else {
-                    Log.e("공지사항 목록 불러오기", "실패: ${response.code()}")
-                }
-            } catch (e: Exception) {
-                Log.e("공지사항 목록 불러오기", "실패: ${e.printStackTrace()}")
-                e.printStackTrace()
-            }
-        }
-    }
-
-    suspend fun requestDetailNotice(noticeId: Int): Notice? {
-        return try {
-            val response = supportApi.readNoticeDetail(noticeId)
-            if (response.isSuccessful) {
-                Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
-                response.body()?.data
-            } else {
-                Log.e("공지사항 디테일 확인", "실패: ${response.code()}")
-                null
-            }
-        } catch (e: Exception) {
-            Log.e("공지사항 디테일 확인", "실패: ${e.message}")
-            e.printStackTrace()
-            null
         }
     }
 }
