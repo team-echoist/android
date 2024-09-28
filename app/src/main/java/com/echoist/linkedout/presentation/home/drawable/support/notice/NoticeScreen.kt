@@ -15,15 +15,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,9 +31,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.echoist.linkedout.data.dto.Notice
-import com.echoist.linkedout.presentation.home.drawable.support.SupportViewModel
 import com.echoist.linkedout.presentation.userInfo.account.SettingTopAppBar
 import com.echoist.linkedout.presentation.util.Routes
 import com.echoist.linkedout.presentation.util.formatDateTime
@@ -44,8 +42,9 @@ import com.echoist.linkedout.presentation.util.parseAndFormatDateTime
 @Composable
 fun NoticeScreen(
     navController: NavController,
-    viewModel: SupportViewModel
+    viewModel: NoticeViewModel = hiltViewModel()
 ) {
+    val searchUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(key1 = Unit) {
         viewModel.requestNoticesList()
@@ -56,23 +55,41 @@ fun NoticeScreen(
             SettingTopAppBar("공지사항", navController)
         }
     ) { paddingValues ->
-        Column(
+        Box(
             Modifier
+                .fillMaxSize()
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
-                .fillMaxHeight()
+                .fillMaxHeight(),
+            contentAlignment = Alignment.Center
         ) {
-            if (!viewModel.noticeList.isEmpty()) {
-                viewModel.noticeList.forEach { item ->
-                    NoticeItem(item) {
-                        navController.navigate("${Routes.NoticeDetailPage}/${item.id}")
+            when (searchUiState) {
+                is UiState.Idle -> {}
+
+                is UiState.Loading -> {
+                    CircularProgressIndicator()
+                }
+
+                is UiState.Success -> {
+                    val noticeList = (searchUiState as UiState.Success).noticeList
+                    if (noticeList.isEmpty()) {
+                        Text(text = "공지사항이 없습니다.", color = Color.Gray)
+                    } else {
+                        noticeList.forEach { item ->
+                            NoticeItem(item) {
+                                navController.navigate("${Routes.NoticeDetailPage}/${item.id}")
+                            }
+                        }
                     }
                 }
-            }
-        }
-        if (viewModel.noticeList.isEmpty()) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = "공지사항이 없습니다.", color = Color.Gray)
+
+                is UiState.Error -> {
+                    Text(
+                        text = "공지사항을 불러오는데 실패했습니다.",
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                }
             }
         }
     }
@@ -122,12 +139,12 @@ fun NoticeItem(notice: Notice, onClickItem: () -> Unit) {
 fun NoticeDetailPage(
     navController: NavController,
     noticeId: Int,
-    supportViewModel: SupportViewModel = hiltViewModel()
+    viewModel: NoticeViewModel = hiltViewModel()
 ) {
-    var notice: Notice? by remember { mutableStateOf(null) }
+    val notice by viewModel.notice.collectAsStateWithLifecycle()
 
     LaunchedEffect(key1 = Unit) {
-        notice = supportViewModel.requestDetailNotice(noticeId)!!
+        viewModel.requestDetailNotice(noticeId)
     }
 
     Scaffold(

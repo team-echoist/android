@@ -123,7 +123,7 @@ fun MobileApp(
             InquiryScreen(navController)
         }
         composable(Routes.NoticeScreen) {
-            NoticeScreen(navController, supportViewModel)
+            NoticeScreen(navController)
         }
         composable(
             route = "${Routes.NoticeDetailPage}/{noticeId}",
