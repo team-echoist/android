@@ -70,7 +70,6 @@ fun InquiryScreen(
     navController: NavController,
     viewModel: SupportViewModel = hiltViewModel()
 ) {
-
     val inquiryOptions = listOf("기술 지원 관련", "계정 및 결제", "콘텐츠 관련", "기능 요청 및 제안", "기타")
     var selectedItem by remember { mutableStateOf("") }
 
@@ -83,7 +82,6 @@ fun InquiryScreen(
 
     // ScrollState를 기억하여 스크롤 상태를 추적
     val scrollState = rememberScrollState()
-    viewModel.requestNoticesList()
 
     // 스크롤 상태를 추적
     val isScrolling = scrollState.isScrollInProgress
@@ -100,9 +98,7 @@ fun InquiryScreen(
     Scaffold(
         topBar = {
             SettingTopAppBar("1:1 문의하기", navController)
-
         }) {
-
         if (viewModel.isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator(color = LinkedInColor)
@@ -213,10 +209,8 @@ fun InquiryScreen(
                 }
             }
             Spacer(modifier = Modifier.height(20.dp))
-
         }
     }
-
 
     AnimatedVisibility(
         visible = isInfoClicked,
@@ -228,7 +222,6 @@ fun InquiryScreen(
         }
     }
 }
-
 
 @Composable
 fun InquiryItem(
@@ -254,7 +247,6 @@ fun InquiryItem(
                 )
             }
             Text(text = inquiryItem, color = Color.White)
-
         }
     }
 }
@@ -265,7 +257,6 @@ fun SingleSelectInquiryList(
     selectedItem: String,
     onItemSelected: (String) -> Unit
 ) {
-
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier
@@ -275,7 +266,6 @@ fun SingleSelectInquiryList(
     ) {
         items(items) { item ->
             val isSelected = item == selectedItem
-
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -292,7 +282,6 @@ fun SingleSelectInquiryList(
                             onItemSelected(if (selected) item else "")
                         }
                     )
-
                 }
             }
         }
@@ -303,9 +292,7 @@ fun SingleSelectInquiryList(
 @Preview
 @Composable
 fun InquiryInfoBox() {
-
     var isClicked by remember { mutableStateOf(false) }
-
     Column {
         Icon(
             imageVector = Icons.Default.Info,
@@ -338,14 +325,12 @@ fun InquiryInfoBox() {
                             fontSize = 14.sp,
                             lineHeight = 24.sp,
                             fontWeight = FontWeight(400),
-                            color = Color(0xFF909090),
-
-                            )
+                            color = Color(0xFF909090)
+                        )
                     )
                 }
             }
         }
-
     }
 }
 
@@ -373,9 +358,8 @@ fun InquiryInformationBox(isClicked: () -> Unit) {
                     fontSize = 16.sp,
                     lineHeight = 24.sp,
                     fontWeight = FontWeight(400),
-                    color = Color(0xFFFFFFFF),
-
-                    )
+                    color = Color(0xFFFFFFFF)
+                )
             )
             Spacer(modifier = Modifier.height(10.dp))
             Text(
@@ -384,11 +368,9 @@ fun InquiryInformationBox(isClicked: () -> Unit) {
                     fontSize = 16.sp,
                     lineHeight = 24.sp,
                     fontWeight = FontWeight(400),
-                    color = Color(0xFFFFFFFF),
-
-                    )
+                    color = Color(0xFFFFFFFF)
+                )
             )
         }
     }
 }
-
