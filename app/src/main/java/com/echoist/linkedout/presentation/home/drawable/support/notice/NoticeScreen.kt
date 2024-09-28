@@ -62,7 +62,6 @@ fun NoticeScreen(
                 .verticalScroll(rememberScrollState())
                 .fillMaxHeight()
         ) {
-
             if (!viewModel.noticeList.isEmpty()) {
                 viewModel.noticeList.forEach { item ->
                     NoticeItem(item) {
@@ -101,7 +100,6 @@ fun NoticeItem(notice: Notice, onClickItem: () -> Unit) {
                 fontSize = 16.sp,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
-
             )
             Text(text = formatDateTime(notice.createdDate), fontSize = 10.sp, color = Color.Gray)
             Spacer(modifier = Modifier.height(10.dp))
@@ -116,10 +114,8 @@ fun NoticeItem(notice: Notice, onClickItem: () -> Unit) {
                 contentDescription = "arrowforward",
                 modifier = Modifier.size(20.dp)
             )
-
         }
     }
-
 }
 
 @Composable

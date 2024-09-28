@@ -33,6 +33,8 @@ import com.echoist.linkedout.presentation.home.drawable.setting.TabletSettingRou
 import com.echoist.linkedout.presentation.home.drawable.support.TabletSupportRoute
 import com.echoist.linkedout.presentation.home.drawable.support.inquiry.TabletInquiryScreen
 import com.echoist.linkedout.presentation.home.drawable.support.linkedoutsupport.TabletLinkedOutSupportRoute
+import com.echoist.linkedout.presentation.home.drawable.support.notice.TabletNoticeDetailRoute
+import com.echoist.linkedout.presentation.home.drawable.support.notice.TabletNoticeRoute
 import com.echoist.linkedout.presentation.home.drawable.thememode.TabletThemeModeScreen
 import com.echoist.linkedout.presentation.home.drawable.updatehistory.TabletUpdateHistoryRoute
 
@@ -46,6 +48,7 @@ fun TabletDrawableScreen(
     onClickLogout: () -> Unit,
 ) {
     var selectedMenu by remember { mutableStateOf(selectedMenu) }
+    var noticeId by remember { mutableStateOf(0) }
 
     Row {
         Column(
@@ -82,7 +85,7 @@ fun TabletDrawableScreen(
             }
             TabletDrawableItems(
                 "고객지원",
-                selectedMenu == "고객지원" || selectedMenu == "링크드아웃 고객센터"
+                selectedMenu == "고객지원" || selectedMenu == "링크드아웃 고객센터" || selectedMenu == "1:1 문의하기" || selectedMenu == "공지사항"
             ) {
                 selectedMenu = "고객지원"
             }
@@ -109,17 +112,17 @@ fun TabletDrawableScreen(
                 }
 
                 "환경 설정" -> {
-                    TabletSettingRoute{
+                    TabletSettingRoute {
                         selectedMenu = "Default"
                     }
                 }
 
                 "고객지원" -> {
-                    TabletSupportRoute(onCloseClick = {
-                        selectedMenu = "Default"
-                    }, onClickSupport = {
-                        selectedMenu = "링크드아웃 고객센터"
-                    })
+                    TabletSupportRoute(
+                        onCloseClick = { selectedMenu = "Default" },
+                        onClickNotice = { selectedMenu = "공지사항" },
+                        onClickSupport = { selectedMenu = "링크드아웃 고객센터" }
+                    )
                 }
 
                 "업데이트 기록" -> {
@@ -139,6 +142,24 @@ fun TabletDrawableScreen(
                 "1:1 문의하기" -> {
                     TabletInquiryScreen {
                         selectedMenu = "링크드아웃 고객센터"
+                    }
+                }
+
+                "공지사항" -> {
+                    TabletNoticeRoute(
+                        onBackPressed = {
+                            selectedMenu = "고객지원"
+                        },
+                        onClickNotice = {
+                            selectedMenu = "공지사항 상세"
+                            noticeId = it
+                        }
+                    )
+                }
+
+                "공지사항 상세" -> {
+                    TabletNoticeDetailRoute(noticeId) {
+                        selectedMenu = "공지사항"
                     }
                 }
             }

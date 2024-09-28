@@ -49,7 +49,8 @@ import com.echoist.linkedout.ui.theme.LinkedOutTheme
 @Composable
 fun TabletSupportRoute(
     onCloseClick: () -> Unit,
-    onClickSupport: () -> Unit
+    onClickSupport: () -> Unit,
+    onClickNotice: () -> Unit
 ) {
     LinkedOutTheme {
         Scaffold(topBar = {
@@ -62,7 +63,7 @@ fun TabletSupportRoute(
                     onClickSupport()
                 }
                 SupportBox(title = "공지사항") {
-
+                    onClickNotice()
                 }
                 ExpandableBox(title = "이용약관")
             }
