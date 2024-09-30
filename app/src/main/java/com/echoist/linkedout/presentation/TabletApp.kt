@@ -86,6 +86,7 @@ fun TabletApp(
     }
 
     val essayCount by drawableViewModel.essayCount.collectAsState()
+    val myInfo by homeViewModel.getMyInfo().collectAsState()
 
     val fillWidthFraction = when (configuration.orientation) {
         Configuration.ORIENTATION_LANDSCAPE -> if (isNotificationClicked) 0.7f else 1f
@@ -101,7 +102,7 @@ fun TabletApp(
             drawerContent = {
                 TabletDrawableScreen(
                     scrollState = scrollState,
-                    userInfo = drawableViewModel.getMyInfo(),
+                    userInfo = myInfo,
                     essayCounts = essayCount,
                     selectedMenu = selectedMenu,
                     onClickMyInfo = {

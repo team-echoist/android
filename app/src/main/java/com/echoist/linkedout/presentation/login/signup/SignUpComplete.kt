@@ -17,6 +17,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -54,17 +55,18 @@ fun SignUpCompletePage(homeViewModel: HomeViewModel = hiltViewModel(), navContro
         }
     }
 
+    val myInfo by homeViewModel.getMyInfo().collectAsState()
+
     Scaffold {
         Box(
-            Modifier
-                .padding(it)
-                .fillMaxSize(), contentAlignment = Alignment.Center
+                Modifier
+                        .padding(it).fillMaxSize(), contentAlignment = Alignment.Center
         ) {
             Column(
                 Modifier.padding(horizontal = 20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                LoadingText(nickName = homeViewModel.readMyProfile().nickname!!)
+                LoadingText(nickName = myInfo.nickname ?: "아무개")
                 Spacer(modifier = Modifier.height(56.dp))
                 GlideImage(
                     model = R.drawable.login_table,
@@ -76,15 +78,15 @@ fun SignUpCompletePage(homeViewModel: HomeViewModel = hiltViewModel(), navContro
             }
             Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(end = 20.dp), contentAlignment = Alignment.BottomEnd
+                        .fillMaxSize()
+                        .padding(end = 20.dp), contentAlignment = Alignment.BottomEnd
             ) {
                 GlideImage(
                     model = R.drawable.rightsidetext,
                     contentDescription = "rightsideText",
-                    Modifier
-                        .padding(bottom = 80.dp)
-                        .size(240.dp, 90.dp)
+                        Modifier
+                                .padding(bottom = 80.dp)
+                                .size(240.dp, 90.dp)
                 )
             }
         }
@@ -138,8 +140,8 @@ fun LoadingText(nickName: String) {
 fun RightSideText() {
     Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .height(90.dp)
+                .fillMaxWidth()
+                .height(90.dp)
     ) {
         Text(
             text = "이곳에서 마음껏\n실험하고,부딪히고,성장하는\n아무개가 되어보세요 ",

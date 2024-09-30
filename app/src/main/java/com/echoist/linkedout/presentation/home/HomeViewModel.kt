@@ -28,6 +28,7 @@ import com.echoist.linkedout.data.dto.Release
 import com.echoist.linkedout.data.dto.UserInfo
 import com.echoist.linkedout.data.repository.HomeRepository
 import com.echoist.linkedout.data.repository.TokenRepository
+import com.echoist.linkedout.data.repository.UserDataRepository
 import com.echoist.linkedout.presentation.essay.write.Token
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -42,6 +43,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val exampleItems: ExampleItems,
+    private val userDataRepository: UserDataRepository,
     private val userApi: UserApi,
     private val supportApi: SupportApi,
     private val homeRepository: HomeRepository,
@@ -105,6 +107,12 @@ class HomeViewModel @Inject constructor(
             Log.d("헤더 토큰", Token.accessToken)
             exampleItems.myProfile = response.data.user
             exampleItems.myProfile.essayStats = response.data.essayStats
+
+            val userinfo = response.data.user.apply {
+                essayStats = response.data.essayStats
+            }
+
+            userDataRepository.setUserInfo(userinfo)
             Log.i(TAG, "readMyInfo: ${exampleItems.myProfile}")
             locationNotification = exampleItems.myProfile.locationConsent ?: false
 
@@ -117,8 +125,8 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun getMyInfo(): UserInfo { // 함수 이름 변경
-        return exampleItems.myProfile
+    fun getMyInfo(): StateFlow<UserInfo> { // 함수 이름 변경
+        return userDataRepository.userInfo
     }
 
     //고유식별자

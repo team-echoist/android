@@ -38,24 +38,26 @@ import com.echoist.linkedout.presentation.util.navigateWithClearBackStack
 
 @Composable
 fun DrawableScreen(
-    viewModel: DrawableViewModel = hiltViewModel(),
-    navController: NavController,
-    userInfoViewModel: UserInfoViewModel = hiltViewModel()
+        viewModel: DrawableViewModel = hiltViewModel(),
+        navController: NavController,
+        userInfoViewModel: UserInfoViewModel = hiltViewModel()
 ) {
     var isLogoutClicked by remember { mutableStateOf(false) }
+
     val essayCount by viewModel.essayCount.collectAsState()
+    val myInfo by viewModel.getMyInfo().collectAsState()
 
     LaunchedEffect(key1 = Unit) {
         viewModel.requestUserGraphSummary()
     }
 
     ModalDrawerSheet(
-        modifier = Modifier.fillMaxWidth(0.9f),
-        drawerShape = RectangleShape,
-        drawerContainerColor = Color(0xFF121212)
+            modifier = Modifier.fillMaxWidth(0.9f),
+            drawerShape = RectangleShape,
+            drawerContainerColor = Color(0xFF121212)
     ) {
         Column(Modifier.verticalScroll(rememberScrollState())) {
-            MyProfile(item = viewModel.getMyInfo()) { navController.navigate("SETTINGS") }
+            MyProfile(item = myInfo) { navController.navigate("SETTINGS") }
             HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
             MyLinkedOutBar()
             LineChartExample(essayCounts = essayCount)
@@ -73,23 +75,23 @@ fun DrawableScreen(
         }
     }
     AnimatedVisibility(
-        visible = isLogoutClicked,
-        enter = slideInVertically(
-            initialOffsetY = { 2000 },
-            animationSpec = tween(durationMillis = 500)
-        ),
-        exit = slideOutVertically(
-            targetOffsetY = { 2000 },
-            animationSpec = tween(durationMillis = 500)
-        )
+            visible = isLogoutClicked,
+            enter = slideInVertically(
+                    initialOffsetY = { 2000 },
+                    animationSpec = tween(durationMillis = 500)
+            ),
+            exit = slideOutVertically(
+                    targetOffsetY = { 2000 },
+                    animationSpec = tween(durationMillis = 500)
+            )
     ) {
         LogoutBox(
-            isCancelClicked = { isLogoutClicked = false },
-            isLogoutClicked = {
-                userInfoViewModel.logout()
-                isLogoutClicked = false
-                navigateWithClearBackStack(navController, Routes.LoginPage)
-            }
+                isCancelClicked = { isLogoutClicked = false },
+                isLogoutClicked = {
+                    userInfoViewModel.logout()
+                    isLogoutClicked = false
+                    navigateWithClearBackStack(navController, Routes.LoginPage)
+                }
         )
     }
 }
