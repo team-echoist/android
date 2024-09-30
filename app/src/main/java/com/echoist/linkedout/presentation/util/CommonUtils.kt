@@ -119,6 +119,12 @@ fun getCurrentDateFormatted(): String {
     return currentDate.format(formatter)
 }
 
+fun getCurrentDate(): String {
+    val currentDate = LocalDate.now()
+    val formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
+    return currentDate.format(formatter)
+}
+
 // 00 일째 링크드아웃! 의 계산함수
 fun calculateDaysDifference(dateString: String): Long {
     // 입력된 날짜를 ZonedDateTime으로 파싱

@@ -48,6 +48,7 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
 import com.echoist.linkedout.data.api.EssayApi
 import com.echoist.linkedout.presentation.essay.write.WritingViewModel
+import com.echoist.linkedout.presentation.util.getCurrentDate
 import com.echoist.linkedout.ui.theme.LinkedInColor
 
 
@@ -71,7 +72,7 @@ fun TemporaryStoragePage(navController: NavController, viewModel: WritingViewMod
         )
     }) {
         Column(Modifier.padding(it)) {
-            StorageWritingEssay(viewModel.title.value.text, viewModel.getCurrentDate())
+            StorageWritingEssay(viewModel.title.value.text, getCurrentDate())
             if (isModifyClicked) {
                 StorageSelectBox(viewModel.storageEssaysList)
             } else {

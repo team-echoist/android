@@ -92,6 +92,7 @@ import com.echoist.linkedout.RequestPermissionsUtil
 import com.echoist.linkedout.data.api.EssayApi
 import com.echoist.linkedout.presentation.util.Keyboard
 import com.echoist.linkedout.presentation.util.Routes
+import com.echoist.linkedout.presentation.util.getCurrentDate
 import com.echoist.linkedout.presentation.util.keyboardAsState
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.mohamedrejeb.richeditor.model.RichTextState
@@ -666,7 +667,7 @@ fun WritingCancelCard(
                                     content = viewModel.content,
                                     longitude = viewModel.longitude,
                                     latitude = viewModel.latitude,
-                                    createdDate = viewModel.getCurrentDate(),
+                                    createdDate = getCurrentDate(),
                                     tags = tagList,
                                     essayPrimaryId = viewModel.essayPrimaryId ?: 0,
                                     thumbnail = viewModel.imageUrl
@@ -938,7 +939,7 @@ fun TextEditBar(
                                     content = viewModel.content,
                                     longitude = viewModel.longitude,
                                     latitude = viewModel.latitude,
-                                    createdDate = viewModel.getCurrentDate(),
+                                    createdDate = getCurrentDate(),
                                     tags = tagList,
                                     essayPrimaryId = viewModel.essayPrimaryId ?: 0
                                 )
