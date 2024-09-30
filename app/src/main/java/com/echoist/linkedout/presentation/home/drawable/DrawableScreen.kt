@@ -13,6 +13,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,7 +25,6 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.echoist.linkedout.presentation.home.HomeViewModel
 import com.echoist.linkedout.presentation.home.LineChartExample
 import com.echoist.linkedout.presentation.home.LogoutBox
 import com.echoist.linkedout.presentation.home.LogoutBtn
@@ -37,23 +38,27 @@ import com.echoist.linkedout.presentation.util.navigateWithClearBackStack
 
 @Composable
 fun DrawableScreen(
-    viewModel: HomeViewModel,
+    viewModel: DrawableViewModel = hiltViewModel(),
     navController: NavController,
     userInfoViewModel: UserInfoViewModel = hiltViewModel()
 ) {
     var isLogoutClicked by remember { mutableStateOf(false) }
-    val scrollState = rememberScrollState()
+    val essayCount by viewModel.essayCount.collectAsState()
+
+    LaunchedEffect(key1 = Unit) {
+        viewModel.requestUserGraphSummary()
+    }
 
     ModalDrawerSheet(
         modifier = Modifier.fillMaxWidth(0.9f),
         drawerShape = RectangleShape,
         drawerContainerColor = Color(0xFF121212)
     ) {
-        Column(Modifier.verticalScroll(scrollState)) {
+        Column(Modifier.verticalScroll(rememberScrollState())) {
             MyProfile(item = viewModel.getMyInfo()) { navController.navigate("SETTINGS") }
             HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
             MyLinkedOutBar()
-            LineChartExample(essayCounts = viewModel.essayCount)
+            LineChartExample(essayCounts = essayCount)
             Spacer(modifier = Modifier.height(10.dp))
             HorizontalDivider(thickness = 6.dp, color = Color(0xFF191919))
             ShopDrawerItem()

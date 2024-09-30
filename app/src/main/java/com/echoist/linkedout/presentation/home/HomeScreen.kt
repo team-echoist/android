@@ -126,7 +126,6 @@ fun HomePage(
 
     LaunchedEffect(key1 = Unit) {
         viewModel.requestMyInfo()
-        viewModel.requestUserGraphSummary()
         viewModel.requestGuleRoquis()
         viewModel.requestUnreadAlerts()
         viewModel.requestLatestNotice()
@@ -144,7 +143,7 @@ fun HomePage(
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            DrawableScreen(viewModel = viewModel, navController)
+            DrawableScreen(navController = navController)
         },
     ) {
         Scaffold(

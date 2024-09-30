@@ -335,20 +335,6 @@ class HomeViewModel @Inject constructor(
             }
         ) { supportApi.readUpdatedHistories() }
     }
-
-    var essayCount by mutableStateOf(mutableListOf(0, 0, 0, 0, 0))
-
-    //유저 주간 링크드아웃 지수
-    fun requestUserGraphSummary() {
-        viewModelScope.launch {
-            homeRepository.requestUserGraphSummary { response ->
-                repeat(5) {
-                    essayCount[it] = response.data.weeklyEssayCounts!![it].count
-                }
-            }
-        }
-    }
-
     //튜토리얼 건너뛰기
     fun requestFirstUserToExistUser() {
         viewModelScope.launch {

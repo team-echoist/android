@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,11 +37,9 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
 import com.echoist.linkedout.presentation.essay.write.WritingViewModel
 import com.echoist.linkedout.presentation.home.tutorial.TutorialScreen
-import com.echoist.linkedout.presentation.util.Routes
 import com.echoist.linkedout.presentation.util.TUTORIAL_BULB
 import com.echoist.linkedout.presentation.util.UserStatus
 import com.echoist.linkedout.presentation.util.getCurrentDateFormatted
-import com.echoist.linkedout.presentation.util.navigateWithClearBackStack
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalGlideComposeApi::class)
@@ -66,7 +63,6 @@ fun TabletHomeRoute(
 
     LaunchedEffect(key1 = Unit) {
         viewModel.requestMyInfo()
-        viewModel.requestUserGraphSummary()
         viewModel.requestGuleRoquis()
         viewModel.requestUnreadAlerts()
         viewModel.requestLatestNotice()

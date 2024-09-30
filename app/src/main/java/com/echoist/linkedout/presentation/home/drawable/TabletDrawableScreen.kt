@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.echoist.linkedout.data.dto.UserInfo
 import com.echoist.linkedout.presentation.home.LineChartExample
 import com.echoist.linkedout.presentation.home.LogoutBtn
@@ -49,6 +48,7 @@ fun TabletDrawableScreen(
 ) {
     var selectedMenu by remember { mutableStateOf(selectedMenu) }
     var noticeId by remember { mutableStateOf(0) }
+
 
     Row {
         Column(
