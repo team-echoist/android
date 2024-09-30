@@ -6,7 +6,6 @@ import android.app.PendingIntent
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
-import android.provider.Settings
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -29,8 +28,8 @@ import com.echoist.linkedout.data.dto.UserInfo
 import com.echoist.linkedout.data.repository.HomeRepository
 import com.echoist.linkedout.data.repository.TokenRepository
 import com.echoist.linkedout.data.repository.UserDataRepository
-import com.echoist.linkedout.presentation.essay.write.Token
-import com.google.firebase.messaging.FirebaseMessaging
+import com.echoist.linkedout.presentation.util.getFCMToken
+import com.echoist.linkedout.presentation.util.getSSAID
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -87,10 +86,6 @@ class HomeViewModel @Inject constructor(
         tokenRepository.setReAuthenticationRequired(value)
     }
 
-    fun readMyProfile(): UserInfo {
-        return exampleItems.myProfile
-    }
-
     fun initializeDetailEssay() {
         exampleItems.detailEssay = EssayApi.EssayItem()
     }
@@ -101,26 +96,19 @@ class HomeViewModel @Inject constructor(
 
     suspend fun requestMyInfo() {
         try {
-
             val response = userApi.getMyInfo()
-
-            Log.d("헤더 토큰", Token.accessToken)
-            exampleItems.myProfile = response.data.user
-            exampleItems.myProfile.essayStats = response.data.essayStats
-
             val userinfo = response.data.user.apply {
                 essayStats = response.data.essayStats
             }
 
             userDataRepository.setUserInfo(userinfo)
-            Log.i(TAG, "readMyInfo: ${exampleItems.myProfile}")
-            locationNotification = exampleItems.myProfile.locationConsent ?: false
+            Log.i(TAG, "readMyInfo: ${userDataRepository.userInfo}")
+            locationNotification = userinfo.locationConsent ?: false
 
             //첫유저인지 판별
             isFirstUser = response.data.user.isFirst == true
 
         } catch (e: Exception) {
-            Log.d(TAG, "readMyInfo: error err")
             e.printStackTrace()
         }
     }
@@ -129,27 +117,6 @@ class HomeViewModel @Inject constructor(
         return userDataRepository.userInfo
     }
 
-    //고유식별자
-
-    private fun getSSAID(context: Context): String {
-        val deviceId =
-            Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
-        Log.d("DeviceID", "Device ID: $deviceId")
-        return deviceId
-    }
-
-    private fun getFCMToken(callback: (String?) -> Unit) {
-        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-            if (!task.isSuccessful) {
-                Log.w(TAG, "Fetching FCM registration token failed", task.exception)
-                callback(null) // 작업 실패 시 null 반환
-                return@addOnCompleteListener
-            }
-            // Get new FCM registration token
-            val token = task.result
-            callback(token)
-        }
-    }
 
     fun requestRegisterDevice(context: Context) {
         val ssaid = getSSAID(context)
@@ -172,8 +139,6 @@ class HomeViewModel @Inject constructor(
                 //토큰없으면 기기등록도 안됨
             }
         }
-
-
     }
 
     //사용자 알림설정 get

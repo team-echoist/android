@@ -26,7 +26,7 @@ class DrawableViewModel @Inject constructor(
         }
     }
 
-    fun getMyInfo(): StateFlow<UserInfo> { // 함수 이름 변경
+    fun getMyInfo(): StateFlow<UserInfo> {
         return userDataRepository.userInfo
     }
 }

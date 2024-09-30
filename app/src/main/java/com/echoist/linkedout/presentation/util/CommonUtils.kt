@@ -1,15 +1,19 @@
 package com.echoist.linkedout.presentation.util
 
 import android.content.ContentResolver
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
+import android.provider.Settings
+import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.echoist.linkedout.BuildConfig
 import com.echoist.linkedout.presentation.essay.write.WritingViewModel
+import com.google.firebase.messaging.FirebaseMessaging
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
@@ -172,5 +176,26 @@ fun formatElapsedTime(isoDateTimeString: String): String {
         hours > 0 -> "${hours}시간 전"
         minutes > 0 -> "${minutes}분 전"
         else -> "${seconds}초 전"
+    }
+}
+
+//안드로이드 고유식별자
+fun getSSAID(context: Context): String {
+    val deviceId =
+            Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+    Log.d("DeviceID", "Device ID: $deviceId")
+    return deviceId
+}
+//fcm토큰
+fun getFCMToken(callback: (String?) -> Unit) {
+    FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+        if (!task.isSuccessful) {
+            Log.w(ContentValues.TAG, "Fetching FCM registration token failed", task.exception)
+            callback(null) // 작업 실패 시 null 반환
+            return@addOnCompleteListener
+        }
+        // Get new FCM registration token
+        val token = task.result
+        callback(token)
     }
 }
