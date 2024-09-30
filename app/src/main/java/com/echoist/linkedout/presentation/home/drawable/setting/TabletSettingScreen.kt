@@ -20,6 +20,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,16 +35,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.echoist.linkedout.presentation.TabletDrawableTopBar
-import com.echoist.linkedout.presentation.home.HomeViewModel
 import com.echoist.linkedout.presentation.home.notification.NotificationViewModel
 
 @Composable
 fun TabletSettingRoute(
-    viewModel: HomeViewModel = hiltViewModel(),
     notificationViewModel: NotificationViewModel = hiltViewModel(),
     onCloseClick: () -> Unit
 ) {
-    viewModel.readUserNotification()
+
+    LaunchedEffect(key1 = Unit) {
+        notificationViewModel.readUserNotification()
+    }
 
     val context = LocalContext.current
     val hour by notificationViewModel.hour.collectAsState()
@@ -52,7 +54,7 @@ fun TabletSettingRoute(
     val writingRemindNotification by notificationViewModel.writingRemindNotification.collectAsState()
 
     var isClickedTimeSelection by remember { mutableStateOf(false) }
-    if (viewModel.isApifinished) {
+    if (notificationViewModel.isApifinished) {
         Column(
             Modifier
                 .background(Color.Black)
@@ -63,9 +65,9 @@ fun TabletSettingRoute(
                 onCloseClick()
             }
             ReadNotificationSettings(
-                viewModel,
-                onReadNotificationChange = { viewModel.viewedNotification = it },
-                onReportResultNotificationChange = { viewModel.reportNotification = it }
+                    notificationViewModel,
+                onReadNotificationChange = { notificationViewModel.viewedNotification = it },
+                onReportResultNotificationChange = { notificationViewModel.reportNotification = it }
             )
             Spacer(modifier = Modifier.height(20.dp))
             WriteNotificationSettings(
@@ -79,13 +81,13 @@ fun TabletSettingRoute(
                 hour, min, period
             )
             Spacer(modifier = Modifier.height(20.dp))
-            OtherNotificationSettings(viewModel = viewModel) {
-                viewModel.marketingNotification = it
+            OtherNotificationSettings(viewModel = notificationViewModel) {
+                notificationViewModel.marketingNotification = it
             }
             Spacer(modifier = Modifier.height(20.dp))
             LocationServiceSettings(
-                viewModel,
-                onLocationNotificationChange = { viewModel.locationNotification = it }
+                    notificationViewModel,
+                onLocationNotificationChange = { notificationViewModel.locationNotification = it }
             )
         }
         Box(
@@ -98,21 +100,21 @@ fun TabletSettingRoute(
                 .fillMaxWidth()
                 .height(61.dp), shape = RoundedCornerShape(20),
                 onClick = {
-                    viewModel.updateUserNotification(
-                        viewModel.locationNotification
+                    notificationViewModel.updateUserNotification(
+                            notificationViewModel.locationNotification
                     )
                     notificationViewModel.saveWritingRemindNotification(
                         writingRemindNotification
                     ) //글쓰기 시간 알림 설정 저장
                     if (writingRemindNotification) {
-                        viewModel.setAlarmFromTimeString(
+                        notificationViewModel.setAlarmFromTimeString(
                             context = context,
                             hour,
                             min,
                             period
                         ) //정해진 시간에 알람설정.
                     } else {
-                        viewModel.cancelAlarm(context) //알람 취소
+                        notificationViewModel.cancelAlarm(context) //알람 취소
                     }
                 }) {
                 Text(text = "저장", color = Color.Black)
@@ -146,7 +148,7 @@ fun TabletSettingRoute(
 
 @Composable
 fun ReadNotificationSettings(
-    viewModel: HomeViewModel,
+        notificationViewModel: NotificationViewModel,
     onReadNotificationChange: (Boolean) -> Unit,
     onReportResultNotificationChange: (Boolean) -> Unit
 ) {
@@ -160,14 +162,14 @@ fun ReadNotificationSettings(
     EssayNotificationBox(
         "글 ",
         "조회 알림",
-        viewModel.viewedNotification
+            notificationViewModel.viewedNotification
     ) {
         onReadNotificationChange(it)
     }
     EssayNotificationBox(
         "신고 결과",
         "알림",
-        viewModel.reportNotification
+            notificationViewModel.reportNotification
     ) {
         onReportResultNotificationChange(it)
     }
@@ -201,7 +203,7 @@ fun WriteNotificationSettings(
 
 @Composable
 fun OtherNotificationSettings(
-    viewModel: HomeViewModel,
+    viewModel: NotificationViewModel,
     onOtherNotificationChange: (Boolean) -> Unit
 ) {
     Text(
@@ -222,7 +224,7 @@ fun OtherNotificationSettings(
 
 @Composable
 fun LocationServiceSettings(
-    viewModel: HomeViewModel,
+    viewModel: NotificationViewModel,
     onLocationNotificationChange: (Boolean) -> Unit
 ) {
     Text(

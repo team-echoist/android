@@ -52,19 +52,22 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.R
-import com.echoist.linkedout.presentation.home.HomeViewModel
 import com.echoist.linkedout.presentation.home.notification.ImageSwitch
 import com.echoist.linkedout.presentation.home.notification.NotificationViewModel
 import com.echoist.linkedout.presentation.userInfo.account.SettingTopAppBar
+import com.echoist.linkedout.presentation.util.Routes
+import com.echoist.linkedout.presentation.util.navigateWithClearBackStack
 import com.echoist.linkedout.ui.theme.LinkedInColor
 
 @Composable
 fun NotificationSettingScreen(
     navController: NavController,
-    homeViewModel: HomeViewModel = hiltViewModel(),
     notificationViewModel: NotificationViewModel = hiltViewModel()
 ) {
-    homeViewModel.readUserNotification()
+
+    LaunchedEffect(key1 = Unit) {
+        notificationViewModel.readUserNotification()
+    }
     val context = LocalContext.current
 
     val hour by notificationViewModel.hour.collectAsState()
@@ -79,13 +82,13 @@ fun NotificationSettingScreen(
         content = {
             var isClickedTimeSelection by remember { mutableStateOf(false) }
 
-            if (homeViewModel.isApifinished) {
+            if (notificationViewModel.isApifinished) {
                 Column(
-                    Modifier
-                        .padding(it)
-                        .navigationBarsPadding()
-                        .padding(bottom = 20.dp)
-                        .verticalScroll(rememberScrollState())
+                        Modifier
+                                .padding(it)
+                                .navigationBarsPadding()
+                                .padding(bottom = 20.dp)
+                                .verticalScroll(rememberScrollState())
                 ) {
 
                     Text(
@@ -99,17 +102,17 @@ fun NotificationSettingScreen(
                     EssayNotificationBox(
                         "글 ",
                         "조회 알림",
-                        homeViewModel.viewedNotification
+                            notificationViewModel.viewedNotification
                     ) { it ->
-                        homeViewModel.viewedNotification = it
+                        notificationViewModel.viewedNotification = it
                     }
 
                     EssayNotificationBox(
                         "신고 결과",
                         "알림",
-                        homeViewModel.reportNotification
+                            notificationViewModel.reportNotification
                     ) { it ->
-                        homeViewModel.reportNotification = it
+                        notificationViewModel.reportNotification = it
                     }
 
                     Spacer(modifier = Modifier.height(20.dp))
@@ -143,9 +146,9 @@ fun NotificationSettingScreen(
                     EssayNotificationBox(
                         "이벤트 혜택 ",
                         "정보 알림",
-                        homeViewModel.marketingNotification
+                            notificationViewModel.marketingNotification
                     ) { it ->
-                        homeViewModel.marketingNotification = it
+                        notificationViewModel.marketingNotification = it
                         Log.d(TAG, "NotificationPage: $it")
                     }
                     Spacer(modifier = Modifier.height(20.dp))
@@ -161,9 +164,9 @@ fun NotificationSettingScreen(
                     EssayNotificationBox(
                         "위치 기반 서비스 ",
                         "동의",
-                        homeViewModel.locationNotification
+                        notificationViewModel.locationNotification
                     ) { it ->
-                        homeViewModel.locationNotification = it
+                        notificationViewModel.locationNotification = it
                         Log.d(TAG, "NotificationPage: $it")
                     }
                     Spacer(modifier = Modifier.height(20.dp))
@@ -189,29 +192,30 @@ fun NotificationSettingScreen(
             }
             Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 20.dp)
-                    .padding(bottom = 60.dp), contentAlignment = Alignment.BottomCenter
+                        .fillMaxSize()
+                        .padding(horizontal = 20.dp)
+                        .padding(bottom = 60.dp), contentAlignment = Alignment.BottomCenter
             ) {
                 Button(modifier = Modifier
-                    .fillMaxWidth()
-                    .height(61.dp), shape = RoundedCornerShape(20),
+                        .fillMaxWidth()
+                        .height(61.dp), shape = RoundedCornerShape(20),
                     onClick = {
-                        homeViewModel.updateUserNotification(
-                            homeViewModel.locationNotification
+                        navigateWithClearBackStack(navController,"${Routes.Home}/200")
+                        notificationViewModel.updateUserNotification(
+                                notificationViewModel.locationNotification
                         )
                         notificationViewModel.saveWritingRemindNotification(
                             writingRemindNotification
                         ) //글쓰기 시간 알림 설정 저장
                         if (writingRemindNotification) {
-                            homeViewModel.setAlarmFromTimeString(
+                            notificationViewModel.setAlarmFromTimeString(
                                 context = context,
                                 hour,
                                 min,
                                 period
                             ) //정해진 시간에 알람설정.
                         } else {
-                            homeViewModel.cancelAlarm(context) //알람 취소
+                            notificationViewModel.cancelAlarm(context) //알람 취소
                         }
                     }) {
                     Text(text = "저장", color = Color.Black)
@@ -230,10 +234,10 @@ fun EssayNotificationBox(
 ) {
     Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .background(Color(0xFF0E0E0E))
-            .height(58.dp)
-            .padding(horizontal = 20.dp)
+                .fillMaxWidth()
+                .background(Color(0xFF0E0E0E))
+                .height(58.dp)
+                .padding(horizontal = 20.dp)
     ) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart) {
             Row {
@@ -275,15 +279,15 @@ fun WritingNotificationBox(
 ) {
     Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .background(Color(0xFF0E0E0E), shape = RoundedCornerShape(6))
-            .height(120.dp)
-            .padding(horizontal = 20.dp)
+                .fillMaxWidth()
+                .background(Color(0xFF0E0E0E), shape = RoundedCornerShape(6))
+                .height(120.dp)
+                .padding(horizontal = 20.dp)
     ) {
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 20.dp), contentAlignment = Alignment.TopStart
+                    .fillMaxSize()
+                    .padding(top = 20.dp), contentAlignment = Alignment.TopStart
         ) {
             Row {
                 Text(text = "글쓰기 시간 알림 설정", color = Color.White)
@@ -291,8 +295,8 @@ fun WritingNotificationBox(
         }
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 10.dp), contentAlignment = Alignment.TopEnd
+                    .fillMaxSize()
+                    .padding(top = 10.dp), contentAlignment = Alignment.TopEnd
         ) {
             ImageSwitch(
                 height = 26.dp,
@@ -314,14 +318,14 @@ fun WritingNotificationBox(
         }
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = 20.dp), contentAlignment = Alignment.BottomEnd
+                    .fillMaxSize()
+                    .padding(bottom = 20.dp), contentAlignment = Alignment.BottomEnd
         ) {
             Box(
                 modifier = Modifier
-                    .size(90.dp, 34.dp)
-                    .clickable { isTimeSelectionClicked() }
-                    .background(Color(0xFF222222)), contentAlignment = Alignment.Center
+                        .size(90.dp, 34.dp)
+                        .clickable { isTimeSelectionClicked() }
+                        .background(Color(0xFF222222)), contentAlignment = Alignment.Center
             ) {
                 Text(text = "${hour}:${min} $period", color = Color(0xFF979797))
             }
@@ -340,15 +344,15 @@ fun NotificationTimePickerBox(
 
     Box(
         modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black.copy(0.7f)),
+                .fillMaxSize()
+                .background(Color.Black.copy(0.7f)),
         contentAlignment = Alignment.Center
     ) {
         Box(
             modifier = Modifier
-                .background(Color(0xFF212121), shape = RoundedCornerShape(5))
-                .size(299.dp, 286.dp)
-                .padding(horizontal = 20.dp, vertical = 20.dp)
+                    .background(Color(0xFF212121), shape = RoundedCornerShape(5))
+                    .size(299.dp, 286.dp)
+                    .padding(horizontal = 20.dp, vertical = 20.dp)
         ) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
                 Text(text = "알림 허용 시간", color = Color.White)
@@ -365,8 +369,8 @@ fun NotificationTimePickerBox(
             }
             Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(bottom = 20.dp),
+                        .fillMaxSize()
+                        .padding(bottom = 20.dp),
                 contentAlignment = Alignment.Center
             ) {
                 NotificationTimePicker(
@@ -385,8 +389,8 @@ fun NotificationTimePickerBox(
                         }
                     },
                     modifier = Modifier
-                        .height(50.dp)
-                        .fillMaxWidth(),
+                            .height(50.dp)
+                            .fillMaxWidth(),
                     shape = RoundedCornerShape(20)
                 ) {
                     Text(text = "저장", color = Color.Black)
@@ -415,30 +419,30 @@ fun NotificationTimePicker(
                 imageVector = Icons.Default.KeyboardArrowUp,
                 contentDescription = "Increase time period",
                 modifier = Modifier
-                    .weight(1f)
-                    .clickable {
-                        timePeriodIndex = (timePeriodIndex + 1) % timePeriods.size
-                    },
+                        .weight(1f)
+                        .clickable {
+                            timePeriodIndex = (timePeriodIndex + 1) % timePeriods.size
+                        },
                 tint = Color.White
             )
             Icon(
                 imageVector = Icons.Default.KeyboardArrowUp,
                 contentDescription = "Increase hour",
                 modifier = Modifier
-                    .weight(1f)
-                    .clickable {
-                        hourIndex = (hourIndex + 1) % hours.size
-                    },
+                        .weight(1f)
+                        .clickable {
+                            hourIndex = (hourIndex + 1) % hours.size
+                        },
                 tint = Color.White
             )
             Icon(
                 imageVector = Icons.Default.KeyboardArrowUp,
                 contentDescription = "Increase minute",
                 modifier = Modifier
-                    .weight(1f)
-                    .clickable {
-                        minuteIndex = (minuteIndex + 1) % minutes.size
-                    },
+                        .weight(1f)
+                        .clickable {
+                            minuteIndex = (minuteIndex + 1) % minutes.size
+                        },
                 tint = Color.White
             )
         }
@@ -465,31 +469,31 @@ fun NotificationTimePicker(
                 imageVector = Icons.Default.KeyboardArrowDown,
                 contentDescription = "Decrease time period",
                 modifier = Modifier
-                    .weight(1f)
-                    .clickable {
-                        timePeriodIndex =
-                            (timePeriodIndex - 1 + timePeriods.size) % timePeriods.size
-                    },
+                        .weight(1f)
+                        .clickable {
+                            timePeriodIndex =
+                                    (timePeriodIndex - 1 + timePeriods.size) % timePeriods.size
+                        },
                 tint = Color.White
             )
             Icon(
                 imageVector = Icons.Default.KeyboardArrowDown,
                 contentDescription = "Decrease hour",
                 modifier = Modifier
-                    .weight(1f)
-                    .clickable {
-                        hourIndex = (hourIndex - 1 + hours.size) % hours.size
-                    },
+                        .weight(1f)
+                        .clickable {
+                            hourIndex = (hourIndex - 1 + hours.size) % hours.size
+                        },
                 tint = Color.White
             )
             Icon(
                 imageVector = Icons.Default.KeyboardArrowDown,
                 contentDescription = "Decrease minute",
                 modifier = Modifier
-                    .weight(1f)
-                    .clickable {
-                        minuteIndex = (minuteIndex - 1 + minutes.size) % minutes.size
-                    },
+                        .weight(1f)
+                        .clickable {
+                            minuteIndex = (minuteIndex - 1 + minutes.size) % minutes.size
+                        },
                 tint = Color.White
             )
         }
@@ -509,11 +513,11 @@ fun NotificationTimePicker(
 fun TimeBox(text: String) {
     Box(
         modifier = Modifier
-            .size(70.dp, 48.dp)
-            .border(
-                BorderStroke(1.dp, Color(0xFF313131)),
-                shape = RoundedCornerShape(20.dp)
-            ),
+                .size(70.dp, 48.dp)
+                .border(
+                        BorderStroke(1.dp, Color(0xFF313131)),
+                        shape = RoundedCornerShape(20.dp)
+                ),
         contentAlignment = Alignment.Center
     ) {
         Text(
