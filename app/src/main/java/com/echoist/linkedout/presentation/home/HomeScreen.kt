@@ -125,6 +125,8 @@ fun HomePage(
     }
 
     LaunchedEffect(key1 = Unit) {
+        viewModel.initializeDetailEssay()
+        viewModel.setStorageEssay(EssayApi.EssayItem())
         viewModel.requestMyInfo()
         viewModel.requestUserGraphSummary()
         viewModel.requestGuleRoquis()
@@ -163,7 +165,7 @@ fun HomePage(
                 }
             },
             bottomBar = { MyBottomNavigation(navController) },
-            floatingActionButton = { WriteFTB(navController, viewModel, writingViewModel) },
+            floatingActionButton = { WriteFTB(navController) },
             content = {
                 Column(modifier = Modifier.padding(it)) {
 
@@ -294,21 +296,16 @@ fun HomePage(
         }
     }
 }
+
 @Composable
 fun WriteFTB(
-    navController: NavController,
-    viewModel: HomeViewModel = hiltViewModel(),
-    writingViewModel: WritingViewModel = hiltViewModel()
+    navController: NavController
 ) {
 
     FloatingActionButton(
         modifier = Modifier.padding(end = 25.dp, bottom = 25.dp),
         onClick = {
             navController.navigate("WritingPage")
-            viewModel.initializeDetailEssay()
-            viewModel.setStorageEssay(EssayApi.EssayItem())
-            writingViewModel.isModifyClicked = false
-            writingViewModel.initialize()
         },
         shape = RoundedCornerShape(100.dp),
         containerColor = Color.White
@@ -683,7 +680,6 @@ fun LogoutBox(isCancelClicked: () -> Unit, isLogoutClicked: () -> Unit) {
         }
     }
 }
-
 
 
 @OptIn(ExperimentalGlideComposeApi::class)

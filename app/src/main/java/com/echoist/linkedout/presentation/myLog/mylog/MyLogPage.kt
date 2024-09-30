@@ -118,11 +118,7 @@ fun MyLogPage(
 
                         bottomBar = { MyBottomNavigation(navController) },
                         floatingActionButton = {
-                            WriteFTB(
-                                navController,
-                                homeViewModel,
-                                writingViewModel
-                            )
+                            WriteFTB(navController)
                         },
                         content = {
                             Box(Modifier.padding(it)) {
