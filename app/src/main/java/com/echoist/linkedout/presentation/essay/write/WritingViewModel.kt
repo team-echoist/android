@@ -14,7 +14,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
 import com.echoist.linkedout.data.api.EssayApi
 import com.echoist.linkedout.data.dto.ExampleItems
 import com.echoist.linkedout.data.room.EssayStoreDao
@@ -22,15 +21,12 @@ import com.mohamedrejeb.richeditor.model.RichTextState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -85,32 +81,20 @@ class WritingViewModel @Inject constructor(
     var locationList by mutableStateOf(mutableStateListOf<String>())
     var isLocationClicked by mutableStateOf(false)
 
-    //todo image bitmap 레트로핏으로 보내는방법
-    fun readDetailEssay(): EssayApi.EssayItem {
-        return exampleItems.detailEssay
-    }
-
     var isTextFeatOpened = mutableStateOf(false)
 
     init {
         isModifyClicked = false
     }
 
-    fun getEssayById(id: Int, navController: NavController) {
+    fun getEssayById(id: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-
             storedDetailEssay = essayStoreDao.getEssayById(id)!!
             title.value = TextFieldValue(storedDetailEssay.title.toString())
             content = storedDetailEssay.content.toString()
             longitude = storedDetailEssay.longitude
             latitude = storedDetailEssay.latitude
             essayPrimaryId = storedDetailEssay.essayPrimaryId
-
-            Log.d(TAG, "getEssayById: $storedDetailEssay")
-            withContext(Dispatchers.Main) {
-                navController.navigate("WritingPage")
-            }
-
         }
     }
 
@@ -155,7 +139,6 @@ class WritingViewModel @Inject constructor(
         }
     }
 
-
     fun initialize() {
         titleFocusState.value = false
         focusState.value = false
@@ -180,16 +163,11 @@ class WritingViewModel @Inject constructor(
         hint = "10자 이상의 내용을 입력해 주세요"
     }
 
-
     //에세이 작성 후 서버에 post
     //api 통신 성공했을시에만 화면 이동
-    fun writeEssay(
-        navController: NavController, //저장할래요는 기본 둘다 false
-        status: String
-    ) {
+    fun writeEssay(status: String, onWriteEssayComplete: () -> Unit) {
         viewModelScope.launch {
             try {
-
                 val essayData = EssayApi.WritingEssayItem(
                     title.value.text,
                     content,
@@ -209,9 +187,7 @@ class WritingViewModel @Inject constructor(
                 if (response.isSuccessful) {
                     exampleItems.detailEssay = response.body()!!.data!!
                     exampleItems.detailEssayBackStack.push(exampleItems.detailEssay)
-
                     when (exampleItems.detailEssay.status) {
-
                         "private" -> {
                             exampleItems.myProfile.essayStats!!.totalEssays += 1
                         }
@@ -225,33 +201,24 @@ class WritingViewModel @Inject constructor(
                             exampleItems.myProfile.essayStats!!.linkedOutEssays += 1
                             exampleItems.myProfile.essayStats!!.totalEssays += 1
                         }
-
                     }
-
-                    Log.e("writeEssayApiSuccess 성공!", "${response.headers()}")
-                    navController.popBackStack("Home", false) //onboarding까지 전부 삭제.
-                    navController.navigate("CompletedEssayPage")
                     initialize()
+                    onWriteEssayComplete()
                 } else {
                     Log.e("에세이 작성 에러", "${response.code()}")
                     Log.e("에러 헤더 엑세스 토큰", Token.accessToken)
                     Log.e("에러 헤더 리프레시 토큰", Token.refreshToken)
-
                 }
-
             } catch (e: Exception) {
                 // api 요청 실패
                 e.printStackTrace()
-
                 Log.e("writeEssayApiFailed 아예", "Failed to write essay: ${e.printStackTrace()}")
                 Log.e("writeEssayApiFailed 아예", "Failed to write essay: ${e.message}")
             }
         }
     }
 
-    //에세이 수정 후 서버에 put
-
-    fun modifyEssay(navController: NavController, status: String) {
+    fun modifyEssay(status: String, onModifyEssayComplete: () -> Unit) {
         viewModelScope.launch {
             try {
                 val essayData = EssayApi.WritingEssayItem(
@@ -265,23 +232,20 @@ class WritingViewModel @Inject constructor(
                     location = locationText.ifEmpty { null },
                     tags = hashTagList
                 )
-                Log.d(TAG, "modifyEssay: $modifyEssayid")
                 val response = essayApi.modifyEssay(modifyEssayid, essayData = essayData)
                 if (response.isSuccessful) {
                     Log.e("수정 성공", "수정 성공!: ${response.code()}")
-
-                    navController.navigate("HOME/200")
-                    navController.popBackStack("OnBoarding", false) //onboarding까지 전부 삭제.
-
+                    onModifyEssayComplete()
                     initialize()
                 } else {
                     Log.e("modifyEssayError", "modifyEssayError: ${response.code()}")
                     Log.e("modifyEssayError", "modifyEssayError: ${Token.accessToken}")
                 }
+                /*
                 if (response.code() == 202) {
                     //블랙리스트 코드 이동
                 }
-
+                 */
             } catch (e: Exception) {
                 e.printStackTrace()
                 // api 요청 실패

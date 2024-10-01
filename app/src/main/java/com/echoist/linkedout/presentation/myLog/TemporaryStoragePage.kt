@@ -48,6 +48,7 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
 import com.echoist.linkedout.data.api.EssayApi
 import com.echoist.linkedout.presentation.essay.write.WritingViewModel
+import com.echoist.linkedout.presentation.util.Routes
 import com.echoist.linkedout.presentation.util.getCurrentDate
 import com.echoist.linkedout.ui.theme.LinkedInColor
 
@@ -287,10 +288,12 @@ fun StorageEssayList(
                         selectedItems - item
                     }
                     onSelectionChange(newSelectedItems)
-                }, { viewModel.getEssayById(item.essayPrimaryId, navController) }
+                }, {
+                    viewModel.getEssayById(item.essayPrimaryId)
+                    navController.navigate(Routes.WritingPage)
+                }
             )
         }
-
     }
 }
 

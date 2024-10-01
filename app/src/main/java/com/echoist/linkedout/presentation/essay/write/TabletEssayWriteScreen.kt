@@ -83,8 +83,6 @@ fun TabletEssayWriteRoute(
     viewModel.isModifyClicked = false
     viewModel.initialize()
 
-    Log.d(ContentValues.TAG, "WritingPage: ${viewModel.readDetailEssay()}")
-
     LaunchedEffect(key1 = Unit) {
         textState.setHtml(viewModel.content)
     }

@@ -1,6 +1,5 @@
 package com.echoist.linkedout.presentation.essay.write
 
-import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -99,9 +98,6 @@ fun WritingCompletePage(
     LaunchedEffect(Unit) {
         bottomSheetState.expand()
     }
-
-    Log.d(TAG, "WritingCompletePage: ${viewModel.readDetailEssay()}")
-
 
     BottomSheetScaffold(
         sheetContainerColor = Color(0xFF191919),
@@ -471,8 +467,7 @@ fun WritingCompletePager(viewModel: WritingViewModel, navController: NavControll
                             modifier = Modifier.padding(bottom = 25.dp),
                             color = Color.White
                         )
-
-                        // 버튼들을 리스트로 처리
+                        
                         val buttons = listOf(
                             Triple("저장", R.drawable.btn_privated, "private"),
                             Triple("발행", R.drawable.btn_published, "published"),
@@ -481,7 +476,16 @@ fun WritingCompletePager(viewModel: WritingViewModel, navController: NavControll
 
                         buttons.forEach { (label, drawable, status) ->
                             Writing_Btn(label, drawable) {
-                                handleEssayAction(status,viewModel,navController)
+                                handleEssayAction(status, viewModel,
+                                    onWriteEssayComplete = {
+                                        navController.popBackStack("Home", false)
+                                        navController.navigate(Routes.CompletedEssayPage)
+                                    },
+                                    onModifyEssayComplete = {
+                                        navController.popBackStack("OnBoarding", false)
+                                        navController.navigate("HOME/200")
+                                    }
+                                )
                             }
                         }
                     }

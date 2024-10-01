@@ -56,12 +56,20 @@ fun startActivityToPlayStore(context: Context) {
     ContextCompat.startActivity(context, playStoreIntent, Bundle.EMPTY)
 }
 
-// 공통 버튼 로직을 함수로 추출
-fun handleEssayAction(status: String, viewModel: WritingViewModel, navController: NavController) {
+fun handleEssayAction(
+    status: String,
+    viewModel: WritingViewModel,
+    onWriteEssayComplete: () -> Unit,
+    onModifyEssayComplete: () -> Unit
+) {
     if (viewModel.isModifyClicked) {
-        viewModel.modifyEssay(navController, status)
+        viewModel.modifyEssay(status) {
+            onModifyEssayComplete()
+        }
     } else {
-        viewModel.writeEssay(navController, status)
+        viewModel.writeEssay(status) {
+            onWriteEssayComplete()
+        }
     }
     viewModel.essayPrimaryId?.let { essayId ->
         viewModel.deleteEssay(essayId = essayId)

@@ -148,9 +148,6 @@ fun WritingPage(
     val isItalic = currentSpanStyle.fontStyle == FontStyle.Italic
     val isUnderline = currentSpanStyle.textDecoration == TextDecoration.Underline
 
-
-    Log.d(TAG, "WritingPage: ${viewModel.readDetailEssay()}")
-
     LaunchedEffect(key1 = Unit) {
         textState.setHtml(viewModel.content)
     }
@@ -423,7 +420,6 @@ fun WritingTopAppBar(
                             viewModel.isLocationClicked = false
                             keyboardController?.hide()
                             focusState.value = false
-
                         },
                     tint = Color.White
                 )
@@ -545,7 +541,6 @@ fun ContentTextField(viewModel: WritingViewModel, textState: RichTextState) {
         label = ""
     ).value
 
-
     Column {
         RichTextEditor(
             state = textState,
@@ -569,14 +564,10 @@ fun ContentTextField(viewModel: WritingViewModel, textState: RichTextState) {
                 unfocusedIndicatorColor = Color.Transparent,
                 textColor = Color.White
             )
-
         )
-
         Spacer(modifier = Modifier.height(20.dp))
-
     }
 }
-
 
 @Composable
 fun MyDivider(viewModel: WritingViewModel) {
@@ -605,8 +596,6 @@ fun WritingCancelCard(
     navController: NavController,
     isStoreClicked: () -> Unit
 ) {
-
-
     Column(
         modifier = Modifier
             .padding(horizontal = 20.dp)
@@ -671,10 +660,7 @@ fun WritingCancelCard(
                                     tags = tagList,
                                     essayPrimaryId = viewModel.essayPrimaryId ?: 0,
                                     thumbnail = viewModel.imageUrl
-
                                 )
-
-
                             )
                             navController.popBackStack()
                             viewModel.initialize()
@@ -705,11 +691,9 @@ fun WritingCancelCard(
                     textAlign = TextAlign.Center,
                     color = Color.White
                 )
-
             }
         }
         Spacer(modifier = Modifier.height(35.dp))
-
     }
 }
 
@@ -761,8 +745,7 @@ fun KeyboardLocationFunc(
             "쓰다 만 글",
             R.drawable.keyboard_storage
         ) { navController.navigate("TemporaryStoragePage") },
-
-        )
+    )
 
     val density = LocalDensity.current
     val keyboardHeightDp = remember { mutableStateOf(283.dp) }
@@ -845,7 +828,6 @@ fun TextEditBar(
     val keyboardController = LocalSoftwareKeyboardController.current
     var isKeyboardAppeared by remember { mutableStateOf(true) }
     val requestPermissionsUtil = RequestPermissionsUtil(LocalContext.current, viewModel)
-
 
     AnimatedVisibility(
         visible = isOpened,
@@ -991,7 +973,6 @@ fun TextSettingsBar(textState: RichTextState) {
     var selectedFontSize by remember { mutableIntStateOf(textState.currentSpanStyle.fontSize.value.toInt()) }
     val fontSizeList = listOf(13, 14, 15, 16, 17, 18, 19, 20, 22, 24)
 
-
     Row(
         Modifier
             .horizontalScroll(rememberScrollState())
@@ -1021,7 +1002,6 @@ fun TextSettingsBar(textState: RichTextState) {
 fun test() {
     var imageSize by remember { mutableStateOf(IntSize.Zero) }
 
-
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
@@ -1048,10 +1028,6 @@ fun test() {
                     Text(text = "변경", fontSize = 12.sp, color = Color.White)
                 }
             }
-
-
         }
     }
-
 }
-
