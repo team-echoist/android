@@ -48,7 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.echoist.linkedout.presentation.TabletDrawableTopBar
+import com.echoist.linkedout.navigation.TabletDrawableTopBar
 import com.echoist.linkedout.presentation.userInfo.account.changeemail.SendEmailFinishedAlert
 import com.echoist.linkedout.presentation.util.isEmailValid
 import com.echoist.linkedout.ui.theme.LinkedInColor

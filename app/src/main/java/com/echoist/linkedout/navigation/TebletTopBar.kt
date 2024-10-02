@@ -1,4 +1,4 @@
-package com.echoist.linkedout.presentation
+package com.echoist.linkedout.navigation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

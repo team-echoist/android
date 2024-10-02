@@ -39,7 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.echoist.linkedout.presentation.TabletDrawableTopBar
+import com.echoist.linkedout.navigation.TabletDrawableTopBar
 import com.echoist.linkedout.presentation.util.LOCATION_POLICY_URL
 import com.echoist.linkedout.presentation.util.PRIVACY_POLICY_URL
 import com.echoist.linkedout.presentation.util.TERMS_POLICY_URL

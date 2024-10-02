@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import com.echoist.linkedout.presentation.TabletDrawableTopBar
+import com.echoist.linkedout.navigation.TabletDrawableTopBar
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import kotlinx.coroutines.delay
 

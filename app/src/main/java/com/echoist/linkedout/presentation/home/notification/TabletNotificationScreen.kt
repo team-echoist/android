@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.data.dto.Alert
-import com.echoist.linkedout.presentation.TabletDrawableTopBar
+import com.echoist.linkedout.navigation.TabletDrawableTopBar
 import com.echoist.linkedout.presentation.home.drawable.support.SupportViewModel
 import com.echoist.linkedout.presentation.util.Routes
 import com.echoist.linkedout.ui.theme.LinkedInColor

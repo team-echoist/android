@@ -1,4 +1,4 @@
-package com.echoist.linkedout.presentation
+package com.echoist.linkedout.navigation
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
@@ -39,7 +39,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.echoist.linkedout.R
 import com.echoist.linkedout.data.api.EssayApi
-import com.echoist.linkedout.navigation.TabletNavHost
 import com.echoist.linkedout.presentation.home.HomeViewModel
 import com.echoist.linkedout.presentation.home.LogoutBox
 import com.echoist.linkedout.presentation.home.MyBottomNavigation
