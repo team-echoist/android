@@ -178,11 +178,11 @@ fun ModifyOption(
         StoryModifyBox({
             isStoryClicked = false
             viewModel.isActionClicked = false
-            viewModel.deleteEssayInStory(navController)
+            viewModel.deleteEssayInStory()
         }, {
             isStoryClicked = false
             viewModel.isActionClicked = false
-            viewModel.modifyEssayInStory(navController)
+            viewModel.modifyEssayInStory()
         },
             {
                 viewModel.isActionClicked = false
@@ -256,7 +256,7 @@ fun ModifyOption(
                     OptionItem(
                         text = "발행",
                         Color.White,
-                        { viewModel.updateEssayToPublished(navController) },
+                        { viewModel.updateEssayToPublished() },
                         R.drawable.option_link
                     )
                     HorizontalDivider(color = Color(0xFF1A1A1A))
@@ -264,7 +264,7 @@ fun ModifyOption(
                     OptionItem(
                         text = "Linked-out",
                         Color.White,
-                        { viewModel.updateEssayToLinkedOut(navController) },
+                        { viewModel.updateEssayToLinkedOut() },
                         R.drawable.option_linkedout
                     )
                     HorizontalDivider(color = Color(0xFF1A1A1A))
@@ -278,7 +278,6 @@ fun ModifyOption(
 
                     OptionItem(text = "삭제", Color(0xFFE43446), {
                         viewModel.deleteEssay(
-                            navController = navController,
                             viewModel.readDetailEssay().id ?: 0
                         )
                         Log.d(TAG, "ModifyOption: dd")
@@ -288,8 +287,6 @@ fun ModifyOption(
             }
         }
     }
-
-
 }
 
 @Composable
@@ -384,7 +381,6 @@ fun DetailTopAppBar(navController: NavController, viewModel: MyLogViewModel) {
                                             viewModel.detailEssayBackStack.peek()
                                     }
                                 }
-
                             }
                         }
                     } //뒤로가기
@@ -402,7 +398,8 @@ fun DetailTopAppBar(navController: NavController, viewModel: MyLogViewModel) {
                         viewModel.isActionClicked = !viewModel.isActionClicked
                     },
             )
-        })
+        }
+    )
 }
 
 @OptIn(ExperimentalGlideComposeApi::class)
@@ -423,7 +420,6 @@ fun DetailEssay(viewModel: MyLogViewModel) {
                         contentDescription = "essay Thumbnail",
                         contentScale = ContentScale.FillHeight
                     )
-
                 }
             }
 
@@ -495,7 +491,6 @@ fun DetailEssay(viewModel: MyLogViewModel) {
                                 }
                             }
                         }
-
                     }
                 }
                 Spacer(modifier = Modifier.height(28.dp))
@@ -512,13 +507,8 @@ fun DetailEssay(viewModel: MyLogViewModel) {
                     }
                 }
             }
-
-
         }
-
-
     }
-
 }
 
 @Composable
@@ -528,7 +518,6 @@ fun StoryModifyBox(
     isBackgroundClicked: () -> Unit,
     viewModel: MyLogViewModel
 ) {
-
     val items = viewModel.storyList
 
     Box(
@@ -617,7 +606,6 @@ fun SingleSelectableList(items: List<Story>, viewModel: MyLogViewModel) {
                         if (selectedItem != null) {
                             viewModel.setSelectStory(selectedItem!!)
                         }
-
                     }
                     .background(backgroundColor)
                     .padding(16.dp)
@@ -631,12 +619,10 @@ fun SingleSelectableList(items: List<Story>, viewModel: MyLogViewModel) {
                         contentDescription = "img"
                     )
                 }
-
             }
         }
     }
 }
-
 
 @Composable
 fun CompletedEssayPage(
@@ -727,7 +713,6 @@ fun CompletedEssayPage(
     }
 }
 
-
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun DetailEssay2(viewModel: MyLogViewModel) {
@@ -748,7 +733,6 @@ fun DetailEssay2(viewModel: MyLogViewModel) {
                         contentDescription = "essay Thumbnail",
                         contentScale = ContentScale.FillHeight
                     )
-
                 }
             }
             Column(
@@ -819,7 +803,6 @@ fun DetailEssay2(viewModel: MyLogViewModel) {
                                 }
                             }
                         }
-
                     }
                 }
                 Spacer(modifier = Modifier.height(28.dp))
@@ -835,15 +818,10 @@ fun DetailEssay2(viewModel: MyLogViewModel) {
                         }
                     }
                 }
-
             }
         }
-
-
     }
-
 }
-
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -881,7 +859,6 @@ fun WriteCompleteBox(type: String) {
                 .fillMaxSize()
                 .background(Color.Black.copy(0.7f))
         ) {
-
         }
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Box(modifier = Modifier.size(300.dp, 286.dp)) {
@@ -923,14 +900,12 @@ fun WriteCompleteBox(type: String) {
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 14.sp
                         )
-
                     }
                 }
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
                     Button(
                         onClick = {
                             isVisible = false
-
                         },
                         Modifier
                             .fillMaxWidth()
@@ -945,7 +920,6 @@ fun WriteCompleteBox(type: String) {
         }
     }
 }
-
 
 @Composable
 fun SequenceBottomBar(
@@ -1003,7 +977,6 @@ fun SequenceBottomBar(
                 .fillMaxWidth()
                 .height(70.dp)
         ) {
-
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -1024,7 +997,6 @@ fun SequenceBottomBar(
                             Modifier
                                 .size(20.dp)
                                 .clickable {
-
                                     if (viewModel.detailEssayBackStack.isNotEmpty()) {
                                         viewModel.detailEssayBackStack.pop()
 
@@ -1036,8 +1008,6 @@ fun SequenceBottomBar(
                                     }
                                     navController.popBackStack()
                                 }
-
-
                         )
                         Spacer(modifier = Modifier.height(6.dp))
                         Text(text = "이전 글", fontSize = 12.sp, color = Color.White)
@@ -1054,16 +1024,18 @@ fun SequenceBottomBar(
                                 .size(20.dp)
                                 .clickable {
                                     viewModel.detailEssayBackStack.push(item)
+                                    val type = when (item.status) {
+                                        "private" -> TYPE_PRIVATE
+                                        "published" -> TYPE_PUBLISHED
+                                        else -> TYPE_STORY
+                                    }
                                     viewModel.readNextEssay(
                                         item.id!!,
-                                        when (item.status) {
-                                            "private" -> TYPE_PRIVATE
-                                            "published" -> TYPE_PUBLISHED
-                                            else -> TYPE_STORY
-                                        },
-                                        navController,
+                                        type,
                                         if (item.status == TYPE_STORY) viewModel.getSelectedStory().id!! else 0
                                     )
+                                    if (type == TYPE_STORY) navController.navigate(Routes.DetailEssayInStoryPage)
+                                    else navController.navigate(Routes.MyLogDetailPage)
                                 }
                         )
                         Spacer(modifier = Modifier.height(6.dp))

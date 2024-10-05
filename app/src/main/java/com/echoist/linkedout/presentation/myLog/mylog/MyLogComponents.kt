@@ -62,6 +62,7 @@ import com.echoist.linkedout.data.api.EssayApi
 import com.echoist.linkedout.data.dto.Story
 import com.echoist.linkedout.presentation.essay.write.StoryCountIcon
 import com.echoist.linkedout.presentation.essay.write.WritingViewModel
+import com.echoist.linkedout.presentation.util.Routes
 import com.echoist.linkedout.presentation.util.TYPE_PRIVATE
 import com.echoist.linkedout.presentation.util.TYPE_PUBLISHED
 import com.echoist.linkedout.presentation.util.TYPE_RECOMMEND
@@ -215,11 +216,11 @@ fun EssayListItem(
         else -> TYPE_RECOMMEND
     }
 
-
     Box(modifier = Modifier
         .fillMaxWidth()
         .clickable {
-            viewModel.readDetailEssay(item.id!!, navController, type)
+            viewModel.readDetailEssay(item.id!!, type)
+            navController.navigate(Routes.MyLogDetailPage)
             viewModel.detailEssayBackStack.push(item)
             Log.d(TAG, "pushpush: ${viewModel.detailEssayBackStack}")
         }
@@ -229,7 +230,6 @@ fun EssayListItem(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-
                 GlideImage(
                     model = item.thumbnail,
                     contentScale = ContentScale.Crop,
@@ -268,10 +268,7 @@ fun EssayListItem(
                             .size(28.dp)
                             .padding(top = 1.5.dp)
                     )
-
-
                 }
-
             }
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -297,7 +294,6 @@ fun EssayListItem(
 //                    color = color,
 //                    overflow = TextOverflow.Ellipsis
 //                )
-
         }
         Box(
             contentAlignment = Alignment.TopEnd, modifier = Modifier
@@ -312,8 +308,6 @@ fun EssayListItem(
                     .clickable { isOptionClicked = !isOptionClicked }) //수정 box
         }
 
-
-
         Box(
             contentAlignment = Alignment.BottomEnd, modifier = Modifier
                 .fillMaxSize()
@@ -324,7 +318,6 @@ fun EssayListItem(
                 fontSize = 10.sp,
                 color = Color(0xFF686868)
             )
-
         }
 
         Box(
@@ -347,7 +340,6 @@ fun EssayListItem(
                 )
             }
         }
-
     }
 }
 
@@ -360,7 +352,6 @@ fun EssayListPage1(
     writingViewModel: WritingViewModel
 ) {
     val listState = rememberLazyListState()
-
 
     LaunchedEffect(listState) {
         snapshotFlow {
@@ -465,7 +456,6 @@ fun StoryListPage(viewModel: MyLogViewModel, navController: NavController) {
 
 @Composable
 fun StoryItem(story: Story, viewModel: MyLogViewModel, navController: NavController) {
-
     Box(modifier = Modifier
         .fillMaxWidth()
         .clickable {
@@ -501,7 +491,6 @@ fun ModifyStoryBox(
     viewModel: MyLogViewModel,
     navController: NavController
 ) {
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -527,7 +516,6 @@ fun ModifyStoryBox(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
                 Text(
                     text = "스토리 편집",
                     color = Color.White,
@@ -550,10 +538,9 @@ fun ModifyStoryBox(
                     fontSize = 16.sp,
                     modifier = Modifier.clickable {
                         viewModel.isModifyStoryClicked = false
-                        viewModel.deleteMyStory(viewModel.getSelectedStory().id!!, navController)
+                        viewModel.deleteMyStory(viewModel.getSelectedStory().id!!)
                     }
                 )
-
             }
             Spacer(modifier = Modifier.height(10.dp))
             Box(
@@ -571,7 +558,6 @@ fun ModifyStoryBox(
         }
     }
 }
-
 
 @Composable
 fun EssayPager(
@@ -596,7 +582,6 @@ fun ModifyOrDeleteBox(
     writingViewModel: WritingViewModel,
     essayItem: EssayApi.EssayItem
 ) {
-
     Surface(
         shape = RoundedCornerShape(10), modifier = Modifier
             .width(180.dp)
@@ -615,11 +600,10 @@ fun ModifyOrDeleteBox(
                 writingViewModel.modifyEssayid = essayItem.id!!
 
                 navController.navigate("WritingPage")
-
             }, R.drawable.option_modify)
             HorizontalDivider(color = Color(0xFF1A1A1A))
             OptionItem(text = "삭제", Color(0xFFE43446), {
-                viewModel.deleteEssay(navController = navController, essayItem.id!!)
+                viewModel.deleteEssay(essayItem.id!!)
                 Log.d(TAG, "ModifyOption: dd")
             }, R.drawable.option_trash)
             Spacer(modifier = Modifier.height(10.dp))
@@ -628,7 +612,7 @@ fun ModifyOrDeleteBox(
 }
 
 @Composable
-fun ExitAppErrorBox(){
+fun ExitAppErrorBox() {
     Box(
         modifier = Modifier
             .padding(horizontal = 20.dp)
@@ -644,7 +628,4 @@ fun ExitAppErrorBox(){
             textAlign = TextAlign.Center // 텍스트 내부에서 중앙 정렬을 추가합니다
         )
     }
-
 }
-
-
