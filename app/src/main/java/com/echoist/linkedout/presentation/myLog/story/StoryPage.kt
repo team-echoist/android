@@ -37,6 +37,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,10 +60,26 @@ import com.echoist.linkedout.presentation.util.formatDateTime
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import kotlinx.coroutines.delay
 
-
 @Composable
 fun StoryPage(viewModel: MyLogViewModel, navController: NavController) {
     var isApiFinished by remember { mutableStateOf(false) }
+
+    val navigateToMyLog0 by viewModel.navigateToMyLog0.collectAsState()
+    val navigateToMyLog2 by viewModel.navigateToMyLog2.collectAsState()
+
+    LaunchedEffect(key1 = navigateToMyLog0) {
+        if (navigateToMyLog0) {
+            navController.navigate("MYLOG/0")
+            viewModel.onNavigatedInit()
+        }
+    }
+
+    LaunchedEffect(key1 = navigateToMyLog2) {
+        if (navigateToMyLog2) {
+            navController.navigate("MYLOG/2")
+            viewModel.onNavigatedInit()
+        }
+    }
 
     LaunchedEffect(key1 = Unit) {
         viewModel.readStoryEssayList()
@@ -70,8 +87,6 @@ fun StoryPage(viewModel: MyLogViewModel, navController: NavController) {
     }
 
     if (isApiFinished) {
-
-
         Scaffold(topBar = { StoryTopAppBar(navController) }, bottomBar = {})
         {
             Column(Modifier.padding(it)) {
@@ -301,10 +316,10 @@ fun StoryEssayListScreen(viewModel: MyLogViewModel, navController: NavController
                     onClick = {
                         if (viewModel.storyTextFieldTitle.isNotEmpty()) {
                             if (viewModel.isCreateStory) { //스토리 생성
-                                viewModel.createStory(navController, essayIdList)
+                                viewModel.createStory(essayIdList)
                                 Log.d("에세이 수정테스트", "스토리 생성입니다.: $selectedItems")
                             } else { // 스토리 수정
-                                viewModel.modifyStory(navController, essayIdList)
+                                viewModel.modifyStory(essayIdList)
                                 Log.d("에세이 수정테스트", "스토리 수정입니다.: $selectedItems")
 
                             }
