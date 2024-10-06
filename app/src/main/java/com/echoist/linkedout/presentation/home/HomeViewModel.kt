@@ -11,7 +11,6 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.echoist.linkedout.data.api.EssayApi
 import com.echoist.linkedout.data.api.SignUpApiImpl
 import com.echoist.linkedout.data.api.SupportApi
 import com.echoist.linkedout.data.api.UserApi
@@ -40,8 +39,6 @@ class HomeViewModel @Inject constructor(
     private val tokenRepository: TokenRepository
 ) : ViewModel() {
 
-    var myProfile by mutableStateOf(exampleItems.myProfile)
-
     var isLoading by mutableStateOf(false)
     var isFirstUser by mutableStateOf(false)
     var latestNoticeId: Int? by mutableStateOf(null) //공지가 있을경우 true, 없을경우 Null
@@ -53,6 +50,7 @@ class HomeViewModel @Inject constructor(
 
     private val _isUserDeleteApiFinished = MutableStateFlow(false)
     val isUserDeleteApiFinished: StateFlow<Boolean> = _isUserDeleteApiFinished
+
     private val _isUpdateUserNotificationApiFinished = MutableStateFlow(false)
 
     private val _isExistLatestUpdate = MutableStateFlow(false)
@@ -68,14 +66,6 @@ class HomeViewModel @Inject constructor(
 
     fun setReAuthenticationRequired(value: Boolean) {
         tokenRepository.setReAuthenticationRequired(value)
-    }
-
-    fun initializeDetailEssay() {
-        exampleItems.detailEssay = EssayApi.EssayItem()
-    }
-
-    fun setStorageEssay(essayItem: EssayApi.EssayItem) {
-        exampleItems.storageEssay = essayItem
     }
 
     suspend fun requestMyInfo() {
