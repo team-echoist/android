@@ -99,9 +99,7 @@ class HomeViewModel @Inject constructor(
 
     suspend fun requestMyInfo() {
         try {
-
             val response = userApi.getMyInfo()
-
             Log.d("헤더 토큰", Token.accessToken)
             exampleItems.myProfile = response.data.user
             exampleItems.myProfile.essayStats = response.data.essayStats
@@ -110,7 +108,6 @@ class HomeViewModel @Inject constructor(
 
             //첫유저인지 판별
             isFirstUser = response.data.user.isFirst == true
-
         } catch (e: Exception) {
             Log.d(TAG, "readMyInfo: error err")
             e.printStackTrace()
@@ -164,8 +161,6 @@ class HomeViewModel @Inject constructor(
                 //토큰없으면 기기등록도 안됨
             }
         }
-
-
     }
 
     //사용자 알림설정 get
@@ -173,7 +168,6 @@ class HomeViewModel @Inject constructor(
 
     //HomeRepository 도입
     fun readUserNotification() {
-
         viewModelScope.launch {
             homeRepository.requestUserNotification({ response ->
                 viewedNotification = response.data.viewed
@@ -185,7 +179,6 @@ class HomeViewModel @Inject constructor(
                 isApifinished = true
             }
         }
-
     }
 
     //사용자 알림설정 update
@@ -393,5 +386,3 @@ class HomeViewModel @Inject constructor(
         }
     }
 }
-
-

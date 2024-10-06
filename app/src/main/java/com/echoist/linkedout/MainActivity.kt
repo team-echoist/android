@@ -120,6 +120,7 @@ class MainActivity : ComponentActivity() {
                         ReLogInWaringAlert {
                             navigateWithClearBackStack(navController, Routes.LoginPage)
                             homeViewModel.setReAuthenticationRequired(false)
+                            viewModel.saveClickedAutoLogin(false)
                         }
                     }
                 }
