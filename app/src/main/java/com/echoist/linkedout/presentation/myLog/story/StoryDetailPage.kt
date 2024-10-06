@@ -54,7 +54,6 @@ import com.echoist.linkedout.ui.theme.LinkedInColor
 fun StoryDetailPage(viewModel: MyLogViewModel, navController: NavController) {
     viewModel.readEssayListInStory()
 
-
     Scaffold(topBar = {
         StoryDetailTopAppBar(navController, viewModel) {
             viewModel.isModifyStoryClicked = true
@@ -82,7 +81,6 @@ fun StoryDetailTopAppBar(
     TopAppBar(modifier = Modifier.padding(horizontal = 10.dp),
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
         title = {
-
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
@@ -109,9 +107,7 @@ fun StoryDetailTopAppBar(
                     color = Color(0xFF6B6B6B),
                     fontSize = 16.sp
                 )
-
             }
-
         },
         actions = {
             Icon(
@@ -213,10 +209,7 @@ fun StoryDetailList(viewModel: MyLogViewModel, navController: NavController) {
         }
         itemsIndexed(viewModel.essayListInStroy) { i, essay ->
             StoryDetailItem(essay, i + 1) {
-                viewModel.readDetailEssayInStory(
-                    essay.id!!, navController, i + 1,
-                    TYPE_STORY, viewModel.getSelectedStory().id!!
-                )
+                navController.navigate("${Routes.DetailEssayInStoryPage}/${essay.id}/$TYPE_STORY/${i + 1}")
             }
         }
     }
@@ -225,7 +218,6 @@ fun StoryDetailList(viewModel: MyLogViewModel, navController: NavController) {
 @Preview
 @Composable
 fun StoryChip() {
-
     Text(
         text = "   스토리   ",
         color = Color.Black,
@@ -238,6 +230,4 @@ fun StoryChip() {
                 LinkedInColor, shape = RoundedCornerShape(50)
             )
     )
-
 }
-
