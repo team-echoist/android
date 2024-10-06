@@ -96,11 +96,16 @@ fun navigateWithClearBackStack(
 //2024-07-01T14:22:46.803+09:00 to 2024.07.01
 fun formatDateTime(input: String): String {
 
-    val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
-    val dateTime = LocalDateTime.parse(input, inputFormatter)
-    val outputFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
+    try {
+        val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+        val dateTime = ZonedDateTime.parse(input, inputFormatter)
+        val outputFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
 
-    return dateTime.format(outputFormatter)
+        return dateTime.format(outputFormatter)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        return input
+    }
 }
 
 //2024-07-01T14:22:46.803 09:00 to 2024-07-01T14:22:46.803+09:00 to 2024.07.01

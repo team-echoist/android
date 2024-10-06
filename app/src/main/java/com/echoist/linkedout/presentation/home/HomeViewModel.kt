@@ -77,7 +77,6 @@ class HomeViewModel @Inject constructor(
             Log.i(TAG, "readMyInfo: ${userDataRepository.userInfo}")
             //첫유저인지 판별
             isFirstUser = response.data.user.isFirst == true
-
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -192,5 +191,3 @@ class HomeViewModel @Inject constructor(
         }
     }
 }
-
-

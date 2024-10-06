@@ -23,6 +23,7 @@ import com.echoist.linkedout.presentation.essay.write.WritingCompletePage
 import com.echoist.linkedout.presentation.essay.write.WritingPage
 import com.echoist.linkedout.presentation.essay.write.WritingViewModel
 import com.echoist.linkedout.presentation.home.HomePage
+import com.echoist.linkedout.presentation.home.HomeViewModel
 import com.echoist.linkedout.presentation.home.drawable.setting.NotificationSettingScreen
 import com.echoist.linkedout.presentation.home.drawable.support.SupportScreen
 import com.echoist.linkedout.presentation.home.drawable.support.SupportViewModel
@@ -63,6 +64,7 @@ import com.echoist.linkedout.presentation.userInfo.recentviewedessay.RecentEssay
 import com.echoist.linkedout.presentation.userInfo.recentviewedessay.RecentViewedEssayPage
 import com.echoist.linkedout.presentation.userInfo.subscriber.ProfilePage
 import com.echoist.linkedout.presentation.util.Routes
+import com.echoist.linkedout.presentation.util.TYPE_STORY
 
 @Composable
 fun MobileApp(
@@ -73,6 +75,7 @@ fun MobileApp(
     val signUpViewModel: SignUpViewModel = hiltViewModel()
     val myLogViewModel: MyLogViewModel = hiltViewModel()
     val communityViewModel: CommunityViewModel = hiltViewModel()
+    val homeViewModel: HomeViewModel = hiltViewModel()
     val supportViewModel: SupportViewModel = hiltViewModel()
 
     NavHost(
@@ -102,7 +105,7 @@ fun MobileApp(
         ) { backStackEntry ->
             val statusCode =
                 backStackEntry.arguments?.getInt("statusCode") ?: 200
-            HomePage(navController, writingViewModel = writingViewModel, statusCode = statusCode)
+            HomePage(navController, homeViewModel, writingViewModel = writingViewModel, statusCode = statusCode)
         }
         composable(Routes.ThemeModeScreen) {
             ThemeModeScreen(navController)
@@ -165,8 +168,17 @@ fun MobileApp(
         composable(Routes.StoryDetailPage) {
             StoryDetailPage(myLogViewModel, navController)
         }
-        composable(Routes.DetailEssayInStoryPage) {
+        composable(
+            route = "${Routes.DetailEssayInStoryPage}/{essayId}/{type}/{num}",
+            arguments = listOf(navArgument("essayId") { type = NavType.IntType },
+                navArgument("type") { type = NavType.StringType },
+                navArgument("num") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val essayId = backStackEntry.arguments?.getInt("essayId") ?: 0
+            val type = backStackEntry.arguments?.getString("type") ?: TYPE_STORY
+            val num = backStackEntry.arguments?.getInt("num") ?: 0
             DetailEssayInStoryScreen(
+                essayId, type, num,
                 navController,
                 myLogViewModel,
                 writingViewModel

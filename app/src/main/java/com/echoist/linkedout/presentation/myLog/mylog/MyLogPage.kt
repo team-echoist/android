@@ -41,7 +41,6 @@ import com.echoist.linkedout.presentation.home.MyBottomNavigation
 import com.echoist.linkedout.presentation.home.WriteFTB
 import kotlinx.coroutines.launch
 
-
 @Composable
 fun MyLogPage(
     navController: NavController,
@@ -55,7 +54,23 @@ fun MyLogPage(
 
     val pagerstate = rememberPagerState { 3 }
     val hasCalledApi = remember { mutableStateOf(false) }
-    val isLoading by viewModel.isLoading.collectAsState()
+
+    val navigateToMyLog0 by viewModel.navigateToMyLog0.collectAsState()
+    val navigateToMyLog2 by viewModel.navigateToMyLog2.collectAsState()
+
+    LaunchedEffect(key1 = navigateToMyLog0) {
+        if (navigateToMyLog0) {
+            navController.navigate("MYLOG/0")
+            viewModel.onNavigatedInit()
+        }
+    }
+
+    LaunchedEffect(key1 = navigateToMyLog2) {
+        if (navigateToMyLog2) {
+            navController.navigate("MYLOG/2")
+            viewModel.onNavigatedInit()
+        }
+    }
 
     LaunchedEffect(key1 = Unit) {
         pagerstate.animateScrollToPage(page)
@@ -72,13 +87,11 @@ fun MyLogPage(
         }
     }
 
-
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         ModalNavigationDrawer(
             drawerState = drawerState,
             drawerContent = {
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-
                     ModalDrawerSheet(
                         modifier = Modifier.fillMaxSize(),
                         drawerShape = RectangleShape,
@@ -91,13 +104,9 @@ fun MyLogPage(
             },
             content = {
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-
-
                     Scaffold(
-
                         topBar = {
                             Column {
-
                                 MyLogTopAppBar(
                                     {
                                         scope.launch {
@@ -111,11 +120,9 @@ fun MyLogPage(
                                     viewModel.isExistUnreadAlerts
                                 )
                                 Spacer(modifier = Modifier.height(10.dp))
-
                                 EssayChips(pagerstate, viewModel)
                             }
                         },
-
                         bottomBar = { MyBottomNavigation(navController) },
                         floatingActionButton = {
                             WriteFTB(
@@ -134,15 +141,6 @@ fun MyLogPage(
                             }
                         }
                     )
-//                        if (isLoading) {
-//                            Box(
-//                                modifier = Modifier.fillMaxSize(),
-//                                contentAlignment = Alignment.Center
-//                            ) {
-//                                CircularProgressIndicator(color = LinkedInColor)
-//                            }
-//                        }
-
                     AnimatedVisibility(
                         visible = viewModel.isModifyStoryClicked,
                         enter = fadeIn(
@@ -159,10 +157,9 @@ fun MyLogPage(
                         )
                     ) {
                         ModifyStoryBox(viewModel, navController)
-
                     }
                 }
-            })
-
+            }
+        )
     }
 }

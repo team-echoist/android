@@ -58,6 +58,9 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun DetailEssayInStoryScreen(
+    essayId: Int,
+    type: String,
+    num: Int,
     navController: NavController,
     viewModel: MyLogViewModel,
     writingViewModel: WritingViewModel
@@ -65,7 +68,12 @@ fun DetailEssayInStoryScreen(
     val scrollState = rememberScrollState()
     var isClicked by remember { mutableStateOf(false) }
 
-
+    LaunchedEffect(key1 = true) {
+        viewModel.readDetailEssayInStory(
+            essayId, num,
+            type, viewModel.getSelectedStory().id!!
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -119,7 +127,6 @@ fun DetailEssayInStoryScreen(
                     delay(3000)
                     isClicked = false
                 }
-
                 AnimatedVisibility(
                     visible = isClicked,
                     enter = fadeIn(
@@ -197,7 +204,8 @@ fun TopAppBar(
                         isModifyClicked()
                     },
             )
-        })
+        }
+    )
 }
 
 
@@ -290,8 +298,6 @@ fun StoryBottomBar(
                                     }
                                     navController.popBackStack()
                                 }
-
-
                         )
                         Spacer(modifier = Modifier.height(6.dp))
                         Text(text = "이전 글", fontSize = 12.sp, color = Color.White)
@@ -308,11 +314,7 @@ fun StoryBottomBar(
                                 .size(20.dp)
                                 .clickable {
                                     viewModel.detailEssayBackStack.push(item)
-                                    viewModel.readNextEssay(
-                                        item.id!!, TYPE_STORY,
-                                        navController,
-                                        viewModel.getSelectedStory().id!!
-                                    )
+                                    navController.navigate("${Routes.DetailEssayInStoryPage}/${item.id}/$TYPE_STORY/${viewModel.getSelectedStory().id}")
                                 }
                         )
                         Spacer(modifier = Modifier.height(6.dp))

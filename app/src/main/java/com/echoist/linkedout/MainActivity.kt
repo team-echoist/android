@@ -109,7 +109,6 @@ class MainActivity : ComponentActivity() {
                 }
 
                 val currentRoute = getCurrentRoute(navController)
-
                 //온보딩,로그인 화면 에서는 401에도 재 로그인 ui 표시 x
                 if (isReAuthenticationRequired &&
                     currentRoute != Routes.OnBoarding && currentRoute != Routes.LoginPage
@@ -121,6 +120,7 @@ class MainActivity : ComponentActivity() {
                         ReLogInWaringAlert {
                             navigateWithClearBackStack(navController, Routes.LoginPage)
                             homeViewModel.setReAuthenticationRequired(false)
+                            viewModel.saveClickedAutoLogin(false)
                         }
                     }
                 }

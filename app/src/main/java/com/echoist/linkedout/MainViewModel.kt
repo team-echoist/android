@@ -41,6 +41,10 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun saveClickedAutoLogin(value: Boolean) {
+        userDataRepository.saveClickedAutoLogin(value)
+    }
+
     fun requestAppVersion() {
         _isVersionMatching.value = true
         viewModelScope.launch {
