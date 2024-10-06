@@ -40,8 +40,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.echoist.linkedout.R
-import com.echoist.linkedout.data.api.EssayApi
 import com.echoist.linkedout.navigation.TabletNavHost
+import com.echoist.linkedout.presentation.essay.write.WritingViewModel
 import com.echoist.linkedout.presentation.home.HomeViewModel
 import com.echoist.linkedout.presentation.home.LogoutBox
 import com.echoist.linkedout.presentation.home.MyBottomNavigation
@@ -62,7 +62,8 @@ fun TabletApp(
     homeViewModel: HomeViewModel = hiltViewModel(),
     drawableViewModel: DrawableViewModel = hiltViewModel(),
     myLogViewModel: MyLogViewModel = hiltViewModel(),
-    userInfoViewModel: UserInfoViewModel = hiltViewModel()
+    userInfoViewModel: UserInfoViewModel = hiltViewModel(),
+    writingViewModel: WritingViewModel = hiltViewModel()
 ) {
     val configuration = LocalConfiguration.current
 
@@ -159,8 +160,7 @@ fun TabletApp(
                             ),
                             onClick = {
                                 navController.navigate(Routes.WritingPage)
-                                homeViewModel.initializeDetailEssay()
-                                homeViewModel.setStorageEssay(EssayApi.EssayItem())
+                                writingViewModel.initialize()
                             },
                             shape = RoundedCornerShape(100.dp),
                             containerColor = Color.White
@@ -195,8 +195,8 @@ fun TabletApp(
                 ) {
                     Box(
                         modifier = Modifier
-                                .weight(1f)
-                                .fillMaxHeight()
+                            .weight(1f)
+                            .fillMaxHeight()
                     ) {
                         TabletNavHost(
                             startDestination = startDestination,

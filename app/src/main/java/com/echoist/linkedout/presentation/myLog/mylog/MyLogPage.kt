@@ -120,7 +120,6 @@ fun MyLogPage(
                         floatingActionButton = {
                             WriteFTB(
                                 navController,
-                                homeViewModel,
                                 writingViewModel
                             )
                         },

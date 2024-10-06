@@ -73,7 +73,6 @@ import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
-import com.echoist.linkedout.data.api.EssayApi
 import com.echoist.linkedout.data.dto.BottomNavItem
 import com.echoist.linkedout.data.dto.UserInfo
 import com.echoist.linkedout.presentation.essay.write.Token
@@ -162,7 +161,7 @@ fun HomePage(
                 }
             },
             bottomBar = { MyBottomNavigation(navController) },
-            floatingActionButton = { WriteFTB(navController, viewModel, writingViewModel) },
+            floatingActionButton = { WriteFTB(navController, writingViewModel) },
             content = {
                 Column(modifier = Modifier.padding(it)) {
 
@@ -296,7 +295,6 @@ fun HomePage(
 @Composable
 fun WriteFTB(
     navController: NavController,
-    viewModel: HomeViewModel = hiltViewModel(),
     writingViewModel: WritingViewModel = hiltViewModel()
 ) {
 
@@ -304,8 +302,6 @@ fun WriteFTB(
         modifier = Modifier.padding(end = 25.dp, bottom = 25.dp),
         onClick = {
             navController.navigate("WritingPage")
-            viewModel.initializeDetailEssay()
-            viewModel.setStorageEssay(EssayApi.EssayItem())
             writingViewModel.isModifyClicked = false
             writingViewModel.initialize()
         },

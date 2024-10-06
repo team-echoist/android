@@ -15,7 +15,6 @@ import com.echoist.linkedout.data.api.SignUpApiImpl
 import com.echoist.linkedout.data.api.SupportApi
 import com.echoist.linkedout.data.api.UserApi
 import com.echoist.linkedout.data.api.apiCall
-import com.echoist.linkedout.data.dto.ExampleItems
 import com.echoist.linkedout.data.dto.Release
 import com.echoist.linkedout.data.dto.UserInfo
 import com.echoist.linkedout.data.repository.HomeRepository
@@ -31,7 +30,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val exampleItems: ExampleItems,
     private val userDataRepository: UserDataRepository,
     private val userApi: UserApi,
     private val supportApi: SupportApi,
