@@ -294,6 +294,7 @@ fun HomePage(
         }
     }
 }
+
 @Composable
 fun WriteFTB(
     navController: NavController,
@@ -683,7 +684,6 @@ fun LogoutBox(isCancelClicked: () -> Unit, isLogoutClicked: () -> Unit) {
         }
     }
 }
-
 
 
 @OptIn(ExperimentalGlideComposeApi::class)

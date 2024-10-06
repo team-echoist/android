@@ -23,6 +23,7 @@ import com.echoist.linkedout.presentation.essay.write.WritingCompletePage
 import com.echoist.linkedout.presentation.essay.write.WritingPage
 import com.echoist.linkedout.presentation.essay.write.WritingViewModel
 import com.echoist.linkedout.presentation.home.HomePage
+import com.echoist.linkedout.presentation.home.HomeViewModel
 import com.echoist.linkedout.presentation.home.drawable.setting.NotificationSettingScreen
 import com.echoist.linkedout.presentation.home.drawable.support.SupportScreen
 import com.echoist.linkedout.presentation.home.drawable.support.SupportViewModel
@@ -73,6 +74,7 @@ fun MobileApp(
     val signUpViewModel: SignUpViewModel = hiltViewModel()
     val myLogViewModel: MyLogViewModel = hiltViewModel()
     val communityViewModel: CommunityViewModel = hiltViewModel()
+    val homeViewModel: HomeViewModel = hiltViewModel()
     val supportViewModel: SupportViewModel = hiltViewModel()
 
     NavHost(
@@ -102,7 +104,7 @@ fun MobileApp(
         ) { backStackEntry ->
             val statusCode =
                 backStackEntry.arguments?.getInt("statusCode") ?: 200
-            HomePage(navController, writingViewModel = writingViewModel, statusCode = statusCode)
+            HomePage(navController, homeViewModel, writingViewModel = writingViewModel, statusCode = statusCode)
         }
         composable(Routes.ThemeModeScreen) {
             ThemeModeScreen(navController)
