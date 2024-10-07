@@ -9,6 +9,7 @@ import com.echoist.linkedout.data.api.SocialSignUpApi
 import com.echoist.linkedout.data.api.StoryApi
 import com.echoist.linkedout.data.api.SupportApi
 import com.echoist.linkedout.data.api.UserApi
+import com.echoist.linkedout.data.dto.ExampleItems
 import com.echoist.linkedout.data.repository.TokenRepository
 import com.echoist.linkedout.presentation.util.BASE_URL
 import com.squareup.moshi.Moshi
@@ -48,6 +49,7 @@ object ApiModule {
             .build()
     }
 
+
     @Provides
     @Singleton
     fun provideErrorHandlingInterceptor(tokenRepository: TokenRepository): ErrorHandlingInterceptor {
@@ -58,6 +60,11 @@ object ApiModule {
     @Singleton
     fun provideApiClient(retrofit: Retrofit): EssayApi {
         return retrofit.create(EssayApi::class.java)
+    }
+    @Provides
+    @Singleton
+    fun provideExampleItemsClient(): ExampleItems {
+        return ExampleItems()
     }
 
     @Provides

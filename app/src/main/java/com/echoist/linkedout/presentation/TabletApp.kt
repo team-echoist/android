@@ -24,6 +24,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,11 +40,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.echoist.linkedout.R
-import com.echoist.linkedout.data.api.EssayApi
 import com.echoist.linkedout.navigation.TabletNavHost
+import com.echoist.linkedout.presentation.essay.write.WritingViewModel
 import com.echoist.linkedout.presentation.home.HomeViewModel
 import com.echoist.linkedout.presentation.home.LogoutBox
 import com.echoist.linkedout.presentation.home.MyBottomNavigation
+import com.echoist.linkedout.presentation.home.drawable.DrawableViewModel
 import com.echoist.linkedout.presentation.home.drawable.TabletDrawableScreen
 import com.echoist.linkedout.presentation.home.notification.TabletNotificationScreen
 import com.echoist.linkedout.presentation.home.tutorial.TabletTutorialScreen
@@ -57,8 +60,10 @@ fun TabletApp(
     navController: NavHostController,
     startDestination: String,
     homeViewModel: HomeViewModel = hiltViewModel(),
+    drawableViewModel: DrawableViewModel = hiltViewModel(),
     myLogViewModel: MyLogViewModel = hiltViewModel(),
-    userInfoViewModel: UserInfoViewModel = hiltViewModel()
+    userInfoViewModel: UserInfoViewModel = hiltViewModel(),
+    writingViewModel: WritingViewModel = hiltViewModel()
 ) {
     val configuration = LocalConfiguration.current
 
@@ -77,6 +82,13 @@ fun TabletApp(
     var isLogoutClicked by remember { mutableStateOf(false) }
     var isNotificationClicked by remember { mutableStateOf(false) }
 
+    LaunchedEffect(key1 = Unit) {
+        drawableViewModel.requestUserGraphSummary()
+    }
+
+    val essayCount by drawableViewModel.essayCount.collectAsState()
+    val myInfo by homeViewModel.getMyInfo().collectAsState()
+
     val fillWidthFraction = when (configuration.orientation) {
         Configuration.ORIENTATION_LANDSCAPE -> if (isNotificationClicked) 0.7f else 1f
         else -> if (isNotificationClicked) 0.55f else 1f
@@ -91,8 +103,8 @@ fun TabletApp(
             drawerContent = {
                 TabletDrawableScreen(
                     scrollState = scrollState,
-                    userInfo = homeViewModel.getMyInfo(),
-                    essayCounts = homeViewModel.essayCount,
+                    userInfo = myInfo,
+                    essayCounts = essayCount,
                     selectedMenu = selectedMenu,
                     onClickMyInfo = {
                         scope.launch {
@@ -148,8 +160,7 @@ fun TabletApp(
                             ),
                             onClick = {
                                 navController.navigate(Routes.WritingPage)
-                                homeViewModel.initializeDetailEssay()
-                                homeViewModel.setStorageEssay(EssayApi.EssayItem())
+                                writingViewModel.initialize()
                             },
                             shape = RoundedCornerShape(100.dp),
                             containerColor = Color.White
@@ -197,8 +208,8 @@ fun TabletApp(
                     if (isNotificationClicked) {
                         Box(
                             modifier = Modifier
-                                .fillMaxWidth(1f - fillWidthFraction)
-                                .fillMaxHeight()
+                                    .fillMaxWidth(1f - fillWidthFraction)
+                                    .fillMaxHeight()
                         ) {
                             TabletNotificationScreen(
                                 navController = navController,
@@ -235,8 +246,8 @@ fun TabletApp(
         if (homeViewModel.isFirstUser) { // 첫 회원이라면
             Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(0.7f))
+                        .fillMaxSize()
+                        .background(Color.Black.copy(0.7f))
             )
             TabletTutorialScreen(
                 isCloseClicked = {

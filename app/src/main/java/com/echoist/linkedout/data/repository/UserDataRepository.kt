@@ -2,16 +2,29 @@ package com.echoist.linkedout.data.repository
 
 import android.content.SharedPreferences
 import com.echoist.linkedout.data.dto.Tokens
+import com.echoist.linkedout.data.dto.UserInfo
 import com.echoist.linkedout.presentation.home.drawable.setting.TimeSelectionIndex
 import com.echoist.linkedout.presentation.util.DISPLAY_INFO
 import com.echoist.linkedout.presentation.util.KEY_HOUR_INDEX
 import com.echoist.linkedout.presentation.util.KEY_MINUTE_INDEX
 import com.echoist.linkedout.presentation.util.KEY_PERIOD_INDEX
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class UserDataRepository @Inject constructor(
     private val sharedPreferences: SharedPreferences
 ) {
+
+    private val _userInfo = MutableStateFlow(UserInfo())
+    val userInfo: StateFlow<UserInfo> = _userInfo
+
+    fun setUserInfo(userInfo: UserInfo){
+        _userInfo.value = userInfo
+    }
+
     fun saveWritingRemindNotification(writingRemindNotification: Boolean) {
         with(sharedPreferences.edit()) {
             putBoolean("writing_notification", writingRemindNotification)

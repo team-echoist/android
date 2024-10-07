@@ -185,6 +185,8 @@ class WritingViewModel @Inject constructor(
         isTextFeatOpened.value = false
         essayPrimaryId = null
         hint = "10자 이상의 내용을 입력해 주세요"
+        exampleItems.detailEssay = EssayApi.EssayItem()
+        exampleItems.storageEssay = EssayApi.EssayItem()
     }
 
 
