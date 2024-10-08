@@ -28,6 +28,7 @@ import com.echoist.linkedout.presentation.login.TabletLoginRoute
 import com.echoist.linkedout.presentation.login.onboarding.TabletOnBoardingRoute
 import com.echoist.linkedout.presentation.login.signup.TabletSignUpCompleteRoute
 import com.echoist.linkedout.presentation.login.signup.TabletSignUpRoute
+import com.echoist.linkedout.presentation.myLog.TemporaryStoragePage
 import com.echoist.linkedout.presentation.myLog.mylog.CompletedEssayPage
 import com.echoist.linkedout.presentation.myLog.mylog.MyLogDetailPage
 import com.echoist.linkedout.presentation.myLog.mylog.MyLogViewModel
@@ -150,6 +151,9 @@ fun TabletNavHost(
         }
         composable(Routes.BadgePage) {
             TabletBadgeRoute(contentPadding = contentPadding)
+        }
+        composable(Routes.TemporaryStoragePage) {
+            TemporaryStoragePage(navController, writingViewModel)
         }
         composable(Routes.AccountPage) {
             TabletAccountRoute(
