@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -121,7 +122,7 @@ fun TabletNavHost(
             TabletMyLogRoute(
                 navController = navController,
                 page = page,
-                modifier = Modifier.padding(contentPadding),
+                modifier = Modifier.padding(horizontal = 48.dp).padding(top = 56.dp),
                 viewModel = myLogViewModel,
                 writingViewModel = writingViewModel
             )

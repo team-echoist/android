@@ -241,7 +241,6 @@ class WritingViewModel @Inject constructor(
                     Log.e("writeEssayApiSuccess 성공!", "${response.headers()}")
                     navController.popBackStack("Home", false) //onboarding까지 전부 삭제.
                     navController.navigate("CompletedEssayPage")
-                    initialize()
                 } else {
                     Log.e("에세이 작성 에러", "${response.code()}")
                     Log.e("에러 헤더 엑세스 토큰", Token.accessToken)

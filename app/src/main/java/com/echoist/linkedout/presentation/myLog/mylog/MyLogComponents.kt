@@ -373,7 +373,7 @@ fun PublishEssayList(
                 }
             }
     }
-    
+
     if (viewModel.publishedEssayList.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text(text = "발행한 글이 없습니다.", color = Color.Gray)
@@ -542,7 +542,7 @@ fun EssayPager(
     navController: NavController,
     writingViewModel: WritingViewModel
 ) {
-    HorizontalPager(state = pagerState, modifier = Modifier.padding(top = 20.dp)) { page ->
+    HorizontalPager(state = pagerState) { page ->
         when (page) {
             0 -> SaveEssayList(viewModel, pagerState, navController, writingViewModel)
             1 -> PublishEssayList(viewModel, pagerState, navController, writingViewModel)
