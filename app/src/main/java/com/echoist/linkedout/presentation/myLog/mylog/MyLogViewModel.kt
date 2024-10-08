@@ -340,6 +340,7 @@ class MyLogViewModel @Inject constructor(
                     Token.accessToken =
                         response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() }
                             ?: Token.accessToken
+                    storyList = storyList.filter { it.id != storyId }
                     _navigateToMyLog2.value = true
                 } else {
                     Log.e("writeEssayApiFailed", "${response.code()}")

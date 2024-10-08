@@ -133,6 +133,9 @@ fun TabletNavHost(
                 modifier = Modifier.padding(contentPadding)
             )
         }
+        composable(Routes.CommunityDetailPage) {
+            CommunityDetailPage(navController, communityViewModel)
+        }
         composable(Routes.Settings) {
             TabletMyInfoRoute(
                 navController = navController,
