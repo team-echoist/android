@@ -79,12 +79,6 @@ fun TabletEssayWriteRoute(
     val isItalic = currentSpanStyle.fontStyle == FontStyle.Italic
     val isUnderline = currentSpanStyle.textDecoration == TextDecoration.Underline
 
-
-    viewModel.isModifyClicked = false
-    viewModel.initialize()
-
-    Log.d(ContentValues.TAG, "WritingPage: ${viewModel.readDetailEssay()}")
-
     LaunchedEffect(key1 = Unit) {
         textState.setHtml(viewModel.content)
     }
@@ -199,7 +193,6 @@ fun TabletEssayWriteRoute(
                                 }
                             }
                         }
-
                     } else if (isKeyBoardOpened == Keyboard.Closed && !viewModel.isTextFeatOpened.value) {
                         if (viewModel.locationList.isNotEmpty() && viewModel.longitude != null) { //직접 입력한 장소가 존재해야함.
                             LocationGroup(viewModel = viewModel)
@@ -233,8 +226,6 @@ fun TabletEssayWriteRoute(
                         }
 
                     if (isKeyBoardOpened == Keyboard.Opened || viewModel.isTextFeatOpened.value) {
-
-
                         if (isTextSettingSelected) {
                             TextSettingsBar(textState)
                         }
@@ -278,9 +269,7 @@ fun TabletEssayWriteRoute(
                                 isTextSettingSelected = false
                             }, textState
                         )
-
                         KeyboardLocationFunc(viewModel, navController, textState)
-
                     }
                 }
             }
@@ -314,6 +303,5 @@ fun TabletEssayWriteRoute(
                 }
             }
         }
-
     }
 }

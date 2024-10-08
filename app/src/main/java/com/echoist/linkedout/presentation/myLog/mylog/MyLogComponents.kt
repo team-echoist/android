@@ -71,7 +71,6 @@ import com.mohamedrejeb.richeditor.model.rememberRichTextState
 import com.mohamedrejeb.richeditor.ui.material3.RichText
 import kotlinx.coroutines.launch
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyLogTopAppBar(
@@ -81,7 +80,6 @@ fun MyLogTopAppBar(
     isExistUnreadAlerts: Boolean
 ) {
     val img = if (isExistUnreadAlerts) R.drawable.icon_noti_on else R.drawable.icon_noti_off
-
 
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
@@ -104,7 +102,6 @@ fun MyLogTopAppBar(
                     .size(30.dp)
                     .clickable { onClickNotification() }
             )
-
         }
     )
 }
@@ -112,8 +109,6 @@ fun MyLogTopAppBar(
 @Composable
 fun EssayChips(pagerState: PagerState, viewModel: MyLogViewModel) {
     val coroutineScope = rememberCoroutineScope()
-
-
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -158,11 +153,9 @@ fun EssayChips(pagerState: PagerState, viewModel: MyLogViewModel) {
                 },
                 color = if (pagerState.currentPage == 2) Color.White else Color.Gray
             )
-
         }
     }
 }
-
 
 @Composable
 fun Essaychip(
@@ -171,8 +164,6 @@ fun Essaychip(
     clickable: () -> Unit,
     color: Color
 ) {
-
-
     Column(
         modifier = Modifier.padding(end = 12.dp),
         verticalArrangement = Arrangement.Center,
@@ -184,7 +175,6 @@ fun Essaychip(
             color = color, // 색상을 먼저 적용합니다
             modifier = Modifier.clickable { clickable() } // Modifier.clickable을 마지막에 적용합니다
         )
-
         Spacer(modifier = Modifier.height(4.dp))
         HorizontalDivider(
             modifier = Modifier
@@ -194,7 +184,6 @@ fun Essaychip(
         )
     }
 }
-
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -249,17 +238,13 @@ fun EssayListItem(
                 .padding(top = 20.dp, start = 20.dp, end = 20.dp)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-
                 Text(
                     text = item.title!!,
                     color = color,
                     fontSize = 20.sp,
-
-                    )
-
+                )
                 if (pagerState.currentPage == 1) {
                     Spacer(modifier = Modifier.width(8.dp))
-
                     Icon(
                         painter = painterResource(id = R.drawable.option_link),
                         tint = Color.White,
@@ -270,9 +255,7 @@ fun EssayListItem(
                     )
                 }
             }
-
             Spacer(modifier = Modifier.height(10.dp))
-
             RichText(
                 state = rememberRichTextState().setHtml(item.content!!),
                 color = color,
@@ -307,7 +290,6 @@ fun EssayListItem(
                     .size(30.dp)
                     .clickable { isOptionClicked = !isOptionClicked }) //수정 box
         }
-
         Box(
             contentAlignment = Alignment.BottomEnd, modifier = Modifier
                 .fillMaxSize()
@@ -319,7 +301,6 @@ fun EssayListItem(
                 color = Color(0xFF686868)
             )
         }
-
         Box(
             contentAlignment = Alignment.BottomEnd, modifier = Modifier
                 .fillMaxSize()
@@ -343,9 +324,8 @@ fun EssayListItem(
     }
 }
 
-
 @Composable
-fun EssayListPage1(
+fun SaveEssayList(
     viewModel: MyLogViewModel,
     pagerState: PagerState,
     navController: NavController,
@@ -363,20 +343,21 @@ fun EssayListPage1(
             }
         }
     }
-    LazyColumn(state = listState) {
-        items(viewModel.myEssayList) { it ->
-            EssayListItem(item = it, pagerState, viewModel, navController, writingViewModel)
-        }
-    }
     if (viewModel.myEssayList.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text(text = "작성한 글이 없습니다.", color = Color.Gray)
+        }
+    } else {
+        LazyColumn(state = listState) {
+            items(viewModel.myEssayList) { it ->
+                EssayListItem(item = it, pagerState, viewModel, navController, writingViewModel)
+            }
         }
     }
 }
 
 @Composable
-fun EssayListPage2(
+fun PublishEssayList(
     viewModel: MyLogViewModel,
     pagerState: PagerState,
     navController: NavController,
@@ -385,23 +366,23 @@ fun EssayListPage2(
     val listState = rememberLazyListState()
 
     LaunchedEffect(listState) {
-        // 스크롤 상태를 감지하는 LaunchedEffect
         snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull() }
             .collect { lastVisibleItem ->
-                // 리스트의 마지막 아이템에 도달하면
                 if (lastVisibleItem?.index == viewModel.publishedEssayList.size - 1) {
                     viewModel.readPublishEssay()
                 }
             }
     }
-    LazyColumn(state = listState) {
-        items(viewModel.publishedEssayList) {
-            EssayListItem(item = it, pagerState, viewModel, navController, writingViewModel)
-        }
-    }
+    
     if (viewModel.publishedEssayList.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(text = "작성한 글이 없습니다.", color = Color.Gray)
+            Text(text = "발행한 글이 없습니다.", color = Color.Gray)
+        }
+    } else {
+        LazyColumn(state = listState) {
+            items(viewModel.publishedEssayList) {
+                EssayListItem(item = it, pagerState, viewModel, navController, writingViewModel)
+            }
         }
     }
 }
@@ -453,7 +434,6 @@ fun StoryListPage(viewModel: MyLogViewModel, navController: NavController) {
     }
 }
 
-
 @Composable
 fun StoryItem(story: Story, viewModel: MyLogViewModel, navController: NavController) {
     Box(modifier = Modifier
@@ -484,7 +464,6 @@ fun StoryItem(story: Story, viewModel: MyLogViewModel, navController: NavControl
         }
     }
 }
-
 
 @Composable
 fun ModifyStoryBox(
@@ -524,14 +503,11 @@ fun ModifyStoryBox(
                         viewModel.isModifyStoryClicked = false
                         viewModel.isCreateStory = false //createstory false면 modify로 취급
                         navController.navigate("StoryPage")
-
                     }
                 )
                 Spacer(modifier = Modifier.height(20.dp))
-
                 HorizontalDivider(color = Color(0xFF202020))
                 Spacer(modifier = Modifier.height(20.dp))
-
                 Text(
                     text = "스토리 삭제",
                     color = Color.Red,
@@ -568,8 +544,8 @@ fun EssayPager(
 ) {
     HorizontalPager(state = pagerState, modifier = Modifier.padding(top = 20.dp)) { page ->
         when (page) {
-            0 -> EssayListPage1(viewModel, pagerState, navController, writingViewModel)
-            1 -> EssayListPage2(viewModel, pagerState, navController, writingViewModel)
+            0 -> SaveEssayList(viewModel, pagerState, navController, writingViewModel)
+            1 -> PublishEssayList(viewModel, pagerState, navController, writingViewModel)
             2 -> StoryListPage(viewModel, navController)
         }
     }
