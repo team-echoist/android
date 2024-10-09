@@ -16,6 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.echoist.linkedout.presentation.community.CommunityViewModel
 import com.echoist.linkedout.presentation.community.TabletCommunityRoute
+import com.echoist.linkedout.presentation.community.bookmark.CommunitySavedEssayPage
 import com.echoist.linkedout.presentation.community.search.TabletSearchScreen
 import com.echoist.linkedout.presentation.essay.detail.CommunityDetailPage
 import com.echoist.linkedout.presentation.essay.write.TabletEssayWriteRoute
@@ -43,6 +44,7 @@ import com.echoist.linkedout.presentation.userInfo.account.changepassword.Tablet
 import com.echoist.linkedout.presentation.userInfo.account.changepassword.TabletResetPwRoute
 import com.echoist.linkedout.presentation.userInfo.account.deleteaccount.TabletDeleteAccountRoute
 import com.echoist.linkedout.presentation.userInfo.badge.TabletBadgeRoute
+import com.echoist.linkedout.presentation.userInfo.recentviewedessay.RecentEssayDetailPage
 import com.echoist.linkedout.presentation.userInfo.recentviewedessay.TabletRecentEssayScreen
 import com.echoist.linkedout.presentation.util.Routes
 import com.echoist.linkedout.presentation.util.TYPE_STORY
@@ -123,7 +125,9 @@ fun TabletNavHost(
             TabletMyLogRoute(
                 navController = navController,
                 page = page,
-                modifier = Modifier.padding(horizontal = 48.dp).padding(top = 56.dp),
+                modifier = Modifier
+                    .padding(horizontal = 48.dp)
+                    .padding(top = 56.dp),
                 viewModel = myLogViewModel,
                 writingViewModel = writingViewModel
             )
@@ -187,6 +191,9 @@ fun TabletNavHost(
                 navController = navController
             )
         }
+        composable(Routes.RecentEssayDetailPage) {
+            RecentEssayDetailPage(navController, communityViewModel)
+        }
         composable(Routes.AgreeOfProvisionsPage) {
             AgreeOfProvisionsPage(navController)
         }
@@ -225,6 +232,9 @@ fun TabletNavHost(
                 myLogViewModel,
                 writingViewModel
             )
+        }
+        composable(Routes.CommunitySavedEssayPage) {
+            CommunitySavedEssayPage(navController, communityViewModel)
         }
     }
 }
