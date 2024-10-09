@@ -30,7 +30,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -55,7 +54,6 @@ import androidx.navigation.NavController
 import com.echoist.linkedout.R
 import com.echoist.linkedout.presentation.util.Routes
 import com.echoist.linkedout.ui.theme.LinkedInColor
-import com.echoist.linkedout.ui.theme.LinkedOutTheme
 import com.navercorp.nid.NaverIdLoginSDK
 
 @Composable
@@ -140,142 +138,131 @@ internal fun TabletLoginScreen(
     val interactionSource = remember { MutableInteractionSource() }
     val error = viewModel.userId.isEmpty() || viewModel.userPw.isEmpty()
 
-    LinkedOutTheme {
-        Scaffold(
-            modifier = Modifier.pointerInput(Unit) { //배경 터치 시 키보드 숨김
-                detectTapGestures(onTap = {
-                    keyboardController?.hide()
-                })
-            },
-            content = {
-                Box(modifier) {
-                    Image(
-                        painter = painterResource(id = R.drawable.background_logo_340),
-                        contentDescription = "background",
-                        modifier = Modifier
-                            .size(350.dp)
-                            .align(Alignment.TopEnd)
-                            .padding(16.dp)
-                    )
-                    Column(
-                        modifier = Modifier
-                            .padding(it)
-                            .verticalScroll(scrollState)
-                    ) {
-                        Spacer(modifier = Modifier.height(20.dp))
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "arrowback",
-
-                            tint = Color.White,
-                            modifier = Modifier
-                                .size(30.dp)
-                                .padding(16.dp)
-                                .clickable { onBackPressed() } //뒤로가기
-                        )
-                        Spacer(modifier = Modifier.height(70.dp))
-                        Text(
-                            text = "안녕하세요! 태블릿입니다.",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.padding(start = 16.dp),
-                            color = Color.White,
-                        )
-                        Text(
-                            text = "링크드아웃에 오신 것을 환영합니다",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.padding(start = 16.dp, bottom = 32.dp),
-                            color = Color.White,
-                        )
-
-                        LoginTextFields(viewModel)
-
-                        var clickedAutoLogin by remember { mutableStateOf(false) }
-                        val autoLoginColor = if (clickedAutoLogin) LinkedInColor else Color.Gray
-
-                        Row(
-                            modifier = Modifier.padding(horizontal = 20.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Check,
-                                tint = autoLoginColor,
-                                contentDescription = "check",
-                                modifier = Modifier
-                                    .clickable { clickedAutoLogin = !clickedAutoLogin }
-                            )
-                            Text(text = "자동 로그인", fontSize = 14.sp, color = autoLoginColor)
-                        }
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Button(
-                            shape = RoundedCornerShape(10.dp),
-                            enabled = !error,
-                            onClick = {
-                                onLoginButtonClick()
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = if (error) Color.Gray else LinkedInColor
-                            ),
-                            interactionSource = interactionSource,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(55.dp)
-                                .padding(start = 16.dp, end = 16.dp)
-                        ) {
-                            Text(text = "로그인")
-                        }
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 24.dp),
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            UnderlineText(text = "아이디 찾기") { }
-                            UnderlineText(text = "비밀번호 재설정") { navigateToResetPassword() }
-                            UnderlineText(text = "회원가입") { navigateToSignUp() }
-                        }
-                        Spacer(modifier = Modifier.height(80.dp))
-
-                        Row(
-                            modifier = Modifier.padding(bottom = 24.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(
-                                12.dp,
-                                Alignment.CenterHorizontally
-                            )
-                        ) {
-                            HorizontalDivider(
-                                thickness = 1.dp,
-                                color = Color.White,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .padding(12.dp)
-                            )
-                            Text(
-                                text = "간편 회원가입/로그인",
-                                color = Color.White,
-                                fontSize = 12.sp
-                            )
-                            HorizontalDivider(
-                                thickness = 1.dp,
-                                color = Color.White,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .padding(12.dp)
-                            )
-                        }
-                        SocialLoginButtonGroup(
-                            onGoogleLoginClick = { onGoogleLoginClick() },
-                            onKakaoLoginClick = { onKakaoLoginClick() },
-                            onNaverLoginClick = { onNaverLoginClick() },
-                            onAppleLoginClick = { onAppleLoginClick() }
-                        )
-                        Spacer(modifier = Modifier.height(20.dp))
-                    }
-                }
-            }
+    Box(modifier = modifier
+        .pointerInput(Unit) { detectTapGestures { keyboardController?.hide() } }) {
+        Image(
+            painter = painterResource(id = R.drawable.background_logo_340),
+            contentDescription = "background",
+            modifier = Modifier
+                .size(350.dp)
+                .align(Alignment.TopEnd)
+                .padding(16.dp)
         )
+        Column(
+            modifier = Modifier
+                .verticalScroll(scrollState)
+        ) {
+            Spacer(modifier = Modifier.height(20.dp))
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "arrowback",
+
+                tint = Color.White,
+                modifier = Modifier
+                    .size(30.dp)
+                    .padding(16.dp)
+                    .clickable { onBackPressed() } //뒤로가기
+            )
+            Spacer(modifier = Modifier.height(70.dp))
+            Text(
+                text = "안녕하세요! 태블릿입니다.",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.padding(start = 16.dp),
+                color = Color.White,
+            )
+            Text(
+                text = "링크드아웃에 오신 것을 환영합니다",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.padding(start = 16.dp, bottom = 32.dp),
+                color = Color.White,
+            )
+
+            LoginTextFields(viewModel)
+
+            var clickedAutoLogin by remember { mutableStateOf(false) }
+            val autoLoginColor = if (clickedAutoLogin) LinkedInColor else Color.Gray
+
+            Row(
+                modifier = Modifier.padding(horizontal = 20.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    tint = autoLoginColor,
+                    contentDescription = "check",
+                    modifier = Modifier
+                        .clickable { clickedAutoLogin = !clickedAutoLogin }
+                )
+                Text(text = "자동 로그인", fontSize = 14.sp, color = autoLoginColor)
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+            Button(
+                shape = RoundedCornerShape(10.dp),
+                enabled = !error,
+                onClick = {
+                    onLoginButtonClick()
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (error) Color.Gray else LinkedInColor
+                ),
+                interactionSource = interactionSource,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(55.dp)
+                    .padding(start = 16.dp, end = 16.dp)
+            ) {
+                Text(text = "로그인")
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 24.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                UnderlineText(text = "아이디 찾기") { }
+                UnderlineText(text = "비밀번호 재설정") { navigateToResetPassword() }
+                UnderlineText(text = "회원가입") { navigateToSignUp() }
+            }
+            Spacer(modifier = Modifier.height(80.dp))
+
+            Row(
+                modifier = Modifier.padding(bottom = 24.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(
+                    12.dp,
+                    Alignment.CenterHorizontally
+                )
+            ) {
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    color = Color.White,
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(12.dp)
+                )
+                Text(
+                    text = "간편 회원가입/로그인",
+                    color = Color.White,
+                    fontSize = 12.sp
+                )
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    color = Color.White,
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(12.dp)
+                )
+            }
+            SocialLoginButtonGroup(
+                onGoogleLoginClick = { onGoogleLoginClick() },
+                onKakaoLoginClick = { onKakaoLoginClick() },
+                onNaverLoginClick = { onNaverLoginClick() },
+                onAppleLoginClick = { onAppleLoginClick() }
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+        }
     }
 }
 
