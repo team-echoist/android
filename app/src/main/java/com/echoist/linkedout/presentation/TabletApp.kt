@@ -144,7 +144,10 @@ fun TabletApp(
                         onClickTutorial = {
                             homeViewModel.isFirstUser = true
                         },
-                        onBackPress = { navController.popBackStack() }
+                        onBackPress = { navController.popBackStack() },
+                        onClickBookmarkList = {
+                            navController.navigate(Routes.CommunitySavedEssayPage)
+                        },
                     )
                 },
                 floatingActionButton = {
@@ -208,8 +211,8 @@ fun TabletApp(
                     if (isNotificationClicked) {
                         Box(
                             modifier = Modifier
-                                    .fillMaxWidth(1f - fillWidthFraction)
-                                    .fillMaxHeight()
+                                .fillMaxWidth(1f - fillWidthFraction)
+                                .fillMaxHeight()
                         ) {
                             TabletNotificationScreen(
                                 navController = navController,
@@ -246,8 +249,8 @@ fun TabletApp(
         if (homeViewModel.isFirstUser) { // 첫 회원이라면
             Box(
                 modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Black.copy(0.7f))
+                    .fillMaxSize()
+                    .background(Color.Black.copy(0.7f))
             )
             TabletTutorialScreen(
                 isCloseClicked = {

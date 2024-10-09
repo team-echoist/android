@@ -62,13 +62,13 @@ class WritingViewModel @Inject constructor(
     var state by mutableStateOf(RichTextState)
     var hint by mutableStateOf("10자 이상의 내용을 입력해 주세요")
     var ringTouchedTime by mutableIntStateOf(5)
-    var essayPrimaryId : Int? by mutableStateOf(null)
+    var essayPrimaryId: Int? by mutableStateOf(null)
 
-    var latitude :Double? by mutableStateOf(null)
-    var longitude :Double? by mutableStateOf(null)
+    var latitude: Double? by mutableStateOf(null)
+    var longitude: Double? by mutableStateOf(null)
 
-    var imageUri : Uri? by mutableStateOf(null)
-    var imageUrl : String? by mutableStateOf(null)
+    var imageUri: Uri? by mutableStateOf(null)
+    var imageUrl: String? by mutableStateOf(null)
 
     var locationText by mutableStateOf("")
     var hashTagList by mutableStateOf(mutableStateListOf<String>())
@@ -88,12 +88,13 @@ class WritingViewModel @Inject constructor(
     var isLocationClicked by mutableStateOf(false)
 
     //todo image bitmap 레트로핏으로 보내는방법
-    fun readDetailEssay() : EssayApi.EssayItem {
+    fun readDetailEssay(): EssayApi.EssayItem {
         return exampleItems.detailEssay
     }
 
 
     var isTextFeatOpened = mutableStateOf(false)
+
     init {
         isModifyClicked = false
     }
@@ -104,7 +105,7 @@ class WritingViewModel @Inject constructor(
         return currentDate.format(formatter)
     }
 
-    fun getEssayById(id: Int,navController: NavController) {
+    fun getEssayById(id: Int, navController: NavController) {
         viewModelScope.launch(Dispatchers.IO) {
 
             storedDetailEssay = essayStoreDao.getEssayById(id)!!
@@ -122,7 +123,7 @@ class WritingViewModel @Inject constructor(
         }
     }
 
-    fun deleteEssay(essayId : Int){
+    fun deleteEssay(essayId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 essayStoreDao.deleteEssayById(essayId)
@@ -132,6 +133,7 @@ class WritingViewModel @Inject constructor(
             }
         }
     }
+
     fun deleteEssays(essayIds: List<Int?>) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -153,7 +155,7 @@ class WritingViewModel @Inject constructor(
         }
     }
 
-    fun getAllStoredData(){
+    fun getAllStoredData() {
         viewModelScope.launch(Dispatchers.IO) {
             val storedData = essayStoreDao.getAllReadData()
             Log.d(TAG, "getAllStoredData: $storedData")
@@ -194,11 +196,10 @@ class WritingViewModel @Inject constructor(
     //api 통신 성공했을시에만 화면 이동
     fun writeEssay(
         navController: NavController, //저장할래요는 기본 둘다 false
-        status : String
+        status: String
     ) {
         viewModelScope.launch {
             try {
-
                 val essayData = EssayApi.WritingEssayItem(
                     title.value.text,
                     content,
@@ -212,21 +213,24 @@ class WritingViewModel @Inject constructor(
                     tags = hashTagList
                 )
                 val response = essayApi.writeEssay(essayData = essayData)
-                Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() } ?: Token.accessToken
+                Token.accessToken = response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() }
+                    ?: Token.accessToken
 
                 if (response.isSuccessful) {
                     exampleItems.detailEssay = response.body()!!.data!!
                     exampleItems.detailEssayBackStack.push(exampleItems.detailEssay)
 
-                    when(exampleItems.detailEssay.status){
+                    when (exampleItems.detailEssay.status) {
 
                         "private" -> {
                             exampleItems.myProfile.essayStats!!.totalEssays += 1
                         }
+
                         "published" -> {
                             exampleItems.myProfile.essayStats!!.publishedEssays += 1
                             exampleItems.myProfile.essayStats!!.totalEssays += 1
                         }
+
                         "linkedout" -> {
                             exampleItems.myProfile.essayStats!!.linkedOutEssays += 1
                             exampleItems.myProfile.essayStats!!.totalEssays += 1
@@ -237,11 +241,10 @@ class WritingViewModel @Inject constructor(
                     Log.e("writeEssayApiSuccess 성공!", "${response.headers()}")
                     navController.popBackStack("Home", false) //onboarding까지 전부 삭제.
                     navController.navigate("CompletedEssayPage")
-                    initialize()
                 } else {
-                    Log.e("에세이 작성 에러", "${response.code()}", )
-                    Log.e("에러 헤더 엑세스 토큰", Token.accessToken, )
-                    Log.e("에러 헤더 리프레시 토큰", Token.refreshToken, )
+                    Log.e("에세이 작성 에러", "${response.code()}")
+                    Log.e("에러 헤더 엑세스 토큰", Token.accessToken)
+                    Log.e("에러 헤더 리프레시 토큰", Token.refreshToken)
 
                 }
 
@@ -257,7 +260,7 @@ class WritingViewModel @Inject constructor(
 
     //에세이 수정 후 서버에 put
 
-    fun modifyEssay(navController: NavController,status: String) {
+    fun modifyEssay(navController: NavController, status: String) {
         viewModelScope.launch {
             try {
                 val essayData = EssayApi.WritingEssayItem(
@@ -272,18 +275,17 @@ class WritingViewModel @Inject constructor(
                     tags = hashTagList
                 )
                 Log.d(TAG, "modifyEssay: $modifyEssayid")
-                val response = essayApi.modifyEssay( modifyEssayid, essayData = essayData)
-                if (response.isSuccessful){
-                    Log.e("수정 성공", "수정 성공!: ${response.code()}", )
+                val response = essayApi.modifyEssay(modifyEssayid, essayData = essayData)
+                if (response.isSuccessful) {
+                    Log.e("수정 성공", "수정 성공!: ${response.code()}")
 
                     navController.navigate("HOME/200")
                     navController.popBackStack("OnBoarding", false) //onboarding까지 전부 삭제.
 
                     initialize()
-                }
-                else{
-                    Log.e("modifyEssayError", "modifyEssayError: ${response.code()}", )
-                    Log.e("modifyEssayError", "modifyEssayError: ${Token.accessToken}", )
+                } else {
+                    Log.e("modifyEssayError", "modifyEssayError: ${response.code()}")
+                    Log.e("modifyEssayError", "modifyEssayError: ${Token.accessToken}")
                 }
                 if (response.code() == 202) {
                     //블랙리스트 코드 이동
@@ -328,13 +330,12 @@ class WritingViewModel @Inject constructor(
                 val body = MultipartBody.Part.createFormData("image", file.name, requestFile)
 
                 // 서버로 업로드 요청 보내기
-                val response = essayApi.uploadThumbnail( body, exampleItems.detailEssay.id)
+                val response = essayApi.uploadThumbnail(body, exampleItems.detailEssay.id)
 
-                if (response.isSuccessful){
+                if (response.isSuccessful) {
                     imageUrl = response.body()!!.data.imageUrl
                     Log.d(TAG, "uploadImage: $imageUrl")
-                }
-                else{
+                } else {
 
                 }
 
@@ -349,7 +350,6 @@ class WritingViewModel @Inject constructor(
 
             }
         }
-
 
 
     }

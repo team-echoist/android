@@ -43,6 +43,7 @@ fun TopBarForRoute(
     onClickSearch: () -> Unit,
     onClickNotification: () -> Unit,
     onClickTutorial: () -> Unit,
+    onClickBookmarkList: () -> Unit,
     onBackPress: () -> Unit,
     pagerState: PagerState = rememberPagerState { 1 }
 ) {
@@ -72,7 +73,7 @@ fun TopBarForRoute(
                 text = "Community", // 원하는 제목으로 변경 가능
                 pagerState = pagerState,
                 onSearchClick = { onClickSearch() },
-                onClickBookMarked = { /* 북마크 클릭 시 동작 */ }
+                onClickBookMarked = { onClickBookmarkList() }
             )
         }
 

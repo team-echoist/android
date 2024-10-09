@@ -147,9 +147,6 @@ fun WritingPage(
     val isItalic = currentSpanStyle.fontStyle == FontStyle.Italic
     val isUnderline = currentSpanStyle.textDecoration == TextDecoration.Underline
 
-
-    Log.d(TAG, "WritingPage: ${viewModel.readDetailEssay()}")
-
     LaunchedEffect(key1 = Unit) {
         textState.setHtml(viewModel.content)
     }
@@ -160,7 +157,6 @@ fun WritingPage(
             viewModel.isStored = false
         }
     }
-
 
     Box {
         Column(
@@ -180,10 +176,8 @@ fun WritingPage(
                     textState
                 ) { viewModel.content = textState.toHtml() }
 
-
                 ContentTextField(viewModel = viewModel, textState)
                 Log.d(TAG, "WritingTopAppBar: ${textState.toHtml()}")
-
 
                 Spacer(modifier = Modifier.height(50.dp))
 
@@ -225,7 +219,6 @@ fun WritingPage(
                     .fillMaxSize()
                     .background(Color.Black.copy(0.7f))
             )
-
         Box(
             modifier = Modifier
                 .fillMaxSize(),
@@ -264,7 +257,6 @@ fun WritingPage(
                             }
                         }
                     }
-
                 } else if (isKeyBoardOpened == Keyboard.Closed && !viewModel.isTextFeatOpened.value) {
                     if (viewModel.locationList.isNotEmpty() && viewModel.longitude != null) { //직접 입력한 장소가 존재해야함.
                         LocationGroup(viewModel = viewModel)
@@ -298,8 +290,6 @@ fun WritingPage(
                     }
 
                 if (isKeyBoardOpened == Keyboard.Opened || viewModel.isTextFeatOpened.value) {
-
-
                     if (isTextSettingSelected) {
                         TextSettingsBar(textState)
                     }
@@ -343,9 +333,7 @@ fun WritingPage(
                             isTextSettingSelected = false
                         }, textState
                     )
-
                     KeyboardLocationFunc(viewModel, navController, textState)
-
                 }
             }
         }
@@ -374,9 +362,7 @@ fun WritingPage(
             }
         }
     }
-
 }
-
 
 @Composable
 fun WritingTopAppBar(
@@ -394,15 +380,12 @@ fun WritingTopAppBar(
 
     var isContentNotEmpty = remember { mutableStateOf(false) }
 
-
-
     Column(
         modifier = Modifier
             .systemBarsPadding()
             .fillMaxWidth()
     ) {
         Row(
-
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxWidth()
@@ -422,7 +405,6 @@ fun WritingTopAppBar(
                             viewModel.isLocationClicked = false
                             keyboardController?.hide()
                             focusState.value = false
-
                         },
                     tint = Color.White
                 )
@@ -440,7 +422,6 @@ fun WritingTopAppBar(
                                 viewModel.isCanCelClicked.value = true
                                 keyboardController?.hide()
                             }
-
                         },
                     fontSize = 16.sp
                 )
@@ -468,7 +449,6 @@ fun WritingTopAppBar(
                         .onFocusChanged {
                             viewModel.titleFocusState.value = it.isFocused
                         },
-
                     placeholder = {
                         Box(
                             modifier = Modifier.fillMaxWidth(),
@@ -533,7 +513,6 @@ fun WritingTopAppBar(
     }
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ContentTextField(viewModel: WritingViewModel, textState: RichTextState) {
@@ -543,7 +522,6 @@ fun ContentTextField(viewModel: WritingViewModel, textState: RichTextState) {
         targetValue = if (viewModel.titleFocusState.value) 40.dp else 0.dp,
         label = ""
     ).value
-
 
     Column {
         RichTextEditor(
@@ -568,18 +546,13 @@ fun ContentTextField(viewModel: WritingViewModel, textState: RichTextState) {
                 unfocusedIndicatorColor = Color.Transparent,
                 textColor = Color.White
             )
-
         )
-
         Spacer(modifier = Modifier.height(20.dp))
-
     }
 }
 
-
 @Composable
 fun MyDivider(viewModel: WritingViewModel) {
-
     val ydp = animateDpAsState(
         targetValue = if (viewModel.titleFocusState.value) 40.dp else 0.dp,
         label = ""
@@ -604,8 +577,6 @@ fun WritingCancelCard(
     navController: NavController,
     isStoreClicked: () -> Unit
 ) {
-
-
     Column(
         modifier = Modifier
             .padding(horizontal = 20.dp)
@@ -672,8 +643,6 @@ fun WritingCancelCard(
                                     thumbnail = viewModel.imageUrl
 
                                 )
-
-
                             )
                             navController.popBackStack()
                             viewModel.initialize()
@@ -685,7 +654,6 @@ fun WritingCancelCard(
                 )
             }
         }
-
         Spacer(modifier = Modifier.height(14.dp))
 
         Card(
@@ -704,14 +672,11 @@ fun WritingCancelCard(
                     textAlign = TextAlign.Center,
                     color = Color.White
                 )
-
             }
         }
         Spacer(modifier = Modifier.height(35.dp))
-
     }
 }
-
 
 @Composable
 fun KeyboardLocationFunc(
@@ -760,8 +725,7 @@ fun KeyboardLocationFunc(
             "쓰다 만 글",
             R.drawable.keyboard_storage
         ) { navController.navigate("TemporaryStoragePage") },
-
-        )
+    )
 
     val density = LocalDensity.current
     val keyboardHeightDp = remember { mutableStateOf(283.dp) }
@@ -844,7 +808,6 @@ fun TextEditBar(
     val keyboardController = LocalSoftwareKeyboardController.current
     var isKeyboardAppeared by remember { mutableStateOf(true) }
     val requestPermissionsUtil = RequestPermissionsUtil(LocalContext.current, viewModel)
-
 
     AnimatedVisibility(
         visible = isOpened,
@@ -983,13 +946,11 @@ fun TextEditBar(
     }
 }
 
-
 @Composable
 fun TextSettingsBar(textState: RichTextState) {
 
     var selectedFontSize by remember { mutableIntStateOf(textState.currentSpanStyle.fontSize.value.toInt()) }
     val fontSizeList = listOf(13, 14, 15, 16, 17, 18, 19, 20, 22, 24)
-
 
     Row(
         Modifier
@@ -1020,7 +981,6 @@ fun TextSettingsBar(textState: RichTextState) {
 fun test() {
     var imageSize by remember { mutableStateOf(IntSize.Zero) }
 
-
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
@@ -1047,10 +1007,6 @@ fun test() {
                     Text(text = "변경", fontSize = 12.sp, color = Color.White)
                 }
             }
-
-
         }
     }
-
 }
-
