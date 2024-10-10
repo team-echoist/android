@@ -36,6 +36,7 @@ import com.echoist.linkedout.presentation.home.ReLogInWaringAlert
 import com.echoist.linkedout.presentation.myLog.mylog.ExitAppErrorBox
 import com.echoist.linkedout.presentation.util.Routes
 import com.echoist.linkedout.presentation.util.getCurrentRoute
+import com.echoist.linkedout.presentation.util.isTablet
 import com.echoist.linkedout.presentation.util.navigateWithClearBackStack
 import com.echoist.linkedout.presentation.util.startActivityToPlayStore
 import com.echoist.linkedout.ui.theme.LinkedOutTheme
@@ -69,10 +70,6 @@ class MainActivity : ComponentActivity() {
                 mutableStateOf(false)
             }
 
-            val isTablet = ((resources.configuration.screenLayout
-                    and Configuration.SCREENLAYOUT_SIZE_MASK)
-                    >= Configuration.SCREENLAYOUT_SIZE_LARGE)
-            
             LaunchedEffect(key1 = isClickedExit) {
                 if (isClickedExit) {
                     delay(2000)
@@ -93,7 +90,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 //release 버전에는 아직 테블릿 제외
-                if (isTablet) {
+                if (isTablet()) {
                     TabletApp(navController, startDestination)
                 } else { //mobile
                     MobileApp(navController, startDestination)

@@ -41,6 +41,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.echoist.linkedout.R
 import com.echoist.linkedout.navigation.TabletNavHost
+import com.echoist.linkedout.presentation.community.CommunityViewModel
 import com.echoist.linkedout.presentation.essay.write.WritingViewModel
 import com.echoist.linkedout.presentation.home.HomeViewModel
 import com.echoist.linkedout.presentation.home.LogoutBox
@@ -63,7 +64,8 @@ fun TabletApp(
     drawableViewModel: DrawableViewModel = hiltViewModel(),
     myLogViewModel: MyLogViewModel = hiltViewModel(),
     userInfoViewModel: UserInfoViewModel = hiltViewModel(),
-    writingViewModel: WritingViewModel = hiltViewModel()
+    writingViewModel: WritingViewModel = hiltViewModel(),
+    communityViewModel: CommunityViewModel = hiltViewModel()
 ) {
     val configuration = LocalConfiguration.current
 
@@ -146,7 +148,7 @@ fun TabletApp(
                         },
                         onBackPress = { navController.popBackStack() },
                         onClickBookmarkList = {
-                            navController.navigate(Routes.CommunitySavedEssayPage)
+                            communityViewModel.readMyBookMarks(navController)
                         },
                     )
                 },

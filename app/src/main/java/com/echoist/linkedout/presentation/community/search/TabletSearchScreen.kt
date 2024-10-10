@@ -1,5 +1,6 @@
 package com.echoist.linkedout.presentation.community.search
 
+import android.content.res.Configuration
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
@@ -50,6 +52,10 @@ fun TabletSearchScreen(
 ) {
     val pagerState = rememberPagerState { 2 }
     val searchUiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    val configuration = LocalConfiguration.current
+    val isPortrait =
+        configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
     var searchQuery by remember { mutableStateOf("") }
 
@@ -77,11 +83,28 @@ fun TabletSearchScreen(
                         navController.popBackStack()
                     }
             )
+            Text(
+                text = "다른 아무개의 이야기가 궁금하신가요?",
+                color = Color.White,
+                fontSize = 16.sp,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(
+                    start = if (isPortrait) 100.dp else 300.dp,
+                    end = if (isPortrait) 100.dp else 300.dp
+                )
+        ) {
             TextField(
                 shape = RoundedCornerShape(42),
                 modifier = Modifier
-                    .weight(1f)
-                    .height(55.dp),
+                    .height(52.dp)
+                    .fillMaxWidth(),
                 value = viewModel.searchingText,
                 onValueChange = {
                     viewModel.searchingText = it
@@ -90,7 +113,7 @@ fun TabletSearchScreen(
                     Text(
                         text = "검색어를 입력하세요",
                         color = Color(0xFF686868),
-                        fontSize = 16.sp
+                        fontSize = 14.sp
                     )
                 },
                 singleLine = true,
@@ -112,52 +135,52 @@ fun TabletSearchScreen(
                     }
                 ),
                 colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
+                    focusedContainerColor = Color(0xFF222222),
+                    unfocusedContainerColor = Color(0xFF222222),
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                     focusedTextColor = Color.White,
                     unfocusedTextColor = Color.White
                 )
             )
-        }
+            Spacer(modifier = Modifier.height(20.dp))
+            SearchingChips(pagerState = pagerState)
+            Spacer(modifier = Modifier.height(20.dp))
+            Box(
+                Modifier
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                when (searchUiState) {
+                    is UiState.Idle -> {}
 
-        SearchingChips(pagerState = pagerState)
-        Spacer(modifier = Modifier.height(20.dp))
-        Box(
-            Modifier
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            when (searchUiState) {
-                is UiState.Idle -> {}
-
-                is UiState.Loading -> {
-                    CircularProgressIndicator()
-                }
-
-                is UiState.Success -> {
-                    SearchList(items = (searchUiState as UiState.Success).essays) {
-                        viewModel.readDetailEssay(it.id!!, navController, TYPE_RECOMMEND)
-                        viewModel.detailEssayBackStack.push(it)
+                    is UiState.Loading -> {
+                        CircularProgressIndicator()
                     }
-                }
 
-                is UiState.Error -> {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        Text(
-                            text = "알 수 없는 에러가 발생했습니다.\n 잠시 후 다시 시도해 주세요.",
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(bottom = 16.dp)
-                        )
-                        Button(onClick = {
-                            viewModel.readSearchingEssays(searchQuery)
-                        }) {
-                            Text(text = "재시도")
+                    is UiState.Success -> {
+                        SearchList(items = (searchUiState as UiState.Success).essays) {
+                            viewModel.readDetailEssay(it.id!!, navController, TYPE_RECOMMEND)
+                            viewModel.detailEssayBackStack.push(it)
+                        }
+                    }
+
+                    is UiState.Error -> {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Text(
+                                text = "알 수 없는 에러가 발생했습니다.\n 잠시 후 다시 시도해 주세요.",
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(bottom = 16.dp)
+                            )
+                            Button(onClick = {
+                                viewModel.readSearchingEssays(searchQuery)
+                            }) {
+                                Text(text = "재시도")
+                            }
                         }
                     }
                 }

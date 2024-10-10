@@ -2,6 +2,7 @@ package com.echoist.linkedout.presentation.community.bookmark
 
 import android.annotation.SuppressLint
 import android.content.ContentValues
+import android.content.res.Configuration
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -43,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -59,12 +61,20 @@ import com.echoist.linkedout.data.dto.ExampleItems
 import com.echoist.linkedout.presentation.community.CommunityViewModel
 import com.echoist.linkedout.presentation.util.TYPE_RECOMMEND
 import com.echoist.linkedout.presentation.util.formatElapsedTime
+import com.echoist.linkedout.presentation.util.isTablet
 import com.echoist.linkedout.ui.theme.LinkedInColor
 
 @Composable
-fun CommunitySavedEssayPage(navController: NavController, viewModel: CommunityViewModel) {
-
+fun CommunitySavedEssayPage(
+    navController: NavController,
+    viewModel: CommunityViewModel
+) {
     val text = if (viewModel.isSavedEssaysModifyClicked) "완료" else "편집"
+    val configuration = LocalConfiguration.current
+    val isPortrait =
+        configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+
+    val isTablet = isTablet()
 
     Scaffold(topBar = {
         SavedEssayTopAppBar(
@@ -77,13 +87,18 @@ fun CommunitySavedEssayPage(navController: NavController, viewModel: CommunityVi
     },
         bottomBar = {})
     {
-        Column(Modifier.padding(it)) {
+        Column(
+            Modifier
+                .fillMaxSize()
+                .padding(
+                    horizontal = if (isTablet) if (isPortrait) 100.dp else 275.dp else 0.dp
+                )
+                .padding(it)
+        ) {
             SavedEssayListScreen(viewModel, navController)
-
         }
     }
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -93,7 +108,6 @@ fun SavedEssayTopAppBar(
     navController: NavController,
     modifyText: String
 ) {
-
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
         title = {
@@ -119,8 +133,6 @@ fun SavedEssayTopAppBar(
                 fontSize = 16.sp,
                 modifier = Modifier.clickable { onClickModify() })
             Spacer(modifier = Modifier.width(15.dp))
-
-
         }
     )
 }
@@ -148,7 +160,6 @@ fun SavedEssayListItem(
             start = 0,
             end = item.title?.length ?: 0
         )
-
         // 두 번째 텍스트 ( "   • ${formatElapsedTime(item.createdDate!!)}" )
         val bulletText = "   • ${formatElapsedTime(item.createdDate!!)}"
         append(bulletText)
@@ -172,8 +183,6 @@ fun SavedEssayListItem(
             }
             .height(140.dp)
     ) {
-
-
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(
                 modifier = Modifier
@@ -208,7 +217,6 @@ fun SavedEssayListItem(
                     fontSize = 10.sp,
                     color = Color(0xFF686868)
                 )
-
             }
             if (item.thumbnail != null && item.thumbnail!!.startsWith("https")) {
                 GlideImage(
@@ -225,7 +233,6 @@ fun SavedEssayListItem(
             val checkColor = if (isSelected) LinkedInColor else Color(0xFF585858)
 
             if (viewModel.isSavedEssaysModifyClicked) {
-
                 IconButton(onClick = {
                     onItemSelected(!isSelected)
                 }) {
@@ -238,7 +245,6 @@ fun SavedEssayListItem(
                         contentDescription = null
                     )
                 }
-
             }
         }
 
@@ -248,7 +254,6 @@ fun SavedEssayListItem(
         ) {
             HorizontalDivider(color = Color(0xFF686868))
         }
-
         if (viewModel.isSavedEssaysModifyClicked && !isSelected) {
             Box(
                 modifier = Modifier
@@ -256,14 +261,12 @@ fun SavedEssayListItem(
                     .background(Color.Black.copy(0.7f))
             )
         }
-
     }
 }
 
 @SuppressLint("MutableCollectionMutableState")
 @Composable
 fun SavedEssayListScreen(viewModel: CommunityViewModel, navController: NavController) {
-
     var selectedItems by remember { mutableStateOf<Set<EssayApi.EssayItem>>(emptySet()) }
 
     val annotatedString = remember {
@@ -299,13 +302,11 @@ fun SavedEssayListScreen(viewModel: CommunityViewModel, navController: NavContro
                 ) {
                     Text(text = annotatedString, fontSize = 12.sp)
                 }
-
                 Box(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.CenterEnd
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-
                         val textColor =
                             if (selectedItems.size != viewModel.bookMarkEssayList.size) Color(
                                 0xFF727070
@@ -359,7 +360,6 @@ fun SavedEssayListScreen(viewModel: CommunityViewModel, navController: NavContro
                                     item.id!!, navController,
                                     TYPE_RECOMMEND
                                 )
-
                                 val exampleItems = ExampleItems()
                                 Log.d(
                                     ContentValues.TAG,
@@ -369,8 +369,6 @@ fun SavedEssayListScreen(viewModel: CommunityViewModel, navController: NavContro
                                     ContentValues.TAG,
                                     "CommunityDetailPage: ${viewModel.detailEssay.title}"
                                 )
-
-
                             }
                         },
                         viewModel = viewModel
@@ -378,7 +376,6 @@ fun SavedEssayListScreen(viewModel: CommunityViewModel, navController: NavContro
                 }
             }
         } else {
-
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(text = "저장한 글이 없습니다.", color = Color.Gray)
             }
@@ -405,9 +402,5 @@ fun SavedEssayListScreen(viewModel: CommunityViewModel, navController: NavContro
                 Text("총 ${selectedItems.size}개 삭제", color = Color.Black)
             }
         }
-
     }
 }
-
-
-
