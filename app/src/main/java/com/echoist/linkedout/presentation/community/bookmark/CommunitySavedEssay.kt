@@ -79,7 +79,6 @@ fun CommunitySavedEssayPage(navController: NavController, viewModel: CommunityVi
     {
         Column(Modifier.padding(it)) {
             SavedEssayListScreen(viewModel, navController)
-
         }
     }
 }
