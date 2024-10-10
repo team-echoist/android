@@ -72,7 +72,7 @@ class MainActivity : ComponentActivity() {
             val isTablet = ((resources.configuration.screenLayout
                     and Configuration.SCREENLAYOUT_SIZE_MASK)
                     >= Configuration.SCREENLAYOUT_SIZE_LARGE)
-
+            
             LaunchedEffect(key1 = isClickedExit) {
                 if (isClickedExit) {
                     delay(2000)

@@ -7,6 +7,7 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.BottomSheetScaffoldState
@@ -39,12 +41,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import com.echoist.linkedout.R
 import com.echoist.linkedout.presentation.TabletDrawableTopBar
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import kotlinx.coroutines.delay
@@ -59,6 +62,9 @@ fun TabletSignUpRoute(
     val configuration = LocalConfiguration.current
     val screenHeightDp = configuration.screenHeightDp
     val passwordFocusRequester = remember { FocusRequester() }
+
+    val isPortrait =
+        configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
     val bottomSheetState =
         rememberStandardBottomSheetState(initialValue = SheetValue.Hidden, skipHiddenState = false)
@@ -82,12 +88,15 @@ fun TabletSignUpRoute(
     }
 
     TabletSignUpScreen(
-        navController = navController,
+        modifier = Modifier.padding(
+            top = if (isPortrait) 150.dp else 0.dp,
+            start = if (isPortrait) 150.dp else 350.dp,
+            end = if (isPortrait) 150.dp else 350.dp
+        ),
         scaffoldState = scaffoldState,
         screenHeightDp = screenHeightDp,
         passwordFocusRequester = passwordFocusRequester,
         viewModel = viewModel,
-        horizontalPadding = if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 350 else 100,
         detectTapGestures = { keyboardController?.hide() },
         onBackPressed = { navController.popBackStack() },
         onSubmitEmail = {
@@ -104,12 +113,11 @@ fun TabletSignUpRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun TabletSignUpScreen(
-    navController: NavController,
+    modifier: Modifier,
     scaffoldState: BottomSheetScaffoldState,
     screenHeightDp: Int,
     passwordFocusRequester: FocusRequester,
     viewModel: SignUpViewModel,
-    horizontalPadding: Int,
     detectTapGestures: () -> Unit,
     onBackPressed: () -> Unit,
     onSubmitEmail: () -> Unit,
@@ -128,7 +136,7 @@ internal fun TabletSignUpScreen(
         sheetPeekHeight = (0.8 * screenHeightDp).dp
     ) {
         SignUpContent(
-            horizontalPadding = horizontalPadding,
+            modifier = modifier,
             detectTapGestures = detectTapGestures,
             onBackPressed = onBackPressed,
             viewModel = viewModel,
@@ -174,63 +182,70 @@ internal fun TabletSignUpScreen(
 
 @Composable
 private fun SignUpContent(
-    horizontalPadding: Int,
+    modifier: Modifier,
     detectTapGestures: () -> Unit,
     onBackPressed: () -> Unit,
     viewModel: SignUpViewModel,
     onSubmitEmail: () -> Unit,
     passwordFocusRequester: FocusRequester
 ) {
-    Box(
+    Column(
         modifier = Modifier
-            .fillMaxSize()
             .pointerInput(Unit) { detectTapGestures { detectTapGestures() } }
-            .padding(horizontal = horizontalPadding.dp)
     ) {
-        Column {
-            TabletDrawableTopBar(title = "회원가입", isBack = true, onBackPressed)
-            Spacer(modifier = Modifier.height(50.dp))
-            Text(
-                text = "이메일로 가입하기",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(start = 16.dp),
-                color = Color.White
-            )
-            Text(
-                text = "회원 서비스 이용을 위해 회원가입을 해주세요.",
-                fontSize = 16.sp,
-                modifier = Modifier.padding(start = 16.dp, bottom = 32.dp),
-                color = Color(0xFF919191)
-            )
-            EmailTextField(viewModel, passwordFocusRequester)
-            PwTextField(
-                viewModel,
-                passwordFocusRequester
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = "*비밀번호는 영문(대소문자), 특수문자, 숫자 포함 8~12자를 조합해 주세요.",
-                fontSize = 10.5.sp,
-                color = LinkedInColor,
-                modifier = Modifier.padding(horizontal = 30.dp)
-            )
-            Button(
-                shape = RoundedCornerShape(10.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = LinkedInColor,
-                    disabledContainerColor = Color(0xFF868686)
-                ),
-                enabled = !viewModel.userEmailError && viewModel.userPw.isNotEmpty(),
+        TabletDrawableTopBar(title = "", isBack = true, onBackPressed)
+        Box(modifier) {
+            Image(
+                painter = painterResource(id = R.drawable.background_logo_340),
+                contentDescription = "background",
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp)
-                    .padding(start = 20.dp, end = 20.dp, top = 50.dp),
-                onClick = {
-                    onSubmitEmail()
+                    .size(350.dp)
+                    .align(Alignment.TopEnd)
+            )
+            Column {
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(
+                    text = "이메일로 가입하기",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(start = 16.dp),
+                    color = Color.White
+                )
+                Text(
+                    text = "회원 서비스 이용을 위해 회원가입을 해주세요.",
+                    fontSize = 16.sp,
+                    modifier = Modifier.padding(start = 16.dp, bottom = 32.dp),
+                    color = Color(0xFF919191)
+                )
+                EmailTextField(viewModel, passwordFocusRequester)
+                PwTextField(
+                    viewModel,
+                    passwordFocusRequester
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "*비밀번호는 영문(대소문자), 특수문자, 숫자 포함 8~12자를 조합해 주세요.",
+                    fontSize = 10.5.sp,
+                    color = LinkedInColor,
+                    modifier = Modifier.padding(horizontal = 30.dp)
+                )
+                Button(
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = LinkedInColor,
+                        disabledContainerColor = Color(0xFF868686)
+                    ),
+                    enabled = !viewModel.userEmailError && viewModel.userPw.isNotEmpty(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp)
+                        .padding(start = 20.dp, end = 20.dp, top = 50.dp),
+                    onClick = {
+                        onSubmitEmail()
+                    }
+                ) {
+                    Text(text = "인증 메일 보내기", color = Color.Black)
                 }
-            ) {
-                Text(text = "인증 메일 보내기", color = Color.Black)
             }
         }
     }
