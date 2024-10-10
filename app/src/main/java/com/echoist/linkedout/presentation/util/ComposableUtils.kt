@@ -1,5 +1,6 @@
 package com.echoist.linkedout.presentation.util
 
+import android.content.res.Configuration
 import android.graphics.Rect
 import android.view.ViewTreeObserver
 import androidx.compose.runtime.Composable
@@ -7,6 +8,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 
 enum class Keyboard {
@@ -36,4 +38,11 @@ fun keyboardAsState(): State<Keyboard> {
         }
     }
     return keyboardState
+}
+
+@Composable
+fun isTablet(): Boolean {
+    val context = LocalContext.current
+    val screenLayout = context.resources.configuration.screenLayout
+    return (screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE
 }
