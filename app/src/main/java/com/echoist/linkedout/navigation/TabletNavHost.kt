@@ -24,8 +24,8 @@ import com.echoist.linkedout.presentation.essay.write.WritingCompletePage
 import com.echoist.linkedout.presentation.essay.write.WritingViewModel
 import com.echoist.linkedout.presentation.home.HomeViewModel
 import com.echoist.linkedout.presentation.home.TabletHomeRoute
-import com.echoist.linkedout.presentation.login.agreeofprovisions.AgreeOfProvisionsPage
 import com.echoist.linkedout.presentation.login.TabletLoginRoute
+import com.echoist.linkedout.presentation.login.agreeofprovisions.TabletAgreeOfProvisionScreen
 import com.echoist.linkedout.presentation.login.onboarding.TabletOnBoardingRoute
 import com.echoist.linkedout.presentation.login.signup.TabletSignUpCompleteRoute
 import com.echoist.linkedout.presentation.login.signup.TabletSignUpRoute
@@ -195,7 +195,9 @@ fun TabletNavHost(
             RecentEssayDetailPage(navController, communityViewModel)
         }
         composable(Routes.AgreeOfProvisionsPage) {
-            AgreeOfProvisionsPage(navController)
+            TabletAgreeOfProvisionScreen(navController) {
+                navController.popBackStack()
+            }
         }
         composable(
             Routes.StoryPage,

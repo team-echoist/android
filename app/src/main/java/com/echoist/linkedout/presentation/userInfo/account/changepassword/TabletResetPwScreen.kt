@@ -1,5 +1,6 @@
 package com.echoist.linkedout.presentation.userInfo.account.changepassword
 
+import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
@@ -40,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -70,7 +72,6 @@ fun TabletResetPwRoute(
         }
     }
     TabletResetPwScreen(
-        horizontalPadding = 350,
         scrollState = scrollState,
         isLoading = isLoading,
         isSendEmailVerifyApiFinished = isSendEmailVerifyApiFinished,
@@ -83,7 +84,6 @@ fun TabletResetPwRoute(
 
 @Composable
 internal fun TabletResetPwScreen(
-    horizontalPadding: Int,
     scrollState: ScrollState,
     isLoading: Boolean,
     isSendEmailVerifyApiFinished: Boolean,
@@ -96,7 +96,6 @@ internal fun TabletResetPwScreen(
         LoadingScreen()
     } else {
         Content(
-            horizontalPadding = horizontalPadding,
             scrollState = scrollState,
             onEmailSubmit = onEmailSubmit,
             isEmailValid = isEmailValid,
@@ -121,7 +120,6 @@ fun LoadingScreen() {
 
 @Composable
 fun Content(
-    horizontalPadding: Int,
     scrollState: ScrollState,
     onEmailSubmit: (String) -> Unit,
     isEmailValid: (String) -> Boolean,
@@ -129,41 +127,53 @@ fun Content(
 ) {
     var email by remember { mutableStateOf("") }
     var isError by remember { mutableStateOf(false) }
+    val configuration = LocalConfiguration.current
+
+    val isPortrait =
+        configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
     Column(
         modifier = Modifier
             .verticalScroll(scrollState)
-            .padding(horizontal = horizontalPadding.dp)
     ) {
         TabletDrawableTopBar(title = "비밀번호 재설정", isBack = true) {
             onBackPress()
         }
 
-        Spacer(modifier = Modifier.height(42.dp))
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(
+                    start = if (isPortrait) 40.dp else 210.dp,
+                    end = if (isPortrait) 40.dp else 210.dp
+                )
+        ) {
+            Spacer(modifier = Modifier.height(42.dp))
 
-        InstructionText()
+            InstructionText()
 
-        Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-        EmailInputField(
-            email = email,
-            isError = isError,
-            onEmailChange = {
-                email = it
-                isError = !isEmailValid(email)
+            EmailInputField(
+                email = email,
+                isError = isError,
+                onEmailChange = {
+                    email = it
+                    isError = !isEmailValid(email)
+                }
+            )
+
+            if (isError) {
+                ErrorText()
             }
-        )
 
-        if (isError) {
-            ErrorText()
+            Spacer(modifier = Modifier.height(40.dp))
+
+            SubmitButton(
+                enabled = !(isError || email.isEmpty()),
+                onClick = { onEmailSubmit(email) }
+            )
         }
-
-        Spacer(modifier = Modifier.height(40.dp))
-
-        SubmitButton(
-            enabled = !(isError || email.isEmpty()),
-            onClick = { onEmailSubmit(email) }
-        )
     }
 }
 
