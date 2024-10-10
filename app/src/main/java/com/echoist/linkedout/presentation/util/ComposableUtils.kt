@@ -43,6 +43,8 @@ fun keyboardAsState(): State<Keyboard> {
 @Composable
 fun isTablet(): Boolean {
     val context = LocalContext.current
-    val screenLayout = context.resources.configuration.screenLayout
-    return (screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE
+    val configuration = context.resources.configuration
+    return ((configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE) &&
+            (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE ||
+                    (configuration.screenWidthDp >= 600 && configuration.screenHeightDp >= 600))
 }
