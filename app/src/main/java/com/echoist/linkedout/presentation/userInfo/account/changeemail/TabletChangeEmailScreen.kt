@@ -62,7 +62,6 @@ import kotlinx.coroutines.delay
 fun TabletChangeEmailScreen(
     viewModel: ChangeEmailViewModel = hiltViewModel(),
     userInfoViewModel: UserInfoViewModel = hiltViewModel(),
-    contentPadding: PaddingValues,
     moveToLoginPage: () -> Unit
 ) {
     val context = LocalContext.current
@@ -147,7 +146,6 @@ fun TabletChangeEmailScreen(
     ) {
         Box(
             Modifier
-                .padding(contentPadding)
                 .fillMaxSize(), contentAlignment = Alignment.TopCenter
         ) {
             Column(

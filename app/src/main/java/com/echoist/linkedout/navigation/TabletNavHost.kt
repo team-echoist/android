@@ -53,7 +53,6 @@ import com.echoist.linkedout.presentation.util.navigateWithClearBackStack
 @Composable
 fun TabletNavHost(
     navController: NavHostController,
-    contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
     startDestination: String = Routes.LoginPage
 ) {
@@ -134,8 +133,7 @@ fun TabletNavHost(
         }
         composable(Routes.Community) {
             TabletCommunityRoute(
-                navController = navController,
-                modifier = Modifier.padding(contentPadding)
+                navController = navController
             )
         }
         composable(Routes.CommunityDetailPage) {
@@ -143,8 +141,7 @@ fun TabletNavHost(
         }
         composable(Routes.Settings) {
             TabletMyInfoRoute(
-                navController = navController,
-                modifier = Modifier.padding(contentPadding)
+                navController = navController
             )
         }
         composable(Routes.WritingPage) {
@@ -154,14 +151,13 @@ fun TabletNavHost(
             TabletSearchScreen(navController)
         }
         composable(Routes.BadgePage) {
-            TabletBadgeRoute(contentPadding = contentPadding)
+            TabletBadgeRoute()
         }
         composable(Routes.TemporaryStoragePage) {
             TemporaryStoragePage(navController, writingViewModel)
         }
         composable(Routes.AccountPage) {
             TabletAccountRoute(
-                contentPadding = contentPadding,
                 onClickChangeEmail = { navController.navigate(Routes.ChangeEmail) },
                 onClickChangePassword = { navController.navigate(Routes.ChangePassword) },
                 onClickDeleteAccount = { navController.navigate(Routes.DeleteAccount) },
@@ -169,25 +165,23 @@ fun TabletNavHost(
             )
         }
         composable(Routes.ChangeEmail) {
-            TabletChangeEmailScreen(contentPadding = contentPadding) {
+            TabletChangeEmailScreen() {
                 navigateWithClearBackStack(navController, Routes.LoginPage)
             }
         }
         composable(Routes.ChangePassword) {
             TabletChangePasswordScreen(
-                contentPadding = contentPadding,
                 onClickResetPassword = { navController.navigate(Routes.ResetPwPageWithEmail) },
                 onChangePwFinished = { navController.popBackStack() }
             )
         }
         composable(Routes.DeleteAccount) {
-            TabletDeleteAccountRoute(contentPadding = contentPadding) {
+            TabletDeleteAccountRoute() {
                 navigateWithClearBackStack(navController, Routes.LoginPage)
             }
         }
         composable(Routes.RecentViewedEssayPage) {
             TabletRecentEssayScreen(
-                contentPadding = contentPadding,
                 navController = navController
             )
         }

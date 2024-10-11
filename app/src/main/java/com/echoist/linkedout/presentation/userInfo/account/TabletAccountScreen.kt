@@ -36,7 +36,6 @@ import com.echoist.linkedout.presentation.userInfo.MyPageViewModel
 fun TabletAccountRoute(
     viewModel: MyPageViewModel = hiltViewModel(),
     userInfoViewModel: UserInfoViewModel = hiltViewModel(),
-    contentPadding: PaddingValues,
     onClickChangeEmail: () -> Unit,
     onClickChangePassword: () -> Unit,
     onClickDeleteAccount: () -> Unit,
@@ -46,7 +45,6 @@ fun TabletAccountRoute(
     var isLogoutClicked by remember { mutableStateOf(false) }
     Box(
         Modifier
-            .padding(contentPadding)
             .fillMaxSize(), contentAlignment = Alignment.TopCenter
     ) {
         Column(

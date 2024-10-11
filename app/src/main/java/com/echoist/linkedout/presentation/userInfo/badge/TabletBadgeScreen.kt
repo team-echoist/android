@@ -2,7 +2,6 @@ package com.echoist.linkedout.presentation.userInfo.badge
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,16 +16,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun TabletBadgeRoute(
-    contentPadding: PaddingValues,
     viewModel: BadgeViewModel = hiltViewModel()
 ) {
-
     val badgeList by viewModel.badgeList.collectAsState()
-    
+
     Box {
         Column(
             Modifier
-                .padding(contentPadding)
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp)
         ) {
