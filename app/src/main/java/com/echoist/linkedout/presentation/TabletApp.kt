@@ -94,8 +94,8 @@ fun TabletApp(
     val myInfo by homeViewModel.getMyInfo().collectAsState()
 
     val fillWidthFraction = when (configuration.orientation) {
-        Configuration.ORIENTATION_LANDSCAPE -> if (isNotificationClicked) 0.7f else 1f
-        else -> if (isNotificationClicked) 0.55f else 1f
+        Configuration.ORIENTATION_PORTRAIT -> if (isNotificationClicked) 0.54f else 1f
+        else -> if (isNotificationClicked) 0.67f else 1f
     }
 
     Surface(
