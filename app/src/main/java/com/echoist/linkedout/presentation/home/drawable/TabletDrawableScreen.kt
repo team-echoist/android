@@ -48,8 +48,7 @@ fun TabletDrawableScreen(
 ) {
     var selectedMenu by remember { mutableStateOf(selectedMenu) }
     var noticeId by remember { mutableStateOf(0) }
-
-
+    
     Row {
         Column(
             Modifier
