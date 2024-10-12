@@ -188,9 +188,7 @@ fun LocationBox(viewModel: WritingViewModel) {
             fontSize = 14.sp,
             color = Color.White
         )
-
     }
-
 }
 
 @Composable
@@ -254,7 +252,7 @@ fun LocationGroup(viewModel: WritingViewModel) {
     ) {
         Image(
             painter = painterResource(id = R.drawable.group_location),
-            contentDescription = "hashtagGroup"
+            contentDescription = "locationGroup"
         )
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -285,10 +283,7 @@ fun LocationGroup(viewModel: WritingViewModel) {
                     fontSize = 12.sp,
                     color = Color(0xFFA8AEE4)
                 )
-
             }
-
-
         }
 
         Box(

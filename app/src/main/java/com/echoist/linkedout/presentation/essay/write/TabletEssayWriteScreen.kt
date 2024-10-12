@@ -181,6 +181,7 @@ fun TabletEssayWriteRoute(
                     if (viewModel.longitude != null && viewModel.latitude != null && viewModel.isTextFeatOpened.value) {
                         if (viewModel.isLocationClicked) {
                             Row {
+                                Spacer(modifier = Modifier.width(20.dp))
                                 LocationBox(viewModel = viewModel)
                                 Row(
                                     Modifier
