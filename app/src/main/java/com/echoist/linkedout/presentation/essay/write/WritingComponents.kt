@@ -142,37 +142,36 @@ fun TextItem(icon: Int, color: Color, clickable: () -> Unit) {
 }
 
 @Composable
-fun LocationTextField(viewModel: WritingViewModel) {
-
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart) {
-        TextField(
-            value = viewModel.locationText,
-            colors = TextFieldDefaults.colors(
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                focusedTextColor = Color.White,
-                unfocusedTextColor = Color.White,
-                focusedContainerColor = Color.Transparent,
-                unfocusedContainerColor = Color.Transparent
-
-
-            ),
-            placeholder = {
-                Text(text = "장소를 입력하고 줄을 띄워주세요", color = Color.Gray, fontSize = 14.sp)
-            },
-            onValueChange = { it ->
-                if (it.isNotEmpty() && (it.last() == '\n') && viewModel.locationList.size < 1) {
-                    val trimmedText = it.trim()
-                    if (trimmedText.isNotBlank()) {
-                        viewModel.locationList.add(trimmedText)
-                        viewModel.locationText = ""
-                    }
-                } else viewModel.locationText = it
-            }
-        )
-    }
+fun LocationTextField(
+    viewModel: WritingViewModel,
+    modifier: Modifier = Modifier
+) {
+    TextField(
+        modifier = modifier,
+        value = viewModel.locationText,
+        colors = TextFieldDefaults.colors(
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            focusedTextColor = Color.White,
+            unfocusedTextColor = Color.White,
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent
 
 
+        ),
+        placeholder = {
+            Text(text = "장소를 입력하고 줄을 띄워주세요", color = Color.Gray, fontSize = 14.sp)
+        },
+        onValueChange = { it ->
+            if (it.isNotEmpty() && (it.last() == '\n') && viewModel.locationList.size < 1) {
+                val trimmedText = it.trim()
+                if (trimmedText.isNotBlank()) {
+                    viewModel.locationList.add(trimmedText)
+                    viewModel.locationText = ""
+                }
+            } else viewModel.locationText = it
+        }
+    )
 }
 
 @Composable

@@ -842,7 +842,15 @@ fun TextEditBar(
                         .padding(end = 14.dp)
                         .clickable { requestPermissionsUtil.RequestLocationUpdates() }
                 )
-                LocationTextField(viewModel = viewModel)
+                LocationTextField(viewModel = viewModel, modifier = Modifier.weight(8f))
+                Icon(
+                    painter = painterResource(id = R.drawable.icon_information),
+                    tint = Color.White,
+                    contentDescription = "icon_info",
+                    modifier = Modifier.size(26.dp)
+                )
+                Spacer(modifier = Modifier.width(17.dp))
+
             } else {
                 Spacer(modifier = Modifier.width(20.dp))
 
