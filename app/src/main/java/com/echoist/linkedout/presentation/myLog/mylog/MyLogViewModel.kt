@@ -13,6 +13,7 @@ import com.echoist.linkedout.data.api.BookMarkApi
 import com.echoist.linkedout.data.api.EssayApi
 import com.echoist.linkedout.data.api.StoryApi
 import com.echoist.linkedout.data.api.SupportApi
+import com.echoist.linkedout.data.api.UserApi
 import com.echoist.linkedout.data.api.toWritingEssayItem
 import com.echoist.linkedout.data.dto.ExampleItems
 import com.echoist.linkedout.data.dto.RelatedEssay
@@ -32,6 +33,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MyLogViewModel @Inject constructor(
+    private val userApi: UserApi,
     private val storyApi: StoryApi,
     private val supportApi: SupportApi,
     private val essayApi: EssayApi,
@@ -68,6 +70,7 @@ class MyLogViewModel @Inject constructor(
         readMyEssay()
         readPublishEssay()
         readMyStory()
+        requestMyInfo()
     }
 
     fun onNavigatedInit() {
@@ -244,6 +247,24 @@ class MyLogViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
+            }
+        }
+    }
+
+    fun requestMyInfo() {
+        viewModelScope.launch {
+            try {
+                val response = userApi.getMyInfo()
+
+                Log.d(TAG, "readMyInfo: suc1")
+                exampleItems.myProfile = response.data.user
+                exampleItems.myProfile.essayStats = response.data.essayStats
+                Log.i(TAG, "readMyInfo: ${exampleItems.myProfile}")
+            } catch (e: Exception) {
+                Log.d(TAG, "readMyInfo: error err")
+                e.printStackTrace()
+                Log.d(TAG, e.message.toString())
+                Log.d(TAG, e.cause.toString())
             }
         }
     }
