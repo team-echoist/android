@@ -206,7 +206,6 @@ fun ModifyBox(text: String, onClick: () -> Unit) {
                 contentDescription = "arrowforward",
                 modifier = Modifier.size(20.dp)
             )
-
         }
     }
 }

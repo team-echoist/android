@@ -67,6 +67,7 @@ import com.echoist.linkedout.presentation.util.TYPE_PRIVATE
 import com.echoist.linkedout.presentation.util.TYPE_PUBLISHED
 import com.echoist.linkedout.presentation.util.TYPE_RECOMMEND
 import com.echoist.linkedout.presentation.util.formatDateTime
+import com.echoist.linkedout.presentation.util.isTablet
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
 import com.mohamedrejeb.richeditor.ui.material3.RichText
 import kotlinx.coroutines.launch
@@ -245,14 +246,22 @@ fun EssayListItem(
                 )
                 if (pagerState.currentPage == 1) {
                     Spacer(modifier = Modifier.width(8.dp))
-                    Icon(
-                        painter = painterResource(id = R.drawable.option_link),
-                        tint = Color.White,
-                        contentDescription = "option_link",
-                        modifier = Modifier
-                            .size(28.dp)
-                            .padding(top = 1.5.dp)
-                    )
+                    if (isTablet()) {
+                        GlideImage(
+                            model = R.drawable.icon_mylog_chip,
+                            contentScale = ContentScale.Fit,
+                            contentDescription = "option_link",
+                        )
+                    } else {
+                        Icon(
+                            painter = painterResource(id = R.drawable.option_link),
+                            tint = Color.White,
+                            contentDescription = "option_link",
+                            modifier = Modifier
+                                .size(28.dp)
+                                .padding(top = 1.5.dp)
+                        )
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(10.dp))
