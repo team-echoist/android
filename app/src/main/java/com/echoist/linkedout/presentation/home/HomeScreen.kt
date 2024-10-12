@@ -105,7 +105,6 @@ fun HomePage(
     writingViewModel: WritingViewModel,
     statusCode: Int
 ) {
-
     val context = LocalContext.current
 
     val scope = rememberCoroutineScope()
@@ -197,7 +196,6 @@ fun HomePage(
         )
     }
     //터치 효과 x
-
     AnimatedVisibility(
         visible = viewModel.isVisibleGeulRoquis && !viewModel.isFirstUser, //튜토리얼을 건너뛰어야 글로키를 볼수있음
         enter = fadeIn(
@@ -298,7 +296,6 @@ fun WriteFTB(
     navController: NavController,
     writingViewModel: WritingViewModel = hiltViewModel()
 ) {
-
     FloatingActionButton(
         modifier = Modifier.padding(end = 25.dp, bottom = 25.dp),
         onClick = {
@@ -416,7 +413,6 @@ private fun isRouteSelected(currentRoute: String?, screenRoute: String): Boolean
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun MyProfile(item: UserInfo, onClick: () -> Unit) {
-
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -465,7 +461,6 @@ fun MyProfile(item: UserInfo, onClick: () -> Unit) {
     }
 }
 
-
 @Composable
 fun LineChartExample(modifier: Modifier = Modifier, essayCounts: List<Int>) {
     val lineData = createLineData(essayCounts)
@@ -489,14 +484,11 @@ fun LineChartExample(modifier: Modifier = Modifier, essayCounts: List<Int>) {
                 xAxis.granularity = 1f
                 xAxis.labelCount = 5
                 xAxis.setDrawAxisLine(false)
-
                 axisRight.isEnabled = false
                 axisLeft.isEnabled = false
                 setTouchEnabled(false)
                 description.isEnabled = false
-
                 legend.isEnabled = false
-
                 animateX(1000)
             }
         },
@@ -526,19 +518,14 @@ fun createLineData(essayCounts: List<Int>): LineData {
         setDrawCircles(true)
         setDrawValues(false)
         setDrawIcons(false)
-
-
     }
-
     return LineData(dataSet)
 }
-
 
 @Composable
 fun MyLinkedOutBar() {
     val currentDate = LocalDate.now()
     val formattedDate = currentDate.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"))
-
 
     Box(
         modifier = Modifier
@@ -557,7 +544,6 @@ fun MyLinkedOutBar() {
 
 @Composable
 fun MyDrawableItem(text: String, onClick: () -> Unit) {
-
     NavigationDrawerItem(
         modifier = Modifier.height(70.dp),
         label = {
@@ -571,7 +557,6 @@ fun MyDrawableItem(text: String, onClick: () -> Unit) {
 @Preview
 @Composable
 fun ShopDrawerItem() {
-
     NavigationDrawerItem(
         modifier = Modifier.height(80.dp),
         label = {
@@ -592,10 +577,8 @@ fun ShopDrawerItem() {
                     color = LinkedInColor,
                     fontSize = 12.sp
                 )
-
             }
         }
-
     )
 }
 
@@ -621,12 +604,11 @@ fun LogoutBtn(isLogoutClicked: () -> Unit) {
 
 @Composable
 fun LogoutBox(isCancelClicked: () -> Unit, isLogoutClicked: () -> Unit) {
-
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(bottom = 10.dp)
             .background(Color.Black.copy(0.4f))
+            .clickable { isCancelClicked() }
     )
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
         Box(
@@ -656,7 +638,6 @@ fun LogoutBox(isCancelClicked: () -> Unit, isLogoutClicked: () -> Unit) {
                         shape = RoundedCornerShape(20)
                     ) {
                         Text(text = "취소", color = Color.Black, fontWeight = FontWeight.SemiBold)
-
                     }
                     Spacer(modifier = Modifier.width(10.dp))
                     Button(
@@ -666,25 +647,21 @@ fun LogoutBox(isCancelClicked: () -> Unit, isLogoutClicked: () -> Unit) {
                             .height(61.dp),
                         onClick = {
                             isLogoutClicked()
-                            /*TODO*/
                         },
                         shape = RoundedCornerShape(20)
                     ) {
                         Text(text = "로그아웃", color = Color.Black, fontWeight = FontWeight.SemiBold)
-
                     }
                 }
-
+                Spacer(modifier = Modifier.height(25.dp))
             }
         }
     }
 }
 
-
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun GeulRoquis(isHoldClicked: () -> Unit, isAcceptClicked: () -> Unit, viewModel: HomeViewModel) {
-
     Box(
         modifier = Modifier
             .background(color = Color(0xF2121212), shape = RoundedCornerShape(4))
@@ -737,9 +714,7 @@ fun GeulRoquis(isHoldClicked: () -> Unit, isAcceptClicked: () -> Unit, viewModel
                 Text(text = "수락", color = Color.White, fontSize = 16.sp, modifier = Modifier
                     .clickable { isAcceptClicked() }
                     .weight(1f), textAlign = TextAlign.Center)
-
             }
-
         }
     }
 }
@@ -748,7 +723,6 @@ fun GeulRoquis(isHoldClicked: () -> Unit, isAcceptClicked: () -> Unit, viewModel
 @Preview
 @Composable
 fun t() {
-
     Box(
         modifier = Modifier
             .background(color = Color(0xF2121212), shape = RoundedCornerShape(4))
@@ -771,8 +745,6 @@ fun t() {
             Spacer(modifier = Modifier.height(5.dp))
             Text(text = "2024-07-24 GeulRoquis", color = Color.White, fontSize = 12.sp)
             Spacer(modifier = Modifier.height(20.dp))
-
-
             GlideImage(
                 model = R.drawable.home_basic,
                 contentDescription = "",
@@ -781,8 +753,6 @@ fun t() {
                     .height(240.dp)
                     .fillMaxWidth()
             )
-
-
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = "보류", color = Color.White, fontSize = 16.sp, modifier = Modifier
@@ -793,9 +763,7 @@ fun t() {
                     text = "수락", color = Color.White, fontSize = 16.sp, modifier = Modifier
                         .weight(1f), textAlign = TextAlign.Center
                 )
-
             }
-
         }
     }
 }
@@ -804,7 +772,6 @@ fun t() {
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ReactivateOrDeleteBox(isClickedReActivate: () -> Unit, isClickedDeActivate: () -> Unit) {
-
     Box(
         modifier = Modifier
             .size(300.dp, 286.dp)
@@ -850,7 +817,6 @@ fun ReactivateOrDeleteBox(isClickedReActivate: () -> Unit, isClickedDeActivate: 
                     .fillMaxWidth()
                     .height(50.dp)
                     .padding(horizontal = 20.dp),
-
                 shape = RoundedCornerShape(20)
             ) {
                 Text(text = "계정 복구하기", color = Color.Black)
@@ -862,7 +828,6 @@ fun ReactivateOrDeleteBox(isClickedReActivate: () -> Unit, isClickedDeActivate: 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun NoticeAlert(isClickedClose: () -> Unit, isClickedOpened: () -> Unit) {
-
     Box(
         modifier = Modifier
             .width(280.dp)
@@ -906,7 +871,6 @@ fun NoticeAlert(isClickedClose: () -> Unit, isClickedOpened: () -> Unit) {
                     Text(text = "닫기", color = Color.Black, fontSize = 12.sp)
                 }
             }
-
         }
     }
 }
@@ -935,7 +899,6 @@ fun ReLogInWaringAlert(isClicked: () -> Unit) {
             )
             Spacer(modifier = Modifier.height(6.dp))
             Text(text = "다시 로그인 해주세요.", color = Color.White, fontSize = 14.sp)
-
         }
         Box(
             modifier = Modifier
@@ -989,7 +952,6 @@ fun UpdateAlert(isClickedClose: () -> Unit, isClickedOpened: () -> Unit) {
                 )
             )
             Spacer(modifier = Modifier.height(27.dp))
-
             Row {
                 Button(
                     onClick = { isClickedOpened() },
@@ -999,7 +961,6 @@ fun UpdateAlert(isClickedClose: () -> Unit, isClickedOpened: () -> Unit) {
                         .padding(start = 15.dp, end = 5.dp)
                         .weight(1f)
                 ) {
-
                     Text(
                         text = "자세히 보기",
                         color = Color.Black,
@@ -1022,4 +983,3 @@ fun UpdateAlert(isClickedClose: () -> Unit, isClickedOpened: () -> Unit) {
         }
     }
 }
-

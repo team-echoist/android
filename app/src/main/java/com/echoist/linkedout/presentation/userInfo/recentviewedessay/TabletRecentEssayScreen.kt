@@ -19,14 +19,12 @@ import com.echoist.linkedout.presentation.community.EssayListItem
 
 @Composable
 fun TabletRecentEssayScreen(
-    contentPadding: PaddingValues,
     navController: NavController,
     viewModel: CommunityViewModel = hiltViewModel()
 ) {
     val items = viewModel.getRecentEssayList()
     Box(
         Modifier
-            .padding(contentPadding)
             .fillMaxSize(), contentAlignment = Alignment.TopCenter
     ) {
         LazyColumn(

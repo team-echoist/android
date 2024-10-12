@@ -1,5 +1,6 @@
 package com.echoist.linkedout.presentation
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -56,6 +57,7 @@ import com.echoist.linkedout.presentation.util.Routes
 import com.echoist.linkedout.presentation.util.navigateWithClearBackStack
 import kotlinx.coroutines.launch
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun TabletApp(
     navController: NavHostController,
@@ -92,8 +94,8 @@ fun TabletApp(
     val myInfo by homeViewModel.getMyInfo().collectAsState()
 
     val fillWidthFraction = when (configuration.orientation) {
-        Configuration.ORIENTATION_LANDSCAPE -> if (isNotificationClicked) 0.7f else 1f
-        else -> if (isNotificationClicked) 0.55f else 1f
+        Configuration.ORIENTATION_PORTRAIT -> if (isNotificationClicked) 0.54f else 1f
+        else -> if (isNotificationClicked) 0.67f else 1f
     }
 
     Surface(
@@ -194,9 +196,10 @@ fun TabletApp(
                             }
                         }
                     }
-                }) { contentPadding ->
+                }) { _ ->
                 Row(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
                 ) {
                     Box(
                         modifier = Modifier
@@ -205,8 +208,7 @@ fun TabletApp(
                     ) {
                         TabletNavHost(
                             startDestination = startDestination,
-                            navController = navController,
-                            contentPadding = contentPadding
+                            navController = navController
                         )
                     }
 

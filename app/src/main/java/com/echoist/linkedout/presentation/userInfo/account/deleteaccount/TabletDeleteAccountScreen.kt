@@ -47,7 +47,6 @@ import com.echoist.linkedout.ui.theme.LinkedInColor
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun TabletDeleteAccountRoute(
-    contentPadding: PaddingValues,
     viewModel: MyPageViewModel = hiltViewModel(),
     userInfoViewModel: UserInfoViewModel = hiltViewModel(),
     onWithdrawalSuccess: () -> Unit
@@ -79,7 +78,6 @@ fun TabletDeleteAccountRoute(
 
     Box(
         Modifier
-            .padding(contentPadding)
             .fillMaxSize(), contentAlignment = Alignment.TopCenter
     ) {
         if (viewModel.isLoading) {

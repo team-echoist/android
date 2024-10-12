@@ -36,7 +36,6 @@ import com.echoist.linkedout.ui.theme.LinkedInColor
 
 @Composable
 fun TabletChangePasswordScreen(
-    contentPadding: PaddingValues,
     viewModel: MyPageViewModel = hiltViewModel(),
     onClickResetPassword: () -> Unit,
     onChangePwFinished: () -> Unit
@@ -56,7 +55,6 @@ fun TabletChangePasswordScreen(
 
     Box(
         Modifier
-            .padding(contentPadding)
             .fillMaxSize(), contentAlignment = Alignment.TopCenter
     ) {
         Column(

@@ -45,7 +45,6 @@ import com.echoist.linkedout.presentation.userInfo.MyPageViewModel
 fun TabletAccountRoute(
     viewModel: MyPageViewModel = hiltViewModel(),
     userInfoViewModel: UserInfoViewModel = hiltViewModel(),
-    contentPadding: PaddingValues,
     onClickChangeEmail: () -> Unit,
     onClickChangePassword: () -> Unit,
     onClickDeleteAccount: () -> Unit,
