@@ -894,6 +894,7 @@ fun TextEditBar(
                             viewModel.hashTagList.forEach {
                                 tagList.add(EssayApi.Tag(1, it))
                             }
+                            viewModel.content = textState.toHtml()
 
                             viewModel.updateOrInsertEssay(
                                 EssayApi.EssayItem(

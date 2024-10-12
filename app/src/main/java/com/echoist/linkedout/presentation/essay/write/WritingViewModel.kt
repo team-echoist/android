@@ -163,8 +163,7 @@ class WritingViewModel @Inject constructor(
             storageEssaysList.addAll(storedData)
         }
     }
-
-
+    
     fun initialize() {
         titleFocusState.value = false
         focusState.value = false

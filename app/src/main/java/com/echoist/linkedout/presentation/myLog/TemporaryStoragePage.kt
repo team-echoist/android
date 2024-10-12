@@ -50,7 +50,6 @@ import com.echoist.linkedout.data.api.EssayApi
 import com.echoist.linkedout.presentation.essay.write.WritingViewModel
 import com.echoist.linkedout.ui.theme.LinkedInColor
 
-
 @Composable
 fun TemporaryStoragePage(navController: NavController, viewModel: WritingViewModel) {
     var isModifyClicked by remember { mutableStateOf(false) }
@@ -61,7 +60,6 @@ fun TemporaryStoragePage(navController: NavController, viewModel: WritingViewMod
     LaunchedEffect(Unit) {
         viewModel.getAllStoredData()
     }
-
 
     Scaffold(topBar = {
         StorageTopAppBar(
@@ -136,7 +134,6 @@ fun StorageTopAppBar(
                 contentDescription = "",
                 Modifier
                     .size(30.dp)
-
                     .clickable { navController.popBackStack() },
                 tint = Color.White
             )
