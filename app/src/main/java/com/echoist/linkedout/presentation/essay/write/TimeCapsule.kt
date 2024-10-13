@@ -138,7 +138,7 @@ fun TimeCapsulePagerStep1() {
                 Spacer(modifier = Modifier.width(20.dp))
                 TimeCapsuleStepChip("Step 1")
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = "위치 기능 사용하기", color = LinkedInColor)
+                Text(text = "위치 기능 사용하기", color = LinkedInColor,fontSize = 14.sp)
             }
             Spacer(modifier = Modifier.height(45.dp))
 
@@ -182,7 +182,7 @@ fun TimeCapsulePagerStep2() {
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = "작성 완료 후 뜨는 모달에서 " +
-                            "[땅에 묻기] 누르기", color = LinkedInColor
+                            "[땅에 묻기] 누르기", color = LinkedInColor,fontSize = 14.sp
                 )
             }
             Spacer(modifier = Modifier.height(6.dp))
@@ -209,7 +209,7 @@ fun TimeCapsulePagerStep3() {
                 Spacer(modifier = Modifier.width(20.dp))
                 TimeCapsuleStepChip("Step 3")
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = "글을 썼던 장소 다시 찾아오기", color = LinkedInColor)
+                Text(text = "글을 썼던 장소 다시 찾아오기", color = LinkedInColor, fontSize = 14.sp)
             }
             GlideImage(
                 model = R.drawable.capsule3,
