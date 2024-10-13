@@ -61,7 +61,6 @@ fun TabletEssayWriteRoute(
     navController: NavController,
     viewModel: WritingViewModel = hiltViewModel()
 ) {
-
     val isKeyBoardOpened by keyboardAsState()
     val scrollState = rememberScrollState()
     val background = Color.Black
@@ -70,7 +69,6 @@ fun TabletEssayWriteRoute(
     var isTextBoldSelected by remember { mutableStateOf(false) }
     var isTextUnderLineSelected by remember { mutableStateOf(false) }
     var isTextMiddleLineSelected by remember { mutableStateOf(false) }
-
 
     //리치텍스트
     val textState = rememberRichTextState()
@@ -108,12 +106,8 @@ fun TabletEssayWriteRoute(
                         viewModel,
                         textState
                     ) { viewModel.content = textState.toHtml() }
-
                     ContentTextField(viewModel = viewModel, textState)
-                    Log.d(ContentValues.TAG, "WritingTopAppBar: ${textState.toHtml()}")
-
                     Spacer(modifier = Modifier.height(50.dp))
-
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center,
@@ -123,10 +117,6 @@ fun TabletEssayWriteRoute(
                                 model = viewModel.imageUri ?: viewModel.imageUrl,
                                 contentDescription = "uri",
                                 contentScale = ContentScale.Crop
-                            )
-                            Log.d(
-                                ContentValues.TAG,
-                                "WritingPage: ${viewModel.imageUri}, ${viewModel.imageUrl}"
                             )
                             if (viewModel.imageUri != null || (viewModel.imageUrl != null && viewModel.imageUrl!!.startsWith(
                                     "https"
@@ -160,7 +150,7 @@ fun TabletEssayWriteRoute(
                     .fillMaxSize(),
                 contentAlignment = Alignment.BottomCenter
             ) { //키보드 자리에 들어갈 컴포 넣기
-                Column {
+                Column{
                     AnimatedVisibility(
                         visible = viewModel.isCanCelClicked.value,
                         enter = slideInVertically(
@@ -216,7 +206,6 @@ fun TabletEssayWriteRoute(
                                 }
                             }
                         }
-
                     } else if (isKeyBoardOpened == Keyboard.Closed && !viewModel.isTextFeatOpened.value)
                         if (viewModel.hashTagList.isNotEmpty()) {
                             Column {

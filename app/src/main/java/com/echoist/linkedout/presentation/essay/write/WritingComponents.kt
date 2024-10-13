@@ -52,6 +52,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -171,8 +172,6 @@ fun LocationTextField(viewModel: WritingViewModel) {
             }
         )
     }
-
-
 }
 
 @Composable
@@ -189,9 +188,7 @@ fun LocationBox(viewModel: WritingViewModel) {
             fontSize = 14.sp,
             color = Color.White
         )
-
     }
-
 }
 
 @Composable
@@ -254,6 +251,8 @@ fun LocationGroup(viewModel: WritingViewModel) {
             .padding(horizontal = 20.dp)
     ) {
         Image(
+            modifier = Modifier.fillMaxWidth(),
+            contentScale = ContentScale.FillBounds,
             painter = painterResource(id = R.drawable.group_location),
             contentDescription = "hashtagGroup"
         )
@@ -286,12 +285,8 @@ fun LocationGroup(viewModel: WritingViewModel) {
                     fontSize = 12.sp,
                     color = Color(0xFFA8AEE4)
                 )
-
             }
-
-
         }
-
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.CenterEnd
@@ -309,12 +304,10 @@ fun LocationGroup(viewModel: WritingViewModel) {
             )
         }
     }
-
 }
 
 @Composable
 fun HashTagBtn(viewModel: WritingViewModel, text: String) {
-
     Row(verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
         modifier = Modifier
@@ -356,6 +349,8 @@ fun HashTagGroup(viewModel: WritingViewModel) {
             .padding(horizontal = 20.dp)
     ) {
         Image(
+            modifier = Modifier.fillMaxWidth(),
+            contentScale = ContentScale.FillBounds,
             painter = painterResource(id = R.drawable.group_hashtag),
             contentDescription = "hashtagGroup"
         )
@@ -363,7 +358,6 @@ fun HashTagGroup(viewModel: WritingViewModel) {
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.CenterStart
         ) {
-
             Row(
                 modifier = Modifier
                     .padding(start = 86.dp, bottom = 4.dp)
@@ -378,7 +372,6 @@ fun HashTagGroup(viewModel: WritingViewModel) {
                 }
             }
         }
-
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.CenterEnd
@@ -396,14 +389,12 @@ fun HashTagGroup(viewModel: WritingViewModel) {
             )
         }
     }
-
 }
 
 //사진 자르기
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalGlideComposeApi::class)
 @Composable
 fun CropImagePage(navController: NavController, viewModel: WritingViewModel) {
-
     var imageUri: Uri? by remember { mutableStateOf(viewModel.imageUri) }
     val context = LocalContext.current as Activity
     val fullWidth = context.resources.displayMetrics.widthPixels
@@ -424,7 +415,6 @@ fun CropImagePage(navController: NavController, viewModel: WritingViewModel) {
     val screenWidth = configuration.screenWidthDp
 
     var isImageExist by remember { mutableStateOf(false) }
-
 
     Scaffold(
         topBar = {
@@ -466,7 +456,6 @@ fun CropImagePage(navController: NavController, viewModel: WritingViewModel) {
                             contentDescription = "Background from gallery"
                         )
                     }
-
                     IconButton(
                         onClick = {
                             val cropOptions = CropImageContractOptions(
@@ -484,7 +473,6 @@ fun CropImagePage(navController: NavController, viewModel: WritingViewModel) {
                         }
                     ) {
                         Icon(
-
                             painter = painterResource(id = R.drawable.icon_camera),
                             modifier = Modifier.size(30.dp),
                             tint = Color.White,
@@ -503,8 +491,6 @@ fun CropImagePage(navController: NavController, viewModel: WritingViewModel) {
                     contentDescription = "writingImg",
                     modifier = Modifier.fillMaxSize()
                 )
-
-
                 Icon(
                     imageVector = Icons.Default.Close,
                     contentDescription = "close",
@@ -552,7 +538,6 @@ fun CropImagePage(navController: NavController, viewModel: WritingViewModel) {
                                     )
                                     imageCropLauncher.launch(cropOptions)
                                 }
-
                         )
                         Spacer(modifier = Modifier.height(10.dp))
                         Text(
@@ -563,7 +548,6 @@ fun CropImagePage(navController: NavController, viewModel: WritingViewModel) {
                         )
                     }
                 }
-
             }
         }
     }
@@ -591,7 +575,6 @@ fun CropImagePage(navController: NavController, viewModel: WritingViewModel) {
     }
 }
 
-
 //임시저장 개수 아이콘
 @Composable
 fun StoryCountIcon(count: Int) {
@@ -616,10 +599,8 @@ fun StoryCountIcon(count: Int) {
                         fontSize = 14.sp,
                         modifier = Modifier.offset(x = (-2).dp)
                     )
-
                 }
             }
         }
     }
 }
-
