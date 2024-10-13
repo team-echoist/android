@@ -77,7 +77,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.ViewCompat
@@ -980,42 +979,6 @@ fun TextSettingsBar(textState: RichTextState) {
                 color = if (selectedFontSize == size) LinkedInColor else Color.White
             )
             Spacer(modifier = Modifier.width(32.dp))
-        }
-    }
-}
-
-@OptIn(ExperimentalGlideComposeApi::class)
-@Preview
-@Composable
-fun test() {
-    var imageSize by remember { mutableStateOf(IntSize.Zero) }
-
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center,
-    ) {
-        Box {
-            GlideImage(
-                model = R.drawable.background_logo_btn,
-                contentDescription = "uri"
-            ) //todo 위치 조절 제대로하기
-
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopEnd) {
-                Row(
-                    Modifier
-                        .offset(x = -(10).dp, y = 10.dp)
-                        .width(50.dp)
-                        .height(27.dp)
-                        .background(
-                            color = Color(0xFF616FED),
-                            shape = RoundedCornerShape(20)
-                        ),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(text = "변경", fontSize = 12.sp, color = Color.White)
-                }
-            }
         }
     }
 }
