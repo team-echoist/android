@@ -75,7 +75,6 @@ class WritingViewModel @Inject constructor(
 
     val storageEssaysList = mutableStateListOf<EssayApi.EssayItem>()
 
-
     var date = mutableStateOf("")
     var isCanCelClicked = mutableStateOf(false)
     var isDeleteClicked = mutableStateOf(false)
@@ -86,17 +85,15 @@ class WritingViewModel @Inject constructor(
 
     var locationList by mutableStateOf(mutableStateListOf<String>())
     var isLocationClicked by mutableStateOf(false)
-
-    //todo image bitmap 레트로핏으로 보내는방법
-    fun readDetailEssay(): EssayApi.EssayItem {
-        return exampleItems.detailEssay
-    }
-
-
     var isTextFeatOpened = mutableStateOf(false)
 
     init {
         isModifyClicked = false
+    }
+
+    //todo image bitmap 레트로핏으로 보내는방법
+    fun readDetailEssay(): EssayApi.EssayItem {
+        return exampleItems.detailEssay
     }
 
     fun getCurrentDate(): String {
@@ -119,7 +116,6 @@ class WritingViewModel @Inject constructor(
             withContext(Dispatchers.Main) {
                 navController.navigate("WritingPage")
             }
-
         }
     }
 
@@ -164,7 +160,6 @@ class WritingViewModel @Inject constructor(
         }
     }
 
-
     fun initialize() {
         titleFocusState.value = false
         focusState.value = false
@@ -190,7 +185,6 @@ class WritingViewModel @Inject constructor(
         exampleItems.detailEssay = EssayApi.EssayItem()
         exampleItems.storageEssay = EssayApi.EssayItem()
     }
-
 
     //에세이 작성 후 서버에 post
     //api 통신 성공했을시에만 화면 이동
@@ -245,13 +239,10 @@ class WritingViewModel @Inject constructor(
                     Log.e("에세이 작성 에러", "${response.code()}")
                     Log.e("에러 헤더 엑세스 토큰", Token.accessToken)
                     Log.e("에러 헤더 리프레시 토큰", Token.refreshToken)
-
                 }
-
             } catch (e: Exception) {
                 // api 요청 실패
                 e.printStackTrace()
-
                 Log.e("writeEssayApiFailed 아예", "Failed to write essay: ${e.printStackTrace()}")
                 Log.e("writeEssayApiFailed 아예", "Failed to write essay: ${e.message}")
             }
@@ -259,7 +250,6 @@ class WritingViewModel @Inject constructor(
     }
 
     //에세이 수정 후 서버에 put
-
     fun modifyEssay(navController: NavController, status: String) {
         viewModelScope.launch {
             try {
@@ -281,7 +271,6 @@ class WritingViewModel @Inject constructor(
 
                     navController.navigate("HOME/200")
                     navController.popBackStack("OnBoarding", false) //onboarding까지 전부 삭제.
-
                     initialize()
                 } else {
                     Log.e("modifyEssayError", "modifyEssayError: ${response.code()}")
@@ -290,7 +279,6 @@ class WritingViewModel @Inject constructor(
                 if (response.code() == 202) {
                     //블랙리스트 코드 이동
                 }
-
             } catch (e: Exception) {
                 e.printStackTrace()
                 // api 요청 실패
@@ -336,21 +324,13 @@ class WritingViewModel @Inject constructor(
                     imageUrl = response.body()!!.data.imageUrl
                     Log.d(TAG, "uploadImage: $imageUrl")
                 } else {
-
                 }
-
-
                 // 서버 응답에서 URL 추출
             } catch (e: Exception) {
                 e.printStackTrace()
                 Log.e(TAG, "uploadImage: ${e.message}")
-
-
             } finally {
-
             }
         }
-
-
     }
 }
