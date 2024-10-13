@@ -176,12 +176,12 @@ fun TimeCapsulePagerStep2() {
         }
         Column {
             Spacer(modifier = Modifier.height(30.dp))
-            Row {
+            Row(modifier = Modifier.padding(end = 20.dp)) {
                 Spacer(modifier = Modifier.width(20.dp))
                 TimeCapsuleStepChip("Step 2")
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "작성 완료 후 뜨는 모달에서\n" +
+                    text = "작성 완료 후 뜨는 모달에서 " +
                             "[땅에 묻기] 누르기", color = LinkedInColor
                 )
             }
@@ -192,7 +192,6 @@ fun TimeCapsulePagerStep2() {
                 fontSize = 12.sp,
                 color = Color(0xFFEDBC61)
             )
-
         }
     }
 }
@@ -206,7 +205,7 @@ fun TimeCapsulePagerStep3() {
     ) {
         Column {
             Spacer(modifier = Modifier.height(30.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(modifier = Modifier.padding(end = 20.dp)) {
                 Spacer(modifier = Modifier.width(20.dp))
                 TimeCapsuleStepChip("Step 3")
                 Spacer(modifier = Modifier.width(8.dp))

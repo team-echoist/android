@@ -72,7 +72,6 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
@@ -132,19 +131,18 @@ fun WritingPage(
     val isKeyBoardOpened by keyboardAsState()
     val scrollState = rememberScrollState()
     val background = Color.Black
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     var isTextSettingSelected by remember { mutableStateOf(false) }
     var isTextBoldSelected by remember { mutableStateOf(false) }
     var isTextUnderLineSelected by remember { mutableStateOf(false) }
     var isTextMiddleLineSelected by remember { mutableStateOf(false) }
 
-
     //리치텍스트
     val textState = rememberRichTextState()
-    val currentSpanStyle = textState.currentSpanStyle
-    val isBold = currentSpanStyle.fontWeight == FontWeight.Bold
-    val isItalic = currentSpanStyle.fontStyle == FontStyle.Italic
-    val isUnderline = currentSpanStyle.textDecoration == TextDecoration.Underline
+    var isClickedTimeCapsuleInfo by remember {
+        mutableStateOf(false)
+    }
 
     LaunchedEffect(key1 = Unit) {
         textState.setHtml(viewModel.content)
@@ -331,13 +329,18 @@ fun WritingPage(
                             else textState.removeSpanStyle(SpanStyle(textDecoration = TextDecoration.LineThrough))
 
                             isTextSettingSelected = false
-                        }, textState
+                        }, textState,
+                        {
+                            isClickedTimeCapsuleInfo = true
+                            keyboardController?.hide()
+                        }
                     )
                     KeyboardLocationFunc(viewModel, navController, textState)
                 }
             }
         }
     }
+
     AnimatedVisibility(
         visible = viewModel.isStored,
         enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)),
@@ -359,6 +362,24 @@ fun WritingPage(
                 contentAlignment = Alignment.Center
             ) {
                 Text(text = "임시 저장이 완료되었습니다.", color = Color.White, fontSize = 16.sp)
+            }
+        }
+    }
+    AnimatedVisibility(
+        visible = isClickedTimeCapsuleInfo,
+        enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)),
+        exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(0.7f))
+                .padding(horizontal = 16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            TimeCapsulePager {
+                isClickedTimeCapsuleInfo = false
+                keyboardController?.show()
             }
         }
     }
@@ -782,17 +803,11 @@ fun TextEditBar(
     onTextUnderLineSelected: (Boolean) -> Unit,
     isTextMiddleLineSelected: Boolean,
     onTextMiddleLineSelected: (Boolean) -> Unit,
-    textState: RichTextState
+    textState: RichTextState,
+    onClickTimeCapsuleInfo : ()->Unit
 ) {
 
     var isOpened by remember { mutableStateOf(true) }
-
-    val insets = ViewCompat.getRootWindowInsets(LocalView.current)
-    val imeHeightPx = insets?.getInsets(WindowInsetsCompat.Type.ime())?.bottom ?: 0
-    val density = LocalDensity.current
-
-    val imeHeightDp = with(density) { imeHeightPx.toDp() }
-
     var isAnimationComplete by remember { mutableStateOf(false) }
 
     // LaunchedEffect를 통해 애니메이션이 완료된 후 상태를 업데이트
@@ -847,7 +862,9 @@ fun TextEditBar(
                     painter = painterResource(id = R.drawable.icon_information),
                     tint = Color.White,
                     contentDescription = "icon_info",
-                    modifier = Modifier.size(26.dp)
+                    modifier = Modifier
+                        .size(26.dp)
+                        .clickable { onClickTimeCapsuleInfo() }
                 )
                 Spacer(modifier = Modifier.width(17.dp))
 

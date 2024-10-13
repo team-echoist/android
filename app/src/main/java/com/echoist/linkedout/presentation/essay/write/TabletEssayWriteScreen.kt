@@ -39,8 +39,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -70,15 +70,15 @@ fun TabletEssayWriteRoute(
     var isTextBoldSelected by remember { mutableStateOf(false) }
     var isTextUnderLineSelected by remember { mutableStateOf(false) }
     var isTextMiddleLineSelected by remember { mutableStateOf(false) }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
+
+    var isClickedTimeCapsuleInfo by remember {
+        mutableStateOf(false)
+    }
 
     //리치텍스트
     val textState = rememberRichTextState()
-    val currentSpanStyle = textState.currentSpanStyle
-    val isBold = currentSpanStyle.fontWeight == FontWeight.Bold
-    val isItalic = currentSpanStyle.fontStyle == FontStyle.Italic
-    val isUnderline = currentSpanStyle.textDecoration == TextDecoration.Underline
-
     LaunchedEffect(key1 = Unit) {
         textState.setHtml(viewModel.content)
     }
@@ -268,13 +268,37 @@ fun TabletEssayWriteRoute(
                                 else textState.removeSpanStyle(SpanStyle(textDecoration = TextDecoration.LineThrough))
 
                                 isTextSettingSelected = false
-                            }, textState
+                            }, textState,
+                            { isClickedTimeCapsuleInfo = true
+                                keyboardController?.hide()
+                            }
                         )
                         KeyboardLocationFunc(viewModel, navController, textState)
                     }
                 }
             }
         }
+
+        AnimatedVisibility(
+            visible = isClickedTimeCapsuleInfo,
+            enter = fadeIn(animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)),
+            exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(0.7f))
+                    .padding(horizontal = 16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                TimeCapsulePager {
+                    isClickedTimeCapsuleInfo = false
+                    keyboardController?.show()
+                }
+            }
+        }
+
+
         AnimatedVisibility(
             visible = viewModel.isStored,
             enter = fadeIn(
