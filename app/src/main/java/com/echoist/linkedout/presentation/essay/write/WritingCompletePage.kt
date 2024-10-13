@@ -462,7 +462,7 @@ fun WritingCompletePager(viewModel: WritingViewModel, navController: NavControll
                             .padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
                             .navigationBarsPadding()
                             .fillMaxWidth()
-                            .height(279.dp),
+                            .height(350.dp),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
@@ -472,18 +472,22 @@ fun WritingCompletePager(viewModel: WritingViewModel, navController: NavControll
                             color = Color.White
                         )
 
-                        // 버튼들을 리스트로 처리
-                        val buttons = listOf(
+                        val buttons = mutableListOf(
                             Triple("저장", R.drawable.btn_privated, "private"),
                             Triple("발행", R.drawable.btn_published, "published"),
                             Triple("linked-out", R.drawable.btn_linkedout, "linkedout")
                         )
+                        if (viewModel.locationList.isNotEmpty()) {
+                            buttons.add(Triple("땅에 묻기", R.drawable.btn_timecapsule, "private")) //todo timecapsule
+                        }
 
                         buttons.forEach { (label, drawable, status) ->
                             Writing_Btn(label, drawable) {
-                                handleEssayAction(status,viewModel,navController)
+                                handleEssayAction(status, viewModel, navController)
                             }
                         }
+
+
                     }
                     Box(
                         modifier = Modifier
