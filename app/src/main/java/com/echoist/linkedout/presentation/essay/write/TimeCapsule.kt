@@ -2,6 +2,7 @@ package com.echoist.linkedout.presentation.essay.write
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,7 +27,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -32,8 +35,7 @@ import com.echoist.linkedout.R
 import com.echoist.linkedout.ui.theme.LinkedInColor
 
 @Composable
-@Preview
-fun TimeCapsulePager() {
+fun TimeCapsulePager(onClickClose: () -> Unit) {
     val pagerState = androidx.compose.foundation.pager.rememberPagerState {
         3
     }
@@ -111,12 +113,20 @@ fun TimeCapsulePager() {
                 }
             }
         }
+
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopEnd){
+            Icon(
+                imageVector = Icons.Filled.Close,
+                contentDescription = "icon_close",
+                modifier = Modifier.padding(top = 16.dp, end = 16.dp).size(20.dp).clickable { onClickClose() },
+                tint = Color.White
+            )
+        }
     }
 }
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-@Preview
 fun TimeCapsulePagerStep1() {
     Box(
         modifier = Modifier
@@ -148,7 +158,6 @@ fun TimeCapsulePagerStep1() {
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-@Preview
 fun TimeCapsulePagerStep2() {
     Box(
         modifier = Modifier
@@ -190,7 +199,6 @@ fun TimeCapsulePagerStep2() {
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-@Preview
 fun TimeCapsulePagerStep3() {
     Box(
         modifier = Modifier
