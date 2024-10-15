@@ -42,6 +42,7 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.echoist.linkedout.R
 import com.echoist.linkedout.presentation.userInfo.MyPageViewModel
 import com.echoist.linkedout.presentation.userInfo.account.UserInfoViewModel
+import com.echoist.linkedout.presentation.util.isPortrait
 import com.echoist.linkedout.ui.theme.LinkedInColor
 
 @OptIn(ExperimentalGlideComposeApi::class)
@@ -88,10 +89,11 @@ fun TabletDeleteAccountRoute(
 
         Column(
             Modifier
-                .fillMaxWidth(0.6f)
+                .fillMaxSize()
+                .padding(horizontal = if (isPortrait()) 40.dp else 188.dp)
                 .verticalScroll(scrollState)
         ) {
-            Spacer(modifier = Modifier.height(42.dp))
+            Spacer(modifier = Modifier.height(60.dp))
             Text(text = "탈퇴 시 유의사항", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
             Spacer(modifier = Modifier.height(10.dp))
 
