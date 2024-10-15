@@ -279,7 +279,7 @@ fun TabletDrawableTopBar(title: String, isBack: Boolean = false, onCloseClick: (
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.fillMaxWidth(),
                 color = Color.White,
-                textAlign = TextAlign.Center
+                textAlign = if (isBack.not()) TextAlign.Center else TextAlign.Start
             )
         },
         actions = {

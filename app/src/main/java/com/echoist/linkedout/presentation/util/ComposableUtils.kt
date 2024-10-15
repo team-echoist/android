@@ -8,6 +8,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 
@@ -47,4 +48,10 @@ fun isTablet(): Boolean {
     return ((configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE) &&
             (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE ||
                     (configuration.screenWidthDp >= 600 && configuration.screenHeightDp >= 600))
+}
+
+@Composable
+fun isPortrait(): Boolean {
+    val configuration = LocalConfiguration.current
+    return configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 }

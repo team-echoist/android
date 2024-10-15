@@ -4,11 +4,14 @@ import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
 import android.provider.Settings
 import android.util.Log
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.echoist.linkedout.BuildConfig
@@ -187,10 +190,11 @@ fun formatElapsedTime(isoDateTimeString: String): String {
 //안드로이드 고유식별자
 fun getSSAID(context: Context): String {
     val deviceId =
-            Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+        Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
     Log.d("DeviceID", "Device ID: $deviceId")
     return deviceId
 }
+
 //fcm토큰
 fun getFCMToken(callback: (String?) -> Unit) {
     FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
