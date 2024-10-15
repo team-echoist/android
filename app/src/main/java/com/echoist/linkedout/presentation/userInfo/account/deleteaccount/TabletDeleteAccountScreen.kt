@@ -98,7 +98,7 @@ fun TabletDeleteAccountRoute(
             Spacer(modifier = Modifier.height(10.dp))
 
             GlideImage(
-                model = R.drawable.box_warn,
+                model = R.drawable.box_warn_tablet,
                 contentDescription = "deleteWarning",
                 modifier = Modifier
                     .fillMaxWidth()
