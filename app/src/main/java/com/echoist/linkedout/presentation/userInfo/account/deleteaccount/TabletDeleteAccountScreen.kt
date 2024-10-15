@@ -9,7 +9,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -86,7 +85,6 @@ fun TabletDeleteAccountRoute(
                 CircularProgressIndicator(color = LinkedInColor)
             }
         }
-
         Column(
             Modifier
                 .fillMaxSize()
@@ -96,7 +94,6 @@ fun TabletDeleteAccountRoute(
             Spacer(modifier = Modifier.height(60.dp))
             Text(text = "탈퇴 시 유의사항", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
             Spacer(modifier = Modifier.height(10.dp))
-
             GlideImage(
                 model = R.drawable.box_warn_tablet,
                 contentDescription = "deleteWarning",
@@ -105,7 +102,6 @@ fun TabletDeleteAccountRoute(
                     .height(274.dp)
             )
             Spacer(modifier = Modifier.height(32.dp))
-
             Text(text = "탈퇴 사유", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
             Spacer(modifier = Modifier.height(10.dp))
             Text(
@@ -113,11 +109,8 @@ fun TabletDeleteAccountRoute(
                 fontSize = 16.sp,
                 color = Color(0xFF5D5D5D)
             )
-
             MultiSelectDeleteList(reasonList, selectedItems, onItemSelected)
-
             Spacer(modifier = Modifier.height(32.dp))
-
             Button(
                 onClick = {
                     isWithdrawalClicked = true
@@ -133,8 +126,7 @@ fun TabletDeleteAccountRoute(
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFFE43446),
                     disabledContainerColor = Color(0xFF868686),
-
-                    )
+                )
             ) {
                 Text(text = "탈퇴하기", color = Color.Black)
             }
@@ -149,8 +141,7 @@ fun TabletDeleteAccountRoute(
                 )
             ),
             exit = fadeOut(animationSpec = tween(durationMillis = 500, easing = LinearEasing))
-        )
-        {
+        ) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
