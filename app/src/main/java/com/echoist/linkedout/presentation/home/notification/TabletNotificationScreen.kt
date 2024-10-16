@@ -64,6 +64,8 @@ fun TabletNotificationScreen(
     }.toAnnotatedString()
 
     val navigateToCommunityDetail by viewModel.navigateToCommunityDetail.collectAsState()
+    val alarmList by viewModel.alarmList.collectAsState()
+
     LaunchedEffect(key1 = navigateToCommunityDetail) {
         if (navigateToCommunityDetail) {
             navController.navigate(Routes.CommunityDetailPage)
@@ -71,44 +73,45 @@ fun TabletNotificationScreen(
         }
     }
 
-    Column(
-        Modifier
-            .fillMaxSize()
-            .padding(horizontal = 20.dp)
-            .verticalScroll(rememberScrollState())
-    ) {
+    Column {
         TabletDrawableTopBar(
             title = "알림",
             onCloseClick = { onBackPress() }
         )
-        if (viewModel.alertList.isNotEmpty()) {
-            val groupedAlerts =
-                viewModel.alertList.groupBy { it -> it.createdDate.split("T")[0] }
-            groupedAlerts.forEach { (date, alerts) ->
-                NotificationDate(date)
-                Spacer(modifier = Modifier.height(5.dp))
-                alerts.forEach { alert ->
-                    NotificationItem(viewModel.readMyProfile().nickname ?: "", alert) {
-                        viewModel.readAlert(alert.id)
+        Column(
+            Modifier
+                .fillMaxSize()
+                .padding(horizontal = 20.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+            if (alarmList.isNotEmpty()) {
+                val groupedAlerts =
+                    alarmList.groupBy { it -> it.createdDate.split("T")[0] }
+                groupedAlerts.forEach { (date, alerts) ->
+                    NotificationDate(date)
+                    Spacer(modifier = Modifier.height(5.dp))
+                    alerts.forEach { alert ->
+                        NotificationItem(viewModel.readMyProfile().nickname ?: "", alert) {
+                            viewModel.readAlert(alert.id)
 
-                        when (alert.type) {
-                            "published" -> viewModel.readDetailEssay(
-                                alert.essay.id ?: 0
-                            )
+                            when (alert.type) {
+                                "published" -> viewModel.readDetailEssay(
+                                    alert.essay.id ?: 0
+                                )
 
-                            else -> { //링크드아웃, 고객지원 모두 오픈테러
-                                isAlertClicked = true
-                                clickedAlert = alert
+                                else -> { //링크드아웃, 고객지원 모두 오픈테러
+                                    isAlertClicked = true
+                                    clickedAlert = alert
+                                }
                             }
                         }
-
+                        Spacer(modifier = Modifier.height(10.dp))
                     }
-                    Spacer(modifier = Modifier.height(10.dp))
                 }
             }
         }
     }
-    if (viewModel.alertList.isEmpty()) {
+    if (alarmList.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Row(
                 modifier = Modifier
@@ -130,7 +133,6 @@ fun TabletNotificationScreen(
                     text = annotatedString
                 )
             }
-
         }
     }
 
@@ -149,6 +151,5 @@ fun TabletNotificationScreen(
             isOkClicked = { isAlertClicked = false },
             isCancelClicked = { isAlertClicked = false }
         )
-
     }
 }
