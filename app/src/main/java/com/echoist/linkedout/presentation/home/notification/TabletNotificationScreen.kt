@@ -64,6 +64,8 @@ fun TabletNotificationScreen(
     }.toAnnotatedString()
 
     val navigateToCommunityDetail by viewModel.navigateToCommunityDetail.collectAsState()
+    val alarmList by viewModel.alarmList.collectAsState()
+
     LaunchedEffect(key1 = navigateToCommunityDetail) {
         if (navigateToCommunityDetail) {
             navController.navigate(Routes.CommunityDetailPage)
@@ -82,9 +84,9 @@ fun TabletNotificationScreen(
                 .padding(horizontal = 20.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            if (viewModel.alertList.isNotEmpty()) {
+            if (alarmList.isNotEmpty()) {
                 val groupedAlerts =
-                    viewModel.alertList.groupBy { it -> it.createdDate.split("T")[0] }
+                    alarmList.groupBy { it -> it.createdDate.split("T")[0] }
                 groupedAlerts.forEach { (date, alerts) ->
                     NotificationDate(date)
                     Spacer(modifier = Modifier.height(5.dp))
@@ -109,7 +111,7 @@ fun TabletNotificationScreen(
             }
         }
     }
-    if (viewModel.alertList.isEmpty()) {
+    if (alarmList.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Row(
                 modifier = Modifier

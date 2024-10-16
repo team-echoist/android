@@ -15,7 +15,6 @@ import com.echoist.linkedout.data.api.SupportApi
 import com.echoist.linkedout.data.dto.Alert
 import com.echoist.linkedout.data.dto.ExampleItems
 import com.echoist.linkedout.data.dto.Inquiry
-import com.echoist.linkedout.data.dto.Notice
 import com.echoist.linkedout.data.dto.UserInfo
 import com.echoist.linkedout.presentation.essay.write.Token
 import com.echoist.linkedout.presentation.util.TYPE_RECOMMEND
@@ -39,6 +38,9 @@ class SupportViewModel @Inject constructor(
     private val _inquiryList = MutableStateFlow<List<Inquiry>>(emptyList())
     val inquiryList: StateFlow<List<Inquiry>>
         get() = _inquiryList.asStateFlow()
+
+    private val _alarmList = MutableStateFlow<List<Alert>>(emptyList())
+    val alarmList: StateFlow<List<Alert>> get() = _alarmList.asStateFlow()
 
     private val _navigateToCommunityDetail = MutableStateFlow(false)
     val navigateToCommunityDetail: StateFlow<Boolean> get() = _navigateToCommunityDetail.asStateFlow()
@@ -65,13 +67,12 @@ class SupportViewModel @Inject constructor(
                         response.headers()["x-access-token"]?.takeIf { it.isNotEmpty() }
                             ?: Token.accessToken
                     alertList = response.body()!!.data.alerts.toMutableStateList()
-
+                    _alarmList.value = response.body()!!.data.alerts
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
             } finally {
                 isLoading = false
-
             }
         }
     }
@@ -111,10 +112,8 @@ class SupportViewModel @Inject constructor(
                         response.body()!!.data.anotherEssays!!.essays.toMutableStateList()
                 }
                 Log.d(TAG, "readDetailEssay: previouse ${exampleItems.detailEssay}")
-
                 Log.d(TAG, "readDetailEssay: anotherEssays ${exampleItems.previousEssayList}")
                 _navigateToCommunityDetail.value = true
-
                 // API 호출 결과 처리 (예: response 데이터 사용)
             } catch (e: Exception) {
                 // 예외 처리
