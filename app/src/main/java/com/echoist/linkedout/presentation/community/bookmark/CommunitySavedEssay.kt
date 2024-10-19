@@ -2,7 +2,6 @@ package com.echoist.linkedout.presentation.community.bookmark
 
 import android.annotation.SuppressLint
 import android.content.ContentValues
-import android.content.res.Configuration
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -44,7 +43,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -61,6 +59,7 @@ import com.echoist.linkedout.data.dto.ExampleItems
 import com.echoist.linkedout.presentation.community.CommunityViewModel
 import com.echoist.linkedout.presentation.util.TYPE_RECOMMEND
 import com.echoist.linkedout.presentation.util.formatElapsedTime
+import com.echoist.linkedout.presentation.util.isPortrait
 import com.echoist.linkedout.presentation.util.isTablet
 import com.echoist.linkedout.ui.theme.LinkedInColor
 
@@ -70,9 +69,6 @@ fun CommunitySavedEssayPage(
     viewModel: CommunityViewModel
 ) {
     val text = if (viewModel.isSavedEssaysModifyClicked) "완료" else "편집"
-    val configuration = LocalConfiguration.current
-    val isPortrait =
-        configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
     val isTablet = isTablet()
 
@@ -91,7 +87,7 @@ fun CommunitySavedEssayPage(
             Modifier
                 .fillMaxSize()
                 .padding(
-                    horizontal = if (isTablet) if (isPortrait) 100.dp else 275.dp else 0.dp
+                    horizontal = if (isTablet) if (isPortrait()) 100.dp else 275.dp else 0.dp
                 )
                 .padding(it)
         ) {
