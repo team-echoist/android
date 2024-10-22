@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.presentation.essay.write.WritingViewModel
+import com.echoist.linkedout.presentation.util.isPortrait
 import kotlinx.coroutines.launch
 
 @Composable
@@ -80,7 +81,9 @@ internal fun TabletMyLogScreen(
     viewModel: MyLogViewModel
 ) {
     Column(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = if (isPortrait()) 90.dp else 180.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         TabletMyLogTabView(
