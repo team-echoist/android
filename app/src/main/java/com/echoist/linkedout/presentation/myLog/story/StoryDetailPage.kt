@@ -47,6 +47,8 @@ import com.echoist.linkedout.presentation.myLog.mylog.MyLogViewModel
 import com.echoist.linkedout.presentation.util.Routes
 import com.echoist.linkedout.presentation.util.TYPE_STORY
 import com.echoist.linkedout.presentation.util.formatDateTime
+import com.echoist.linkedout.presentation.util.isPortrait
+import com.echoist.linkedout.presentation.util.isTablet
 import com.echoist.linkedout.presentation.util.navigateWithClearBackStack
 import com.echoist.linkedout.ui.theme.LinkedInColor
 
@@ -60,7 +62,11 @@ fun StoryDetailPage(viewModel: MyLogViewModel, navController: NavController) {
         }
     }, bottomBar = {})
     {
-        Column(Modifier.padding(it)) {
+        Column(
+            Modifier
+                .padding(it)
+                .padding(horizontal = if (isTablet()) if (isPortrait()) 100.dp else 280.dp else 0.dp)
+        ) {
             StoryDetailTitle(viewModel.getSelectedStory(), viewModel.getUserInfo().nickname!!)
             Spacer(modifier = Modifier.height(20.dp))
             StoryDetailList(viewModel, navController)
