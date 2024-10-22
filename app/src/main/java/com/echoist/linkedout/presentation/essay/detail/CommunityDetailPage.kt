@@ -85,6 +85,7 @@ import com.echoist.linkedout.presentation.myLog.mylog.OptionItem
 import com.echoist.linkedout.presentation.util.Routes
 import com.echoist.linkedout.presentation.util.TYPE_RECOMMEND
 import com.echoist.linkedout.presentation.util.formatDateTime
+import com.echoist.linkedout.presentation.util.isTablet
 import com.echoist.linkedout.ui.theme.LinkedInColor
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
 import com.mohamedrejeb.richeditor.ui.material3.RichText
@@ -97,7 +98,6 @@ import kotlinx.coroutines.launch
 fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewModel) {
 
     val scope = rememberCoroutineScope()
-
     val peekHeight = if (viewModel.isReportClicked) 310.dp else 0.dp
 
     val bottomSheetState =
@@ -134,7 +134,6 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
         sheetContainerColor = Color(0xFF191919),
         scaffoldState = scaffoldState,
         sheetContent = {
-
             //신고하기 요청보냄.
             if (!viewModel.isReportCleared) {
                 ReportMenuBottomSheet(viewModel)
@@ -147,20 +146,14 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
                     scope.launch {
                         bottomSheetState.hide()
                     }
-
                 }
             }
-
-
         },
-
         sheetPeekHeight = peekHeight
     ) {
         Scaffold(
             topBar = {
-
                 CommunityTopAppBar(navController = navController, viewModel, color = color)
-
             },
             content = {
                 Box(
@@ -171,7 +164,6 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
                 ) {
                     LazyColumn(state = listState) {
                         item {
-
                             DetailEssay(
                                 item = viewModel.readDetailEssay(),
                                 viewModel,
@@ -216,10 +208,7 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
                                 navController = navController
                             )
                         }
-
-
                     }
-
                     //신고 옵션
                     AnimatedVisibility(
                         visible = viewModel.isOptionClicked,
@@ -247,9 +236,7 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
                             }, viewModel)
                         }
                     }
-
                 }
-
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -284,13 +271,10 @@ fun CommunityDetailPage(navController: NavController, viewModel: CommunityViewMo
                         .fillMaxSize()
                         .background(Color.Black.copy(0.7f))
                         .clickable { viewModel.isReportClicked = false })
-
             }
-
         )
     }
 }
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -316,10 +300,7 @@ fun CommunityTopAppBar(navController: NavController, viewModel: CommunityViewMod
                 modifier = Modifier
                     .padding(start = 10.dp)
                     .size(30.dp)
-
                     .clickable {
-
-
 //searching은 그냥 뒤로가기 해야 서칭페이지로 나감
                         if (previousRoute == Routes.CommunityDetailPage) {
                             navController.navigate(Routes.Community)
@@ -338,7 +319,6 @@ fun CommunityTopAppBar(navController: NavController, viewModel: CommunityViewMod
 //                            }
 //                        }
 //                        navController.popBackStack()
-
                     } //뒤로가기
             )
         },
@@ -354,7 +334,8 @@ fun CommunityTopAppBar(navController: NavController, viewModel: CommunityViewMod
                         viewModel.isOptionClicked = !viewModel.isOptionClicked
                     },
             )
-        })
+        }
+    )
 }
 
 @Composable
@@ -398,7 +379,6 @@ fun ReportOption(onClickReport: () -> Unit, viewModel: CommunityViewModel) {
                 onClick = { onClickReport() },
                 R.drawable.option_report
             )
-
         }
     }
 }
@@ -427,7 +407,6 @@ fun DetailEssay(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-
             ) {
                 Spacer(modifier = Modifier.height(40.dp))
                 if (item.thumbnail != null && item.thumbnail!!.startsWith("https")) {
@@ -450,8 +429,6 @@ fun DetailEssay(
                         modifier = Modifier.fillMaxWidth(),
                         contentAlignment = Alignment.CenterEnd
                     ) {
-
-
                         Icon(
                             painter = painterResource(id = iconImg),
                             contentDescription = "iconImg",
@@ -466,7 +443,6 @@ fun DetailEssay(
                                             item.id!!
                                         )
                                     }
-
                                 },
                         )
                     }
@@ -506,7 +482,6 @@ fun DetailEssay(
                                     color = Color(0xFF686868)
                                 )
                             }
-
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                         Box(
@@ -543,7 +518,6 @@ fun DetailEssay(
                                 }
                             }
                         }
-
                     }
                 }
                 Spacer(modifier = Modifier.height(28.dp))
@@ -562,7 +536,6 @@ fun DetailEssay(
             }
         }
     }
-
 }
 
 @Composable
@@ -639,7 +612,6 @@ fun SequenceBottomBar(
                                     item.id!!
                                 )
                             }
-
                         }
                         .size(35.dp))
             }
@@ -681,7 +653,6 @@ fun SequenceBottomBar(
                                     } else {
                                         noExistPreviousStack = true
                                     }
-
                                 }
                         )
                         Spacer(modifier = Modifier.height(6.dp))
@@ -750,13 +721,15 @@ fun ReportMenuBottomSheet(viewModel: CommunityViewModel) {
             )
             Spacer(modifier = Modifier.height(20.dp))
             Button(
+                enabled = selectedItem != "",
                 onClick = {
                     viewModel.reportEssay(viewModel.detailEssay.id!!, selectedItem)
                 },
                 modifier = Modifier
                     .fillMaxWidth() // TODO: report API 연동 필요
                     .height(61.dp)
-                    .padding(bottom = 10.dp),
+                    .padding(bottom = 10.dp)
+                    .padding(horizontal = if (isTablet()) 130.dp else 0.dp),
                 shape = RoundedCornerShape(20)
             ) {
                 Text(text = "신고하기", color = Color.Black)
@@ -835,8 +808,6 @@ fun SingleSelectReportList(
 
 @Composable
 fun ReportTextField(hint: String, selectedColor: Color) {
-
-
     var isFocused by remember { mutableStateOf(false) }
     var borderColor = if (isFocused) selectedColor else Color(0xFF202020)
 
@@ -857,8 +828,6 @@ fun ReportTextField(hint: String, selectedColor: Color) {
             onValueChange = {
                 text = it
             },
-
-
             colors = TextFieldDefaults.colors(
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
@@ -872,8 +841,6 @@ fun ReportTextField(hint: String, selectedColor: Color) {
             ),
         )
     }
-
-
 }
 
 @OptIn(ExperimentalGlideComposeApi::class)
@@ -923,7 +890,6 @@ fun ReportComplete(isCompleteClicked: () -> Unit) {
                     fontSize = 16.sp
                 )
                 Spacer(modifier = Modifier.height(54.dp))
-
             }
             Text(text = "신고 접수", fontSize = 16.sp, color = Color.White)
             Text(
@@ -943,7 +909,6 @@ fun ReportComplete(isCompleteClicked: () -> Unit) {
 //                    label = { Text("진행중", fontSize = 10.sp, color = Color.Black, fontWeight = FontWeight.Bold) },
 //                    colors = SuggestionChipDefaults.suggestionChipColors(containerColor = Color(0xFFFFBB36)),
 //                )
-
             }
             Text(
                 text = "링크드아웃 팀에서는 수상한 글을 꼼꼼하게 심문해 규정을 어긴 글을 최대한 빠르게 체포하고 있어요.",
@@ -970,6 +935,3 @@ fun ReportComplete(isCompleteClicked: () -> Unit) {
         }
     }
 }
-
-
-

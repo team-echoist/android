@@ -236,7 +236,7 @@ fun EssayListItem(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 20.dp, start = 20.dp, end = 20.dp)
+                .padding(20.dp)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(

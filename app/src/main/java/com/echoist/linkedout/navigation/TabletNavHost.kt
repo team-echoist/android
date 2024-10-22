@@ -48,6 +48,7 @@ import com.echoist.linkedout.presentation.userInfo.recentviewedessay.RecentEssay
 import com.echoist.linkedout.presentation.userInfo.recentviewedessay.TabletRecentEssayScreen
 import com.echoist.linkedout.presentation.util.Routes
 import com.echoist.linkedout.presentation.util.TYPE_STORY
+import com.echoist.linkedout.presentation.util.isPortrait
 import com.echoist.linkedout.presentation.util.navigateWithClearBackStack
 
 @Composable
@@ -124,9 +125,7 @@ fun TabletNavHost(
             TabletMyLogRoute(
                 navController = navController,
                 page = page,
-                modifier = Modifier
-                    .padding(horizontal = 48.dp)
-                    .padding(top = 56.dp),
+                modifier = Modifier.padding(top = 60.dp),
                 viewModel = myLogViewModel,
                 writingViewModel = writingViewModel
             )

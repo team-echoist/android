@@ -6,6 +6,7 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.echoist.linkedout.presentation.essay.write.WritingViewModel
+import com.echoist.linkedout.presentation.util.isPortrait
 import kotlinx.coroutines.launch
 
 @Composable
@@ -79,11 +81,12 @@ internal fun TabletMyLogScreen(
     viewModel: MyLogViewModel
 ) {
     Column(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = if (isPortrait()) 90.dp else 180.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         TabletMyLogTabView(
-            modifier = modifier,
             pagerState = pagerState,
             viewModel = viewModel
         )
@@ -117,62 +120,62 @@ fun ContentSection(
 }
 
 @Composable
-fun TabletMyLogTabView(modifier: Modifier, pagerState: PagerState, viewModel: MyLogViewModel) {
+fun TabletMyLogTabView(pagerState: PagerState, viewModel: MyLogViewModel) {
     val coroutineScope = rememberCoroutineScope()
-    Box(
-        modifier = modifier.height(30.dp)
+    Spacer(modifier = Modifier.height(16.dp))
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp),
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(5.dp) // 탭 사이 간격을 5dp로 설정
-        ) {
-            TabItem(
-                text = "나만의 글 ${viewModel.myEssayList.size}",
-                dividerWidth = 75.dp,
-                onClick = {
-                    coroutineScope.launch {
-                        pagerState.animateScrollToPage(0)
-                    }
-                },
-                color = if (pagerState.currentPage == 0) Color.White else Color.Gray,
-                modifier = Modifier.weight(1f)
-            )
-            TabItem(
-                text = "발행한 글 ${viewModel.publishedEssayList.size}",
-                dividerWidth = 75.dp,
-                onClick = {
-                    coroutineScope.launch {
-                        pagerState.animateScrollToPage(1)
-                    }
-                },
-                color = if (pagerState.currentPage == 1) Color.White else Color.Gray,
-                modifier = Modifier.weight(1f)
-            )
-            TabItem(
-                text = "스토리 ${viewModel.storyList.size}",
-                dividerWidth = 75.dp,
-                onClick = {
-                    coroutineScope.launch {
-                        pagerState.animateScrollToPage(2)
-                    }
-                },
-                color = if (pagerState.currentPage == 2) Color.White else Color.Gray,
-                modifier = Modifier.weight(1f)
-            )
-        }
+        TabItem(
+            text = "나만의 글 ${viewModel.myEssayList.size}",
+            isSelected = pagerState.currentPage == 0,
+            onClick = {
+                coroutineScope.launch {
+                    pagerState.animateScrollToPage(0)
+                }
+            },
+            color = if (pagerState.currentPage == 0) Color.White else Color.Gray,
+            modifier = Modifier.weight(1f)
+        )
+        TabItem(
+            text = "발행한 글 ${viewModel.publishedEssayList.size}",
+            isSelected = pagerState.currentPage == 1,
+            onClick = {
+                coroutineScope.launch {
+                    pagerState.animateScrollToPage(1)
+                }
+            },
+            color = if (pagerState.currentPage == 1) Color.White else Color.Gray,
+            modifier = Modifier.weight(1f)
+        )
+        TabItem(
+            text = "스토리 ${viewModel.storyList.size}",
+            isSelected = pagerState.currentPage == 2,
+            onClick = {
+                coroutineScope.launch {
+                    pagerState.animateScrollToPage(2)
+                }
+            },
+            color = if (pagerState.currentPage == 2) Color.White else Color.Gray,
+            modifier = Modifier.weight(1f)
+        )
     }
 }
 
 @Composable
 fun TabItem(
     text: String,
-    dividerWidth: Dp,
+    isSelected: Boolean = false,
     onClick: () -> Unit,
     color: Color,
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.padding(end = 12.dp),
+        modifier = modifier
+            .padding(end = 12.dp)
+            .padding(vertical = 10.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -182,12 +185,14 @@ fun TabItem(
             color = color,
             modifier = Modifier.clickable { onClick() }
         )
-        Spacer(modifier = Modifier.height(4.dp))
-        HorizontalDivider(
-            modifier = Modifier.width(dividerWidth),
-            color = color,
-            thickness = 2.dp
-        )
+        Spacer(modifier = Modifier.height(8.dp))
+        if (isSelected) {
+            HorizontalDivider(
+                modifier = modifier.fillMaxWidth(),
+                color = color,
+                thickness = 2.dp
+            )
+        }
     }
 }
 
